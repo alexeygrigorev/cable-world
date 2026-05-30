@@ -35,10 +35,14 @@ class AndroidExportContractTest(unittest.TestCase):
     def test_android_identity_and_version_are_stable(self) -> None:
         self.assertIsNotNone(self.android_preset, "Нужен Android export preset")
         options = self.parser[f"{self.android_preset}.options"]
+        project_version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        self.assertRegex(project_version, r"^\d+\.\d+\.\d+$")
+        expected_version_code = int(project_version.split(".")[2])
 
         self.assertEqual(_unquote(options["package/unique_name"]), "com.mirtrossov.app")
         self.assertEqual(_unquote(options["package/name"]), "Мир Троссов")
-        self.assertEqual(_unquote(options["version/name"]), "0.1.3")
+        self.assertEqual(_unquote(options["version/name"]), project_version)
+        self.assertEqual(int(options["version/code"]), expected_version_code)
         self.assertGreater(int(options["version/code"]), 0)
         self.assertEqual(_unquote(options["gradle_build/export_format"]), "0")
 
