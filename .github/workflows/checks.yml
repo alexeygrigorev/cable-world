@@ -18,5 +18,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Установить Godot
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          export PATH="$HOME/.local/bin:$PATH"
+          INSTALL_EXPORT_TEMPLATES=false scripts/install-godot.sh
+
       - name: Запустить быстрые проверки
         run: python3 -m unittest discover -s tests

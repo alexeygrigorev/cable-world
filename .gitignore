@@ -1,9 +1,15 @@
 .godot/
 .import/
-export_presets.cfg
 *.translation
 build/
+dist/
 __pycache__/
+
+# Terraform local state; remote/backend setup is documented separately.
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.backup
+**/tfplan
 
 # Локальные данные MVP
 *.sqlite

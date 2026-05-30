@@ -1,0 +1,85 @@
+name: Релиз
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Версия без префикса v"
+        required: true
+        default: "0.1.0"
+      deploy_web:
+        description: "Выложить Web-сборку в AWS S3"
+        required: true
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build:
+    name: Собрать релизные артефакты
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: "4.6.3-stable"
+    steps:
+      - name: Получить код
+        uses: actions/checkout@v4
+
+      - name: Настроить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить Godot и export templates
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          export PATH="$HOME/.local/bin:$PATH"
+          scripts/install-godot.sh
+
+      - name: Запустить проверки
+        run: python3 -m unittest discover -s tests
+
+      - name: Определить версию
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            version="${{ inputs.version }}"
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Собрать Web и Linux
+        run: scripts/export-release.sh "${{ steps.version.outputs.version }}"
+
+      - name: Загрузить артефакты workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: mir-trossov-${{ steps.version.outputs.version }}
+          path: dist/${{ steps.version.outputs.version }}/*.zip
+
+      - name: Создать GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ steps.version.outputs.version }}/*.zip
+          generate_release_notes: true
+
+      - name: Настроить AWS credentials
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy_web == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Выложить Web-сборку в S3
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy_web == 'true'
+        run: |
+          aws s3 sync "dist/${{ steps.version.outputs.version }}/web/" "s3://${{ vars.AWS_WEB_BUCKET }}/" --delete
