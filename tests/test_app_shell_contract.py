@@ -9,7 +9,17 @@ class AppShellContractTest(unittest.TestCase):
     def test_main_scene_declares_mvp_sections_and_navigation(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
 
-        for node_name in ["MapSection", "ListSection", "CardSection", "MemorySection", "CollectionSection", "JournalSection"]:
+        for node_name in [
+            "MapSection",
+            "ListSection",
+            "CardSection",
+            "CollectionSection",
+            "JournalSection",
+            "MemorySection",
+            "RideSection",
+            "ObserverSection",
+            "SettingsSection",
+        ]:
             self.assertIn(f'name="{node_name}"', scene_text)
             self.assertIn("unique_name_in_owner = true", scene_text)
 
@@ -17,9 +27,12 @@ class AppShellContractTest(unittest.TestCase):
             "MapButton": "Карта",
             "ListButton": "Список",
             "CardButton": "Карточка",
-            "MemoryButton": "Воспоминание",
             "CollectionButton": "Коллекция",
             "JournalButton": "Журнал",
+            "MemoryButton": "Воспоминание",
+            "RideButton": "Поездка",
+            "ObserverButton": "Наблюдатель",
+            "SettingsButton": "Настройки",
         }.items():
             self.assertIn(f'name="{button_name}" type="Button"', scene_text)
             self.assertIn(f'text = "{button_text}"', scene_text)
@@ -46,17 +59,25 @@ class AppShellContractTest(unittest.TestCase):
             'SubResource("Theme_mobile_touch")',
             "default_font_size = 18",
             "Button/font_sizes/font_size = 18",
+            'name="НавигацияПрокрутка" type="ScrollContainer"',
+            'name="Навигация" type="HBoxContainer"',
+            'name="CurrentSectionLabel" type="Label"',
+            'text = "Раздел: Карта"',
             'name="ContentScroll" type="ScrollContainer"',
             "horizontal_scroll_mode = 0",
-            "columns = 3",
+            "horizontal_scroll_mode = 1",
         ]:
             self.assertIn(expected, scene_text)
 
-        for button_name in ["MapButton", "ListButton", "CardButton", "MemoryButton", "CollectionButton", "JournalButton"]:
+        for button_name in ["MapButton", "ListButton", "CardButton", "CollectionButton", "JournalButton", "RideButton", "SettingsButton"]:
             button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
-            self.assertIn("custom_minimum_size = Vector2(0, 52)", button_block)
+            self.assertIn("custom_minimum_size = Vector2(116, 48)", button_block)
 
-        for control_name in ["OrientationOption", "TypeFilterOption", "VisitFilterOption"]:
+        for button_name in ["MemoryButton", "ObserverButton"]:
+            button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
+            self.assertIn("custom_minimum_size = Vector2(144, 48)", button_block)
+
+        for control_name in ["OrientationOption", "SearchLineEdit", "CountryFilterOption", "TypeFilterOption", "VisitFilterOption"]:
             control_block = scene_text.split(f'name="{control_name}"', 1)[1].split("[node ", 1)[0]
             self.assertIn("custom_minimum_size = Vector2(0, 48)", control_block)
 
@@ -66,14 +87,18 @@ class AppShellContractTest(unittest.TestCase):
     def test_main_scene_declares_orientation_setting_in_russian(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
 
+        settings_section = scene_text.split('name="SettingsSection" type="VBoxContainer"', 1)[1]
         self.assertIn('name="OrientationOption" type="OptionButton"', scene_text)
         for text in ["Ориентация", "Как в системе", "Вертикальная", "Горизонтальная"]:
-            self.assertIn(f'text = "{text}"', scene_text)
+            self.assertIn(f'text = "{text}"', settings_section)
+
+        header_text = scene_text.split('name="Содержимое" type="PanelContainer"', 1)[0]
+        self.assertNotIn('name="OrientationOption" type="OptionButton"', header_text)
 
     def test_main_controller_routes_selection_between_sections(self) -> None:
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
 
-        for section_name in ['"map"', '"list"', '"card"', '"memory"', '"collection"', '"journal"']:
+        for section_name in ['"map"', '"list"', '"card"', '"collection"', '"journal"', '"memory"', '"ride"', '"observer"', '"settings"']:
             self.assertIn(section_name, script_text)
 
         self.assertIn("object_list.object_selected.connect(_on_object_selected)", script_text)
@@ -86,8 +111,31 @@ class AppShellContractTest(unittest.TestCase):
         self.assertIn("map_panel.select_object(index)", script_text)
         self.assertIn("memory_panel.show_object(objects[index])", script_text)
         self.assertIn("_update_map_selection(objects[index])", script_text)
+        self.assertIn("settings_button.pressed.connect", script_text)
         self.assertIn("selected_object_label.text", script_text)
         self.assertIn('selected_object_label.text = "Выбрано: %s\\n%s\\n%.4f, %.4f"', script_text)
+
+    def test_current_section_indicator_and_navigation_scroll_contract(self) -> None:
+        script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
+        scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
+
+        for expected in [
+            "@onready var navigation_scroll: ScrollContainer = %НавигацияПрокрутка",
+            "@onready var current_section_label: Label = %CurrentSectionLabel",
+            "var section_titles: Dictionary = {}",
+            '"observer": "Наблюдатель"',
+            '"ride": "Поездка"',
+            '"settings": "Настройки"',
+            'current_section_label.text = "Раздел: %s" % title',
+            "_scroll_navigation_to_current(section_name)",
+            'navigation_scroll.set_deferred("scroll_horizontal"',
+        ]:
+            self.assertIn(expected, script_text)
+
+        current_section_block = scene_text.split('name="CurrentSectionLabel" type="Label"', 1)[1].split("[node ", 1)[0]
+        self.assertIn("unique_name_in_owner = true", current_section_block)
+        self.assertIn('text = "Раздел: Карта"', current_section_block)
+        self.assertIn("autowrap_mode = 3", current_section_block)
 
     def test_main_controller_persists_and_applies_orientation_setting(self) -> None:
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
@@ -101,6 +149,28 @@ class AppShellContractTest(unittest.TestCase):
         self.assertIn("ConfigFile.new()", settings_text)
         for text in ["Как в системе", "Вертикальная", "Горизонтальная"]:
             self.assertIn(text, settings_text)
+
+    def test_layout_settings_ux_analysis_is_documented(self) -> None:
+        doc_text = (ROOT / "docs" / "layout-settings-ux.md").read_text(encoding="utf-8")
+
+        for expected in [
+            "Главная навигация",
+            "Настройки",
+            "Карточка объекта",
+            "Mobile portrait",
+            "`Карта`",
+            "`Список`",
+            "`Карточка`",
+            "`Коллекция`",
+            "`Журнал`",
+            "`Воспоминание`",
+            "`Поездка`",
+            "`Наблюдатель`",
+            "`Настройки`",
+            "`Ориентация`",
+            "не должна занимать место на стартовой карте",
+        ]:
+            self.assertIn(expected, doc_text)
 
     def test_list_panel_can_update_selection_without_reemitting(self) -> None:
         script_text = (ROOT / "scripts" / "object_list_panel.gd").read_text(encoding="utf-8")

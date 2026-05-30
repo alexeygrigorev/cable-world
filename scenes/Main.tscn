@@ -1,10 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://mir_trossov_main"]
+[gd_scene load_steps=9 format=3 uid="uid://mir_trossov_main"]
 
 [ext_resource type="Script" path="res://scripts/main_screen.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/object_list_panel.gd" id="2_list"]
 [ext_resource type="Script" path="res://scripts/object_card_panel.gd" id="3_card"]
 [ext_resource type="Script" path="res://scripts/map_panel.gd" id="4_map"]
 [ext_resource type="Script" path="res://scripts/memory_panel.gd" id="5_memory"]
+[ext_resource type="Script" path="res://scripts/ride_panel.gd" id="6_ride"]
+[ext_resource type="Script" path="res://scripts/observer_panel.gd" id="7_observer"]
 
 [sub_resource type="Theme" id="Theme_mobile_touch"]
 default_font_size = 18
@@ -51,162 +53,224 @@ layout_mode = 2
 text = "Канатные дороги и фуникулеры"
 autowrap_mode = 3
 
-[node name="Настройки" type="GridContainer" parent="Отступы/Оболочка"]
+[node name="НавигацияОбласть" type="Control" parent="Отступы/Оболочка"]
 layout_mode = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 6
-columns = 2
-
-[node name="ОриентацияПодпись" type="Label" parent="Отступы/Оболочка/Настройки"]
-layout_mode = 2
-text = "Ориентация"
-
-[node name="OrientationOption" type="OptionButton" parent="Отступы/Оболочка/Настройки"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-size_flags_horizontal = 3
-item_count = 3
-selected = 0
-popup/item_0/text = "Как в системе"
-popup/item_0/id = 0
-popup/item_1/text = "Вертикальная"
-popup/item_1/id = 1
-popup/item_2/text = "Горизонтальная"
-popup/item_2/id = 2
-
-[node name="Навигация" type="GridContainer" parent="Отступы/Оболочка"]
-layout_mode = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
-columns = 3
-
-[node name="MapButton" type="Button" parent="Отступы/Оболочка/Навигация"]
-unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
+size_flags_horizontal = 3
+clip_contents = true
+
+[node name="НавигацияПрокрутка" type="ScrollContainer" parent="Отступы/Оболочка/НавигацияОбласть"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+
+[node name="Навигация" type="HBoxContainer" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="MapButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(116, 48)
+layout_mode = 2
 toggle_mode = true
 text = "Карта"
 
-[node name="ListButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+[node name="ListButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
-size_flags_horizontal = 3
 toggle_mode = true
 text = "Список"
 
-[node name="CardButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+[node name="CardButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
-size_flags_horizontal = 3
 toggle_mode = true
 text = "Карточка"
 
-[node name="MemoryButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+[node name="CollectionButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-text = "Воспоминание"
-
-[node name="CollectionButton" type="Button" parent="Отступы/Оболочка/Навигация"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
-layout_mode = 2
-size_flags_horizontal = 3
 toggle_mode = true
 text = "Коллекция"
 
-[node name="JournalButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+[node name="JournalButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
-size_flags_horizontal = 3
 toggle_mode = true
 text = "Журнал"
+
+[node name="MemoryButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(144, 48)
+layout_mode = 2
+toggle_mode = true
+text = "Воспоминание"
+
+[node name="RideButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(116, 48)
+layout_mode = 2
+toggle_mode = true
+text = "Поездка"
+
+[node name="ObserverButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(144, 48)
+layout_mode = 2
+toggle_mode = true
+text = "Наблюдатель"
+
+[node name="SettingsButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(116, 48)
+layout_mode = 2
+toggle_mode = true
+text = "Настройки"
+
+[node name="CurrentSectionLabel" type="Label" parent="Отступы/Оболочка"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Раздел: Карта"
+autowrap_mode = 3
 
 [node name="Содержимое" type="PanelContainer" parent="Отступы/Оболочка"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ContentScroll" type="ScrollContainer" parent="Отступы/Оболочка/Содержимое"]
-unique_name_in_owner = true
+[node name="ContentViewport" type="Control" parent="Отступы/Оболочка/Содержимое"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+clip_contents = true
+
+[node name="ContentScroll" type="ScrollContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
+scroll_deadzone = 18
 
-[node name="Секции" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll"]
+[node name="Секции" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MapSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+[node name="MapSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="КартаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MapSection"]
+[node name="КартаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Карта"
 
-[node name="MapPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MapSection"]
+[node name="MapPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 420)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("4_map")
 
-[node name="SelectedObjectLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MapSection"]
+[node name="SelectedObjectLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Выбрано: пока нет"
 autowrap_mode = 3
 
-[node name="ListSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+[node name="ListSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 0
 
-[node name="СписокЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
+[node name="ListSafeArea" type="MarginContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="ListContent" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="СписокЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Список объектов"
 
-[node name="СписокПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
+[node name="СписокПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
 layout_mode = 2
-text = "Нажмите объект, чтобы открыть карточку."
+text = "Касание открывает карточку, движение прокручивает список."
 autowrap_mode = 3
 
-[node name="ListActiveCollectionFilterLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
+[node name="ListActiveCollectionFilterLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "Фильтр: не выбран"
 autowrap_mode = 3
 
-[node name="ФильтрыСписка" type="GridContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
+[node name="ПоискФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
 layout_mode = 2
+text = "Поиск по названию, региону или стране"
+autowrap_mode = 3
+
+[node name="SearchLineEdit" type="LineEdit" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Поиск"
+clear_button_enabled = true
+
+[node name="CountryFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 1
+selected = 0
+popup/item_0/text = "Все страны"
+popup/item_0/id = 0
+
+[node name="ФильтрыСписка" type="GridContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
-columns = 2
+columns = 1
 
-[node name="ТипФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
+[node name="ТипФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent/ФильтрыСписка"]
 layout_mode = 2
 text = "Тип"
 
-[node name="СтатусФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
-layout_mode = 2
-text = "Статус"
-
-[node name="TypeFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
+[node name="TypeFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent/ФильтрыСписка"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
@@ -216,7 +280,11 @@ selected = 0
 popup/item_0/text = "Все виды транспорта"
 popup/item_0/id = 0
 
-[node name="VisitFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
+[node name="СтатусФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent/ФильтрыСписка"]
+layout_mode = 2
+text = "Статус"
+
+[node name="VisitFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent/ФильтрыСписка"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
@@ -230,111 +298,215 @@ popup/item_1/id = 1
 popup/item_2/text = "Уже посещали"
 popup/item_2/id = 2
 
-[node name="ListEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
+[node name="ListEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-text = "По таким фильтрам ничего не нашлось. Попробуйте выбрать другой тип или статус посещения."
+text = "По этому поиску и фильтрам ничего не нашлось. Попробуйте изменить запрос, страну, тип или статус."
 autowrap_mode = 3
 
-[node name="ObjectList" type="ItemList" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 260)
+[node name="ObjectListViewport" type="Control" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
+clip_contents = true
+
+[node name="ObjectList" type="ItemList" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent/ObjectListViewport"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+same_column_width = true
+fixed_icon_size = Vector2i(1, 1)
 script = ExtResource("2_list")
 
-[node name="CollectionSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+[node name="CollectionSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="КоллекцияЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+[node name="КоллекцияЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/CollectionSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Коллекция"
 
-[node name="КоллекцияПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+[node name="КоллекцияПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/CollectionSection"]
 layout_mode = 2
 text = "Прогресс по странам и типам транспорта."
 autowrap_mode = 3
 
-[node name="CollectionScroll" type="ScrollContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+[node name="CollectionScroll" type="ScrollContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/CollectionSection"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 260)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="CollectionRows" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection/CollectionScroll"]
+[node name="CollectionRows" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/CollectionSection/CollectionScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="CollectionEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+[node name="CollectionEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/CollectionSection"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "Коллекция пока пуста. Здесь появится прогресс по странам и типам."
 autowrap_mode = 3
 
-[node name="CardSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+[node name="CardSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="КарточкаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CardSection"]
+[node name="КарточкаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/CardSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Карточка объекта"
 
-[node name="ObjectCard" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CardSection"]
+[node name="ObjectCard" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/CardSection"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("3_card")
 
-[node name="MemorySection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+[node name="ObserverSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="ВоспоминаниеЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MemorySection"]
+[node name="НаблюдательЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ObserverSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+text = "Наблюдатель"
+autowrap_mode = 3
+
+[node name="ObserverPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ObserverSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("7_observer")
+
+[node name="MemorySection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ВоспоминаниеЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MemorySection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Воспоминание"
 
-[node name="MemoryPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MemorySection"]
+[node name="MemoryPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MemorySection"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("5_memory")
 
-[node name="JournalSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+[node name="RideSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="ЖурналЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/JournalSection"]
+[node name="ПоездкаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/RideSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Поездка"
+
+[node name="RidePanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/RideSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("6_ride")
+
+[node name="JournalSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ЖурналЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/JournalSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Журнал"
 
-[node name="JournalLabel" type="RichTextLabel" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/JournalSection"]
+[node name="JournalLabel" type="RichTextLabel" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/JournalSection"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
 fit_content = true
 text = "[b]Журнал[/b]\nПока нет действий."
+
+[node name="SettingsSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="НастройкиЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/SettingsSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Настройки"
+
+[node name="НастройкиПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/SettingsSection"]
+layout_mode = 2
+text = "Параметры экрана и поведения приложения."
+autowrap_mode = 3
+
+[node name="SettingsGrid" type="GridContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/SettingsSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 1
+
+[node name="ОриентацияПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/SettingsSection/SettingsGrid"]
+layout_mode = 2
+text = "Ориентация"
+
+[node name="OrientationOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/SettingsSection/SettingsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 3
+selected = 0
+popup/item_0/text = "Как в системе"
+popup/item_0/id = 0
+popup/item_1/text = "Вертикальная"
+popup/item_1/id = 1
+popup/item_2/text = "Горизонтальная"
+popup/item_2/id = 2

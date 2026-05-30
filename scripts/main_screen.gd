@@ -3,15 +3,21 @@ class_name MainScreen
 
 const AppSettings := preload("res://scripts/app_settings.gd")
 const MapPanelScript := preload("res://scripts/map_panel.gd")
+const RidePanelScript := preload("res://scripts/ride_panel.gd")
 const COLLECTION_STATS_SCRIPT_PATH := "res://scripts/collection_stats.gd"
 const ACHIEVEMENTS_SCRIPT_PATH := "res://scripts/achievements.gd"
+const CONTENT_WIDTH_GUARD := 2.0
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
 @onready var memory_panel: MemoryPanel = %MemoryPanel
+@onready var observer_panel: ObserverPanel = %ObserverPanel
 @onready var map_panel: MapPanelScript = %MapPanel
+@onready var ride_panel: RidePanelScript = %RidePanel
+@onready var search_line_edit: LineEdit = %SearchLineEdit
 @onready var type_filter_option: OptionButton = %TypeFilterOption
 @onready var visit_filter_option: OptionButton = %VisitFilterOption
+@onready var country_filter_option: OptionButton = %CountryFilterOption
 @onready var orientation_option: OptionButton = %OrientationOption
 @onready var list_empty_state_label: Label = %ListEmptyStateLabel
 @onready var list_active_collection_filter_label: Label = %ListActiveCollectionFilterLabel
@@ -20,15 +26,26 @@ const ACHIEVEMENTS_SCRIPT_PATH := "res://scripts/achievements.gd"
 @onready var map_button: Button = %MapButton
 @onready var list_button: Button = %ListButton
 @onready var card_button: Button = %CardButton
+@onready var observer_button: Button = %ObserverButton
 @onready var memory_button: Button = %MemoryButton
+@onready var ride_button: Button = %RideButton
 @onready var collection_button: Button = %CollectionButton
 @onready var journal_button: Button = %JournalButton
+@onready var settings_button: Button = %SettingsButton
+@onready var navigation_scroll: ScrollContainer = %НавигацияПрокрутка
+@onready var current_section_label: Label = %CurrentSectionLabel
 @onready var map_section: VBoxContainer = %MapSection
 @onready var list_section: VBoxContainer = %ListSection
 @onready var card_section: VBoxContainer = %CardSection
+@onready var observer_section: VBoxContainer = %ObserverSection
 @onready var memory_section: VBoxContainer = %MemorySection
+@onready var ride_section: VBoxContainer = %RideSection
 @onready var collection_section: VBoxContainer = %CollectionSection
 @onready var journal_section: VBoxContainer = %JournalSection
+@onready var settings_section: VBoxContainer = %SettingsSection
+@onready var content_viewport: Control = $Отступы/Оболочка/Содержимое/ContentViewport
+@onready var content_scroll: ScrollContainer = %ContentScroll
+@onready var sections_container: VBoxContainer = $Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции
 @onready var collection_rows: VBoxContainer = %CollectionRows
 @onready var collection_empty_state_label: Label = %CollectionEmptyStateLabel
 
@@ -38,6 +55,7 @@ var journal_entries: Array[String] = []
 var selected_index: int = -1
 var sections: Dictionary = {}
 var navigation_buttons: Dictionary = {}
+var section_titles: Dictionary = {}
 var storage: SQLiteStorageAdapter = SQLiteStorageAdapter.new()
 var storage_runtime_enabled: bool = false
 var app_settings: RefCounted = AppSettings.new()
@@ -53,40 +71,67 @@ func _ready() -> void:
 		"map": map_section,
 		"list": list_section,
 		"card": card_section,
+		"observer": observer_section,
 		"memory": memory_section,
+		"ride": ride_section,
 		"collection": collection_section,
 		"journal": journal_section,
+		"settings": settings_section,
 	}
 	navigation_buttons = {
 		"map": map_button,
 		"list": list_button,
 		"card": card_button,
+		"observer": observer_button,
 		"memory": memory_button,
+		"ride": ride_button,
 		"collection": collection_button,
 		"journal": journal_button,
+		"settings": settings_button,
+	}
+	section_titles = {
+		"map": "Карта",
+		"list": "Список",
+		"card": "Карточка",
+		"observer": "Наблюдатель",
+		"memory": "Воспоминание",
+		"ride": "Поездка",
+		"collection": "Коллекция",
+		"journal": "Журнал",
+		"settings": "Настройки",
 	}
 
 	map_button.pressed.connect(func() -> void: _show_section("map"))
 	list_button.pressed.connect(func() -> void: _show_section("list"))
 	card_button.pressed.connect(func() -> void: _show_section("card"))
+	observer_button.pressed.connect(func() -> void: _show_section("observer"))
 	memory_button.pressed.connect(func() -> void: _show_section("memory"))
+	ride_button.pressed.connect(func() -> void: _show_section("ride"))
 	collection_button.pressed.connect(func() -> void: _show_section("collection"))
 	journal_button.pressed.connect(func() -> void: _show_section("journal"))
+	settings_button.pressed.connect(func() -> void: _show_section("settings"))
 	orientation_option.item_selected.connect(_on_orientation_selected)
+	search_line_edit.text_changed.connect(_on_search_changed)
 	type_filter_option.item_selected.connect(_on_filter_changed)
 	visit_filter_option.item_selected.connect(_on_filter_changed)
+	country_filter_option.item_selected.connect(_on_filter_changed)
 	object_list.set_empty_state_label(list_empty_state_label)
 	object_list.set_objects(objects)
 	object_list.object_selected.connect(_on_object_selected)
 	object_card.status_changed.connect(_on_status_changed)
 	object_card.photo_registration_requested.connect(_on_photo_registration_requested)
 	object_card.visit_registration_requested.connect(_on_visit_registration_requested)
+	object_card.observer_requested.connect(func() -> void: _show_section("observer"))
 	memory_panel.back_requested.connect(func() -> void: _show_section("card"))
+	observer_panel.back_requested.connect(func() -> void: _show_section("card"))
+	ride_panel.card_requested.connect(func() -> void: _show_section("card"))
 	map_panel.set_objects(objects)
 	map_panel.object_selected.connect(_on_map_object_selected)
+	content_viewport.resized.connect(_sync_content_width)
 
 	_configure_orientation_setting()
 	_configure_list_filters()
+	_sync_content_width()
 	_refresh_collection()
 	if not objects.is_empty():
 		_select_object(0, false)
@@ -126,13 +171,23 @@ func _on_filter_changed(_item_index: int) -> void:
 	if type_filter_option.selected > 0:
 		type_filter = type_filter_option.get_item_text(type_filter_option.selected)
 
+	var country_filter := ObjectListPanel.FILTER_ALL
+	if country_filter_option.selected > 0:
+		country_filter = country_filter_option.get_item_text(country_filter_option.selected)
+
 	var visit_filter := ObjectListPanel.FILTER_ALL
 	if visit_filter_option.selected == 1:
 		visit_filter = ObjectListPanel.FILTER_NOT_VISITED
 	elif visit_filter_option.selected == 2:
 		visit_filter = ObjectListPanel.FILTER_VISITED
 
-	object_list.set_filters(type_filter, visit_filter)
+	object_list.set_filters(type_filter, visit_filter, country_filter)
+	list_active_collection_filter_label.visible = false
+	if selected_index >= 0:
+		object_list.select_visual_object(selected_index)
+
+func _on_search_changed(next_text: String) -> void:
+	object_list.set_search_query(next_text)
 	list_active_collection_filter_label.visible = false
 	if selected_index >= 0:
 		object_list.select_visual_object(selected_index)
@@ -249,7 +304,15 @@ func _configure_list_filters() -> void:
 	visit_filter_option.add_item("Все объекты")
 	visit_filter_option.add_item("Еще не посещали")
 	visit_filter_option.add_item("Уже посещали")
-	object_list.set_filters(ObjectListPanel.FILTER_ALL, ObjectListPanel.FILTER_ALL)
+
+	country_filter_option.clear()
+	country_filter_option.add_item("Все страны")
+	for country in object_list.get_countries():
+		country_filter_option.add_item(country)
+
+	search_line_edit.text = ""
+	object_list.set_search_query("")
+	object_list.set_filters(ObjectListPanel.FILTER_ALL, ObjectListPanel.FILTER_ALL, ObjectListPanel.FILTER_ALL)
 
 func _refresh_collection() -> void:
 	for child in collection_rows.get_children():
@@ -420,11 +483,15 @@ func _apply_collection_filter(filter_kind: String, value: String) -> void:
 	if filter_kind == "type":
 		type_filter = value
 		_select_type_filter_option(value)
+		_select_country_filter_option(ObjectListPanel.FILTER_ALL)
 	else:
 		_select_type_filter_option(ObjectListPanel.FILTER_ALL)
 		country_filter = value
+		_select_country_filter_option(value)
 
 	visit_filter_option.select(0)
+	search_line_edit.text = ""
+	object_list.set_search_query("")
 	object_list.set_filters(type_filter, ObjectListPanel.FILTER_ALL, country_filter)
 	list_active_collection_filter_label.text = "Фильтр: %s\n%s" % [
 		"тип транспорта" if filter_kind == "type" else "страна",
@@ -442,6 +509,15 @@ func _select_type_filter_option(value: String) -> void:
 	for index in type_filter_option.get_item_count():
 		if type_filter_option.get_item_text(index) == value:
 			type_filter_option.select(index)
+			return
+
+func _select_country_filter_option(value: String) -> void:
+	country_filter_option.select(0)
+	if value == ObjectListPanel.FILTER_ALL:
+		return
+	for index in country_filter_option.get_item_count():
+		if country_filter_option.get_item_text(index) == value:
+			country_filter_option.select(index)
 			return
 
 func _is_collection_object_visited(object_data: Dictionary) -> bool:
@@ -497,6 +573,8 @@ func _select_object(index: int, open_card: bool) -> void:
 		_ensure_route_details(index)
 	object_card.show_object(objects[index], storage_runtime_enabled)
 	memory_panel.show_object(objects[index])
+	observer_panel.show_object(objects[index])
+	ride_panel.show_object(objects[index])
 	map_panel.select_object(index)
 	_update_map_selection(objects[index])
 	if open_card:
@@ -510,6 +588,36 @@ func _show_section(section_name: String) -> void:
 	for key in navigation_buttons:
 		var button: Button = navigation_buttons[key]
 		button.button_pressed = key == section_name
+
+	var title: String = section_titles.get(section_name, section_name)
+	current_section_label.text = "Раздел: %s" % title
+	_sync_content_width()
+	_scroll_navigation_to_current(section_name)
+
+func _sync_content_width() -> void:
+	if content_viewport == null or content_scroll == null or sections_container == null:
+		return
+	var content_width: float = max(0.0, content_viewport.size.x - CONTENT_WIDTH_GUARD)
+	content_scroll.scroll_horizontal = 0
+	content_scroll.set_deferred("scroll_horizontal", 0)
+	sections_container.custom_minimum_size.x = content_width
+	for key in sections:
+		var section: Control = sections[key]
+		section.custom_minimum_size.x = content_width
+
+func _scroll_navigation_to_current(section_name: String) -> void:
+	if navigation_scroll == null or not navigation_buttons.has(section_name):
+		return
+	var button: Button = navigation_buttons[section_name]
+	var button_left := int(button.position.x)
+	var button_right := int(button.position.x + button.size.x)
+	var viewport_width := int(navigation_scroll.size.x)
+	var target := navigation_scroll.scroll_horizontal
+	if button_left < target:
+		target = button_left
+	elif button_right > target + viewport_width:
+		target = button_right - viewport_width
+	navigation_scroll.set_deferred("scroll_horizontal", max(0, target))
 
 func _update_map_selection(object_data: Dictionary) -> void:
 	var coordinates: Vector2 = object_data.get("coordinates", Vector2.ZERO)

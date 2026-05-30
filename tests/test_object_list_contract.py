@@ -10,6 +10,8 @@ class ObjectListContractTest(unittest.TestCase):
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
 
         for node_name in [
+            "SearchLineEdit",
+            "CountryFilterOption",
             "TypeFilterOption",
             "VisitFilterOption",
             "ListEmptyStateLabel",
@@ -18,13 +20,15 @@ class ObjectListContractTest(unittest.TestCase):
             self.assertIn("unique_name_in_owner = true", scene_text)
 
         for visible_text in [
+            "Поиск по названию, региону или стране",
+            "Все страны",
             "Тип",
             "Статус",
             "Все виды транспорта",
             "Все объекты",
             "Еще не посещали",
             "Уже посещали",
-            "По таким фильтрам ничего не нашлось",
+            "По этому поиску и фильтрам ничего не нашлось",
         ]:
             self.assertIn(visible_text, scene_text)
 
@@ -35,9 +39,13 @@ class ObjectListContractTest(unittest.TestCase):
             "const FILTER_VISITED",
             "const FILTER_NOT_VISITED",
             "var visible_object_indices: Array[int]",
+            'var search_query: String = ""',
             "func set_filters(next_type_filter: String, next_visit_filter: String, next_country_filter: String = FILTER_ALL) -> void:",
+            "func set_search_query(next_search_query: String) -> void:",
             "func get_transport_types() -> Array[String]:",
+            "func get_countries() -> Array[String]:",
             "func _matches_filters(object_data: Dictionary) -> bool:",
+            "func _matches_search(object_data: Dictionary) -> bool:",
             "func _is_object_visited(object_data: Dictionary) -> bool:",
             "func _visit_status_text(object_data: Dictionary) -> String:",
             "func _operational_status_text(object_data: Dictionary) -> String:",
@@ -47,7 +55,77 @@ class ObjectListContractTest(unittest.TestCase):
             "работа:",
             "object_selected.emit(visible_object_indices[index])",
             "Пока нет объектов.",
+            "изменить запрос, страну, тип или статус",
             'var label := "%s\\n%s · %s · %s"',
+        ]:
+            self.assertIn(expected, script_text)
+
+    def test_list_panel_has_touch_scroll_safety_contract(self) -> None:
+        scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
+        script_text = (ROOT / "scripts" / "object_list_panel.gd").read_text(encoding="utf-8")
+
+        object_list_block = scene_text.split('name="ObjectList" type="ItemList"', 1)[1].split("[node ", 1)[0]
+        content_scroll_block = scene_text.split('name="ContentScroll" type="ScrollContainer"', 1)[1].split("[node ", 1)[0]
+
+        for expected in [
+            "size_flags_horizontal = 3",
+            "size_flags_vertical = 3",
+            "custom_minimum_size = Vector2(0, 300)",
+        ]:
+            self.assertIn(expected, object_list_block)
+
+        self.assertIn("horizontal_scroll_mode = 0", content_scroll_block)
+        self.assertIn("scroll_deadzone = 18", content_scroll_block)
+
+        for expected in [
+            "const TOUCH_DRAG_THRESHOLD := 18.0",
+            "const SELECTION_SUPPRESS_MSEC := 250",
+            "const TAP_SELECTION_DELAY_SEC := 0.12",
+            "func _gui_input(event: InputEvent) -> void:",
+            "event is InputEventScreenDrag",
+            "suppress_selection_until_msec",
+            "visual_selection_refreshing",
+            "await get_tree().create_timer(TAP_SELECTION_DELAY_SEC).timeout",
+            "if touch_is_dragging or Time.get_ticks_msec() < suppress_selection_until_msec:",
+        ]:
+            self.assertIn(expected, script_text)
+
+    def test_list_section_has_left_safe_area_without_horizontal_overflow(self) -> None:
+        scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
+        script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
+
+        list_section_block = scene_text.split('name="ListSection" type="VBoxContainer"', 1)[1].split("[node ", 1)[0]
+        list_safe_area_block = scene_text.split('name="ListSafeArea" type="MarginContainer"', 1)[1].split("[node ", 1)[0]
+        list_content_block = scene_text.split('name="ListContent" type="VBoxContainer"', 1)[1].split("[node ", 1)[0]
+        object_list_viewport_path = (
+            'parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/'
+            'ListSafeArea/ListContent"'
+        )
+        object_list_path = (
+            'parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/'
+            'ListSafeArea/ListContent/ObjectListViewport"'
+        )
+
+        self.assertIn("theme_override_constants/separation = 0", list_section_block)
+        for expected in [
+            "unique_name_in_owner = true",
+            "size_flags_horizontal = 3",
+            "theme_override_constants/margin_left = 12",
+            "theme_override_constants/margin_right = 12",
+        ]:
+            self.assertIn(expected, list_safe_area_block)
+        self.assertIn("theme_override_constants/separation = 8", list_content_block)
+        self.assertIn(object_list_viewport_path, scene_text)
+        self.assertIn(object_list_path, scene_text)
+
+        for expected in [
+            "const CONTENT_WIDTH_GUARD := 2.0",
+            "@onready var content_scroll: ScrollContainer = %ContentScroll",
+            "var content_width: float = max(0.0, content_viewport.size.x - CONTENT_WIDTH_GUARD)",
+            "sections_container.custom_minimum_size.x = content_width",
+            "section.custom_minimum_size.x = content_width",
+            "content_scroll.scroll_horizontal = 0",
+            'content_scroll.set_deferred("scroll_horizontal", 0)',
         ]:
             self.assertIn(expected, script_text)
 
@@ -55,10 +133,17 @@ class ObjectListContractTest(unittest.TestCase):
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
 
         for expected in [
+            "@onready var search_line_edit: LineEdit = %SearchLineEdit",
+            "@onready var country_filter_option: OptionButton = %CountryFilterOption",
+            "search_line_edit.text_changed.connect(_on_search_changed)",
             "type_filter_option.item_selected.connect(_on_filter_changed)",
             "visit_filter_option.item_selected.connect(_on_filter_changed)",
+            "country_filter_option.item_selected.connect(_on_filter_changed)",
             "object_list.set_empty_state_label(list_empty_state_label)",
-            "object_list.set_filters(type_filter, visit_filter)",
+            "object_list.set_filters(type_filter, visit_filter, country_filter)",
+            "object_list.set_search_query(next_text)",
+            'country_filter_option.add_item("Все страны")',
+            "for country in object_list.get_countries():",
             "func _load_objects_from_local_source() -> Array[Dictionary]:",
             "return DemoCatalog.get_objects()",
         ]:

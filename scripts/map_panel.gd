@@ -8,20 +8,155 @@ class OfflineMapLayer:
 
 	var pan_offset := Vector2.ZERO
 	var zoom := 1.0
+	var geo_bounds: Dictionary = {}
+	var city_labels: Array[Dictionary] = []
+	var country_labels: Array[Dictionary] = []
 
 	func _draw() -> void:
 		var rect := Rect2(Vector2.ZERO, size)
-		draw_rect(rect, Color("#f8fbf4"))
-		draw_rect(Rect2(_map_point(Vector2(14.0, 16.0)), Vector2(max(1.0, size.x - 44.0), max(1.0, size.y - 48.0)) * zoom), Color("#d8ead2"), false, 4.0)
-		draw_line(_map_point(Vector2(22.0, size.y * 0.36)), _map_point(Vector2(size.x - 24.0, size.y * 0.42)), Color("#6fa5c9"), 8.0 * zoom, true)
-		draw_line(_map_point(Vector2(size.x * 0.34, 22.0)), _map_point(Vector2(size.x * 0.46, size.y - 22.0)), Color("#87aa72"), 5.0 * zoom, true)
-		draw_line(_map_point(Vector2(24.0, size.y * 0.68)), _map_point(Vector2(size.x - 24.0, size.y * 0.58)), Color("#b39145"), 5.0 * zoom, true)
-		draw_circle(_map_point(Vector2(size.x * 0.68, size.y * 0.28)), 28.0 * zoom, Color("#c9df7a"))
-		draw_circle(_map_point(Vector2(size.x * 0.22, size.y * 0.72)), 22.0 * zoom, Color("#b8d66d"))
-		draw_rect(rect, Color("#31544d"), false, 3.0)
+		draw_rect(rect, Color("#dbe9ee"))
+		_draw_land_mass()
+		_draw_graticule()
+		_draw_reference_routes()
+		_draw_geo_labels(country_labels, Color("#40524a"), 13, true)
+		_draw_geo_labels(city_labels, Color("#1c302b"), 12, false)
+		_draw_scale_bar()
+		draw_rect(rect, Color("#2f4b45"), false, 2.0)
 
 	func _map_point(point: Vector2) -> Vector2:
 		return pan_offset + point * zoom
+
+	func _draw_land_mass() -> void:
+		var inset := 10.0
+		var base_rect := Rect2(_map_point(Vector2(inset, inset)), Vector2(max(1.0, size.x - inset * 2.0), max(1.0, size.y - inset * 2.0)) * zoom)
+		draw_rect(base_rect, Color("#eef1df"))
+		draw_rect(base_rect, Color("#b6c9a2"), false, 1.5 * zoom)
+
+		if geo_bounds.is_empty():
+			return
+
+		var europe_poly := PackedVector2Array([
+			_geo_to_screen(Vector2(-12.0, 59.0)),
+			_geo_to_screen(Vector2(6.0, 64.0)),
+			_geo_to_screen(Vector2(23.0, 61.0)),
+			_geo_to_screen(Vector2(31.0, 53.0)),
+			_geo_to_screen(Vector2(24.0, 45.0)),
+			_geo_to_screen(Vector2(7.0, 43.0)),
+			_geo_to_screen(Vector2(-6.0, 49.0)),
+		])
+		draw_colored_polygon(europe_poly, Color("#e5ead0"))
+
+		var russia_poly := PackedVector2Array([
+			_geo_to_screen(Vector2(28.0, 69.0)),
+			_geo_to_screen(Vector2(64.0, 70.0)),
+			_geo_to_screen(Vector2(103.0, 65.0)),
+			_geo_to_screen(Vector2(139.0, 55.0)),
+			_geo_to_screen(Vector2(132.0, 43.0)),
+			_geo_to_screen(Vector2(92.0, 47.0)),
+			_geo_to_screen(Vector2(43.0, 48.0)),
+			_geo_to_screen(Vector2(29.0, 55.0)),
+		])
+		draw_colored_polygon(russia_poly, Color("#e8edd4"))
+
+	func _draw_graticule() -> void:
+		if geo_bounds.is_empty():
+			return
+
+		var min_lon: float = floor(float(geo_bounds["min_longitude"]) / 10.0) * 10.0
+		var max_lon: float = ceil(float(geo_bounds["max_longitude"]) / 10.0) * 10.0
+		var min_lat: float = floor(float(geo_bounds["min_latitude"]) / 5.0) * 5.0
+		var max_lat: float = ceil(float(geo_bounds["max_latitude"]) / 5.0) * 5.0
+
+		var lon: float = min_lon
+		while lon <= max_lon:
+			var start: Vector2 = _geo_to_screen(Vector2(lon, float(geo_bounds["min_latitude"])))
+			var finish: Vector2 = _geo_to_screen(Vector2(lon, float(geo_bounds["max_latitude"])))
+			draw_line(start, finish, Color(0.72, 0.78, 0.74, 0.55), 1.0, true)
+			draw_string(get_theme_default_font(), start + Vector2(3.0, -4.0), "%dE" % int(lon), HORIZONTAL_ALIGNMENT_LEFT, -1.0, 10, Color("#607169"))
+			lon += 10.0
+
+		var lat: float = min_lat
+		while lat <= max_lat:
+			var start: Vector2 = _geo_to_screen(Vector2(float(geo_bounds["min_longitude"]), lat))
+			var finish: Vector2 = _geo_to_screen(Vector2(float(geo_bounds["max_longitude"]), lat))
+			draw_line(start, finish, Color(0.72, 0.78, 0.74, 0.55), 1.0, true)
+			draw_string(get_theme_default_font(), start + Vector2(4.0, 12.0), "%dN" % int(lat), HORIZONTAL_ALIGNMENT_LEFT, -1.0, 10, Color("#607169"))
+			lat += 5.0
+
+	func _draw_reference_routes() -> void:
+		if geo_bounds.is_empty():
+			return
+
+		_draw_geo_line([
+			Vector2(6.8, 50.4),
+			Vector2(8.4, 50.0),
+			Vector2(13.4, 52.5),
+			Vector2(14.2, 51.0),
+		], Color("#72a7c4"), 3.0)
+		_draw_geo_line([
+			Vector2(30.2, 59.9),
+			Vector2(37.6, 55.8),
+			Vector2(44.0, 56.3),
+			Vector2(49.1, 55.8),
+		], Color("#72a7c4"), 3.0)
+		_draw_geo_line([
+			Vector2(9.2, 48.8),
+			Vector2(10.9, 48.0),
+			Vector2(11.6, 47.5),
+			Vector2(13.0, 47.8),
+		], Color("#d0bb76"), 2.0)
+
+	func _draw_geo_line(points: Array[Vector2], color: Color, width: float) -> void:
+		for index in range(1, points.size()):
+			draw_line(_geo_to_screen(points[index - 1]), _geo_to_screen(points[index]), color, width * zoom, true)
+
+	func _draw_geo_labels(labels: Array[Dictionary], color: Color, font_size: int, uppercase: bool) -> void:
+		var font := get_theme_default_font()
+		for label_data in labels:
+			var title := str(label_data.get("title", ""))
+			if title.is_empty():
+				continue
+			if uppercase:
+				title = title.to_upper()
+			var position: Vector2 = _geo_to_screen(label_data.get("coordinates", Vector2.ZERO))
+			draw_string(font, position + Vector2(5.0, -5.0), title, HORIZONTAL_ALIGNMENT_LEFT, -1.0, font_size, color)
+
+	func _draw_scale_bar() -> void:
+		var bar_origin := Vector2(14.0, max(34.0, size.y - 28.0))
+		var bar_width: float = clamp(size.x * 0.26 / max(zoom, 0.01), 54.0, 110.0) * zoom
+		draw_line(bar_origin, bar_origin + Vector2(bar_width, 0.0), Color("#263b36"), 3.0, true)
+		draw_line(bar_origin, bar_origin + Vector2(0.0, -6.0), Color("#263b36"), 2.0, true)
+		draw_line(bar_origin + Vector2(bar_width, 0.0), bar_origin + Vector2(bar_width, -6.0), Color("#263b36"), 2.0, true)
+		draw_string(get_theme_default_font(), bar_origin + Vector2(0.0, -8.0), "масштаб", HORIZONTAL_ALIGNMENT_LEFT, -1.0, 10, Color("#263b36"))
+
+	func _geo_to_screen(coordinates: Vector2) -> Vector2:
+		return _map_point(_project_coordinates(coordinates, geo_bounds, size))
+
+	static func _project_coordinates(coordinates: Vector2, bounds: Dictionary, map_size: Vector2) -> Vector2:
+		if bounds.is_empty():
+			return Vector2.ZERO
+
+		var marker_size := Vector2(46.0, 38.0)
+		var map_padding := 18.0
+		var min_longitude: float = float(bounds["min_longitude"])
+		var max_longitude: float = float(bounds["max_longitude"])
+		var min_latitude: float = float(bounds["min_latitude"])
+		var max_latitude: float = float(bounds["max_latitude"])
+		var longitude_span: float = max(0.000001, max_longitude - min_longitude)
+		var min_mercator_y: float = _mercator_y(min_latitude)
+		var max_mercator_y: float = _mercator_y(max_latitude)
+		var mercator_span: float = max(0.000001, max_mercator_y - min_mercator_y)
+		var x_ratio: float = (coordinates.x - min_longitude) / longitude_span
+		var y_ratio: float = (max_mercator_y - _mercator_y(coordinates.y)) / mercator_span
+		return Vector2(
+			map_padding + x_ratio * max(1.0, map_size.x - marker_size.x - map_padding * 2.0),
+			map_padding + y_ratio * max(1.0, map_size.y - marker_size.y - map_padding * 2.0)
+		)
+
+	static func _mercator_y(latitude: float) -> float:
+		var clamped_latitude: float = clamp(latitude, -85.0, 85.0)
+		var radians: float = deg_to_rad(clamped_latitude)
+		return log(tan(PI / 4.0 + radians / 2.0))
 
 const MARKER_SIZE := Vector2(46.0, 38.0)
 const MAP_MIN_HEIGHT := 420.0
@@ -29,8 +164,6 @@ const MAP_VIEW_HEIGHT := 270.0
 const MAP_PADDING := 18.0
 const MARKER_SPREAD_DISTANCE := 58.0
 const MARKER_SPREAD_STEP := 42.0
-const GRID_LAYOUT_MIN_MARKERS := 10
-const GRID_COLUMNS := 5
 const SELECTED_NAME_LIMIT := 42
 const MAP_FILTER_ALL := "all"
 const MAP_FILTER_VISITED := "visited"
@@ -38,7 +171,7 @@ const MAP_FILTER_NOT_VISITED := "not_visited"
 const MIN_ZOOM := 0.75
 const MAX_ZOOM := 2.6
 const ZOOM_STEP := 1.18
-const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
+const MAP_CONTROL_SIZE := Vector2(44.0, 44.0)
 
 var objects: Array[Dictionary] = []
 var selected_index: int = -1
@@ -86,7 +219,7 @@ func _ready() -> void:
 	rows.add_child(summary_label)
 
 	var hint_label := Label.new()
-	hint_label.text = "Локальная схема без сети: каждая точка показывает один объект."
+	hint_label.text = "Офлайн-карта без сети: точки стоят по координатам, сетка показывает широту и долготу."
 	hint_label.add_theme_color_override("font_color", Color("#344842"))
 	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	rows.add_child(hint_label)
@@ -100,6 +233,7 @@ func _ready() -> void:
 
 	var filter_row := HBoxContainer.new()
 	filter_row.add_theme_constant_override("separation", 6)
+	filter_row.custom_minimum_size = Vector2(0.0, 42.0)
 	rows.add_child(filter_row)
 	_add_filter_button(filter_row, "Все", MAP_FILTER_ALL)
 	_add_filter_button(filter_row, "Посещенные", MAP_FILTER_VISITED)
@@ -195,6 +329,7 @@ func _refresh_markers() -> void:
 	_refresh_marker_styles()
 	_update_summary_label()
 	_update_empty_state()
+	_update_map_reference_data()
 	_position_markers()
 
 func _on_map_layer_resized() -> void:
@@ -205,6 +340,7 @@ func _on_map_layer_resized() -> void:
 		empty_state_label.size = map_layer.size
 	if zoom_controls != null:
 		zoom_controls.position = Vector2(max(10.0, map_layer.size.x - MAP_CONTROL_SIZE.x - 10.0), 10.0)
+	_update_map_reference_data()
 	_apply_map_transform()
 	_position_markers()
 
@@ -216,12 +352,7 @@ func _position_markers() -> void:
 	if bounds.is_empty():
 		return
 
-	var longitude_span: float = max(0.000001, float(bounds["max_longitude"]) - float(bounds["min_longitude"]))
-	var latitude_span: float = max(0.000001, float(bounds["max_latitude"]) - float(bounds["min_latitude"]))
-	var usable_width: float = max(1.0, map_layer.size.x - MARKER_SIZE.x - MAP_PADDING * 2.0)
-	var usable_height: float = max(1.0, map_layer.size.y - MARKER_SIZE.y - MAP_PADDING * 2.0)
 	var placed_positions: Array[Vector2] = []
-	var use_grid_layout: bool = marker_buttons.size() >= GRID_LAYOUT_MIN_MARKERS
 
 	for marker_number in marker_buttons.size():
 		var marker := marker_buttons[marker_number]
@@ -230,17 +361,8 @@ func _position_markers() -> void:
 			continue
 
 		var coordinates := _object_coordinates(objects[index])
-		var base_position: Vector2
-		if use_grid_layout:
-			base_position = _grid_marker_position(marker_number, marker_buttons.size(), map_layer.size)
-		else:
-			var x_ratio := (coordinates.x - float(bounds["min_longitude"])) / longitude_span
-			var y_ratio := (float(bounds["max_latitude"]) - coordinates.y) / latitude_span
-			base_position = Vector2(
-				MAP_PADDING + x_ratio * usable_width,
-				MAP_PADDING + y_ratio * usable_height
-			)
-		var spread_position := base_position if use_grid_layout else _spread_marker_position(base_position, placed_positions, map_layer.size)
+		var base_position := OfflineMapLayer._project_coordinates(coordinates, bounds, map_layer.size)
+		var spread_position := _spread_marker_position(base_position, placed_positions, map_layer.size)
 		var clamped_position := Vector2(
 			clamp(spread_position.x, MAP_PADDING, max(MAP_PADDING, map_layer.size.x - MARKER_SIZE.x - MAP_PADDING)),
 			clamp(spread_position.y, MAP_PADDING, max(MAP_PADDING, map_layer.size.y - MARKER_SIZE.y - MAP_PADDING))
@@ -275,8 +397,7 @@ func _update_summary_label() -> void:
 		return
 
 	var visible_count := _visible_marker_count()
-	var layout_text := ", сетка для читаемости" if marker_buttons.size() >= GRID_LAYOUT_MIN_MARKERS else ""
-	summary_label.text = "Общая карта объектов: %d из %d точек%s" % [visible_count, marker_buttons.size(), layout_text]
+	summary_label.text = "Общая карта объектов: %d из %d точек по координатам" % [visible_count, marker_buttons.size()]
 
 func _update_empty_state() -> void:
 	if empty_state_label == null:
@@ -306,21 +427,6 @@ func _update_selection_label() -> void:
 		coordinates.y,
 		coordinates.x
 	]
-
-func _grid_marker_position(marker_number: int, total_markers: int, map_size: Vector2) -> Vector2:
-	var column_count: int = min(GRID_COLUMNS, max(1, total_markers))
-	var row_count: int = int(ceil(float(total_markers) / float(column_count)))
-	var column: int = marker_number % column_count
-	var row: int = int(marker_number / column_count)
-	var usable_width: float = max(1.0, map_size.x - MARKER_SIZE.x - MAP_PADDING * 2.0)
-	var usable_height: float = max(1.0, map_size.y - MARKER_SIZE.y - MAP_PADDING * 2.0)
-	var x_step: float = usable_width / max(1.0, float(column_count - 1))
-	var y_step: float = usable_height / max(1.0, float(row_count - 1))
-	var stagger: float = 10.0 if row % 2 == 1 else 0.0
-	return Vector2(
-		MAP_PADDING + column * x_step + stagger,
-		MAP_PADDING + row * y_step
-	)
 
 func _spread_marker_position(base_position: Vector2, placed_positions: Array[Vector2], map_size: Vector2) -> Vector2:
 	if _is_clear_marker_position(base_position, placed_positions):
@@ -354,7 +460,7 @@ func _add_filter_button(parent: Container, title: String, filter_id: String) -> 
 	button.text = title
 	button.toggle_mode = true
 	button.focus_mode = Control.FOCUS_ALL
-	button.custom_minimum_size = Vector2(0.0, 48.0)
+	button.custom_minimum_size = Vector2(0.0, 42.0)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.set_meta("map_filter", filter_id)
 	button.pressed.connect(set_map_filter.bind(filter_id))
@@ -497,14 +603,14 @@ func _compact_text(text: String, max_length: int) -> String:
 
 func _apply_marker_style(marker: Button, is_selected: bool) -> void:
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color("#136f63") if is_selected else Color("#f4fff8")
-	normal_style.border_color = Color("#063f39") if is_selected else Color("#31544d")
-	normal_style.set_border_width_all(3 if is_selected else 2)
+	normal_style.bg_color = Color("#d64f2a") if is_selected else Color("#fff8df")
+	normal_style.border_color = Color("#6a1d13") if is_selected else Color("#31544d")
+	normal_style.set_border_width_all(4 if is_selected else 2)
 	normal_style.set_corner_radius_all(8)
 	marker.add_theme_stylebox_override("normal", normal_style)
 
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color("#0f5c52") if is_selected else Color("#dff3e6")
+	hover_style.bg_color = Color("#ba3f21") if is_selected else Color("#f1e7be")
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)
@@ -537,12 +643,48 @@ func _coordinate_bounds() -> Dictionary:
 	if not has_any_coordinates:
 		return {}
 
+	var longitude_padding: float = max(2.0, (max_longitude - min_longitude) * 0.08)
+	var latitude_padding: float = max(1.0, (max_latitude - min_latitude) * 0.12)
 	return {
-		"min_longitude": min_longitude,
-		"max_longitude": max_longitude,
-		"min_latitude": min_latitude,
-		"max_latitude": max_latitude,
+		"min_longitude": min_longitude - longitude_padding,
+		"max_longitude": max_longitude + longitude_padding,
+		"min_latitude": clamp(min_latitude - latitude_padding, -85.0, 85.0),
+		"max_latitude": clamp(max_latitude + latitude_padding, -85.0, 85.0),
 	}
+
+func _update_map_reference_data() -> void:
+	if map_layer == null:
+		return
+
+	var layer := map_layer as OfflineMapLayer
+	layer.geo_bounds = _coordinate_bounds()
+	layer.city_labels = _geo_labels_for_key("city")
+	layer.country_labels = _geo_labels_for_key("country")
+	layer.queue_redraw()
+
+func _geo_labels_for_key(key: String) -> Array[Dictionary]:
+	var grouped := {}
+	for object_data in objects:
+		if not _has_coordinates(object_data):
+			continue
+		var title := str(object_data.get(key, ""))
+		if title.is_empty():
+			continue
+		if not grouped.has(title):
+			grouped[title] = {"longitude": 0.0, "latitude": 0.0, "count": 0}
+		var coordinates := _object_coordinates(object_data)
+		grouped[title]["longitude"] = float(grouped[title]["longitude"]) + coordinates.x
+		grouped[title]["latitude"] = float(grouped[title]["latitude"]) + coordinates.y
+		grouped[title]["count"] = int(grouped[title]["count"]) + 1
+
+	var labels: Array[Dictionary] = []
+	for title in grouped:
+		var count: int = max(1, int(grouped[title]["count"]))
+		labels.append({
+			"title": title,
+			"coordinates": Vector2(float(grouped[title]["longitude"]) / count, float(grouped[title]["latitude"]) / count),
+		})
+	return labels
 
 func _has_coordinates(object_data: Dictionary) -> bool:
 	if object_data.has("coordinates") and object_data.get("coordinates") is Vector2:

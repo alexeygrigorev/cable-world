@@ -1,0 +1,266 @@
+{
+  "schema_version": "import-candidates-v1",
+  "generated_by": "docs/europe-catalog-research.md",
+  "candidates": [
+    {
+      "id": "braga-bom-jesus-funicular",
+      "transport_type_id": "funicular_water",
+      "visit_status_id": "not_visited",
+      "country": "Португалия",
+      "region": "Брага",
+      "city": "Брага",
+      "latitude": 41.5547,
+      "longitude": -8.3778,
+      "localized": {
+        "ru": {
+          "title": "Фуникулер Bom Jesus do Monte",
+          "description": "Водобалластный фуникулер у святилища Bom Jesus do Monte в Браге; приоритетный кандидат из-за редкой технологии."
+        },
+        "en": {
+          "title": "Bom Jesus do Monte Funicular",
+          "description": ""
+        }
+      },
+      "opened_year": 1882,
+      "operator": "Irmandade do Bom Jesus do Monte",
+      "manufacturer": "",
+      "operational_status": "unknown",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://bomjesus.pt/bom-jesus/elevator-or-funicular/",
+      "status_note": "Нужно подтвердить актуальное расписание перед переносом в seed.",
+      "source_ids": {
+        "wikidata": "Q892885"
+      },
+      "source_urls": [
+        "https://bomjesus.pt/bom-jesus/elevator-or-funicular/",
+        "https://www.erih.net/i-want-to-go-there/site/bom-jesus-funicular",
+        "https://www.wikidata.org/wiki/Q892885"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Первым кандидатом для Португалии; проверить координату нижней станции и статус."
+      }
+    },
+    {
+      "id": "grenoble-bastille-cable-car",
+      "transport_type_id": "cable_tourist",
+      "visit_status_id": "not_visited",
+      "country": "Франция",
+      "region": "Овернь — Рона — Альпы",
+      "city": "Гренобль",
+      "latitude": 45.1939,
+      "longitude": 5.7265,
+      "localized": {
+        "ru": {
+          "title": "Канатная дорога Grenoble-Bastille",
+          "description": "Городская туристическая канатная дорога из центра Гренобля к крепости Бастилия."
+        },
+        "en": {
+          "title": "Grenoble-Bastille cable car",
+          "description": ""
+        },
+        "de": {
+          "title": "Seilbahn Grenoble-Bastille",
+          "description": ""
+        }
+      },
+      "opened_year": 1934,
+      "operator": "Régie du Téléphérique Grenoble Bastille",
+      "manufacturer": "",
+      "operational_status": "unknown",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://bastille-grenoble.fr/en/",
+      "status_note": "Официальный сайт есть; перед seed проверить текущие часы работы и плановые обслуживания.",
+      "source_ids": {
+        "wikidata": "Q1520467"
+      },
+      "source_urls": [
+        "https://bastille-grenoble.fr/en/",
+        "https://www.wikidata.org/wiki/Q1520467"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Приоритетный французский объект с хорошим официальным источником."
+      }
+    },
+    {
+      "id": "como-brunate-funicular",
+      "transport_type_id": "funicular_classic",
+      "visit_status_id": "not_visited",
+      "country": "Италия",
+      "region": "Ломбардия",
+      "city": "Комо",
+      "latitude": 45.8148,
+      "longitude": 9.0835,
+      "localized": {
+        "ru": {
+          "title": "Фуникулер Комо — Брунате",
+          "description": "Классический фуникулер, соединяющий Комо с Брунате над озером Комо."
+        },
+        "en": {
+          "title": "Como-Brunate funicular",
+          "description": ""
+        },
+        "de": {
+          "title": "Standseilbahn Como-Brunate",
+          "description": ""
+        }
+      },
+      "opened_year": 1894,
+      "operator": "",
+      "manufacturer": "",
+      "operational_status": "unknown",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://www.funicolarecomo.it/",
+      "status_note": "Перед seed проверить оператора и актуальное расписание.",
+      "source_ids": {
+        "wikidata": "Q1055831"
+      },
+      "source_urls": [
+        "https://www.funicolarecomo.it/",
+        "https://www.wikidata.org/wiki/Q1055831"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Хороший первый кандидат для Италии; объект известен и имеет отдельный сайт."
+      }
+    },
+    {
+      "id": "prague-petrin-funicular",
+      "transport_type_id": "funicular_classic",
+      "visit_status_id": "not_visited",
+      "country": "Чехия",
+      "region": "Прага",
+      "city": "Прага",
+      "latitude": 50.0838,
+      "longitude": 14.4039,
+      "localized": {
+        "ru": {
+          "title": "Пражский фуникулер на Петршин",
+          "description": "Фуникулер Újezd — Petřín в Праге; на дату среза находится в плановой реконструкции."
+        },
+        "en": {
+          "title": "Petřín funicular",
+          "description": ""
+        },
+        "de": {
+          "title": "Petřín-Standseilbahn",
+          "description": ""
+        }
+      },
+      "opened_year": 1891,
+      "operator": "Dopravní podnik hl. m. Prahy",
+      "manufacturer": "",
+      "operational_status": "temporarily_closed_planned",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://www.dpp.cz/en/entertainment-and-experience/funicular-to-petrin",
+      "status_note": "DPP сообщает о приостановке работы из-за полной реконструкции; пассажирские тесты ожидаются на рубеже лета и осени 2026.",
+      "source_ids": {
+        "osm": [
+          "relation/5617683"
+        ],
+        "wikidata": "Q1502676"
+      },
+      "source_urls": [
+        "https://www.dpp.cz/en/entertainment-and-experience/funicular-to-petrin",
+        "https://www.dpp.cz/en/company/news/detail/342_3304-in-pictures-new-petrin-funicular-cars-installed-on-the-line",
+        "https://www.wikidata.org/wiki/Q1502676",
+        "https://www.openstreetmap.org/relation/5617683"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Не переносить как active; после открытия обновить статус и дату проверки."
+      }
+    },
+    {
+      "id": "stary-smokovec-hrebienok-funicular",
+      "transport_type_id": "funicular_classic",
+      "visit_status_id": "not_visited",
+      "country": "Словакия",
+      "region": "Прешовский край",
+      "city": "Высокие Татры",
+      "latitude": 49.1419,
+      "longitude": 20.2224,
+      "localized": {
+        "ru": {
+          "title": "Фуникулер Старый Смоковец — Гребиенок",
+          "description": "Горный фуникулер в Высоких Татрах между Старым Смоковцем и туристическим узлом Гребиенок."
+        },
+        "en": {
+          "title": "Starý Smokovec-Hrebienok funicular",
+          "description": ""
+        }
+      },
+      "opened_year": 1908,
+      "operator": "Tatry mountain resorts",
+      "manufacturer": "",
+      "operational_status": "unknown",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://visittatry.sk/en/post/cable-cars",
+      "status_note": "Перед seed проверить сезонное расписание и официальный статус у оператора.",
+      "source_ids": {
+        "wikidata": "Q7607830"
+      },
+      "source_urls": [
+        "https://visittatry.sk/en/post/cable-cars",
+        "https://www.vt.sk/fileadmin/resort_upload/vt/Basic_cableway_passenger_information__TATRANSKA_LOMNICA__STARY_SMOKOVEC__STRBSKE_PLESO_resort__1_.pdf",
+        "https://www.wikidata.org/wiki/Q7607830"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Первый кандидат для Словакии; уточнить координату нижней станции и сезонный статус."
+      }
+    },
+    {
+      "id": "zakopane-kasprowy-wierch-cable-car",
+      "transport_type_id": "cable_aerial_tram",
+      "visit_status_id": "not_visited",
+      "country": "Польша",
+      "region": "Малопольское воеводство",
+      "city": "Закопане",
+      "latitude": 49.232,
+      "longitude": 19.981,
+      "localized": {
+        "ru": {
+          "title": "Канатная дорога на Каспровы Верх",
+          "description": "Высокогорная канатная дорога PKL из Кузнице на Каспровы Верх в Татрах."
+        },
+        "en": {
+          "title": "Kasprowy Wierch cable car",
+          "description": ""
+        }
+      },
+      "opened_year": 1936,
+      "operator": "Polskie Koleje Linowe",
+      "manufacturer": "",
+      "operational_status": "unknown",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://www.pkl.pl/kasprowy-wierch/kolej-linowa-kasprowy-wierch.html?setlang=1",
+      "status_note": "Перед seed проверить погодные ограничения, лимиты парка и фактическое расписание.",
+      "source_ids": {
+        "wikidata": "Q637591"
+      },
+      "source_urls": [
+        "https://www.pkl.pl/kasprowy-wierch/kolej-linowa-kasprowy-wierch.html?setlang=1",
+        "https://www.zakopane.pl/en/tourist-area/tourism/mountain-ropeways/kasprowy-wierch-cable-railway",
+        "https://www.wikidata.org/wiki/Q637591"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Первый польский кандидат; уточнить координату нижней станции Kuźnice."
+      }
+    }
+  ]
+}

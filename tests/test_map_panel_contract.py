@@ -54,8 +54,9 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("https://", script_text)
         for text in [
             "Общая карта объектов",
-            "Локальная схема без сети",
-            "каждая точка показывает один объект",
+            "Офлайн-карта без сети",
+            "точки стоят по координатам",
+            "сетка показывает широту и долготу",
             "Выбранная точка: пока не выбрана",
             "Выбрать объект",
             "Нет точек с координатами",
@@ -78,11 +79,20 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("OfflineMapLayer.new()", script_text)
         self.assertIn("draw_rect(rect", script_text)
         self.assertIn("draw_line", script_text)
+        self.assertIn("geo_bounds", script_text)
+        self.assertIn("_draw_graticule()", script_text)
+        self.assertIn("_draw_geo_labels(country_labels", script_text)
+        self.assertIn("_draw_geo_labels(city_labels", script_text)
+        self.assertIn("_draw_scale_bar()", script_text)
+        self.assertIn("static func _project_coordinates(", script_text)
+        self.assertIn("static func _mercator_y(", script_text)
+        self.assertIn("_update_map_reference_data()", script_text)
+        self.assertIn("точек по координатам", script_text)
         self.assertIn("MARKER_SPREAD_DISTANCE", script_text)
         self.assertIn("MARKER_SPREAD_STEP", script_text)
-        self.assertIn("GRID_LAYOUT_MIN_MARKERS", script_text)
-        self.assertIn("func _grid_marker_position(", script_text)
-        self.assertIn("сетка для читаемости", script_text)
+        self.assertNotIn("GRID_LAYOUT_MIN_MARKERS", script_text)
+        self.assertNotIn("func _grid_marker_position(", script_text)
+        self.assertNotIn("сетка для читаемости", script_text)
         self.assertIn("func _spread_marker_position(", script_text)
         self.assertIn("func _is_clear_marker_position(", script_text)
         self.assertIn("func _compact_text(", script_text)
@@ -108,6 +118,9 @@ class MapPanelContractTest(unittest.TestCase):
             'button.text = title',
             '"+"',
             '"-"',
+            "const MAP_CONTROL_SIZE := Vector2(44.0, 44.0)",
+            "filter_row.custom_minimum_size = Vector2(0.0, 42.0)",
+            "button.custom_minimum_size = Vector2(0.0, 42.0)",
             "custom_minimum_size = MAP_CONTROL_SIZE",
         ]:
             self.assertIn(expected, script_text)
@@ -133,6 +146,22 @@ class MapPanelContractTest(unittest.TestCase):
             '"Непосещенные"',
         ]:
             self.assertIn(expected, script_text)
+
+    def test_real_map_tiles_follow_up_is_documented(self) -> None:
+        doc_text = (ROOT / "docs" / "real-map-tiles-plan.md").read_text(encoding="utf-8")
+
+        for expected in [
+            "Real map tiles follow-up",
+            "OpenStreetMap",
+            "MapLibre",
+            "Android",
+            "Raster tiles внутри Godot",
+            "disk cache",
+            "OfflineMapLayer",
+            "© OpenStreetMap contributors",
+            "feature flag",
+        ]:
+            self.assertIn(expected, doc_text)
 
     def test_main_scene_and_controller_wire_map_selection(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")

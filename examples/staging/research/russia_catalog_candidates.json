@@ -1,0 +1,244 @@
+{
+  "candidates": [
+    {
+      "id": "nizhny-novgorod-bor-cable-car",
+      "transport_type_id": "cable_urban",
+      "visit_status_id": "not_visited",
+      "country": "Россия",
+      "region": "Нижегородская область",
+      "city": "Нижний Новгород / Бор",
+      "latitude": 56.3309,
+      "longitude": 44.0168,
+      "localized": {
+        "ru": {
+          "title": "Нижегородская канатная дорога",
+          "description": "Городская канатная дорога через Волгу между Нижним Новгородом и Бором."
+        }
+      },
+      "opened_year": 2012,
+      "operator": "АО \"Нижегородские канатные дороги\"",
+      "operational_status": "active",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://www.borcity.ru/activity/transport/kanatka.php?special_version=Y",
+      "status_note": "Статус и координаты нужно сверить с оператором/OSM перед production seed.",
+      "source_ids": {
+        "official": "borcity-kanatka"
+      },
+      "source_urls": [
+        "https://www.borcity.ru/activity/transport/kanatka.php?special_version=Y"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Seed first: высокий приоритет для России; проверить OSM/Wikidata ids."
+      }
+    },
+    {
+      "id": "moscow-vorobyovy-gory-cable-car",
+      "transport_type_id": "cable_urban",
+      "visit_status_id": "not_visited",
+      "country": "Россия",
+      "region": "Москва",
+      "city": "Москва",
+      "latitude": 55.7106,
+      "longitude": 37.5429,
+      "localized": {
+        "ru": {
+          "title": "Московская канатная дорога",
+          "description": "Канатная дорога между Воробьевыми горами, Новой Лигой и Лужниками."
+        }
+      },
+      "opened_year": 2018,
+      "operator": "ООО \"Московские канатные дороги\"",
+      "operational_status": "active",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://srkvg.ru/kanatnaya-doroga/",
+      "status_note": "Официальный сайт описывает маршрут и функции дороги; перед seed уточнить координаты станций.",
+      "source_ids": {
+        "official": "srkvg"
+      },
+      "source_urls": [
+        "https://srkvg.ru/kanatnaya-doroga/"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Seed first: высокий приоритет; тип cable_urban выбран из-за городской связи через Москву-реку."
+      }
+    },
+    {
+      "id": "vladivostok-funicular",
+      "transport_type_id": "funicular_classic",
+      "visit_status_id": "not_visited",
+      "country": "Россия",
+      "region": "Приморский край",
+      "city": "Владивосток",
+      "latitude": 43.1168,
+      "longitude": 131.8998,
+      "localized": {
+        "ru": {
+          "title": "Владивостокский фуникулер",
+          "description": "Классический городской фуникулер на склоне сопки Орлиной между улицами Пушкинской и Суханова."
+        }
+      },
+      "opened_year": 1962,
+      "operational_status": "active",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://www.vladivostok.travel/todo/funicular/",
+      "status_note": "Туристический портал и новости подтверждают действующую работу после ремонтов; требуется сверка расписания.",
+      "source_ids": {
+        "official_tourism": "vladivostok-travel-funicular"
+      },
+      "source_urls": [
+        "https://www.vladivostok.travel/todo/funicular/",
+        "https://prim.rbc.ru/prim/freenews/6683ac8d9a79473cfc87dbeb"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Seed first: один из самых важных российских фуникулеров."
+      }
+    },
+    {
+      "id": "nizhny-novgorod-kremlin-funicular",
+      "transport_type_id": "funicular_modern",
+      "visit_status_id": "not_visited",
+      "country": "Россия",
+      "region": "Нижегородская область",
+      "city": "Нижний Новгород",
+      "latitude": 56.3282,
+      "longitude": 44.0057,
+      "localized": {
+        "ru": {
+          "title": "Кремлевский фуникулер в Нижнем Новгороде",
+          "description": "Восстановленный фуникулер у Нижегородского кремля, открытый заново в 2024 году."
+        }
+      },
+      "opened_year": 2024,
+      "operator": "ГБУК НО \"Нижегородский государственный историко-архитектурный музей-заповедник\"",
+      "operational_status": "active",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://kremlnn.ru/funicular",
+      "status_note": "Официальный сайт указывает режим и зимние температурные ограничения; координаты ориентировочные.",
+      "source_ids": {
+        "official": "kremlnn-funicular"
+      },
+      "source_urls": [
+        "https://kremlnn.ru/funicular",
+        "https://tass.ru/obschestvo/21870653"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Seed first: новый российский фуникулер с сильной исторической ценностью."
+      }
+    },
+    {
+      "id": "pyatigorsk-mashuk-cable-car",
+      "transport_type_id": "cable_aerial_tram",
+      "visit_status_id": "not_visited",
+      "country": "Россия",
+      "region": "Ставропольский край",
+      "city": "Пятигорск",
+      "latitude": 44.0479,
+      "longitude": 43.0838,
+      "localized": {
+        "ru": {
+          "title": "Пятигорская канатная дорога на Машук",
+          "description": "Маятниковая канатная дорога от бульвара Гагарина к вершине горы Машук."
+        }
+      },
+      "opened_year": 1971,
+      "operational_status": "active",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://kanatkakmw.ru/",
+      "status_note": "Регламентные закрытия возможны; перед seed проверить текущий режим работы.",
+      "source_ids": {
+        "official": "kanatkakmw"
+      },
+      "source_urls": [
+        "https://kanatkakmw.ru/",
+        "https://www.interfax-russia.ru/tourism/news/kanatnaya-doroga-v-pyatigorske-zakrylas-do-17-marta"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Seed first: высокий приоритет для Кавказских Минеральных Вод."
+      }
+    },
+    {
+      "id": "svetlogorsk-panorama-elevator",
+      "transport_type_id": "elevator_panoramic",
+      "visit_status_id": "not_visited",
+      "country": "Россия",
+      "region": "Калининградская область",
+      "city": "Светлогорск",
+      "latitude": 54.9447,
+      "longitude": 20.1538,
+      "localized": {
+        "ru": {
+          "title": "Панорамный лифт \"Панорама\" в Светлогорске",
+          "description": "Панорамный лифт у морского побережья Светлогорска, работающий как видовой инженерный объект и вертикальная связь."
+        }
+      },
+      "opened_year": null,
+      "operational_status": "active",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://liftsvetlogorsk.ru/",
+      "status_note": "Перед seed уточнить год открытия и точку привязки нижней/верхней станции.",
+      "source_ids": {
+        "official": "liftsvetlogorsk"
+      },
+      "source_urls": [
+        "https://liftsvetlogorsk.ru/",
+        "https://visit-kaliningrad.ru/entertainment/sights/sightseeings/panorama-vv/"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Seed first for elevator types: хороший российский пример elevator_panoramic."
+      }
+    },
+    {
+      "id": "moscow-monorail",
+      "transport_type_id": "monorail",
+      "visit_status_id": "not_visited",
+      "country": "Россия",
+      "region": "Москва",
+      "city": "Москва",
+      "latitude": 55.8214,
+      "longitude": 37.6404,
+      "localized": {
+        "ru": {
+          "title": "Московский монорельс",
+          "description": "Историческая городская монорельсовая линия на северо-востоке Москвы, закрытая для пассажирской работы в 2025 году."
+        }
+      },
+      "opened_year": 2004,
+      "operator": "Московский транспорт",
+      "operational_status": "historical",
+      "status_checked_at": "2026-05-30",
+      "status_source_url": "https://transport.mos.ru/mostrans/all_news/125075",
+      "status_note": "Единый транспортный портал Москвы сообщил, что монорельс завершит работу 28 июня 2025 года.",
+      "source_ids": {
+        "official_transport": "transport-mos-news-125075"
+      },
+      "source_urls": [
+        "https://transport.mos.ru/mostrans/all_news/125075",
+        "https://transport.mos.ru/metro/rezhim"
+      ],
+      "review": {
+        "state": "candidate",
+        "reviewed_by": "",
+        "reviewed_at": "",
+        "notes": "Historical candidate: включать после решения, показывать ли закрытые системы в основном каталоге."
+      }
+    }
+  ]
+}

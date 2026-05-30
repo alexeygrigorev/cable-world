@@ -11,11 +11,22 @@ var objects: Array[Dictionary] = []
 var type_filter: String = FILTER_ALL
 var visit_filter: String = FILTER_ALL
 var country_filter: String = FILTER_ALL
+var search_query: String = ""
 var visible_object_indices: Array[int] = []
 var empty_state_label: Label
+var touch_start_position := Vector2.ZERO
+var touch_is_dragging := false
+var suppress_selection_until_msec := 0
+var visual_selection_refreshing := false
+var selection_request_token := 0
+
+const TOUCH_DRAG_THRESHOLD := 18.0
+const SELECTION_SUPPRESS_MSEC := 250
+const TAP_SELECTION_DELAY_SEC := 0.12
 
 func _ready() -> void:
 	item_selected.connect(_on_item_selected)
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	_update_empty_state()
 
 func set_empty_state_label(label: Label) -> void:
@@ -32,6 +43,10 @@ func set_filters(next_type_filter: String, next_visit_filter: String, next_count
 	country_filter = next_country_filter
 	refresh()
 
+func set_search_query(next_search_query: String) -> void:
+	search_query = next_search_query.strip_edges().to_lower()
+	refresh()
+
 func get_transport_types() -> Array[String]:
 	var transport_types: Array[String] = []
 	for object_data in objects:
@@ -41,6 +56,16 @@ func get_transport_types() -> Array[String]:
 
 	transport_types.sort()
 	return transport_types
+
+func get_countries() -> Array[String]:
+	var countries: Array[String] = []
+	for object_data in objects:
+		var country: String = object_data.get("country", "")
+		if country != "" and not countries.has(country):
+			countries.append(country)
+
+	countries.sort()
+	return countries
 
 func refresh() -> void:
 	clear()
@@ -72,12 +97,16 @@ func select_visual_object(index: int) -> void:
 	if visible_index == -1:
 		return
 
+	visual_selection_refreshing = true
 	select(visible_index)
+	visual_selection_refreshing = false
 
 func _matches_filters(object_data: Dictionary) -> bool:
 	if type_filter != FILTER_ALL and object_data.get("kind", "") != type_filter:
 		return false
 	if country_filter != FILTER_ALL and object_data.get("country", "") != country_filter:
+		return false
+	if not search_query.is_empty() and not _matches_search(object_data):
 		return false
 
 	var is_visited := _is_object_visited(object_data)
@@ -87,6 +116,16 @@ func _matches_filters(object_data: Dictionary) -> bool:
 		return false
 
 	return true
+
+func _matches_search(object_data: Dictionary) -> bool:
+	var searchable_parts := PackedStringArray([
+		str(object_data.get("name", "")),
+		str(object_data.get("title", "")),
+		str(object_data.get("region", "")),
+		str(object_data.get("country", "")),
+	])
+	var searchable_text := " ".join(searchable_parts).to_lower()
+	return searchable_text.contains(search_query)
 
 func _is_object_visited(object_data: Dictionary) -> bool:
 	if object_data.has("visit_status_id"):
@@ -112,10 +151,38 @@ func _update_empty_state() -> void:
 	if objects.is_empty():
 		empty_state_label.text = "Пока нет объектов. Когда список появится, здесь можно будет выбрать место для семейной поездки."
 	else:
-		empty_state_label.text = "По таким фильтрам ничего не нашлось. Попробуйте выбрать другой тип или статус посещения."
+		empty_state_label.text = "По этому поиску и фильтрам ничего не нашлось. Попробуйте изменить запрос, страну, тип или статус."
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			touch_start_position = event.position
+			touch_is_dragging = false
+		else:
+			if touch_is_dragging:
+				suppress_selection_until_msec = Time.get_ticks_msec() + SELECTION_SUPPRESS_MSEC
+			touch_is_dragging = false
+	elif event is InputEventScreenDrag:
+		if event.position.distance_to(touch_start_position) >= TOUCH_DRAG_THRESHOLD:
+			touch_is_dragging = true
+			suppress_selection_until_msec = Time.get_ticks_msec() + SELECTION_SUPPRESS_MSEC
+	elif event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if event.relative.length() >= TOUCH_DRAG_THRESHOLD:
+			touch_is_dragging = true
+			suppress_selection_until_msec = Time.get_ticks_msec() + SELECTION_SUPPRESS_MSEC
 
 func _on_item_selected(index: int) -> void:
 	if index < 0 or index >= visible_object_indices.size():
+		return
+	if visual_selection_refreshing:
+		return
+
+	selection_request_token += 1
+	var request_token := selection_request_token
+	await get_tree().create_timer(TAP_SELECTION_DELAY_SEC).timeout
+	if request_token != selection_request_token:
+		return
+	if touch_is_dragging or Time.get_ticks_msec() < suppress_selection_until_msec:
 		return
 
 	object_selected.emit(visible_object_indices[index])

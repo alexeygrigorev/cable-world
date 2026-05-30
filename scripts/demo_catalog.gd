@@ -213,7 +213,95 @@ static func get_objects() -> Array[Dictionary]:
 			"longitude": 13.5900,
 			"opened_year": 2017,
 			"operator": "Leitner Seilbahn Berlin GmbH",
-			"manufacturer": "Leitner"
+			"manufacturer": "Leitner",
+			"stations": [
+				{
+					"id": "berlin-gaerten-der-welt-station-kienbergpark",
+					"title": "Киенбергпарк",
+					"latitude": 52.5281,
+					"longitude": 13.5903,
+					"sort_order": 10,
+					"note": "Нижняя станция у U5; удобная начальная точка семейной поездки."
+				},
+				{
+					"id": "berlin-gaerten-der-welt-station-wolkenhain",
+					"title": "Волькенхайн",
+					"latitude": 52.5268,
+					"longitude": 13.5838,
+					"sort_order": 20,
+					"note": "Промежуточная станция на Кинберге рядом со смотровой площадкой."
+				},
+				{
+					"id": "berlin-gaerten-der-welt-station-gaerten-der-welt",
+					"title": "Сады мира",
+					"latitude": 52.5254,
+					"longitude": 13.5753,
+					"sort_order": 30,
+					"note": "Станция у входа в парк со стороны Блумбергер-Дамм."
+				}
+			],
+			"route_directions": [
+				{
+					"id": "berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten",
+					"from_station_id": "berlin-gaerten-der-welt-station-kienbergpark",
+					"to_station_id": "berlin-gaerten-der-welt-station-gaerten-der-welt",
+					"title": "Киенбергпарк -> Сады мира",
+					"direction_label": "от Киенбергпарка к Садам мира",
+					"sort_order": 10,
+					"note": "Направление через Волькенхайн от метро U5 к главному входу в парк."
+				},
+				{
+					"id": "berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark",
+					"from_station_id": "berlin-gaerten-der-welt-station-gaerten-der-welt",
+					"to_station_id": "berlin-gaerten-der-welt-station-kienbergpark",
+					"title": "Сады мира -> Киенбергпарк",
+					"direction_label": "от Садов мира к Киенбергпарку",
+					"sort_order": 20,
+					"note": "Обратное направление к U5 с промежуточной остановкой на Кинберге."
+				}
+			],
+			"route_segments_by_direction": {
+				"berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten": [
+					{
+						"id": "berlin-gaerten-der-welt-segment-kienbergpark-wolkenhain",
+						"from_station_id": "berlin-gaerten-der-welt-station-kienbergpark",
+						"to_station_id": "berlin-gaerten-der-welt-station-wolkenhain",
+						"segment_order": 10,
+						"title": "Киенбергпарк -> Волькенхайн",
+						"direction_label": "вверх к Волькенхайну",
+						"note": "Первый подъем от U5 к Кинбергу."
+					},
+					{
+						"id": "berlin-gaerten-der-welt-segment-wolkenhain-gaerten",
+						"from_station_id": "berlin-gaerten-der-welt-station-wolkenhain",
+						"to_station_id": "berlin-gaerten-der-welt-station-gaerten-der-welt",
+						"segment_order": 20,
+						"title": "Волькенхайн -> Сады мира",
+						"direction_label": "вниз к Садам мира",
+						"note": "Спуск к входу в парк."
+					}
+				],
+				"berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark": [
+					{
+						"id": "berlin-gaerten-der-welt-segment-gaerten-wolkenhain",
+						"from_station_id": "berlin-gaerten-der-welt-station-gaerten-der-welt",
+						"to_station_id": "berlin-gaerten-der-welt-station-wolkenhain",
+						"segment_order": 10,
+						"title": "Сады мира -> Волькенхайн",
+						"direction_label": "вверх к Волькенхайну",
+						"note": "Обратный подъем от парка к Кинбергу."
+					},
+					{
+						"id": "berlin-gaerten-der-welt-segment-wolkenhain-kienbergpark",
+						"from_station_id": "berlin-gaerten-der-welt-station-wolkenhain",
+						"to_station_id": "berlin-gaerten-der-welt-station-kienbergpark",
+						"segment_order": 20,
+						"title": "Волькенхайн -> Киенбергпарк",
+						"direction_label": "вниз к Киенбергпарку",
+						"note": "Спуск к U5."
+					}
+				]
+			}
 		},
 		{
 			"id": "thale-hexentanzplatz",
