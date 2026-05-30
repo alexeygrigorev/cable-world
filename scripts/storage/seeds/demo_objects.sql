@@ -17,37 +17,37 @@ INSERT INTO transport_objects (
     updated_at
 ) VALUES
 (
-    'vorobyovy-gory',
-    'Канатная дорога на Воробьевых горах',
+    'nizhny-novgorod-bor-cable-car',
+    'Нижегородская канатная дорога',
     'cable_urban',
     'not_visited',
     'Россия',
-    'Москва',
-    'Москва',
-    55.7103,
-    37.5517,
-    'Городская канатная дорога через Москву-реку с видом на университет и стадион.',
-    'Проверить расписание и семейный тариф перед поездкой.',
-    NULL,
-    NULL,
+    'Нижегородская область',
+    'Нижний Новгород / Бор',
+    56.3309,
+    44.0168,
+    'Городская канатная дорога через Волгу между Нижним Новгородом и Бором.',
+    'Высокий приоритет для российского каталога; перед основным seed сверить станции и источники.',
+    2012,
+    'АО "Нижегородские канатные дороги"',
     NULL,
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 ),
 (
-    'nizhny-novgorod',
-    'Нижегородская канатная дорога',
-    'cable_aerial_tram',
+    'moscow-vorobyovy-gory-cable-car',
+    'Московская канатная дорога',
+    'cable_urban',
     'not_visited',
     'Россия',
-    'Нижний Новгород',
-    'Нижний Новгород',
-    56.3299,
-    44.0186,
-    'Маршрут над Волгой между Нижним Новгородом и Бором.',
-    'Хороший кандидат для первой большой карточки с фото и билетами.',
-    NULL,
-    NULL,
+    'Москва',
+    'Москва',
+    55.7106,
+    37.5429,
+    'Канатная дорога между Воробьевыми горами, Новой Лигой и Лужниками.',
+    'Используется staging id; legacy-id Воробьевых гор не добавляется, чтобы не было дублей.',
+    2018,
+    'ООО "Московские канатные дороги"',
     NULL,
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
@@ -58,14 +58,86 @@ INSERT INTO transport_objects (
     'funicular_classic',
     'not_visited',
     'Россия',
+    'Приморский край',
     'Владивосток',
-    'Владивосток',
-    43.1187,
-    131.8939,
-    'Короткий городской фуникулер на сопке Орлиное Гнездо.',
-    'Добавить историю сооружения и видовые точки.',
+    43.1168,
+    131.8998,
+    'Классический городской фуникулер на склоне сопки Орлиной между улицами Пушкинской и Суханова.',
+    'Один из самых важных российских фуникулеров для начальной подборки.',
+    1962,
     NULL,
     NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'nizhny-novgorod-kremlin-funicular',
+    'Кремлевский фуникулер в Нижнем Новгороде',
+    'funicular_modern',
+    'not_visited',
+    'Россия',
+    'Нижегородская область',
+    'Нижний Новгород',
+    56.3282,
+    44.0057,
+    'Восстановленный фуникулер у Нижегородского кремля, открытый заново в 2024 году.',
+    'Новый российский фуникулер с сильной исторической ценностью.',
+    2024,
+    'ГБУК НО "Нижегородский государственный историко-архитектурный музей-заповедник"',
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'pyatigorsk-mashuk-cable-car',
+    'Пятигорская канатная дорога на Машук',
+    'cable_aerial_tram',
+    'not_visited',
+    'Россия',
+    'Ставропольский край',
+    'Пятигорск',
+    44.0479,
+    43.0838,
+    'Маятниковая канатная дорога от бульвара Гагарина к вершине горы Машук.',
+    'Высокий приоритет для Кавказских Минеральных Вод.',
+    1971,
+    NULL,
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'svetlogorsk-panorama-elevator',
+    'Панорамный лифт "Панорама" в Светлогорске',
+    'elevator_panoramic',
+    'not_visited',
+    'Россия',
+    'Калининградская область',
+    'Светлогорск',
+    54.9447,
+    20.1538,
+    'Панорамный лифт у морского побережья Светлогорска, работающий как видовой инженерный объект и вертикальная связь.',
+    'Хороший российский пример для типа elevator_panoramic.',
+    NULL,
+    NULL,
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'moscow-monorail',
+    'Московский монорельс',
+    'monorail',
+    'not_visited',
+    'Россия',
+    'Москва',
+    'Москва',
+    55.8214,
+    37.6404,
+    'Историческая городская монорельсовая линия на северо-востоке Москвы, закрытая для пассажирской работы в 2025 году.',
+    'Исторический объект: показываем закрытые системы отдельно от действующих.',
+    2004,
+    'Московский транспорт',
     NULL,
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
@@ -447,8 +519,260 @@ INSERT INTO transport_objects (
     'Julius Pohlig',
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
     strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'braga-bom-jesus-funicular',
+    'Фуникулер Bom Jesus do Monte',
+    'funicular_water',
+    'not_visited',
+    'Португалия',
+    'Брага',
+    'Брага',
+    41.5547,
+    -8.3778,
+    'Водобалластный фуникулер у святилища Bom Jesus do Monte в Браге; редкая технология для семейного исследования.',
+    'Проверить координату нижней станции и текущий график работы перед поездкой.',
+    1882,
+    'Irmandade do Bom Jesus do Monte',
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'grenoble-bastille-cable-car',
+    'Канатная дорога Grenoble-Bastille',
+    'cable_tourist',
+    'not_visited',
+    'Франция',
+    'Овернь — Рона — Альпы',
+    'Гренобль',
+    45.1939,
+    5.7265,
+    'Городская туристическая канатная дорога из центра Гренобля к крепости Бастилия.',
+    'Хороший объект для карточки с видом на город и сравнением старых и современных кабинок.',
+    1934,
+    'Régie du Téléphérique Grenoble Bastille',
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'como-brunate-funicular',
+    'Фуникулер Комо — Брунате',
+    'funicular_classic',
+    'not_visited',
+    'Италия',
+    'Ломбардия',
+    'Комо',
+    45.8148,
+    9.0835,
+    'Классический фуникулер, соединяющий Комо с Брунате над озером Комо.',
+    'Уточнить оператора и расписание; объект подходит для маршрута от озера к смотровой точке.',
+    1894,
+    NULL,
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'prague-petrin-funicular',
+    'Пражский фуникулер на Петршин',
+    'funicular_classic',
+    'not_visited',
+    'Чехия',
+    'Прага',
+    'Прага',
+    50.0838,
+    14.4039,
+    'Фуникулер Уезд — Петршин в Праге; на дату среза находится в плановой реконструкции.',
+    'Не показывать как работающий объект, пока реконструкция не завершена и статус не обновлен.',
+    1891,
+    'Dopravní podnik hl. m. Prahy',
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'stary-smokovec-hrebienok-funicular',
+    'Фуникулер Старый Смоковец — Гребиенок',
+    'funicular_classic',
+    'not_visited',
+    'Словакия',
+    'Прешовский край',
+    'Высокие Татры',
+    49.1419,
+    20.2224,
+    'Горный фуникулер в Высоких Татрах между Старым Смоковцем и туристическим узлом Гребиенок.',
+    'Уточнить координату нижней станции и сезонный статус перед семейной поездкой.',
+    1908,
+    'Tatry mountain resorts',
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+),
+(
+    'zakopane-kasprowy-wierch-cable-car',
+    'Канатная дорога на Каспровы Верх',
+    'cable_aerial_tram',
+    'not_visited',
+    'Польша',
+    'Малопольское воеводство',
+    'Закопане',
+    49.2320,
+    19.9810,
+    'Высокогорная канатная дорога PKL из Кузнице на Каспровы Верх в Татрах.',
+    'Проверить погоду, ограничения национального парка и фактическое расписание на день поездки.',
+    1936,
+    'Polskie Koleje Linowe',
+    NULL,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 )
 ON CONFLICT(id) DO NOTHING;
+
+DROP TABLE IF EXISTS legacy_transport_object_id_merge;
+
+CREATE TEMP TABLE legacy_transport_object_id_merge (
+    source_id TEXT PRIMARY KEY,
+    target_id TEXT NOT NULL,
+    source_visit_status_id TEXT NOT NULL
+);
+
+INSERT INTO legacy_transport_object_id_merge (
+    source_id,
+    target_id,
+    source_visit_status_id
+)
+SELECT
+    transport_objects.id,
+    CASE transport_objects.id
+        WHEN 'vorobyovy-gory' THEN 'moscow-vorobyovy-gory-cable-car'
+        WHEN 'nizhny-novgorod' THEN 'nizhny-novgorod-bor-cable-car'
+    END,
+    transport_objects.visit_status_id
+FROM transport_objects
+WHERE transport_objects.id IN ('vorobyovy-gory', 'nizhny-novgorod');
+
+UPDATE transport_objects
+SET visit_status_id = (
+        SELECT legacy_transport_object_id_merge.source_visit_status_id
+        FROM legacy_transport_object_id_merge
+        WHERE legacy_transport_object_id_merge.target_id = transport_objects.id
+          AND legacy_transport_object_id_merge.source_visit_status_id != 'not_visited'
+        LIMIT 1
+    ),
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE id IN (
+    SELECT target_id
+    FROM legacy_transport_object_id_merge
+    WHERE source_visit_status_id != 'not_visited'
+);
+
+UPDATE visits
+SET transport_object_id = (
+    SELECT legacy_transport_object_id_merge.target_id
+    FROM legacy_transport_object_id_merge
+    WHERE legacy_transport_object_id_merge.source_id = visits.transport_object_id
+)
+WHERE transport_object_id IN (
+    SELECT source_id
+    FROM legacy_transport_object_id_merge
+);
+
+UPDATE media_assets
+SET transport_object_id = (
+    SELECT legacy_transport_object_id_merge.target_id
+    FROM legacy_transport_object_id_merge
+    WHERE legacy_transport_object_id_merge.source_id = media_assets.transport_object_id
+)
+WHERE transport_object_id IN (
+    SELECT source_id
+    FROM legacy_transport_object_id_merge
+);
+
+UPDATE tickets
+SET transport_object_id = (
+    SELECT legacy_transport_object_id_merge.target_id
+    FROM legacy_transport_object_id_merge
+    WHERE legacy_transport_object_id_merge.source_id = tickets.transport_object_id
+)
+WHERE transport_object_id IN (
+    SELECT source_id
+    FROM legacy_transport_object_id_merge
+);
+
+DELETE FROM transport_objects
+WHERE id IN (
+    SELECT source_id
+    FROM legacy_transport_object_id_merge
+);
+
+DROP TABLE legacy_transport_object_id_merge;
+
+UPDATE transport_objects
+SET title = 'Владивостокский фуникулер',
+    transport_type_id = 'funicular_classic',
+    country = 'Россия',
+    region = 'Приморский край',
+    city = 'Владивосток',
+    latitude = 43.1168,
+    longitude = 131.8998,
+    description = 'Классический городской фуникулер на склоне сопки Орлиной между улицами Пушкинской и Суханова.',
+    notes = 'Один из самых важных российских фуникулеров для начальной подборки.',
+    opened_year = 1962,
+    operator = NULL,
+    manufacturer = NULL,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE id = 'vladivostok-funicular';
+
+UPDATE transport_objects
+SET operational_status = 'active',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://www.borcity.ru/activity/transport/kanatka.php?special_version=Y',
+    status_note = 'Статус и координаты нужно сверить с оператором/OSM перед production seed.'
+WHERE id = 'nizhny-novgorod-bor-cable-car';
+
+UPDATE transport_objects
+SET operational_status = 'active',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://srkvg.ru/kanatnaya-doroga/',
+    status_note = 'Официальный сайт описывает маршрут и функции дороги; перед seed уточнить координаты станций.'
+WHERE id = 'moscow-vorobyovy-gory-cable-car';
+
+UPDATE transport_objects
+SET operational_status = 'active',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://www.vladivostok.travel/todo/funicular/',
+    status_note = 'Туристический портал и новости подтверждают действующую работу после ремонтов; требуется сверка расписания.'
+WHERE id = 'vladivostok-funicular';
+
+UPDATE transport_objects
+SET operational_status = 'active',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://kremlnn.ru/funicular',
+    status_note = 'Официальный сайт указывает режим и зимние температурные ограничения; координаты ориентировочные.'
+WHERE id = 'nizhny-novgorod-kremlin-funicular';
+
+UPDATE transport_objects
+SET operational_status = 'active',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://kanatkakmw.ru/',
+    status_note = 'Регламентные закрытия возможны; перед seed проверить текущий режим работы.'
+WHERE id = 'pyatigorsk-mashuk-cable-car';
+
+UPDATE transport_objects
+SET operational_status = 'active',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://liftsvetlogorsk.ru/',
+    status_note = 'Перед seed уточнить год открытия и точку привязки нижней/верхней станции.'
+WHERE id = 'svetlogorsk-panorama-elevator';
+
+UPDATE transport_objects
+SET operational_status = 'historical',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://transport.mos.ru/mostrans/all_news/125075',
+    status_note = 'Единый транспортный портал Москвы сообщил, что монорельс завершит работу 28 июня 2025 года.'
+WHERE id = 'moscow-monorail';
 
 UPDATE transport_objects
 SET operational_status = 'active_seasonal',
@@ -568,6 +892,48 @@ SET operational_status = 'active_seasonal',
     status_source_url = 'https://www.stadtwerkekoeln.de/pressemitteilungen/saisonstart-kolner-seilbahn-ab-dem-12-marz-heben-die-gondeln-wieder-ab',
     status_note = 'Сезон 2026 стартовал 12 марта; регулярный сезон идет до начала ноября, далее запланированы адвентные рейсы.'
 WHERE id = 'koeln-seilbahn';
+
+UPDATE transport_objects
+SET operational_status = 'unknown',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://bomjesus.pt/bom-jesus/elevator-or-funicular/',
+    status_note = 'Нужно подтвердить актуальное расписание перед переносом в основной каталог.'
+WHERE id = 'braga-bom-jesus-funicular';
+
+UPDATE transport_objects
+SET operational_status = 'unknown',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://bastille-grenoble.fr/en/',
+    status_note = 'Официальный сайт есть; перед поездкой нужно проверить часы работы и плановое обслуживание.'
+WHERE id = 'grenoble-bastille-cable-car';
+
+UPDATE transport_objects
+SET operational_status = 'unknown',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://www.funicolarecomo.it/',
+    status_note = 'Перед переносом в основной каталог нужно проверить оператора и актуальное расписание.'
+WHERE id = 'como-brunate-funicular';
+
+UPDATE transport_objects
+SET operational_status = 'temporarily_closed_planned',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://www.dpp.cz/en/entertainment-and-experience/funicular-to-petrin',
+    status_note = 'DPP сообщает о приостановке работы из-за полной реконструкции; пассажирские тесты ожидаются на рубеже лета и осени 2026.'
+WHERE id = 'prague-petrin-funicular';
+
+UPDATE transport_objects
+SET operational_status = 'unknown',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://visittatry.sk/en/post/cable-cars',
+    status_note = 'Перед переносом в основной каталог нужно проверить сезонное расписание и официальный статус у оператора.'
+WHERE id = 'stary-smokovec-hrebienok-funicular';
+
+UPDATE transport_objects
+SET operational_status = 'unknown',
+    status_checked_at = '2026-05-30',
+    status_source_url = 'https://www.pkl.pl/kasprowy-wierch/kolej-linowa-kasprowy-wierch.html?setlang=1',
+    status_note = 'Перед поездкой нужно проверить погодные ограничения, лимиты парка и фактическое расписание.'
+WHERE id = 'zakopane-kasprowy-wierch-cable-car';
 
 INSERT INTO object_stations (
     id,

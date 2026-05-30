@@ -1,6 +1,9 @@
 extends RefCounted
 class_name DemoCatalog
 
+const DemoCatalogEuropeScript := preload("res://scripts/demo_catalog_europe.gd")
+const DemoCatalogRussiaScript := preload("res://scripts/demo_catalog_russia.gd")
+
 const DEFAULT_OPERATIONAL_STATUS := {
 	"operational_status": "unknown",
 	"status_checked_at": "",
@@ -135,6 +138,12 @@ const OPERATIONAL_STATUS_BY_ID := {
 		"status_source_url": "https://www.stadtwerkekoeln.de/pressemitteilungen/saisonstart-kolner-seilbahn-ab-dem-12-marz-heben-die-gondeln-wieder-ab",
 		"status_note": "Сезон 2026 стартовал 12 марта; регулярный сезон идет до начала ноября, далее запланированы адвентные рейсы."
 	}
+}
+
+const LEGACY_OBJECT_IDS_REPLACED_BY_STAGING := {
+	"vorobyovy-gory": true,
+	"nizhny-novgorod": true,
+	"vladivostok-funicular": true
 }
 
 static func get_objects() -> Array[Dictionary]:
@@ -684,15 +693,52 @@ static func get_objects() -> Array[Dictionary]:
 			"manufacturer": "Julius Pohlig"
 		}
 	]
+
+	objects = _without_replaced_legacy_objects(objects)
+	_append_seed_objects(objects, DemoCatalogEuropeScript.get_objects())
+	_append_seed_objects(objects, DemoCatalogRussiaScript.get_objects())
 	_apply_operational_status(objects)
 	return objects
 
 
+static func _without_replaced_legacy_objects(source_objects: Array[Dictionary]) -> Array[Dictionary]:
+	var filtered_objects: Array[Dictionary] = []
+	for object_data in source_objects:
+		var object_id := str(object_data.get("id", ""))
+		if LEGACY_OBJECT_IDS_REPLACED_BY_STAGING.has(object_id):
+			continue
+		filtered_objects.append(object_data)
+	return filtered_objects
+
+
+static func _append_seed_objects(target_objects: Array[Dictionary], seed_objects: Array[Dictionary]) -> void:
+	var known_ids := {}
+	for object_data in target_objects:
+		known_ids[str(object_data.get("id", ""))] = true
+
+	for object_data in seed_objects:
+		var object_id := str(object_data.get("id", ""))
+		if object_id.is_empty() or known_ids.has(object_id):
+			continue
+		target_objects.append(object_data)
+		known_ids[object_id] = true
+
+
 static func _apply_operational_status(objects: Array[Dictionary]) -> void:
+	var status_by_id := _combined_operational_status_by_id()
 	for object_data in objects:
 		var object_id := str(object_data.get("id", ""))
 		var metadata: Dictionary = DEFAULT_OPERATIONAL_STATUS
-		if OPERATIONAL_STATUS_BY_ID.has(object_id):
-			metadata = OPERATIONAL_STATUS_BY_ID[object_id]
+		if status_by_id.has(object_id):
+			metadata = status_by_id[object_id]
 		for key in metadata.keys():
 			object_data[key] = metadata[key]
+
+
+static func _combined_operational_status_by_id() -> Dictionary:
+	var status_by_id := OPERATIONAL_STATUS_BY_ID.duplicate(true)
+	for object_id in DemoCatalogEuropeScript.get_operational_status_by_id().keys():
+		status_by_id[object_id] = DemoCatalogEuropeScript.get_operational_status_by_id()[object_id]
+	for object_id in DemoCatalogRussiaScript.get_operational_status_by_id().keys():
+		status_by_id[object_id] = DemoCatalogRussiaScript.get_operational_status_by_id()[object_id]
+	return status_by_id

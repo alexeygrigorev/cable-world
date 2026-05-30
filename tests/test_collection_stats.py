@@ -111,6 +111,27 @@ class CollectionStatsTest(unittest.TestCase):
             self.assertRegex(group["id"], r"^[a-z0-9_]+$")
             self.assertGreater(len(re.findall(r"[А-Яа-яЁё]", group["title"])), 0)
 
+    def test_new_seed_countries_have_stable_country_ids(self) -> None:
+        stats = calculate_collection_stats(
+            [
+                {"id": "pt", "visit_status_id": "not_visited", "country": "Португалия"},
+                {"id": "fr", "visit_status_id": "not_visited", "country": "Франция"},
+                {"id": "it", "visit_status_id": "not_visited", "country": "Италия"},
+                {"id": "cz", "visit_status_id": "not_visited", "country": "Чехия"},
+                {"id": "sk", "visit_status_id": "not_visited", "country": "Словакия"},
+                {"id": "pl", "visit_status_id": "not_visited", "country": "Польша"},
+            ]
+        )
+
+        countries = {country["title"]: country["id"] for country in stats["countries"]}
+        self.assertEqual(countries["Португалия"], "pt")
+        self.assertEqual(countries["Франция"], "fr")
+        self.assertEqual(countries["Италия"], "it")
+        self.assertEqual(countries["Чехия"], "cz")
+        self.assertEqual(countries["Словакия"], "sk")
+        self.assertEqual(countries["Польша"], "pl")
+        self.assertNotIn("country_unknown", countries.values())
+
     def test_godot_collection_stats_script_exposes_same_contract(self) -> None:
         script_text = (ROOT / "scripts" / "collection_stats.gd").read_text(encoding="utf-8")
         for expected in [
@@ -122,6 +143,12 @@ class CollectionStatsTest(unittest.TestCase):
             "STATUS_FAVORITE",
             "status_is_visited",
             '"Вся коллекция"',
+            '"Португалия": "pt"',
+            '"Франция": "fr"',
+            '"Италия": "it"',
+            '"Чехия": "cz"',
+            '"Словакия": "sk"',
+            '"Польша": "pl"',
         ]:
             self.assertIn(expected, script_text)
 

@@ -19,6 +19,7 @@ from scripts.storage import MediaAsset, SQLiteStorage, Ticket  # noqa: E402
 
 
 MIN_GERMAN_DEMO_OBJECTS = 21
+EXPECTED_SQLITE_DEMO_OBJECTS = 34
 
 REQUIRED_GERMAN_OBJECTS = {
     "berlin-gaerten-der-welt": ("Берлин", "cable_gondola"),
@@ -42,6 +43,30 @@ REQUIRED_GERMAN_OBJECTS = {
     "baden-baden-merkurbergbahn": ("Баден-Вюртемберг", "funicular_classic"),
     "koblenz-seilbahn": ("Рейнланд-Пфальц", "cable_urban"),
     "koeln-seilbahn": ("Северный Рейн-Вестфалия", "cable_tourist"),
+}
+
+REPLACED_LEGACY_RUSSIA_IDS = {
+    "vorobyovy-gory",
+    "nizhny-novgorod",
+}
+
+REQUIRED_EUROPE_OBJECTS = {
+    "braga-bom-jesus-funicular": ("Португалия", "funicular_water", "unknown"),
+    "grenoble-bastille-cable-car": ("Франция", "cable_tourist", "unknown"),
+    "como-brunate-funicular": ("Италия", "funicular_classic", "unknown"),
+    "prague-petrin-funicular": ("Чехия", "funicular_classic", "temporarily_closed_planned"),
+    "stary-smokovec-hrebienok-funicular": ("Словакия", "funicular_classic", "unknown"),
+    "zakopane-kasprowy-wierch-cable-car": ("Польша", "cable_aerial_tram", "unknown"),
+}
+
+REQUIRED_RUSSIA_OBJECTS = {
+    "nizhny-novgorod-bor-cable-car": ("Россия", "cable_urban", "active"),
+    "moscow-vorobyovy-gory-cable-car": ("Россия", "cable_urban", "active"),
+    "vladivostok-funicular": ("Россия", "funicular_classic", "active"),
+    "nizhny-novgorod-kremlin-funicular": ("Россия", "funicular_modern", "active"),
+    "pyatigorsk-mashuk-cable-car": ("Россия", "cable_aerial_tram", "active"),
+    "svetlogorsk-panorama-elevator": ("Россия", "elevator_panoramic", "active"),
+    "moscow-monorail": ("Россия", "monorail", "historical"),
 }
 
 
@@ -157,20 +182,20 @@ class StorageContractTest(unittest.TestCase):
 
     def test_demo_seed_initializes_objects_once(self) -> None:
         self.storage.seed_demo_objects()
-        self.storage.update_object_status("vorobyovy-gory", "visited")
+        self.storage.update_object_status("moscow-vorobyovy-gory-cable-car", "visited")
         self.storage.update_object_status("berlin-gaerten-der-welt", "planned")
         self.storage.seed_demo_objects()
 
         objects = self.storage.list_objects()
         self.assertGreaterEqual(len(objects), 15)
-        self.assertIn("vorobyovy-gory", {obj["id"] for obj in objects})
+        self.assertIn("moscow-vorobyovy-gory-cable-car", {obj["id"] for obj in objects})
         self.assertIn("berlin-gaerten-der-welt", {obj["id"] for obj in objects})
         self.assertEqual(
-            self.storage.get_object("vorobyovy-gory")["transport_type_id"],
+            self.storage.get_object("moscow-vorobyovy-gory-cable-car")["transport_type_id"],
             "cable_urban",
         )
         self.assertEqual(
-            self.storage.get_object("vorobyovy-gory")["visit_status_id"],
+            self.storage.get_object("moscow-vorobyovy-gory-cable-car")["visit_status_id"],
             "visited",
         )
         self.assertEqual(
@@ -214,6 +239,135 @@ class StorageContractTest(unittest.TestCase):
                         "unknown",
                     },
                 )
+
+    def test_demo_seed_matches_integrated_catalog_for_europe_and_russia(self) -> None:
+        self.storage.seed_demo_objects()
+
+        objects_by_id = {obj["id"]: obj for obj in self.storage.list_objects()}
+        self.assertEqual(len(objects_by_id), EXPECTED_SQLITE_DEMO_OBJECTS)
+        self.assertTrue(REPLACED_LEGACY_RUSSIA_IDS.isdisjoint(objects_by_id))
+
+        for object_id, (country, transport_type, operational_status) in {
+            **REQUIRED_EUROPE_OBJECTS,
+            **REQUIRED_RUSSIA_OBJECTS,
+        }.items():
+            with self.subTest(object_id=object_id):
+                obj = objects_by_id.get(object_id)
+                self.assertIsNotNone(obj)
+                assert obj is not None
+                self.assertEqual(obj["country"], country)
+                self.assertEqual(obj["transport_type_id"], transport_type)
+                self.assertEqual(obj["operational_status"], operational_status)
+                self.assertEqual(obj["status_checked_at"], "2026-05-30")
+                self.assertTrue(obj["status_source_url"])
+                self.assertTrue(obj["status_note"])
+
+        self.assertEqual(objects_by_id["vladivostok-funicular"]["region"], "Приморский край")
+        self.assertEqual(objects_by_id["vladivostok-funicular"]["opened_year"], 1962)
+
+    def test_demo_seed_merges_legacy_russia_ids_without_losing_user_data(self) -> None:
+        self.storage.upsert_object(
+            {
+                "id": "vorobyovy-gory",
+                "title": "Канатная дорога на Воробьевых горах",
+                "transport_type_id": "cable_urban",
+                "visit_status_id": "favorite",
+                "country": "Россия",
+                "region": "Москва",
+                "city": "Москва",
+                "latitude": 55.7103,
+                "longitude": 37.5517,
+                "description": "Legacy объект из v0.1.15.",
+            }
+        )
+        self.storage.upsert_object(
+            {
+                "id": "nizhny-novgorod",
+                "title": "Нижегородская канатная дорога",
+                "transport_type_id": "cable_aerial_tram",
+                "visit_status_id": "planned",
+                "country": "Россия",
+                "region": "Нижний Новгород",
+                "city": "Нижний Новгород",
+                "latitude": 56.3299,
+                "longitude": 44.0186,
+                "description": "Legacy объект из v0.1.15.",
+            }
+        )
+        self.storage.upsert_visit(
+            {
+                "id": "visit-legacy-vorobyovy",
+                "transport_object_id": "vorobyovy-gory",
+                "visited_on": "2026-05-30",
+                "title": "Старая поездка",
+            }
+        )
+        self.storage.upsert_media_asset(
+            MediaAsset(
+                id="photo-legacy-vorobyovy",
+                transport_object_id="vorobyovy-gory",
+                visit_id="visit-legacy-vorobyovy",
+                kind="photo",
+                local_path="media/vorobyovy-gory/photo-legacy-vorobyovy.jpg",
+                caption="Фото до миграции id.",
+            )
+        )
+        self.storage.upsert_ticket(
+            Ticket(
+                id="ticket-legacy-vorobyovy",
+                transport_object_id="vorobyovy-gory",
+                visit_id="visit-legacy-vorobyovy",
+                media_asset_id="photo-legacy-vorobyovy",
+                title="Билет до миграции",
+                price_currency="RUB",
+            )
+        )
+
+        self.storage.seed_demo_objects()
+        self.storage.seed_demo_objects()
+
+        objects_by_id = {obj["id"]: obj for obj in self.storage.list_objects()}
+        self.assertEqual(len(objects_by_id), EXPECTED_SQLITE_DEMO_OBJECTS)
+        self.assertNotIn("vorobyovy-gory", objects_by_id)
+        self.assertNotIn("nizhny-novgorod", objects_by_id)
+        self.assertEqual(
+            objects_by_id["moscow-vorobyovy-gory-cable-car"]["visit_status_id"],
+            "favorite",
+        )
+        self.assertEqual(
+            objects_by_id["nizhny-novgorod-bor-cable-car"]["visit_status_id"],
+            "planned",
+        )
+
+        visit = self.storage.get_visit("visit-legacy-vorobyovy")
+        self.assertEqual(
+            visit["transport_object_id"],
+            "moscow-vorobyovy-gory-cable-car",
+        )
+        self.assertEqual(
+            [row["id"] for row in self.storage.list_visits("moscow-vorobyovy-gory-cable-car")],
+            ["visit-legacy-vorobyovy"],
+        )
+
+        photo = self.storage.get_media_asset("photo-legacy-vorobyovy")
+        self.assertEqual(
+            photo["transport_object_id"],
+            "moscow-vorobyovy-gory-cable-car",
+        )
+        self.assertEqual(
+            [row["id"] for row in self.storage.list_object_photos("moscow-vorobyovy-gory-cable-car")],
+            ["photo-legacy-vorobyovy"],
+        )
+
+        ticket = self.storage.get_ticket("ticket-legacy-vorobyovy")
+        self.assertEqual(
+            ticket["transport_object_id"],
+            "moscow-vorobyovy-gory-cable-car",
+        )
+        self.assertEqual(
+            [row["id"] for row in self.storage.list_tickets(object_id="moscow-vorobyovy-gory-cable-car")],
+            ["ticket-legacy-vorobyovy"],
+        )
 
     def test_demo_seed_records_operational_status_source_and_check_date(self) -> None:
         self.storage.seed_demo_objects()
@@ -331,10 +485,10 @@ class StorageContractTest(unittest.TestCase):
         expected_statuses = ["not_visited", "planned", "visited", "favorite"]
 
         for status_id in expected_statuses:
-            updated = self.storage.update_object_status("vorobyovy-gory", status_id)
+            updated = self.storage.update_object_status("moscow-vorobyovy-gory-cable-car", status_id)
             self.assertEqual(updated["visit_status_id"], status_id)
             self.assertEqual(
-                self.storage.get_object("vorobyovy-gory")["visit_status_id"],
+                self.storage.get_object("moscow-vorobyovy-gory-cable-car")["visit_status_id"],
                 status_id,
             )
 
@@ -342,20 +496,20 @@ class StorageContractTest(unittest.TestCase):
         self.storage = SQLiteStorage(self.database_path)
         self.storage.migrate()
 
-        restored = self.storage.get_object("vorobyovy-gory")
+        restored = self.storage.get_object("moscow-vorobyovy-gory-cable-car")
         self.assertIsNotNone(restored)
         self.assertEqual(restored["visit_status_id"], "favorite")
 
     def test_visit_crud_and_cascade_delete(self) -> None:
         self.storage.seed_demo_objects()
-        before_status = self.storage.get_object("vorobyovy-gory")
+        before_status = self.storage.get_object("moscow-vorobyovy-gory-cable-car")
         self.assertIsNotNone(before_status)
         assert before_status is not None
 
         self.storage.upsert_visit(
             {
                 "id": "visit-vorobyovy-2026",
-                "transport_object_id": "vorobyovy-gory",
+                "transport_object_id": "moscow-vorobyovy-gory-cable-car",
                 "visited_on": "2026-05-30",
                 "title": "Семейная поездка",
                 "notes": "Проверка журнала посещений.",
@@ -364,8 +518,8 @@ class StorageContractTest(unittest.TestCase):
         )
         visit = self.storage.get_visit("visit-vorobyovy-2026")
         self.assertEqual(visit["impression_rating"], 5)
-        self.assertEqual(len(self.storage.list_visits("vorobyovy-gory")), 1)
-        after_visit = self.storage.get_object("vorobyovy-gory")
+        self.assertEqual(len(self.storage.list_visits("moscow-vorobyovy-gory-cable-car")), 1)
+        after_visit = self.storage.get_object("moscow-vorobyovy-gory-cable-car")
         self.assertEqual(after_visit["visit_status_id"], before_status["visit_status_id"])
         self.assertEqual(after_visit["operational_status"], before_status["operational_status"])
 
@@ -373,17 +527,17 @@ class StorageContractTest(unittest.TestCase):
         self.storage = SQLiteStorage(self.database_path)
         self.storage.migrate()
 
-        restored_visits = self.storage.list_visits("vorobyovy-gory")
+        restored_visits = self.storage.list_visits("moscow-vorobyovy-gory-cable-car")
         self.assertEqual(len(restored_visits), 1)
         self.assertEqual(restored_visits[0]["title"], "Семейная поездка")
-        restored_object = self.storage.get_object("vorobyovy-gory")
+        restored_object = self.storage.get_object("moscow-vorobyovy-gory-cable-car")
         self.assertEqual(restored_object["visit_status_id"], before_status["visit_status_id"])
         self.assertEqual(restored_object["operational_status"], before_status["operational_status"])
 
         self.storage.upsert_visit(
             {
                 "id": "visit-vorobyovy-2026",
-                "transport_object_id": "vorobyovy-gory",
+                "transport_object_id": "moscow-vorobyovy-gory-cable-car",
                 "visited_on": "2026-05-30",
                 "title": "Семейная поездка",
                 "notes": "Обновленные заметки.",
@@ -398,12 +552,12 @@ class StorageContractTest(unittest.TestCase):
         self.storage.upsert_visit(
             {
                 "id": "visit-vorobyovy-2026",
-                "transport_object_id": "vorobyovy-gory",
+                "transport_object_id": "moscow-vorobyovy-gory-cable-car",
                 "visited_on": "2026-05-30",
             }
         )
-        self.storage.delete_object("vorobyovy-gory")
-        self.assertEqual(self.storage.list_visits("vorobyovy-gory"), [])
+        self.storage.delete_object("moscow-vorobyovy-gory-cable-car")
+        self.assertEqual(self.storage.list_visits("moscow-vorobyovy-gory-cable-car"), [])
 
     def test_media_asset_photo_crud_and_object_listing(self) -> None:
         self.storage.seed_demo_objects()
@@ -411,9 +565,9 @@ class StorageContractTest(unittest.TestCase):
         created = self.storage.upsert_media_asset(
             MediaAsset(
                 id="photo-vorobyovy-mvp",
-                transport_object_id="vorobyovy-gory",
+                transport_object_id="moscow-vorobyovy-gory-cable-car",
                 kind="photo",
-                local_path="media/vorobyovy-gory/photo-vorobyovy-mvp.jpg",
+                local_path="media/moscow-vorobyovy-gory-cable-car/photo-vorobyovy-mvp.jpg",
                 caption="Фото MVP: запись без копирования файла.",
                 latitude=55.7103,
                 longitude=37.5517,
@@ -423,24 +577,24 @@ class StorageContractTest(unittest.TestCase):
         )
 
         self.assertEqual(created["kind"], "photo")
-        self.assertEqual(created["transport_object_id"], "vorobyovy-gory")
-        self.assertEqual(created["local_path"], "media/vorobyovy-gory/photo-vorobyovy-mvp.jpg")
+        self.assertEqual(created["transport_object_id"], "moscow-vorobyovy-gory-cable-car")
+        self.assertEqual(created["local_path"], "media/moscow-vorobyovy-gory-cable-car/photo-vorobyovy-mvp.jpg")
         self.assertEqual(created["coordinate_source"], "manual")
         self.assertEqual(created["geo_note"], "Точка вручную поставлена у станции для проверки UI.")
         self.assertEqual(
-            self.storage.get_object("vorobyovy-gory")["photo_count"],
+            self.storage.get_object("moscow-vorobyovy-gory-cable-car")["photo_count"],
             1,
         )
 
-        photos = self.storage.list_object_photos("vorobyovy-gory")
+        photos = self.storage.list_object_photos("moscow-vorobyovy-gory-cable-car")
         self.assertEqual([photo["id"] for photo in photos], ["photo-vorobyovy-mvp"])
 
         self.storage.upsert_media_asset(
             {
                 "id": "photo-vorobyovy-mvp",
-                "transport_object_id": "vorobyovy-gory",
+                "transport_object_id": "moscow-vorobyovy-gory-cable-car",
                 "kind": "photo",
-                "local_path": "media/vorobyovy-gory/photo-vorobyovy-mvp.jpg",
+                "local_path": "media/moscow-vorobyovy-gory-cable-car/photo-vorobyovy-mvp.jpg",
                 "caption": "Обновленная подпись MVP.",
             }
         )
@@ -451,14 +605,14 @@ class StorageContractTest(unittest.TestCase):
 
         self.storage.delete_media_asset("photo-vorobyovy-mvp")
         self.assertIsNone(self.storage.get_media_asset("photo-vorobyovy-mvp"))
-        self.assertEqual(self.storage.list_object_photos("vorobyovy-gory"), [])
+        self.assertEqual(self.storage.list_object_photos("moscow-vorobyovy-gory-cable-car"), [])
 
     def test_ticket_crud_lists_by_object_and_visit_after_reopen(self) -> None:
         self.storage.seed_demo_objects()
         self.storage.upsert_visit(
             {
                 "id": "visit-vorobyovy-ticket-2026",
-                "transport_object_id": "vorobyovy-gory",
+                "transport_object_id": "moscow-vorobyovy-gory-cable-car",
                 "visited_on": "2026-05-30",
                 "title": "Поездка с билетом",
             }
@@ -466,10 +620,10 @@ class StorageContractTest(unittest.TestCase):
         self.storage.upsert_media_asset(
             MediaAsset(
                 id="ticket-scan-vorobyovy-2026",
-                transport_object_id="vorobyovy-gory",
+                transport_object_id="moscow-vorobyovy-gory-cable-car",
                 visit_id="visit-vorobyovy-ticket-2026",
                 kind="document",
-                local_path="media/vorobyovy-gory/ticket-scan-vorobyovy-2026.jpg",
+                local_path="media/moscow-vorobyovy-gory-cable-car/ticket-scan-vorobyovy-2026.jpg",
                 caption="Скан билета.",
             )
         )
@@ -477,7 +631,7 @@ class StorageContractTest(unittest.TestCase):
         created = self.storage.upsert_ticket(
             Ticket(
                 id="ticket-vorobyovy-2026",
-                transport_object_id="vorobyovy-gory",
+                transport_object_id="moscow-vorobyovy-gory-cable-car",
                 visit_id="visit-vorobyovy-ticket-2026",
                 media_asset_id="ticket-scan-vorobyovy-2026",
                 title="Билет на канатную дорогу",
@@ -488,12 +642,12 @@ class StorageContractTest(unittest.TestCase):
             )
         )
 
-        self.assertEqual(created["transport_object_id"], "vorobyovy-gory")
+        self.assertEqual(created["transport_object_id"], "moscow-vorobyovy-gory-cable-car")
         self.assertEqual(created["visit_id"], "visit-vorobyovy-ticket-2026")
         self.assertEqual(created["media_asset_id"], "ticket-scan-vorobyovy-2026")
         self.assertEqual(created["price_currency"], "RUB")
         self.assertEqual(
-            [ticket["id"] for ticket in self.storage.list_tickets(object_id="vorobyovy-gory")],
+            [ticket["id"] for ticket in self.storage.list_tickets(object_id="moscow-vorobyovy-gory-cable-car")],
             ["ticket-vorobyovy-2026"],
         )
         self.assertEqual(
@@ -504,7 +658,7 @@ class StorageContractTest(unittest.TestCase):
         self.storage.upsert_ticket(
             {
                 "id": "ticket-vorobyovy-2026",
-                "transport_object_id": "vorobyovy-gory",
+                "transport_object_id": "moscow-vorobyovy-gory-cable-car",
                 "visit_id": "visit-vorobyovy-ticket-2026",
                 "media_asset_id": "ticket-scan-vorobyovy-2026",
                 "title": "Семейный билет",
@@ -515,14 +669,14 @@ class StorageContractTest(unittest.TestCase):
             }
         )
         self.assertEqual(self.storage.get_ticket("ticket-vorobyovy-2026")["title"], "Семейный билет")
-        self.assertEqual(self.storage.get_object("vorobyovy-gory")["photo_count"], 0)
-        self.assertEqual(len(self.storage.list_visits("vorobyovy-gory")), 1)
+        self.assertEqual(self.storage.get_object("moscow-vorobyovy-gory-cable-car")["photo_count"], 0)
+        self.assertEqual(len(self.storage.list_visits("moscow-vorobyovy-gory-cable-car")), 1)
 
         self.storage.close()
         self.storage = SQLiteStorage(self.database_path)
         self.storage.migrate()
 
-        restored = self.storage.list_tickets(object_id="vorobyovy-gory")
+        restored = self.storage.list_tickets(object_id="moscow-vorobyovy-gory-cable-car")
         self.assertEqual([ticket["id"] for ticket in restored], ["ticket-vorobyovy-2026"])
         self.assertEqual(restored[0]["notes"], "Обновленная заметка.")
 
@@ -532,7 +686,7 @@ class StorageContractTest(unittest.TestCase):
         assert ticket_without_visit is not None
         self.assertIsNone(ticket_without_visit["visit_id"])
         self.assertEqual(
-            [ticket["id"] for ticket in self.storage.list_tickets(object_id="vorobyovy-gory")],
+            [ticket["id"] for ticket in self.storage.list_tickets(object_id="moscow-vorobyovy-gory-cable-car")],
             ["ticket-vorobyovy-2026"],
         )
 
@@ -558,7 +712,7 @@ class StorageContractTest(unittest.TestCase):
             self.storage.upsert_visit(
                 {
                     "id": "bad-rating",
-                    "transport_object_id": "vorobyovy-gory",
+                    "transport_object_id": "moscow-vorobyovy-gory-cable-car",
                     "visited_on": "2026-05-30",
                     "impression_rating": 6,
                 }

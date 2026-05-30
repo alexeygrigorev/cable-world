@@ -16,8 +16,8 @@ class OneZeroReadinessContractTest(unittest.TestCase):
         self.assertTrue(READINESS_DOC.is_file())
         for expected in [
             "READY_FOR_1_0_CANDIDATE",
-            "v0.1.14",
-            "0.1.14",
+            "v0.1.15",
+            "0.1.15",
             "не команда выпускать `v1.0.0`",
             "семейным sideload APK",
             "не Google Play production release",
@@ -77,7 +77,7 @@ class OneZeroReadinessContractTest(unittest.TestCase):
             "mir-trossov-android-<version>.apk",
             "GitHub Release",
             "Assets",
-            "v0.1.14",
+            "v0.1.15",
         ]:
             with self.subTest(expected=expected):
                 self.assertIn(expected, self.readiness_text)
@@ -125,12 +125,17 @@ class OneZeroReadinessContractTest(unittest.TestCase):
             with self.subTest(expected=expected):
                 self.assertIn(expected, release_workflow)
 
-    def test_open_issues_are_classified_as_post_1_0_v3(self) -> None:
+    def test_open_catalog_issues_and_closed_v3_tracks_are_documented(self) -> None:
+        for issue_number in ["#35", "#36"]:
+            with self.subTest(issue_number=issue_number):
+                self.assertIn(issue_number, self.readiness_text)
+        self.assertIn("расширяют seed-каталог", self.readiness_text)
+
         for issue_number in ["#31", "#32", "#33", "#34"]:
             with self.subTest(issue_number=issue_number):
                 self.assertRegex(self.readiness_text, rf"`{re.escape(issue_number)}` V3:")
 
-        self.assertIn("не блокируют MVP", self.readiness_text)
+        self.assertIn("не блокируют уже устанавливаемый APK", self.readiness_text)
 
 
 if __name__ == "__main__":

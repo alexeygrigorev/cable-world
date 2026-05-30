@@ -9,6 +9,12 @@ const STATUS_FAVORITE: String = "favorite"
 const COUNTRY_IDS_BY_TITLE := {
 	"Россия": "ru",
 	"Германия": "de",
+	"Португалия": "pt",
+	"Франция": "fr",
+	"Италия": "it",
+	"Чехия": "cz",
+	"Словакия": "sk",
+	"Польша": "pl",
 }
 
 

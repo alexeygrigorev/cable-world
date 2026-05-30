@@ -149,6 +149,20 @@ class ObjectListContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, script_text)
 
+    def test_country_filter_has_seed_countries_available_from_demo_catalog(self) -> None:
+        demo_catalog_text = (ROOT / "scripts" / "demo_catalog.gd").read_text(encoding="utf-8")
+        europe_text = (ROOT / "scripts" / "demo_catalog_europe.gd").read_text(encoding="utf-8")
+        russia_text = (ROOT / "scripts" / "demo_catalog_russia.gd").read_text(encoding="utf-8")
+
+        self.assertIn("for country in object_list.get_countries():", (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8"))
+        self.assertIn("countries.sort()", (ROOT / "scripts" / "object_list_panel.gd").read_text(encoding="utf-8"))
+        self.assertIn("DemoCatalogEuropeScript.get_objects()", demo_catalog_text)
+        self.assertIn("DemoCatalogRussiaScript.get_objects()", demo_catalog_text)
+
+        for country in ["Португалия", "Франция", "Италия", "Чехия", "Словакия", "Польша", "Россия"]:
+            with self.subTest(country=country):
+                self.assertIn(f'"country": "{country}"', europe_text + russia_text)
+
 
 if __name__ == "__main__":
     unittest.main()
