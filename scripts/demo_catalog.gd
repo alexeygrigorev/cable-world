@@ -633,7 +633,49 @@ static func get_objects() -> Array[Dictionary]:
 			"longitude": 6.7653,
 			"opened_year": 2002,
 			"operator": "Flughafen Düsseldorf GmbH",
-			"manufacturer": "Siemens"
+			"manufacturer": "Siemens",
+			"stations": [
+				{
+					"id": "duesseldorf-skytrain-station-terminal",
+					"title": "Терминал",
+					"latitude": 51.2893,
+					"longitude": 6.7652,
+					"sort_order": 10,
+					"note": "Станция у терминала аэропорта Дюссельдорфа."
+				},
+				{
+					"id": "duesseldorf-skytrain-station-bahnhof",
+					"title": "Аэропорт-вокзал",
+					"latitude": 51.2810,
+					"longitude": 6.7460,
+					"sort_order": 20,
+					"note": "Станция у дальнего железнодорожного вокзала Flughafen."
+				}
+			],
+			"route_directions": [
+				{
+					"id": "duesseldorf-skytrain-direction-terminal-to-bahnhof",
+					"from_station_id": "duesseldorf-skytrain-station-terminal",
+					"to_station_id": "duesseldorf-skytrain-station-bahnhof",
+					"title": "Терминал -> Аэропорт-вокзал",
+					"direction_label": "в сторону вокзала",
+					"sort_order": 10,
+					"note": "Направление от терминала аэропорта к железнодорожному вокзалу Flughafen."
+				}
+			],
+			"route_segments_by_direction": {
+				"duesseldorf-skytrain-direction-terminal-to-bahnhof": [
+					{
+						"id": "duesseldorf-skytrain-segment-terminal-bahnhof",
+						"from_station_id": "duesseldorf-skytrain-station-terminal",
+						"to_station_id": "duesseldorf-skytrain-station-bahnhof",
+						"segment_order": 10,
+						"title": "Терминал -> Аэропорт-вокзал",
+						"direction_label": "вниз к вокзалу",
+						"note": "Прямой участок от терминала к железнодорожному вокзалу."
+					}
+				]
+			}
 		},
 		{
 			"id": "baden-baden-merkurbergbahn",

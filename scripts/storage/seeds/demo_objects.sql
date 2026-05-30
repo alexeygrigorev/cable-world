@@ -984,6 +984,45 @@ ON CONFLICT(id) DO UPDATE SET
     note = excluded.note,
     updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
 
+INSERT INTO object_stations (
+    id,
+    transport_object_id,
+    title,
+    station_role,
+    latitude,
+    longitude,
+    sort_order,
+    note
+) VALUES
+(
+    'duesseldorf-skytrain-station-terminal',
+    'duesseldorf-skytrain',
+    'Терминал',
+    'terminal',
+    51.2893,
+    6.7652,
+    10,
+    'Станция у терминала аэропорта Дюссельдорфа.'
+),
+(
+    'duesseldorf-skytrain-station-bahnhof',
+    'duesseldorf-skytrain',
+    'Аэропорт-вокзал',
+    'lower',
+    51.2810,
+    6.7460,
+    20,
+    'Станция у дальнего железнодорожного вокзала Flughafen.'
+)
+ON CONFLICT(id) DO UPDATE SET
+    title = excluded.title,
+    station_role = excluded.station_role,
+    latitude = excluded.latitude,
+    longitude = excluded.longitude,
+    sort_order = excluded.sort_order,
+    note = excluded.note,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
+
 -- TODO(object-mode): добавить EngineeringPoint/hotspot seed для опор, приводных
 -- и станционных инженерных узлов после появления таблицы EngineeringPoint.
 -- Текущий vertical slice намеренно хранит только проверяемые станции,
@@ -1018,6 +1057,35 @@ INSERT INTO route_directions (
     'от Садов мира к Киенбергпарку',
     20,
     'Обратное направление к U5 с промежуточной остановкой на Кинберге.'
+)
+ON CONFLICT(id) DO UPDATE SET
+    from_station_id = excluded.from_station_id,
+    to_station_id = excluded.to_station_id,
+    title = excluded.title,
+    direction_label = excluded.direction_label,
+    sort_order = excluded.sort_order,
+    note = excluded.note,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
+
+INSERT INTO route_directions (
+    id,
+    transport_object_id,
+    from_station_id,
+    to_station_id,
+    title,
+    direction_label,
+    sort_order,
+    note
+) VALUES
+(
+    'duesseldorf-skytrain-direction-terminal-to-bahnhof',
+    'duesseldorf-skytrain',
+    'duesseldorf-skytrain-station-terminal',
+    'duesseldorf-skytrain-station-bahnhof',
+    'Терминал -> Аэропорт-вокзал',
+    'в сторону вокзала',
+    10,
+    'Направление от терминала аэропорта к железнодорожному вокзалу Flughafen.'
 )
 ON CONFLICT(id) DO UPDATE SET
     from_station_id = excluded.from_station_id,
@@ -1082,6 +1150,38 @@ INSERT INTO route_segments (
     'Волькенхайн -> Киенбергпарк',
     'вниз к Киенбергпарку',
     'Спуск к U5.'
+)
+ON CONFLICT(id) DO UPDATE SET
+    route_direction_id = excluded.route_direction_id,
+    from_station_id = excluded.from_station_id,
+    to_station_id = excluded.to_station_id,
+    segment_order = excluded.segment_order,
+    title = excluded.title,
+    direction_label = excluded.direction_label,
+    note = excluded.note,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
+
+INSERT INTO route_segments (
+    id,
+    transport_object_id,
+    route_direction_id,
+    from_station_id,
+    to_station_id,
+    segment_order,
+    title,
+    direction_label,
+    note
+) VALUES
+(
+    'duesseldorf-skytrain-segment-terminal-bahnhof',
+    'duesseldorf-skytrain',
+    'duesseldorf-skytrain-direction-terminal-to-bahnhof',
+    'duesseldorf-skytrain-station-terminal',
+    'duesseldorf-skytrain-station-bahnhof',
+    10,
+    'Терминал -> Аэропорт-вокзал',
+    'вниз к вокзалу',
+    'Прямой участок от терминала к железнодорожному вокзалу.'
 )
 ON CONFLICT(id) DO UPDATE SET
     route_direction_id = excluded.route_direction_id,
