@@ -1,3 +1,3 @@
-from .contract import MediaAsset, SQLiteStorage
+from .contract import MediaAsset, SQLiteStorage, Ticket
 
-__all__ = ["MediaAsset", "SQLiteStorage"]
+__all__ = ["MediaAsset", "SQLiteStorage", "Ticket"]

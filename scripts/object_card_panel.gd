@@ -3,6 +3,7 @@ class_name ObjectCardPanel
 
 signal status_changed(object_id: String, status_id: String)
 signal photo_registration_requested(object_id: String)
+signal visit_registration_requested(object_id: String, title: String, notes: String)
 
 var current_object: Dictionary = {}
 var title_label: Label
@@ -21,6 +22,9 @@ var add_photo_button: Button
 var videos_label: Label
 var tickets_label: Label
 var visits_label: Label
+var visit_title_edit: LineEdit
+var visit_notes_edit: TextEdit
+var add_visit_button: Button
 var status_option_is_refreshing: bool = false
 
 func _ready() -> void:
@@ -82,6 +86,19 @@ func _ready() -> void:
 	videos_label = _add_text_label(rows)
 	tickets_label = _add_text_label(rows)
 	visits_label = _add_text_label(rows)
+	visit_title_edit = LineEdit.new()
+	visit_title_edit.placeholder_text = "Короткое название поездки"
+	rows.add_child(visit_title_edit)
+	visit_notes_edit = TextEdit.new()
+	visit_notes_edit.placeholder_text = "Заметка о посещении"
+	visit_notes_edit.custom_minimum_size = Vector2(0, 88)
+	visit_notes_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	rows.add_child(visit_notes_edit)
+	add_visit_button = Button.new()
+	add_visit_button.text = "Сохранить посещение"
+	add_visit_button.tooltip_text = "Записать дату, время и заметку о поездке."
+	add_visit_button.pressed.connect(_on_add_visit_pressed)
+	rows.add_child(add_visit_button)
 
 	show_empty_state()
 
@@ -102,6 +119,11 @@ func show_empty_state() -> void:
 	videos_label.text = "Видео: пока нет"
 	tickets_label.text = "Билеты: пока нет"
 	visits_label.text = "Посещения: пока нет"
+	visit_title_edit.text = ""
+	visit_title_edit.editable = false
+	visit_notes_edit.text = ""
+	visit_notes_edit.editable = false
+	add_visit_button.disabled = true
 	status_option.disabled = true
 	_select_status_option(SQLiteStorageAdapter.STATUS_NOT_VISITED)
 
@@ -122,6 +144,9 @@ func show_object(object_data: Dictionary, can_register_photo: bool = false) -> v
 	videos_label.text = _collection_status("Видео", object_data, "videos", "video_count", "пока нет добавленных видео")
 	tickets_label.text = _collection_status("Билеты", object_data, "tickets", "ticket_count", "пока нет сохраненных билетов")
 	visits_label.text = _visits_status(object_data)
+	visit_title_edit.editable = can_register_photo
+	visit_notes_edit.editable = can_register_photo
+	add_visit_button.disabled = not can_register_photo
 	status_option.disabled = false
 	_select_status_option(_object_status_id(object_data))
 
@@ -146,6 +171,17 @@ func _on_add_photo_pressed() -> void:
 	if current_object.is_empty():
 		return
 	photo_registration_requested.emit(current_object.get("id", ""))
+
+func _on_add_visit_pressed() -> void:
+	if current_object.is_empty():
+		return
+	visit_registration_requested.emit(
+		current_object.get("id", ""),
+		visit_title_edit.text.strip_edges(),
+		visit_notes_edit.text.strip_edges()
+	)
+	visit_title_edit.text = ""
+	visit_notes_edit.text = ""
 
 func _select_status_option(status_id: String) -> void:
 	status_option_is_refreshing = true
@@ -278,12 +314,26 @@ func _photo_hint_text(can_register_photo: bool) -> String:
 	return "Добавление фото сейчас недоступно: локальное хранилище не открыто."
 
 func _visits_status(object_data: Dictionary) -> String:
+	if object_data.has("visits") and object_data.get("visits") is Array:
+		var visits: Array = object_data.get("visits")
+		if not visits.is_empty():
+			var rows: Array[String] = ["Последние посещения: %d" % visits.size()]
+			var start_index: int = max(0, visits.size() - 3)
+			for reverse_index in range(visits.size() - 1, start_index - 1, -1):
+				var item = visits[reverse_index]
+				if item is Dictionary:
+					var visit: Dictionary = item
+					var title := _value_text(visit.get("title", ""), "поездка")
+					var notes := str(visit.get("notes", "")).strip_edges()
+					var line := "- %s: %s" % [_value_text(visit.get("visited_on", ""), "дата не указана"), title]
+					if not notes.is_empty():
+						line += " — %s" % notes
+					rows.append(line)
+			return "\n".join(rows)
+
 	var count := -1
 	if object_data.has("visit_count"):
 		count = int(object_data.get("visit_count", 0))
-	elif object_data.has("visits") and object_data.get("visits") is Array:
-		var visits: Array = object_data.get("visits")
-		count = visits.size()
 
 	if count > 0:
 		return "Посещения: %d" % count

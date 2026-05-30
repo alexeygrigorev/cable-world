@@ -62,6 +62,8 @@ python3 -m unittest discover -s tests
 
 APK для установки на телефон публикуется в GitHub Releases вместе с Web/Linux-архивами. В релизе нужно скачать файл вида `mir-trossov-android-<version>.apk` и установить его вручную как sideload APK.
 
+Перед семейной установкой пройти ручной [MVP-чеклист релиза APK](docs/release-mvp-checklist.md): запуск, ориентация, карта, карточка объекта, фото, статусы и объекты Германии.
+
 Android package id закреплен как `com.mirtrossov.app`, имя приложения на устройстве — «Мир Троссов». APK подписывается стабильным `android/debug.keystore` из репозитория со стандартными debug credentials. Это dev/sideload подпись для семейных сборок, не production key для Google Play.
 
 Будущие APK должны ставиться поверх старой установки, если не менять package id и keystore, а `version/code` в Android export preset монотонно увеличивать перед каждым релизом.

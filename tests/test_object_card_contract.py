@@ -70,6 +70,11 @@ class ObjectCardContractTest(unittest.TestCase):
             "Видео",
             "Билеты",
             "Посещения",
+            "Последние посещения",
+            "Короткое название поездки",
+            "Заметка о посещении",
+            "Сохранить посещение",
+            "Записать дату, время и заметку о поездке.",
             "не указано",
             "пока нет",
         ]:
@@ -91,13 +96,16 @@ class ObjectCardContractTest(unittest.TestCase):
                     "Добавить",
                     "файл",
                     "хранилище",
+                    "посещ",
+                    "поезд",
+                    "Журнал",
                 ]
             )
         ]
         visible_main_literals = [
             literal
             for literal in _gd_string_literals(main_text)
-            if any(marker in literal for marker in ["фото", "Фото", "файл", "хранилище"])
+            if any(marker in literal for marker in ["фото", "Фото", "файл", "хранилище", "посещ", "поезд", "Журнал"])
         ]
 
         for literal in visible_card_literals + visible_main_literals:
@@ -124,14 +132,20 @@ class ObjectCardContractTest(unittest.TestCase):
         for expected in [
             "signal status_changed(object_id: String, status_id: String)",
             "signal photo_registration_requested(object_id: String)",
+            "signal visit_registration_requested(object_id: String, title: String, notes: String)",
             "var status_option: OptionButton",
             "var add_photo_button: Button",
+            "var add_visit_button: Button",
+            "var visit_title_edit: LineEdit",
+            "var visit_notes_edit: TextEdit",
             "_configure_status_option()",
             "SQLiteStorageAdapter.status_ids()",
             "status_option.item_selected.connect(_on_status_selected)",
             "add_photo_button.pressed.connect(_on_add_photo_pressed)",
+            "add_visit_button.pressed.connect(_on_add_visit_pressed)",
             "status_changed.emit",
             "photo_registration_requested.emit",
+            "visit_registration_requested.emit",
             "SQLiteStorageAdapter.status_title",
             "SQLiteStorageAdapter.operational_status_title",
             "operational_status_label",
@@ -142,13 +156,19 @@ class ObjectCardContractTest(unittest.TestCase):
         for expected in [
             "object_card.status_changed.connect(_on_status_changed)",
             "object_card.photo_registration_requested.connect(_on_photo_registration_requested)",
+            "object_card.visit_registration_requested.connect(_on_visit_registration_requested)",
             "func _on_status_changed(object_id: String, status_id: String) -> void:",
             "func _on_photo_registration_requested(object_id: String) -> void:",
+            "func _on_visit_registration_requested(object_id: String, title: String, notes: String) -> void:",
             "storage.update_object_status(object_id, normalized_status)",
             "storage.upsert_media_asset",
+            "storage.upsert_visit",
+            "storage.list_visits(object_id)",
             "storage.list_object_photos(object_id)",
             'objects[index]["visited"] = visited',
             'objects[index]["visit_status_id"] = normalized_status',
+            'objects[index]["visits"] = storage.list_visits(object_id)',
+            'objects[index]["visit_count"] = objects[index]["visits"].size()',
             "object_card.show_object(objects[index], storage_runtime_enabled)",
         ]:
             self.assertIn(expected, main_text)

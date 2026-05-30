@@ -445,6 +445,84 @@ func delete_media_asset(media_asset_id: String) -> int:
 	return _execute_with_bindings("DELETE FROM media_assets WHERE id = ?", [media_asset_id])
 
 
+func list_tickets(object_id: String = "", visit_id: String = "") -> Array[Dictionary]:
+	if object_id.is_empty() and visit_id.is_empty():
+		return _query("""
+			SELECT id, transport_object_id, visit_id, media_asset_id, title,
+			       issued_on, price_amount, price_currency, notes, created_at
+			FROM tickets
+			ORDER BY issued_on, created_at, id
+		""")
+	if visit_id.is_empty():
+		return _query("""
+			SELECT id, transport_object_id, visit_id, media_asset_id, title,
+			       issued_on, price_amount, price_currency, notes, created_at
+			FROM tickets
+			WHERE transport_object_id = ?
+			ORDER BY issued_on, created_at, id
+		""", [object_id])
+	if object_id.is_empty():
+		return _query("""
+			SELECT id, transport_object_id, visit_id, media_asset_id, title,
+			       issued_on, price_amount, price_currency, notes, created_at
+			FROM tickets
+			WHERE visit_id = ?
+			ORDER BY issued_on, created_at, id
+		""", [visit_id])
+	return _query("""
+		SELECT id, transport_object_id, visit_id, media_asset_id, title,
+		       issued_on, price_amount, price_currency, notes, created_at
+		FROM tickets
+		WHERE transport_object_id = ? AND visit_id = ?
+		ORDER BY issued_on, created_at, id
+	""", [object_id, visit_id])
+
+
+func get_ticket(ticket_id: String) -> Dictionary:
+	var rows := _query("""
+		SELECT id, transport_object_id, visit_id, media_asset_id, title,
+		       issued_on, price_amount, price_currency, notes, created_at
+		FROM tickets
+		WHERE id = ?
+	""", [ticket_id])
+	return {} if rows.is_empty() else rows[0]
+
+
+func upsert_ticket(data: Dictionary) -> int:
+	var existing := get_ticket(data.get("id", ""))
+	var created_at: String = data.get("created_at", existing.get("created_at", _now()))
+	return _execute_with_bindings("""
+		INSERT INTO tickets (
+			id, transport_object_id, visit_id, media_asset_id, title,
+			issued_on, price_amount, price_currency, notes, created_at
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT(id) DO UPDATE SET
+			transport_object_id = excluded.transport_object_id,
+			visit_id = excluded.visit_id,
+			media_asset_id = excluded.media_asset_id,
+			title = excluded.title,
+			issued_on = excluded.issued_on,
+			price_amount = excluded.price_amount,
+			price_currency = excluded.price_currency,
+			notes = excluded.notes
+	""", [
+		data.get("id", ""),
+		data.get("transport_object_id", ""),
+		data.get("visit_id", null),
+		data.get("media_asset_id", null),
+		data.get("title", ""),
+		data.get("issued_on", null),
+		data.get("price_amount", null),
+		data.get("price_currency", null),
+		data.get("notes", ""),
+		created_at,
+	])
+
+
+func delete_ticket(ticket_id: String) -> int:
+	return _execute_with_bindings("DELETE FROM tickets WHERE id = ?", [ticket_id])
+
+
 func _execute(sql: String) -> int:
 	if database == null:
 		last_error = "SQLite database is not open."

@@ -59,6 +59,7 @@ func _ready() -> void:
 	object_list.object_selected.connect(_on_object_selected)
 	object_card.status_changed.connect(_on_status_changed)
 	object_card.photo_registration_requested.connect(_on_photo_registration_requested)
+	object_card.visit_registration_requested.connect(_on_visit_registration_requested)
 	map_panel.set_objects(objects)
 	map_panel.object_selected.connect(_on_map_object_selected)
 
@@ -158,6 +159,48 @@ func _on_photo_registration_requested(object_id: String) -> void:
 		_add_photo_journal_entry(objects[index], caption)
 		return
 
+func _on_visit_registration_requested(object_id: String, title: String, notes: String) -> void:
+	if not storage_runtime_enabled:
+		push_warning("Журнал посещений сейчас недоступен: локальное хранилище не открыто.")
+		return
+
+	for index in objects.size():
+		if objects[index].get("id", "") != object_id:
+			continue
+
+		var visited_at := Time.get_datetime_dict_from_system(false)
+		var visited_on := "%04d-%02d-%02d %02d:%02d" % [
+			int(visited_at.get("year", 0)),
+			int(visited_at.get("month", 0)),
+			int(visited_at.get("day", 0)),
+			int(visited_at.get("hour", 0)),
+			int(visited_at.get("minute", 0)),
+		]
+		var visit_id := "%s-visit-%d-%d" % [
+			object_id,
+			int(Time.get_unix_time_from_system()),
+			Time.get_ticks_msec(),
+		]
+		var visit_title := title if not title.is_empty() else "Семейная поездка"
+		var visit_notes := notes if not notes.is_empty() else "Заметка пока не добавлена."
+		var save_result := storage.upsert_visit({
+			"id": visit_id,
+			"transport_object_id": object_id,
+			"visited_on": visited_on,
+			"title": visit_title,
+			"notes": visit_notes,
+		})
+		if save_result != OK:
+			push_warning("Не удалось сохранить посещение: %s" % storage.last_error)
+			return
+
+		objects[index]["visits"] = storage.list_visits(object_id)
+		objects[index]["visit_count"] = objects[index]["visits"].size()
+		object_list.refresh()
+		_select_object(index, false)
+		_add_visit_journal_entry(objects[index], visit_title, visited_on)
+		return
+
 func _exit_tree() -> void:
 	storage.close()
 
@@ -252,13 +295,21 @@ func _add_photo_journal_entry(object_data: Dictionary, caption: String) -> void:
 	journal_entries = journal_entries.slice(0, 6)
 	journal_label.text = "[b]Журнал[/b]\n%s" % "\n".join(journal_entries)
 
+func _add_visit_journal_entry(object_data: Dictionary, title: String, visited_on: String) -> void:
+	journal_entries.push_front("%s: посещение %s (%s)" % [object_data.get("name", "Объект"), title, visited_on])
+	journal_entries = journal_entries.slice(0, 6)
+	journal_label.text = "[b]Журнал[/b]\n%s" % "\n".join(journal_entries)
+
 func _attach_photo_lists(source_objects: Array[Dictionary]) -> Array[Dictionary]:
 	var objects_with_photos: Array[Dictionary] = []
 	for object_data in source_objects:
 		var enriched_object := object_data.duplicate(true)
 		var object_id: String = enriched_object.get("id", "")
 		var photos := storage.list_object_photos(object_id)
+		var visits := storage.list_visits(object_id)
 		enriched_object["photos"] = photos
 		enriched_object["photo_count"] = photos.size()
+		enriched_object["visits"] = visits
+		enriched_object["visit_count"] = visits.size()
 		objects_with_photos.append(enriched_object)
 	return objects_with_photos

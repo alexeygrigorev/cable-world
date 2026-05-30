@@ -14,7 +14,7 @@ import sys
 
 sys.path.insert(0, str(ROOT))
 
-from scripts.storage import MediaAsset, SQLiteStorage  # noqa: E402
+from scripts.storage import MediaAsset, SQLiteStorage, Ticket  # noqa: E402
 
 
 MIN_GERMAN_DEMO_OBJECTS = 21
@@ -253,6 +253,9 @@ class StorageContractTest(unittest.TestCase):
 
     def test_visit_crud_and_cascade_delete(self) -> None:
         self.storage.seed_demo_objects()
+        before_status = self.storage.get_object("vorobyovy-gory")
+        self.assertIsNotNone(before_status)
+        assert before_status is not None
 
         self.storage.upsert_visit(
             {
@@ -267,6 +270,20 @@ class StorageContractTest(unittest.TestCase):
         visit = self.storage.get_visit("visit-vorobyovy-2026")
         self.assertEqual(visit["impression_rating"], 5)
         self.assertEqual(len(self.storage.list_visits("vorobyovy-gory")), 1)
+        after_visit = self.storage.get_object("vorobyovy-gory")
+        self.assertEqual(after_visit["visit_status_id"], before_status["visit_status_id"])
+        self.assertEqual(after_visit["operational_status"], before_status["operational_status"])
+
+        self.storage.close()
+        self.storage = SQLiteStorage(self.database_path)
+        self.storage.migrate()
+
+        restored_visits = self.storage.list_visits("vorobyovy-gory")
+        self.assertEqual(len(restored_visits), 1)
+        self.assertEqual(restored_visits[0]["title"], "Семейная поездка")
+        restored_object = self.storage.get_object("vorobyovy-gory")
+        self.assertEqual(restored_object["visit_status_id"], before_status["visit_status_id"])
+        self.assertEqual(restored_object["operational_status"], before_status["operational_status"])
 
         self.storage.upsert_visit(
             {
@@ -334,6 +351,92 @@ class StorageContractTest(unittest.TestCase):
         self.storage.delete_media_asset("photo-vorobyovy-mvp")
         self.assertIsNone(self.storage.get_media_asset("photo-vorobyovy-mvp"))
         self.assertEqual(self.storage.list_object_photos("vorobyovy-gory"), [])
+
+    def test_ticket_crud_lists_by_object_and_visit_after_reopen(self) -> None:
+        self.storage.seed_demo_objects()
+        self.storage.upsert_visit(
+            {
+                "id": "visit-vorobyovy-ticket-2026",
+                "transport_object_id": "vorobyovy-gory",
+                "visited_on": "2026-05-30",
+                "title": "Поездка с билетом",
+            }
+        )
+        self.storage.upsert_media_asset(
+            MediaAsset(
+                id="ticket-scan-vorobyovy-2026",
+                transport_object_id="vorobyovy-gory",
+                visit_id="visit-vorobyovy-ticket-2026",
+                kind="document",
+                local_path="media/vorobyovy-gory/ticket-scan-vorobyovy-2026.jpg",
+                caption="Скан билета.",
+            )
+        )
+
+        created = self.storage.upsert_ticket(
+            Ticket(
+                id="ticket-vorobyovy-2026",
+                transport_object_id="vorobyovy-gory",
+                visit_id="visit-vorobyovy-ticket-2026",
+                media_asset_id="ticket-scan-vorobyovy-2026",
+                title="Билет на канатную дорогу",
+                issued_on="2026-05-30",
+                price_amount=350.0,
+                price_currency="RUB",
+                notes="Локальная запись без внешнего сервера.",
+            )
+        )
+
+        self.assertEqual(created["transport_object_id"], "vorobyovy-gory")
+        self.assertEqual(created["visit_id"], "visit-vorobyovy-ticket-2026")
+        self.assertEqual(created["media_asset_id"], "ticket-scan-vorobyovy-2026")
+        self.assertEqual(created["price_currency"], "RUB")
+        self.assertEqual(
+            [ticket["id"] for ticket in self.storage.list_tickets(object_id="vorobyovy-gory")],
+            ["ticket-vorobyovy-2026"],
+        )
+        self.assertEqual(
+            [ticket["id"] for ticket in self.storage.list_tickets(visit_id="visit-vorobyovy-ticket-2026")],
+            ["ticket-vorobyovy-2026"],
+        )
+
+        self.storage.upsert_ticket(
+            {
+                "id": "ticket-vorobyovy-2026",
+                "transport_object_id": "vorobyovy-gory",
+                "visit_id": "visit-vorobyovy-ticket-2026",
+                "media_asset_id": "ticket-scan-vorobyovy-2026",
+                "title": "Семейный билет",
+                "issued_on": "2026-05-30",
+                "price_amount": 700.0,
+                "price_currency": "RUB",
+                "notes": "Обновленная заметка.",
+            }
+        )
+        self.assertEqual(self.storage.get_ticket("ticket-vorobyovy-2026")["title"], "Семейный билет")
+        self.assertEqual(self.storage.get_object("vorobyovy-gory")["photo_count"], 0)
+        self.assertEqual(len(self.storage.list_visits("vorobyovy-gory")), 1)
+
+        self.storage.close()
+        self.storage = SQLiteStorage(self.database_path)
+        self.storage.migrate()
+
+        restored = self.storage.list_tickets(object_id="vorobyovy-gory")
+        self.assertEqual([ticket["id"] for ticket in restored], ["ticket-vorobyovy-2026"])
+        self.assertEqual(restored[0]["notes"], "Обновленная заметка.")
+
+        self.storage.delete_visit("visit-vorobyovy-ticket-2026")
+        ticket_without_visit = self.storage.get_ticket("ticket-vorobyovy-2026")
+        self.assertIsNotNone(ticket_without_visit)
+        assert ticket_without_visit is not None
+        self.assertIsNone(ticket_without_visit["visit_id"])
+        self.assertEqual(
+            [ticket["id"] for ticket in self.storage.list_tickets(object_id="vorobyovy-gory")],
+            ["ticket-vorobyovy-2026"],
+        )
+
+        self.storage.delete_ticket("ticket-vorobyovy-2026")
+        self.assertIsNone(self.storage.get_ticket("ticket-vorobyovy-2026"))
 
     def test_constraints_reject_invalid_references_and_ratings(self) -> None:
         with self.assertRaises(sqlite3.IntegrityError):

@@ -63,13 +63,21 @@ func _init() -> void:
 	_expect_ok(storage.upsert_visit({
 		"id": "godot-contract-visit",
 		"transport_object_id": "vorobyovy-gory",
-		"visited_on": "2026-05-30",
+		"visited_on": "2026-05-30 12:30",
 		"title": "Контрактное посещение",
 		"notes": "Проверка visit CRUD.",
 		"impression_rating": 5,
 	}), storage, "upsert_visit")
 	_expect(storage.get_visit("godot-contract-visit").get("impression_rating", 0) == 5, "Visit CRUD must read inserted visit.")
 	_expect(storage.list_visits("vorobyovy-gory").size() >= 1, "Visit CRUD must list object visits.")
+	var object_before_visit: Dictionary = storage.get_object("vorobyovy-gory")
+	storage.close()
+	_expect_ok(storage.open(TEST_DATABASE_PATH), storage, "reopen after visit")
+	_expect_ok(storage.migrate(), storage, "migrate after visit")
+	_expect(storage.get_visit("godot-contract-visit").get("title", "") == "Контрактное посещение", "Visit CRUD must persist after reopen.")
+	var object_after_visit: Dictionary = storage.get_object("vorobyovy-gory")
+	_expect(object_after_visit.get("visit_status_id", "") == object_before_visit.get("visit_status_id", ""), "Visit records must not alter family visit status.")
+	_expect(object_after_visit.get("operational_status", "") == object_before_visit.get("operational_status", ""), "Visit records must not alter operational status.")
 	_expect_ok(storage.delete_visit("godot-contract-visit"), storage, "delete_visit")
 	_expect(storage.get_visit("godot-contract-visit").is_empty(), "Visit CRUD must delete inserted visit.")
 
@@ -86,6 +94,52 @@ func _init() -> void:
 	_expect(int(object_with_photo.get("photo_count", 0)) == 1, "TransportObject must expose photo_count from MediaAsset records.")
 	_expect_ok(storage.delete_media_asset("godot-contract-photo"), storage, "delete_media_asset")
 	_expect(storage.get_media_asset("godot-contract-photo").is_empty(), "MediaAsset CRUD must delete inserted photo.")
+
+	_expect_ok(storage.upsert_visit({
+		"id": "godot-contract-ticket-visit",
+		"transport_object_id": "vorobyovy-gory",
+		"visited_on": "2026-05-30",
+		"title": "Посещение с билетом",
+	}), storage, "upsert_visit for ticket")
+	_expect_ok(storage.upsert_media_asset({
+		"id": "godot-contract-ticket-scan",
+		"transport_object_id": "vorobyovy-gory",
+		"visit_id": "godot-contract-ticket-visit",
+		"kind": "document",
+		"local_path": "media/vorobyovy-gory/godot-contract-ticket-scan.jpg",
+		"caption": "Скан билета.",
+	}), storage, "upsert_media_asset for ticket")
+	_expect_ok(storage.upsert_ticket({
+		"id": "godot-contract-ticket",
+		"transport_object_id": "vorobyovy-gory",
+		"visit_id": "godot-contract-ticket-visit",
+		"media_asset_id": "godot-contract-ticket-scan",
+		"title": "Контрактный билет",
+		"issued_on": "2026-05-30",
+		"price_amount": 350.0,
+		"price_currency": "RUB",
+		"notes": "Локальная запись билета.",
+	}), storage, "upsert_ticket")
+	_expect(storage.get_ticket("godot-contract-ticket").get("title", "") == "Контрактный билет", "Ticket CRUD must read inserted ticket.")
+	_expect(storage.list_tickets("vorobyovy-gory").size() == 1, "Ticket CRUD must list object tickets.")
+	_expect(storage.list_tickets("", "godot-contract-ticket-visit").size() == 1, "Ticket CRUD must list visit tickets.")
+	_expect_ok(storage.upsert_ticket({
+		"id": "godot-contract-ticket",
+		"transport_object_id": "vorobyovy-gory",
+		"visit_id": "godot-contract-ticket-visit",
+		"media_asset_id": "godot-contract-ticket-scan",
+		"title": "Обновленный контрактный билет",
+		"issued_on": "2026-05-30",
+		"price_amount": 700.0,
+		"price_currency": "RUB",
+		"notes": "Обновленная локальная запись.",
+	}), storage, "update_ticket")
+	_expect(storage.get_ticket("godot-contract-ticket").get("title", "") == "Обновленный контрактный билет", "Ticket CRUD must update an existing ticket.")
+	_expect_ok(storage.delete_visit("godot-contract-ticket-visit"), storage, "delete ticket visit")
+	_expect(storage.get_ticket("godot-contract-ticket").has("visit_id") and storage.get_ticket("godot-contract-ticket").get("visit_id") == null, "Deleting a visit must keep the object ticket and clear visit_id.")
+	_expect_ok(storage.delete_ticket("godot-contract-ticket"), storage, "delete_ticket")
+	_expect(storage.get_ticket("godot-contract-ticket").is_empty(), "Ticket CRUD must delete inserted ticket.")
+	_expect(storage.get_object("vorobyovy-gory").get("photo_count", 0) == 0, "Ticket document must not change object photo_count.")
 
 	storage.close()
 	DirAccess.remove_absolute(database_absolute_path)

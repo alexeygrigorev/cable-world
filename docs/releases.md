@@ -17,6 +17,12 @@ python3 -m unittest discover -s tests
 scripts/export-release.sh "$(cat VERSION)"
 ```
 
+## APK smoke test
+
+Перед публикацией APK и после установки APK из GitHub Release пройти [MVP-чеклист релиза APK](release-mvp-checklist.md). Он покрывает запуск, ориентацию, карту, карточку объекта, фото, статусы посещения и работы объекта, а также поиск объектов Германии.
+
+Опубликованный APK скачивается со страницы GitHub Release проекта: <https://github.com/alexeygrigorev/cable-world/releases>. В блоке `Assets` нужен файл вида `mir-trossov-android-<version>.apk`.
+
 ## Web-хостинг в AWS
 
 Инфраструктура лежит в `infra/aws-web` и управляется Terraform. Она создает:

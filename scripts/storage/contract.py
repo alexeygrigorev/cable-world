@@ -23,6 +23,20 @@ class MediaAsset:
     created_at: str | None = None
 
 
+@dataclass(frozen=True)
+class Ticket:
+    id: str
+    transport_object_id: str
+    title: str
+    visit_id: str | None = None
+    media_asset_id: str | None = None
+    issued_on: str | None = None
+    price_amount: float | None = None
+    price_currency: str | None = None
+    notes: str = ""
+    created_at: str | None = None
+
+
 class SQLiteStorage:
     """Small SQLite contract used by tests until Godot gets a SQLite runtime plugin."""
 
@@ -355,6 +369,105 @@ class SQLiteStorage:
 
     def delete_media_asset(self, media_asset_id: str) -> None:
         self.connection.execute("DELETE FROM media_assets WHERE id = ?", (media_asset_id,))
+        self.connection.commit()
+
+    def list_tickets(
+        self,
+        object_id: str | None = None,
+        visit_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        filters = []
+        params: list[Any] = []
+        if object_id is not None:
+            filters.append("transport_object_id = ?")
+            params.append(object_id)
+        if visit_id is not None:
+            filters.append("visit_id = ?")
+            params.append(visit_id)
+
+        where = "" if not filters else "WHERE " + " AND ".join(filters)
+        return self._query_all(
+            f"""
+            SELECT id, transport_object_id, visit_id, media_asset_id, title,
+                   issued_on, price_amount, price_currency, notes, created_at
+            FROM tickets
+            {where}
+            ORDER BY issued_on, created_at, id
+            """,
+            tuple(params),
+        )
+
+    def get_ticket(self, ticket_id: str) -> dict[str, Any] | None:
+        return self._query_one(
+            """
+            SELECT id, transport_object_id, visit_id, media_asset_id, title,
+                   issued_on, price_amount, price_currency, notes, created_at
+            FROM tickets
+            WHERE id = ?
+            """,
+            (ticket_id,),
+        )
+
+    def upsert_ticket(self, data: dict[str, Any] | Ticket) -> dict[str, Any]:
+        if isinstance(data, Ticket):
+            ticket_data = {
+                "id": data.id,
+                "transport_object_id": data.transport_object_id,
+                "visit_id": data.visit_id,
+                "media_asset_id": data.media_asset_id,
+                "title": data.title,
+                "issued_on": data.issued_on,
+                "price_amount": data.price_amount,
+                "price_currency": data.price_currency,
+                "notes": data.notes,
+                "created_at": data.created_at,
+            }
+        else:
+            ticket_data = data
+
+        required = {"id", "transport_object_id", "title"}
+        missing = sorted(required - set(ticket_data))
+        if missing:
+            raise ValueError(f"Missing ticket fields: {', '.join(missing)}")
+
+        existing = self.get_ticket(ticket_data["id"])
+        created_at = ticket_data.get("created_at") or (existing["created_at"] if existing else self._now())
+        self.connection.execute(
+            """
+            INSERT INTO tickets (
+                id, transport_object_id, visit_id, media_asset_id, title,
+                issued_on, price_amount, price_currency, notes, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                transport_object_id = excluded.transport_object_id,
+                visit_id = excluded.visit_id,
+                media_asset_id = excluded.media_asset_id,
+                title = excluded.title,
+                issued_on = excluded.issued_on,
+                price_amount = excluded.price_amount,
+                price_currency = excluded.price_currency,
+                notes = excluded.notes
+            """,
+            (
+                ticket_data["id"],
+                ticket_data["transport_object_id"],
+                ticket_data.get("visit_id"),
+                ticket_data.get("media_asset_id"),
+                ticket_data["title"],
+                ticket_data.get("issued_on"),
+                ticket_data.get("price_amount"),
+                ticket_data.get("price_currency"),
+                ticket_data.get("notes", ""),
+                created_at,
+            ),
+        )
+        self.connection.commit()
+        ticket = self.get_ticket(ticket_data["id"])
+        assert ticket is not None
+        return ticket
+
+    def delete_ticket(self, ticket_id: str) -> None:
+        self.connection.execute("DELETE FROM tickets WHERE id = ?", (ticket_id,))
         self.connection.commit()
 
     def _applied_migrations(self) -> set[str]:
