@@ -1,0 +1,47 @@
+{
+  "id": "berlin-gaerten-der-welt",
+  "transport_type_id": "cable_gondola",
+  "visit_status_id": "not_visited",
+  "country": "Германия",
+  "region": "Берлин",
+  "city": "Берлин",
+  "latitude": 52.5396,
+  "longitude": 13.5763,
+  "localized": {
+    "ru": {
+      "title": "Канатная дорога в садах мира Берлина",
+      "description": "Гондольная канатная дорога над парком Gärten der Welt."
+    },
+    "de": {
+      "title": "Seilbahn in den Gärten der Welt",
+      "description": ""
+    },
+    "en": {
+      "title": "Gärten der Welt cable car",
+      "description": ""
+    }
+  },
+  "opened_year": 2017,
+  "operator": "Leitner Ropeways",
+  "manufacturer": "Leitner Ropeways",
+  "operational_status": "unknown",
+  "status_checked_at": "",
+  "status_source_url": "",
+  "status_note": "",
+  "source_ids": {
+    "osm": [
+      "way/123456789"
+    ],
+    "wikidata": "Q123456"
+  },
+  "source_urls": [
+    "https://www.openstreetmap.org/way/123456789",
+    "https://www.wikidata.org/wiki/Q123456"
+  ],
+  "review": {
+    "state": "candidate",
+    "reviewed_by": "",
+    "reviewed_at": "",
+    "notes": "Требуется ручная проверка типа, статуса и русского описания."
+  }
+}

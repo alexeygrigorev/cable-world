@@ -1,0 +1,60 @@
+{
+  "elements": [
+    {
+      "type": "way",
+      "id": 1001,
+      "center": {
+        "lat": 52.5396,
+        "lon": 13.5763
+      },
+      "tags": {
+        "aerialway": "gondola",
+        "name": "Gärten der Welt cable car",
+        "name:ru": "Канатная дорога в садах мира Берлина",
+        "name:de": "Seilbahn in den Gärten der Welt",
+        "operator": "Leitner Ropeways",
+        "start_date": "2017",
+        "website": "https://www.seilbahn.berlin/",
+        "wikidata": "Q1001"
+      }
+    },
+    {
+      "type": "relation",
+      "id": 2002,
+      "center": {
+        "lat": 50.733,
+        "lon": 7.1
+      },
+      "tags": {
+        "railway": "rail",
+        "rack": "yes",
+        "name": "Drachenfelsbahn",
+        "operator": "Bergbahnen im Siebengebirge AG"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3003,
+      "lat": 51.269,
+      "lon": 7.199,
+      "tags": {
+        "railway": "monorail",
+        "monorail": "hanging",
+        "name": "Wuppertaler Schwebebahn",
+        "wikidata": "Q3003"
+      }
+    },
+    {
+      "type": "way",
+      "id": 4004,
+      "center": {
+        "lat": 48.782,
+        "lon": 9.177
+      },
+      "tags": {
+        "railway": "funicular",
+        "name": "Stuttgarter Standseilbahn"
+      }
+    }
+  ]
+}

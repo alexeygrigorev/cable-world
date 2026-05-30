@@ -1,0 +1,27 @@
+{
+  "id": "Берлин",
+  "transport_type_id": "ski_lift",
+  "visit_status_id": "not_visited",
+  "country": "Германия",
+  "latitude": 95,
+  "longitude": 13.5763,
+  "localized": {
+    "en": {
+      "title": "Gärten der Welt cable car",
+      "description": ""
+    }
+  },
+  "operational_status": "maybe_active",
+  "source_ids": {
+    "osm": []
+  },
+  "source_urls": [
+    "www.openstreetmap.org/way/123456789"
+  ],
+  "review": {
+    "state": "candidate",
+    "reviewed_by": "",
+    "reviewed_at": "",
+    "notes": "Пример должен падать на контрактной проверке."
+  }
+}

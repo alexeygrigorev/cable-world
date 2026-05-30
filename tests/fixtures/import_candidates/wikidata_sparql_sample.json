@@ -1,0 +1,95 @@
+{
+  "head": {
+    "vars": [
+      "item",
+      "itemLabel",
+      "itemLabelRu",
+      "itemLabelEn",
+      "itemLabelDe",
+      "coord",
+      "countryLabel",
+      "operatorLabel",
+      "officialWebsite",
+      "osmWayId",
+      "instanceOfLabel"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "item": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q1001"
+        },
+        "itemLabel": {
+          "type": "literal",
+          "value": "Канатная дорога в садах мира Берлина"
+        },
+        "itemLabelRu": {
+          "type": "literal",
+          "value": "Канатная дорога в садах мира Берлина"
+        },
+        "itemLabelEn": {
+          "type": "literal",
+          "value": "Gärten der Welt cable car"
+        },
+        "coord": {
+          "datatype": "http://www.opengis.net/ont/geosparql#wktLiteral",
+          "type": "literal",
+          "value": "Point(13.5763 52.5396)"
+        },
+        "countryLabel": {
+          "type": "literal",
+          "value": "Германия"
+        },
+        "operatorLabel": {
+          "type": "literal",
+          "value": "Leitner Ropeways"
+        },
+        "officialWebsite": {
+          "type": "uri",
+          "value": "https://www.seilbahn.berlin/"
+        },
+        "osmWayId": {
+          "type": "literal",
+          "value": "1001"
+        },
+        "instanceOfLabel": {
+          "type": "literal",
+          "value": "гондольная канатная дорога"
+        }
+      },
+      {
+        "item": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q5005"
+        },
+        "itemLabel": {
+          "type": "literal",
+          "value": "Tama Toshi Monorail"
+        },
+        "itemLabelEn": {
+          "type": "literal",
+          "value": "Tama Toshi Monorail"
+        },
+        "coord": {
+          "datatype": "http://www.opengis.net/ont/geosparql#wktLiteral",
+          "type": "literal",
+          "value": "Point(139.412 35.713)"
+        },
+        "countryLabel": {
+          "type": "literal",
+          "value": "Япония"
+        },
+        "osmRelationId": {
+          "type": "literal",
+          "value": "5005"
+        },
+        "instanceOfLabel": {
+          "type": "literal",
+          "value": "monorail"
+        }
+      }
+    ]
+  }
+}
