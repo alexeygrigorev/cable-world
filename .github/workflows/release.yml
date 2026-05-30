@@ -31,6 +31,22 @@ jobs:
       - name: Получить код
         uses: actions/checkout@v4
 
+      - name: Проверить AWS variables для Web deploy
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy_web == 'true'
+        env:
+          AWS_REGION_VAR: ${{ vars.AWS_REGION }}
+          AWS_WEB_BUCKET_VAR: ${{ vars.AWS_WEB_BUCKET }}
+          AWS_ROLE_ARN_VAR: ${{ vars.AWS_ROLE_ARN }}
+        run: |
+          missing=0
+          for name in AWS_REGION_VAR AWS_WEB_BUCKET_VAR AWS_ROLE_ARN_VAR; do
+            if [ -z "${!name}" ]; then
+              echo "::error::GitHub repository variable ${name%_VAR} is empty. Set AWS_REGION, AWS_WEB_BUCKET and AWS_ROLE_ARN before deploy_web=true."
+              missing=1
+            fi
+          done
+          exit "$missing"
+
       - name: Настроить Python
         uses: actions/setup-python@v5
         with:

@@ -8,8 +8,8 @@
 
 ## Текущая база
 
-- Последний опубликованный релиз: `v0.1.15`.
-- Текущая версия в проекте: `0.1.15`.
+- Последний опубликованный релиз: `v0.1.16`.
+- Текущая версия в проекте: `0.1.16`.
 - Открытые GitHub Issues на момент аудита: `#35`, `#36`; обе задачи расширяют seed-каталог по Европе и России и не блокируют установленный Android MVP, но улучшают содержательность поиска, карты и коллекции перед `1.0.0`.
 - V3 issues `#31` и `#33` закрыты реализацией первого среза режимов поездки и наблюдателя; `#32` и `#34` закрыты контрактами/планом и остаются источником будущих игровых задач.
 - 1.0 scope остается семейным sideload APK и регулярными GitHub Releases, не Google Play production release.
@@ -32,7 +32,7 @@
 - `PASS` Workflow `Релиз` запускает contract tests до сборки артефактов.
 - `PASS` `scripts/export-release.sh` собирает Web, Linux и Android APK.
 - `PASS` GitHub Release по tag получает `mir-trossov-web-<version>.zip`, `mir-trossov-linux-<version>.zip` и `mir-trossov-android-<version>.apk`.
-- `PASS` Последний `v0.1.15` уже опубликован с Web, Linux и Android assets.
+- `PASS` Последний `v0.1.16` уже опубликован с Web, Linux и Android assets.
 - `PASS` Документы объясняют, где скачать APK из GitHub Release Assets и как пройти smoke test до и после релиза.
 
 ## Visual review gate
@@ -44,10 +44,16 @@
 
 ## AWS and infrastructure gate
 
+- `PASS` Terraform-код в `infra/aws-bootstrap` описывает S3 remote state bucket и DynamoDB lock table/bootstrap-ресурс для воспроизводимого Terraform state.
 - `PASS` Terraform-код в `infra/aws-web` описывает S3 static website bucket и IAM role для GitHub Actions OIDC deploy.
-- `PASS` `docs/releases.md` документирует `terraform init`, `terraform apply` и repository variables `AWS_REGION`, `AWS_WEB_BUCKET`, `AWS_ROLE_ARN`.
+- `PASS` `infra/aws-web/backend.tf` закрепляет S3 backend `cable-world-terraform-state-817685572750`, key `aws-web/terraform.tfstate`, region `eu-west-1` и современный S3 lockfile.
+- `PASS` `docs/releases.md` и `infra/aws-web/README.md` документируют bootstrap, `terraform init`, `terraform -chdir=infra/aws-web init -migrate-state`, import recovery, `terraform apply` и repository variables `AWS_REGION`, `AWS_WEB_BUCKET`, `AWS_ROLE_ARN`.
+- `PASS` Workflow `Проверки` запускает `terraform fmt -check`, `terraform init -backend=false` и `terraform validate` для `infra/aws-bootstrap` и `infra/aws-web`.
+- `PASS` Workflow `Релиз` проверяет непустые `AWS_REGION`, `AWS_WEB_BUCKET` и `AWS_ROLE_ARN` ранним шагом перед Web deploy.
 - `PASS` Workflow `Релиз` умеет выкладывать Web-сборку в S3 при ручном запуске с `deploy_web=true`.
-- `PASS` AWS deploy не является blocker-ом для Android 1.0 APK, но воспроизводимость Web-инфраструктуры задокументирована.
+- `PASS` Текущий Web test URL: `http://cable-world-web-817685572750.s3-website-eu-west-1.amazonaws.com`.
+- `PASS` S3 website endpoint по `http` принят как семейный/test hosting для семейной проверки и не является финальным публичным HTTPS для `1.0`.
+- `PASS` AWS deploy не является blocker-ом для Android 1.0 APK, но воспроизводимость Web-инфраструктуры теперь закреплена bootstrap/backend flow.
 
 ## Release assets gate
 

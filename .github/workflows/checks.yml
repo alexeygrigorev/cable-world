@@ -20,6 +20,21 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Настроить Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Проверить Terraform bootstrap
+        run: |
+          terraform -chdir=infra/aws-bootstrap fmt -check
+          terraform -chdir=infra/aws-bootstrap init -backend=false
+          terraform -chdir=infra/aws-bootstrap validate
+
+      - name: Проверить Terraform web
+        run: |
+          terraform -chdir=infra/aws-web fmt -check
+          terraform -chdir=infra/aws-web init -backend=false
+          terraform -chdir=infra/aws-web validate
+
       - name: Настроить Java для Android
         uses: actions/setup-java@v4
         with:
