@@ -148,6 +148,8 @@ MVP не требует полноценного 3D, прогулки по сц�
 
 Минимальные требования и data/UI contract для V3-режимов «поездка» и «наблюдатель» описаны в `docs/v3-scene-modes-contract.md`. Эти режимы относятся к post-1.0 roadmap и не являются blocker для 1.0, если текущий MVP уже показывает маршрут в карточке объекта.
 
+Минимальный data contract для object mode закреплен в `docs/object-mode-contract.md`. Он уточняет цепочку выбранный `TransportObject` -> детальная схема -> станция -> поездка, обязательные поля для `ObjectStation`, `RouteDirection`, `RouteSegment` и будущего `EngineeringPoint`/hotspot, русские пустые состояния, i18n-ready id и вертикальный срез `berlin-gaerten-der-welt`.
+
 `RouteDirection` хранит `from_station_id`, `to_station_id`, `title` и `direction_label`. `title` может быть короткой подписью вида «Киенбергпарк -> Сады мира», а `direction_label` - человекочитаемым направлением «от Киенбергпарка к Садам мира». `RouteSegment` задает `from_station_id`, `to_station_id`, `segment_order`, `title` и `direction_label`, например «вверх к Волькенхайну» или «вниз к Садам мира».
 
 `MediaAsset` может относиться не только к объекту или посещению в целом, но и к станции, отрезку или направлению: например, видео подъема от нижней станции к верхней, фото приводного колеса или ролик вдоль конкретного `RouteSegment`. Связи `station_id`, `route_direction_id` и `route_segment_id` нужны будущему UI, чтобы показать станции и направление видео без EXIF-импорта.

@@ -55,6 +55,29 @@ class ReleaseMvpChecklistTest(unittest.TestCase):
         export_index = release_workflow.index("scripts/export-release.sh")
         self.assertLess(release_test_index, export_index)
 
+    def test_object_mode_visual_reviewer_gate_is_documented(self) -> None:
+        agents_text = (ROOT / "agents.md").read_text(encoding="utf-8")
+        checklist_text = (ROOT / "docs" / "release-mvp-checklist.md").read_text(encoding="utf-8")
+
+        for text in [agents_text, checklist_text]:
+            with self.subTest(document=text[:40]):
+                for expected in [
+                    "object mode",
+                    "ACCEPT",
+                    "REJECT",
+                    "390x844",
+                    "844x390",
+                    "читаем",
+                    "tap targets",
+                    "скролл",
+                    "панорамирование",
+                    "возврат назад",
+                    "пустые состояния",
+                    "реальный",
+                ]:
+                    with self.subTest(expected=expected):
+                        self.assertIn(expected.casefold(), text.casefold())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -984,6 +984,11 @@ ON CONFLICT(id) DO UPDATE SET
     note = excluded.note,
     updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
 
+-- TODO(object-mode): добавить EngineeringPoint/hotspot seed для опор, приводных
+-- и станционных инженерных узлов после появления таблицы EngineeringPoint.
+-- Текущий vertical slice намеренно хранит только проверяемые станции,
+-- направления, сегменты и демо-геометку видео; координаты ниже ручные,
+-- не геодезические инженерные точки.
 INSERT INTO route_directions (
     id,
     transport_object_id,

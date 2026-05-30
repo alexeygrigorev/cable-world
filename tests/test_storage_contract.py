@@ -397,6 +397,10 @@ class StorageContractTest(unittest.TestCase):
             [station["title"] for station in stations],
             ["Киенбергпарк", "Волькенхайн", "Сады мира"],
         )
+        self.assertEqual(
+            [station["station_role"] for station in stations],
+            ["lower", "upper", "lower"],
+        )
         self.assertTrue(all(station["latitude"] and station["longitude"] for station in stations))
 
         directions = self.storage.list_route_directions("berlin-gaerten-der-welt")
@@ -411,6 +415,19 @@ class StorageContractTest(unittest.TestCase):
             [direction["direction_label"] for direction in directions],
             ["от Киенбергпарка к Садам мира", "от Садов мира к Киенбергпарку"],
         )
+        self.assertEqual(
+            [(direction["from_station_id"], direction["to_station_id"]) for direction in directions],
+            [
+                (
+                    "berlin-gaerten-der-welt-station-kienbergpark",
+                    "berlin-gaerten-der-welt-station-gaerten-der-welt",
+                ),
+                (
+                    "berlin-gaerten-der-welt-station-gaerten-der-welt",
+                    "berlin-gaerten-der-welt-station-kienbergpark",
+                ),
+            ],
+        )
 
         outbound_segments = self.storage.list_route_segments(
             "berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten"
@@ -418,6 +435,39 @@ class StorageContractTest(unittest.TestCase):
         self.assertEqual(
             [segment["direction_label"] for segment in outbound_segments],
             ["вверх к Волькенхайну", "вниз к Садам мира"],
+        )
+        self.assertEqual(
+            [(segment["from_station_id"], segment["to_station_id"]) for segment in outbound_segments],
+            [
+                (
+                    "berlin-gaerten-der-welt-station-kienbergpark",
+                    "berlin-gaerten-der-welt-station-wolkenhain",
+                ),
+                (
+                    "berlin-gaerten-der-welt-station-wolkenhain",
+                    "berlin-gaerten-der-welt-station-gaerten-der-welt",
+                ),
+            ],
+        )
+        inbound_segments = self.storage.list_route_segments(
+            "berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark"
+        )
+        self.assertEqual(
+            [segment["direction_label"] for segment in inbound_segments],
+            ["вверх к Волькенхайну", "вниз к Киенбергпарку"],
+        )
+        self.assertEqual(
+            [(segment["from_station_id"], segment["to_station_id"]) for segment in inbound_segments],
+            [
+                (
+                    "berlin-gaerten-der-welt-station-gaerten-der-welt",
+                    "berlin-gaerten-der-welt-station-wolkenhain",
+                ),
+                (
+                    "berlin-gaerten-der-welt-station-wolkenhain",
+                    "berlin-gaerten-der-welt-station-kienbergpark",
+                ),
+            ],
         )
 
         video = self.storage.get_media_asset("berlin-gaerten-der-welt-demo-video-kienbergpark-to-gaerten")
@@ -434,6 +484,35 @@ class StorageContractTest(unittest.TestCase):
         self.storage.seed_demo_objects()
         self.assertEqual(len(self.storage.list_object_stations("berlin-gaerten-der-welt")), 3)
         self.assertEqual(len(self.storage.list_route_directions("berlin-gaerten-der-welt")), 2)
+        self.assertEqual(
+            len(
+                self.storage.connection.execute(
+                    """
+                    SELECT id
+                    FROM route_segments
+                    WHERE transport_object_id = 'berlin-gaerten-der-welt'
+                    """
+                ).fetchall()
+            ),
+            4,
+        )
+
+    def test_gaerten_der_welt_object_mode_hotspots_wait_for_engineering_point_schema(self) -> None:
+        self.storage.seed_demo_objects()
+
+        tables = {
+            row[0]
+            for row in self.storage.connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        self.assertNotIn("engineering_points", tables)
+        self.assertNotIn("EngineeringPoint", tables)
+
+        seed_text = DEMO_SEED.read_text(encoding="utf-8")
+        self.assertIn("TODO(object-mode)", seed_text)
+        self.assertIn("EngineeringPoint/hotspot seed", seed_text)
+        self.assertIn("не геодезические инженерные точки", seed_text)
 
     def test_visit_status_update_does_not_change_operational_status(self) -> None:
         self.storage.seed_demo_objects()
