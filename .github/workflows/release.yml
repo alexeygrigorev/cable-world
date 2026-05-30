@@ -36,7 +36,29 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Настроить Java для Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Настроить Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Установить Android SDK packages
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install \
+            "platform-tools" \
+            "build-tools;35.0.1" \
+            "platforms;android-35" \
+            "cmdline-tools;latest" \
+            "cmake;3.10.2.4988404" \
+            "ndk;28.1.13356709"
+
       - name: Установить Godot и export templates
+        env:
+          CONFIGURE_GODOT_ANDROID_EXPORT: "true"
         run: |
           mkdir -p "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
@@ -56,20 +78,24 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Собрать Web и Linux
+      - name: Собрать Web, Linux и Android
         run: scripts/export-release.sh "${{ steps.version.outputs.version }}"
 
       - name: Загрузить артефакты workflow
         uses: actions/upload-artifact@v4
         with:
           name: mir-trossov-${{ steps.version.outputs.version }}
-          path: dist/${{ steps.version.outputs.version }}/*.zip
+          path: |
+            dist/${{ steps.version.outputs.version }}/*.zip
+            dist/${{ steps.version.outputs.version }}/*.apk
 
       - name: Создать GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/${{ steps.version.outputs.version }}/*.zip
+          files: |
+            dist/${{ steps.version.outputs.version }}/*.zip
+            dist/${{ steps.version.outputs.version }}/*.apk
           generate_release_notes: true
 
       - name: Настроить AWS credentials

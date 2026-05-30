@@ -22,6 +22,8 @@ var journal_entries: Array[String] = []
 var selected_index: int = -1
 var sections: Dictionary = {}
 var navigation_buttons: Dictionary = {}
+var storage: SQLiteStorageAdapter = SQLiteStorageAdapter.new()
+var storage_runtime_enabled: bool = false
 
 func _ready() -> void:
 	objects = _load_objects_from_local_source()
@@ -55,6 +57,21 @@ func _ready() -> void:
 	_show_section("map")
 
 func _load_objects_from_local_source() -> Array[Dictionary]:
+	var open_result := storage.open()
+	if open_result == OK:
+		var migration_result := storage.migrate()
+		var seed_result := storage.seed_demo_objects() if migration_result == OK else migration_result
+		if seed_result == OK:
+			var stored_objects := storage.list_objects()
+			if not stored_objects.is_empty():
+				storage_runtime_enabled = true
+				return stored_objects
+		push_warning("SQLite storage fallback: %s" % storage.last_error)
+		storage.close()
+	else:
+		push_warning("SQLite storage unavailable: %s" % storage.last_error)
+
+	storage_runtime_enabled = false
 	return DemoCatalog.get_objects()
 
 func _on_object_selected(index: int) -> void:
@@ -78,11 +95,19 @@ func _on_filter_changed(_item_index: int) -> void:
 func _on_visit_toggled(object_id: String, visited: bool) -> void:
 	for index in objects.size():
 		if objects[index].get("id", "") == object_id:
+			if storage_runtime_enabled:
+				var update_result := storage.update_object_visited(object_id, visited)
+				if update_result != OK:
+					push_warning("SQLite status update failed: %s" % storage.last_error)
 			objects[index]["visited"] = visited
+			objects[index]["visit_status_id"] = SQLiteStorageAdapter.STATUS_VISITED if visited else SQLiteStorageAdapter.STATUS_NOT_VISITED
 			object_list.refresh()
 			_select_object(index, false)
 			_add_journal_entry(objects[index], visited)
 			return
+
+func _exit_tree() -> void:
+	storage.close()
 
 func _configure_list_filters() -> void:
 	type_filter_option.clear()

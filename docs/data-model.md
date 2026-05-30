@@ -118,6 +118,8 @@
 
 Схема рассчитана на локальную базу SQLite. Все идентификаторы текстовые, чтобы импорт из JSON и будущая синхронизация могли сохранять стабильные ключи.
 
+Каноническая SQL-версия схемы хранится в `scripts/storage/migrations/001_initial_schema.sql`. Демо-инициализация объектов хранится отдельно в `scripts/storage/seeds/demo_objects.sql`, чтобы повторный запуск мог добавлять отсутствующие демо-записи без перезаписи пользовательских статусов.
+
 ```sql
 PRAGMA foreign_keys = ON;
 
@@ -212,6 +214,21 @@ INSERT INTO visit_statuses (id, title, sort_order) VALUES
 
 ## Демо-данные
 
-Текущие демо-данные в GDScript считаются временным представлением модели и в этой задаче не меняются. При следующем переносе в JSON или SQLite каждая демо-запись должна мапиться на `TransportObject`, использовать один `transport_type_id` из справочника и один `visit_status_id` из `VisitStatus`.
+Текущие демо-данные в GDScript считаются временным представлением модели и в этой задаче не меняются. SQL seed в `scripts/storage/seeds/demo_objects.sql` мапит те же записи на `TransportObject`, использует один `transport_type_id` из справочника и один `visit_status_id` из `VisitStatus`.
 
 Если у демо-объекта есть отметка посещения, она должна превращаться в статус `visited` или `not_visited`. Фото, видео и билеты в будущих демо-наборах должны добавляться как `MediaAsset` и `Ticket`, а не как произвольные поля внутри объекта.
+
+## Runtime SQLite в Godot
+
+Godot 4.6 не содержит встроенного SQLite API, поэтому runtime-хранилище подключено через GDExtension [2shady4u/godot-sqlite](https://github.com/2shady4u/godot-sqlite) версии `v4.7`. В репозитории зафиксирован минимальный vendored набор для Linux x86_64:
+
+- `addons/godot-sqlite/gdsqlite.gdextension`;
+- `addons/godot-sqlite/bin/libgdsqlite.linux.template_debug.x86_64.so`;
+- `addons/godot-sqlite/bin/libgdsqlite.linux.template_release.x86_64.so`;
+- `addons/godot-sqlite/licenses/LICENSE.md`.
+
+Полный релиз addon'а содержит сборки для других платформ, но они не добавлены в проект, чтобы не раздувать репозиторий неиспользуемыми бинарными файлами. Источник и версия зафиксированы здесь, а лицензия MIT лежит рядом с vendored-файлами.
+
+`scripts/storage/sqlite_storage_adapter.gd` открывает `user://mir-trossov.sqlite3`, применяет SQL migrations из `scripts/storage/migrations`, выполняет seed из `scripts/storage/seeds/demo_objects.sql` и предоставляет CRUD для `transport_objects` и `visits`. Главное окно использует этот адаптер для загрузки объектов и сохранения статуса посещения; повторный запуск видит сохраненный `visit_status_id`.
+
+На платформах без загруженного класса `SQLite`, включая текущий Web export, `is_runtime_available()` возвращает `false`. Приложение в этом случае использует встроенный `DemoCatalog` и не обещает сохранение пользовательских изменений между запусками.
