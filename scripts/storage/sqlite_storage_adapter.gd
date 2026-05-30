@@ -5,7 +5,9 @@ const DATABASE_PATH: String = "user://mir-trossov.sqlite3"
 const MIGRATIONS_PATH: String = "res://scripts/storage/migrations"
 const DEMO_SEED_PATH: String = "res://scripts/storage/seeds/demo_objects.sql"
 const STATUS_NOT_VISITED: String = "not_visited"
+const STATUS_PLANNED: String = "planned"
 const STATUS_VISITED: String = "visited"
+const STATUS_FAVORITE: String = "favorite"
 
 var last_error: String = ""
 var database: Object = null
@@ -200,7 +202,45 @@ func update_object_status(object_id: String, visit_status_id: String) -> int:
 		UPDATE transport_objects
 		SET visit_status_id = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 		WHERE id = ?
-	""", [visit_status_id, object_id])
+	""", [normalized_status_id(visit_status_id), object_id])
+
+
+static func normalized_status_id(visit_status_id: String) -> String:
+	if visit_status_id == STATUS_NOT_VISITED:
+		return STATUS_NOT_VISITED
+	if visit_status_id == STATUS_PLANNED:
+		return STATUS_PLANNED
+	if visit_status_id == STATUS_VISITED:
+		return STATUS_VISITED
+	if visit_status_id == STATUS_FAVORITE:
+		return STATUS_FAVORITE
+	return STATUS_NOT_VISITED
+
+
+static func status_is_visited(visit_status_id: String) -> bool:
+	var normalized_status := normalized_status_id(visit_status_id)
+	return normalized_status == STATUS_VISITED or normalized_status == STATUS_FAVORITE
+
+
+static func status_title(visit_status_id: String) -> String:
+	var normalized_status := normalized_status_id(visit_status_id)
+	if normalized_status == STATUS_PLANNED:
+		return "запланирован"
+	if normalized_status == STATUS_VISITED:
+		return "посещен"
+	if normalized_status == STATUS_FAVORITE:
+		return "любимый"
+	return "не посещен"
+
+
+static func status_ids() -> Array[String]:
+	var ids: Array[String] = [
+		STATUS_NOT_VISITED,
+		STATUS_PLANNED,
+		STATUS_VISITED,
+		STATUS_FAVORITE,
+	]
+	return ids
 
 
 func delete_object(object_id: String) -> int:
@@ -338,7 +378,7 @@ func _row_to_app_object(row: Dictionary) -> Dictionary:
 		"region": row.get("region", row.get("country", "")),
 		"coordinates": Vector2(longitude, latitude),
 		"description": row.get("description", ""),
-		"visited": row.get("visit_status_id", STATUS_NOT_VISITED) == STATUS_VISITED,
+		"visited": status_is_visited(str(row.get("visit_status_id", STATUS_NOT_VISITED))),
 		"notes": row.get("notes", ""),
 		"transport_type_id": row.get("transport_type_id", ""),
 		"visit_status_id": row.get("visit_status_id", STATUS_NOT_VISITED),

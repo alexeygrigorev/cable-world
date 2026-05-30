@@ -32,25 +32,27 @@ class ObjectCardContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, script_text)
 
-    def test_card_formats_visit_status_and_refreshes_after_toggle(self) -> None:
+    def test_card_formats_and_edits_visit_status(self) -> None:
         card_text = (ROOT / "scripts" / "object_card_panel.gd").read_text(encoding="utf-8")
         main_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
 
         for expected in [
-            'match status_id:',
-            '"not_visited"',
-            '"planned"',
-            '"visited"',
-            '"favorite"',
-            "visit_toggled.emit",
-            "Снять отметку посещения",
-            "Отметить как посещенное",
+            "signal status_changed(object_id: String, status_id: String)",
+            "var status_option: OptionButton",
+            "_configure_status_option()",
+            "SQLiteStorageAdapter.status_ids()",
+            "status_option.item_selected.connect(_on_status_selected)",
+            "status_changed.emit",
+            "SQLiteStorageAdapter.status_title",
         ]:
             self.assertIn(expected, card_text)
 
         for expected in [
+            "object_card.status_changed.connect(_on_status_changed)",
+            "func _on_status_changed(object_id: String, status_id: String) -> void:",
+            "storage.update_object_status(object_id, normalized_status)",
             'objects[index]["visited"] = visited',
-            'objects[index]["visit_status_id"] = SQLiteStorageAdapter.STATUS_VISITED if visited else SQLiteStorageAdapter.STATUS_NOT_VISITED',
+            'objects[index]["visit_status_id"] = normalized_status',
             "object_card.show_object(objects[index])",
         ]:
             self.assertIn(expected, main_text)

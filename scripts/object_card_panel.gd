@@ -1,7 +1,7 @@
 extends PanelContainer
 class_name ObjectCardPanel
 
-signal visit_toggled(object_id: String, visited: bool)
+signal status_changed(object_id: String, status_id: String)
 
 var current_object: Dictionary = {}
 var title_label: Label
@@ -9,6 +9,7 @@ var type_label: Label
 var location_label: Label
 var coordinates_label: Label
 var status_label: Label
+var status_option: OptionButton
 var description_label: Label
 var notes_label: Label
 var technical_label: Label
@@ -16,7 +17,7 @@ var photos_label: Label
 var videos_label: Label
 var tickets_label: Label
 var visits_label: Label
-var visit_button: Button
+var status_option_is_refreshing: bool = false
 
 func _ready() -> void:
 	var margin := MarginContainer.new()
@@ -47,6 +48,10 @@ func _ready() -> void:
 	location_label = _add_text_label(rows)
 	coordinates_label = _add_text_label(rows)
 	status_label = _add_text_label(rows)
+	status_option = OptionButton.new()
+	_configure_status_option()
+	status_option.item_selected.connect(_on_status_selected)
+	rows.add_child(status_option)
 
 	_add_separator(rows)
 	_add_section_title(rows, "Описание")
@@ -67,10 +72,6 @@ func _ready() -> void:
 	tickets_label = _add_text_label(rows)
 	visits_label = _add_text_label(rows)
 
-	visit_button = Button.new()
-	visit_button.pressed.connect(_on_visit_pressed)
-	rows.add_child(visit_button)
-
 	show_empty_state()
 
 func show_empty_state() -> void:
@@ -87,8 +88,8 @@ func show_empty_state() -> void:
 	videos_label.text = "Видео: пока нет"
 	tickets_label.text = "Билеты: пока нет"
 	visits_label.text = "Посещения: пока нет"
-	visit_button.text = "Отметить посещение"
-	visit_button.disabled = true
+	status_option.disabled = true
+	_select_status_option(SQLiteStorageAdapter.STATUS_NOT_VISITED)
 
 func show_object(object_data: Dictionary) -> void:
 	current_object = object_data
@@ -104,16 +105,34 @@ func show_object(object_data: Dictionary) -> void:
 	videos_label.text = _collection_status("Видео", object_data, "videos", "video_count", "пока нет добавленных видео")
 	tickets_label.text = _collection_status("Билеты", object_data, "tickets", "ticket_count", "пока нет сохраненных билетов")
 	visits_label.text = _visits_status(object_data)
-	visit_button.disabled = false
-	visit_button.text = "Снять отметку посещения" if object_data.get("visited", false) else "Отметить как посещенное"
+	status_option.disabled = false
+	_select_status_option(_object_status_id(object_data))
 
-func _on_visit_pressed() -> void:
+func _configure_status_option() -> void:
+	status_option.clear()
+	for status_id in SQLiteStorageAdapter.status_ids():
+		status_option.add_item(SQLiteStorageAdapter.status_title(status_id))
+		status_option.set_item_metadata(status_option.get_item_count() - 1, status_id)
+
+func _on_status_selected(index: int) -> void:
 	if current_object.is_empty():
 		return
+	if status_option_is_refreshing:
+		return
+	if index < 0 or index >= status_option.get_item_count():
+		return
 
-	var current_visited: bool = current_object.get("visited", false)
-	var next_visited: bool = not current_visited
-	visit_toggled.emit(current_object.get("id", ""), next_visited)
+	var status_id := str(status_option.get_item_metadata(index))
+	status_changed.emit(current_object.get("id", ""), status_id)
+
+func _select_status_option(status_id: String) -> void:
+	status_option_is_refreshing = true
+	var normalized_status := SQLiteStorageAdapter.normalized_status_id(status_id)
+	for index in status_option.get_item_count():
+		if status_option.get_item_metadata(index) == normalized_status:
+			status_option.select(index)
+			break
+	status_option_is_refreshing = false
 
 func _add_separator(rows: VBoxContainer) -> void:
 	var separator := HSeparator.new()
@@ -160,18 +179,12 @@ func _coordinates_text(object_data: Dictionary) -> String:
 	return "Координаты: не указаны"
 
 func _visit_status_text(object_data: Dictionary) -> String:
-	var status_id: String = object_data.get("visit_status_id", "")
-	match status_id:
-		"not_visited":
-			return "не посещали"
-		"planned":
-			return "запланировано"
-		"visited":
-			return "посещено"
-		"favorite":
-			return "любимое место"
-		_:
-			return "посещено" if object_data.get("visited", false) else "не посещали"
+	return SQLiteStorageAdapter.status_title(_object_status_id(object_data))
+
+func _object_status_id(object_data: Dictionary) -> String:
+	if object_data.has("visit_status_id"):
+		return SQLiteStorageAdapter.normalized_status_id(str(object_data.get("visit_status_id", "")))
+	return SQLiteStorageAdapter.STATUS_VISITED if object_data.get("visited", false) else SQLiteStorageAdapter.STATUS_NOT_VISITED
 
 func _technical_text(object_data: Dictionary) -> String:
 	return "Год открытия: %s\nОператор: %s\nПроизводитель: %s" % [

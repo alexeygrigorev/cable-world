@@ -49,7 +49,7 @@ func _ready() -> void:
 	object_list.set_empty_state_label(list_empty_state_label)
 	object_list.set_objects(objects)
 	object_list.object_selected.connect(_on_object_selected)
-	object_card.visit_toggled.connect(_on_visit_toggled)
+	object_card.status_changed.connect(_on_status_changed)
 
 	_configure_list_filters()
 	if not objects.is_empty():
@@ -92,18 +92,20 @@ func _on_filter_changed(_item_index: int) -> void:
 	if selected_index >= 0:
 		object_list.select_visual_object(selected_index)
 
-func _on_visit_toggled(object_id: String, visited: bool) -> void:
+func _on_status_changed(object_id: String, status_id: String) -> void:
+	var normalized_status := SQLiteStorageAdapter.normalized_status_id(status_id)
 	for index in objects.size():
 		if objects[index].get("id", "") == object_id:
 			if storage_runtime_enabled:
-				var update_result := storage.update_object_visited(object_id, visited)
+				var update_result := storage.update_object_status(object_id, normalized_status)
 				if update_result != OK:
 					push_warning("SQLite status update failed: %s" % storage.last_error)
+			var visited := SQLiteStorageAdapter.status_is_visited(normalized_status)
 			objects[index]["visited"] = visited
-			objects[index]["visit_status_id"] = SQLiteStorageAdapter.STATUS_VISITED if visited else SQLiteStorageAdapter.STATUS_NOT_VISITED
+			objects[index]["visit_status_id"] = normalized_status
 			object_list.refresh()
 			_select_object(index, false)
-			_add_journal_entry(objects[index], visited)
+			_add_journal_entry(objects[index], normalized_status)
 			return
 
 func _exit_tree() -> void:
@@ -150,8 +152,8 @@ func _update_map_selection(object_data: Dictionary) -> void:
 		coordinates.x
 	]
 
-func _add_journal_entry(object_data: Dictionary, visited: bool) -> void:
-	var status: String = "посещено" if visited else "снята отметка посещения"
+func _add_journal_entry(object_data: Dictionary, status_id: String) -> void:
+	var status: String = "статус: %s" % SQLiteStorageAdapter.status_title(status_id)
 	journal_entries.push_front("%s: %s" % [object_data.get("name", "Объект"), status])
 	journal_entries = journal_entries.slice(0, 6)
 	journal_label.text = "[b]Журнал[/b]\n%s" % "\n".join(journal_entries)

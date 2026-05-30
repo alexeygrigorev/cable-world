@@ -38,6 +38,10 @@ class ObjectListContractTest(unittest.TestCase):
             "func set_filters(next_type_filter: String, next_visit_filter: String) -> void:",
             "func get_transport_types() -> Array[String]:",
             "func _matches_filters(object_data: Dictionary) -> bool:",
+            "func _is_object_visited(object_data: Dictionary) -> bool:",
+            "func _visit_status_text(object_data: Dictionary) -> String:",
+            "SQLiteStorageAdapter.status_is_visited",
+            "SQLiteStorageAdapter.status_title",
             "object_selected.emit(visible_object_indices[index])",
             "Пока нет объектов.",
         ]:

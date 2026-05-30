@@ -22,6 +22,30 @@ class DataModelContractTest(unittest.TestCase):
         for entity in ["TransportObject", "Visit", "MediaAsset", "Ticket", "VisitStatus"]:
             self.assertIn(entity, self.text)
 
+    def test_two_level_map_model_is_documented_without_schema_change(self) -> None:
+        for term in [
+            "объектная карта",
+            "детальная схема объекта",
+            "одной точкой",
+            "начало и конец",
+            "направление видео",
+            "не входят в SQLite-схему MVP",
+            "текущая миграция `media_assets` не меняется",
+        ]:
+            self.assertIn(term, self.text)
+
+        for entity in ["ObjectStation", "RouteSegment", "EngineeringPoint"]:
+            self.assertIn(entity, self.text)
+
+        for detail in [
+            "станция",
+            "платформа",
+            "приводное колесо",
+            "отрезок маршрута",
+            "направления съемки",
+        ]:
+            self.assertIn(detail, self.text)
+
     def test_visit_statuses_are_fixed(self) -> None:
         expected_statuses = {
             "not_visited": "не посещен",

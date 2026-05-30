@@ -110,6 +110,26 @@ class StorageContractTest(unittest.TestCase):
         self.storage.delete_object("test-lift")
         self.assertIsNone(self.storage.get_object("test-lift"))
 
+    def test_visit_status_transitions_persist_after_reopen(self) -> None:
+        self.storage.seed_demo_objects()
+        expected_statuses = ["not_visited", "planned", "visited", "favorite"]
+
+        for status_id in expected_statuses:
+            updated = self.storage.update_object_status("vorobyovy-gory", status_id)
+            self.assertEqual(updated["visit_status_id"], status_id)
+            self.assertEqual(
+                self.storage.get_object("vorobyovy-gory")["visit_status_id"],
+                status_id,
+            )
+
+        self.storage.close()
+        self.storage = SQLiteStorage(self.database_path)
+        self.storage.migrate()
+
+        restored = self.storage.get_object("vorobyovy-gory")
+        self.assertIsNotNone(restored)
+        self.assertEqual(restored["visit_status_id"], "favorite")
+
     def test_visit_crud_and_cascade_delete(self) -> None:
         self.storage.seed_demo_objects()
 

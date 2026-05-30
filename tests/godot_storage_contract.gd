@@ -19,16 +19,20 @@ func _init() -> void:
 	_expect_ok(storage.seed_demo_objects(), storage, "seed")
 	_expect(storage.list_objects().size() >= 3, "Demo seed must create transport objects.")
 
-	_expect_ok(storage.update_object_visited("vorobyovy-gory", true), storage, "update_object_visited")
+	for status_id in ["not_visited", "planned", "visited", "favorite"]:
+		_expect_ok(storage.update_object_status("vorobyovy-gory", status_id), storage, "update_object_status")
+		var status_object: Dictionary = storage.get_object("vorobyovy-gory")
+		_expect(status_object.get("visit_status_id", "") == status_id, "Visit status must transition to %s." % status_id)
 	var visited_object: Dictionary = storage.get_object("vorobyovy-gory")
-	_expect(visited_object.get("visited", false), "Visited status must update in the open database.")
+	_expect(visited_object.get("visited", false), "Favorite status must be treated as visited in the open database.")
 	storage.close()
 
 	_expect_ok(storage.open(TEST_DATABASE_PATH), storage, "reopen")
 	_expect_ok(storage.migrate(), storage, "repeat migrate")
 	_expect_ok(storage.seed_demo_objects(), storage, "repeat seed")
 	visited_object = storage.get_object("vorobyovy-gory")
-	_expect(visited_object.get("visited", false), "Visited status must persist after reopen and repeat seed.")
+	_expect(visited_object.get("visit_status_id", "") == "favorite", "Favorite status must persist after reopen and repeat seed.")
+	_expect(visited_object.get("visited", false), "Favorite status must remain compatible with the visited field.")
 
 	_expect_ok(storage.upsert_object({
 		"id": "godot-contract-lift",

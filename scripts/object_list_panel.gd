@@ -49,11 +49,10 @@ func refresh() -> void:
 			continue
 
 		visible_object_indices.append(index)
-		var mark := "✓ " if object_data.get("visited", false) else ""
-		var label := "%s%s — %s" % [
-			mark,
+		var label := "%s — %s — %s" % [
 			object_data.get("name", "Без названия"),
-			object_data.get("region", "Регион не указан")
+			object_data.get("region", "Регион не указан"),
+			_visit_status_text(object_data)
 		]
 		add_item(label)
 	_update_empty_state()
@@ -76,13 +75,23 @@ func _matches_filters(object_data: Dictionary) -> bool:
 	if type_filter != FILTER_ALL and object_data.get("kind", "") != type_filter:
 		return false
 
-	var is_visited: bool = object_data.get("visited", false)
+	var is_visited := _is_object_visited(object_data)
 	if visit_filter == FILTER_VISITED and not is_visited:
 		return false
 	if visit_filter == FILTER_NOT_VISITED and is_visited:
 		return false
 
 	return true
+
+func _is_object_visited(object_data: Dictionary) -> bool:
+	if object_data.has("visit_status_id"):
+		return SQLiteStorageAdapter.status_is_visited(str(object_data.get("visit_status_id", "")))
+	return object_data.get("visited", false)
+
+func _visit_status_text(object_data: Dictionary) -> String:
+	if object_data.has("visit_status_id"):
+		return SQLiteStorageAdapter.status_title(str(object_data.get("visit_status_id", "")))
+	return SQLiteStorageAdapter.status_title(SQLiteStorageAdapter.STATUS_VISITED if object_data.get("visited", false) else SQLiteStorageAdapter.STATUS_NOT_VISITED)
 
 func _update_empty_state() -> void:
 	if empty_state_label == null:
