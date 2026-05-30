@@ -1,0 +1,81 @@
+from pathlib import Path
+import re
+import unittest
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA_MODEL = ROOT / "docs" / "data-model.md"
+
+
+class DataModelContractTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.text = DATA_MODEL.read_text(encoding="utf-8")
+
+    def test_document_exists_and_is_russian(self) -> None:
+        self.assertTrue(DATA_MODEL.exists(), "Документ доменной модели должен существовать")
+        cyrillic_letters = len(re.findall(r"[А-Яа-яЁё]", self.text))
+        latin_letters = len(re.findall(r"[A-Za-z]", self.text))
+        self.assertGreater(cyrillic_letters, latin_letters, "Документ должен быть преимущественно на русском")
+
+    def test_required_entities_are_named(self) -> None:
+        for entity in ["TransportObject", "Visit", "MediaAsset", "Ticket", "VisitStatus"]:
+            self.assertIn(entity, self.text)
+
+    def test_visit_statuses_are_fixed(self) -> None:
+        expected_statuses = {
+            "not_visited": "не посещен",
+            "planned": "запланирован",
+            "visited": "посещен",
+            "favorite": "любимый",
+        }
+        for status_id, title in expected_statuses.items():
+            self.assertIn(f"`{status_id}`", self.text)
+            self.assertIn(title, self.text)
+
+    def test_sqlite_tables_are_documented(self) -> None:
+        for table in [
+            "visit_statuses",
+            "transport_types",
+            "transport_objects",
+            "visits",
+            "media_assets",
+            "tickets",
+        ]:
+            self.assertRegex(self.text, rf"CREATE TABLE {table}\b")
+
+    def test_transport_types_are_explicit(self) -> None:
+        expected_types = [
+            "cable_gondola",
+            "cable_aerial_tram",
+            "cable_urban",
+            "cable_tourist",
+            "funicular_classic",
+            "funicular_water",
+            "funicular_modern",
+            "rail_cog",
+            "rail_mountain",
+            "rail_suspended",
+            "elevator_vertical",
+            "elevator_inclined",
+            "elevator_panoramic",
+            "suspended_train",
+            "monorail",
+            "suspended_ferry",
+            "escalator_unusual",
+            "special_transport_system",
+            "unique_engineering_object",
+        ]
+        for transport_type in expected_types:
+            self.assertIn(f"`{transport_type}`", self.text)
+
+    def test_demo_data_mapping_is_documented_without_requiring_code_change(self) -> None:
+        self.assertIn("Демо-данные", self.text)
+        self.assertIn("в этой задаче не меняются", self.text)
+        self.assertIn("TransportObject", self.text)
+        self.assertIn("transport_type_id", self.text)
+        self.assertIn("visit_status_id", self.text)
+
+
+if __name__ == "__main__":
+    unittest.main()

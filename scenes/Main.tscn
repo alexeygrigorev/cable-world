@@ -25,44 +25,158 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 24
 
-[node name="Колонки" type="HSplitContainer" parent="Отступы"]
+[node name="Оболочка" type="VBoxContainer" parent="Отступы"]
 layout_mode = 2
-split_offset = 420
+theme_override_constants/separation = 12
 
-[node name="ЛеваяПанель" type="VBoxContainer" parent="Отступы/Колонки"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Заголовок" type="Label" parent="Отступы/Колонки/ЛеваяПанель"]
+[node name="Заголовок" type="Label" parent="Отступы/Оболочка"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Мир Троссов"
 
-[node name="Подзаголовок" type="Label" parent="Отступы/Колонки/ЛеваяПанель"]
+[node name="Подзаголовок" type="Label" parent="Отступы/Оболочка"]
 layout_mode = 2
 text = "Канатные дороги, фуникулеры и другие инженерные маршруты"
 autowrap_mode = 3
 
-[node name="ObjectList" type="ItemList" parent="Отступы/Колонки/ЛеваяПанель"]
+[node name="Навигация" type="GridContainer" parent="Отступы/Оболочка"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="MapButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Карта"
+
+[node name="ListButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Список"
+
+[node name="CardButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Карточка"
+
+[node name="JournalButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Журнал"
+
+[node name="Содержимое" type="PanelContainer" parent="Отступы/Оболочка"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Секции" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MapSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="КартаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/MapSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Карта"
+
+[node name="КартаЗаглушка" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/Секции/MapSection"]
+custom_minimum_size = Vector2(0, 320)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="КартаОтступы" type="MarginContainer" parent="Отступы/Оболочка/Содержимое/Секции/MapSection/КартаЗаглушка"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="КартаТекст" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции/MapSection/КартаЗаглушка/КартаОтступы"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MapStatusLabel" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/MapSection/КартаЗаглушка/КартаОтступы/КартаТекст"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Здесь будет карта объектов. На этапе MVP это честная заглушка без MapLibre."
+autowrap_mode = 3
+
+[node name="SelectedObjectLabel" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/MapSection/КартаЗаглушка/КартаОтступы/КартаТекст"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Выбранный объект: пока не выбран"
+autowrap_mode = 3
+
+[node name="ListSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="СписокЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Список объектов"
+
+[node name="СписокПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+layout_mode = 2
+text = "Выберите объект, чтобы открыть его карточку."
+autowrap_mode = 3
+
+[node name="ObjectList" type="ItemList" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("2_list")
 
-[node name="ПраваяПанель" type="VBoxContainer" parent="Отступы/Колонки"]
+[node name="CardSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
 
-[node name="ObjectCard" type="PanelContainer" parent="Отступы/Колонки/ПраваяПанель"]
+[node name="КарточкаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/CardSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Карточка объекта"
+
+[node name="ObjectCard" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/Секции/CardSection"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("3_card")
 
-[node name="JournalLabel" type="RichTextLabel" parent="Отступы/Колонки/ПраваяПанель"]
+[node name="JournalSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 140)
+visible = false
 layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ЖурналЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/JournalSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Журнал"
+
+[node name="JournalLabel" type="RichTextLabel" parent="Отступы/Оболочка/Содержимое/Секции/JournalSection"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
 bbcode_enabled = true
 fit_content = true
 text = "[b]Журнал[/b]\nПока нет действий."

@@ -23,8 +23,14 @@ func select_object(index: int) -> void:
 	if index < 0 or index >= get_item_count():
 		return
 
-	select(index)
+	select_visual_object(index)
 	object_selected.emit(index)
+
+func select_visual_object(index: int) -> void:
+	if index < 0 or index >= get_item_count():
+		return
+
+	select(index)
 
 func _on_item_selected(index: int) -> void:
 	object_selected.emit(index)
