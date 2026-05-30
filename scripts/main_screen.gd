@@ -4,6 +4,7 @@ class_name MainScreen
 const AppSettings := preload("res://scripts/app_settings.gd")
 const MapPanelScript := preload("res://scripts/map_panel.gd")
 const COLLECTION_STATS_SCRIPT_PATH := "res://scripts/collection_stats.gd"
+const ACHIEVEMENTS_SCRIPT_PATH := "res://scripts/achievements.gd"
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
@@ -38,10 +39,12 @@ var storage: SQLiteStorageAdapter = SQLiteStorageAdapter.new()
 var storage_runtime_enabled: bool = false
 var app_settings: RefCounted = AppSettings.new()
 var collection_stats_script: Resource = null
+var achievements_script: Resource = null
 var orientation_option_is_refreshing: bool = false
 
 func _ready() -> void:
 	collection_stats_script = load(COLLECTION_STATS_SCRIPT_PATH) if ResourceLoader.exists(COLLECTION_STATS_SCRIPT_PATH) else null
+	achievements_script = load(ACHIEVEMENTS_SCRIPT_PATH) if ResourceLoader.exists(ACHIEVEMENTS_SCRIPT_PATH) else null
 	objects = _load_objects_from_local_source()
 	sections = {
 		"map": map_section,
@@ -251,8 +254,14 @@ func _refresh_collection() -> void:
 	if not has_rows:
 		return
 
+	_add_achievements_group(_calculate_achievements(objects))
 	_add_collection_group("Страны", countries, "country")
 	_add_collection_group("Типы транспорта", transport_types, "type")
+
+func _calculate_achievements(source_objects: Array[Dictionary]) -> Array[Dictionary]:
+	if achievements_script != null and achievements_script.has_method("calculate"):
+		return achievements_script.calculate(source_objects)
+	return []
 
 func _calculate_collection_stats(source_objects: Array[Dictionary]) -> Dictionary:
 	if collection_stats_script != null and collection_stats_script.has_method("calculate"):
@@ -330,6 +339,42 @@ func _add_collection_group(title: String, rows: Array, filter_kind: String) -> v
 	for row in rows:
 		if row is Dictionary:
 			_add_collection_row(row, filter_kind)
+
+func _add_achievements_group(rows: Array[Dictionary]) -> void:
+	if rows.is_empty():
+		return
+
+	var title_label := Label.new()
+	title_label.text = "Достижения"
+	title_label.add_theme_font_size_override("font_size", 20)
+	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	collection_rows.add_child(title_label)
+
+	for achievement in rows:
+		_add_achievement_row(achievement)
+
+func _add_achievement_row(achievement: Dictionary) -> void:
+	var unlocked := bool(achievement.get("unlocked", false))
+	var status_text := str(achievement.get("status_text", "Еще не получено"))
+	var title := str(achievement.get("title", "Достижение"))
+	var description := str(achievement.get("description", ""))
+	var progress_text := str(achievement.get("progress_text", ""))
+
+	var row := VBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	collection_rows.add_child(row)
+
+	var title_label := Label.new()
+	title_label.text = "%s: %s" % [status_text, title]
+	title_label.custom_minimum_size = Vector2(0, 36)
+	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	row.add_child(title_label)
+
+	var detail_label := Label.new()
+	detail_label.text = "%s\n%s" % [description, progress_text]
+	detail_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	detail_label.modulate = Color(0.82, 0.82, 0.82, 1.0) if unlocked else Color(0.68, 0.68, 0.68, 1.0)
+	row.add_child(detail_label)
 
 func _add_collection_row(row: Dictionary, filter_kind: String) -> void:
 	var title := str(row.get("title", "Не указано"))
@@ -437,6 +482,8 @@ func _select_object(index: int, open_card: bool) -> void:
 
 	selected_index = index
 	object_list.select_visual_object(index)
+	if storage_runtime_enabled:
+		_ensure_route_details(index)
 	object_card.show_object(objects[index], storage_runtime_enabled)
 	map_panel.select_object(index)
 	_update_map_selection(objects[index])
@@ -490,3 +537,34 @@ func _attach_photo_lists(source_objects: Array[Dictionary]) -> Array[Dictionary]
 		enriched_object["visit_count"] = visits.size()
 		objects_with_photos.append(enriched_object)
 	return objects_with_photos
+
+func _ensure_route_details(index: int) -> void:
+	if index < 0 or index >= objects.size():
+		return
+	if objects[index].get("route_details_loaded", false):
+		return
+
+	var enriched_object := objects[index].duplicate(true)
+	var object_id: String = enriched_object.get("id", "")
+	var media_assets := storage.list_media_assets(object_id)
+	var videos: Array[Dictionary] = []
+	for media_asset in media_assets:
+		if media_asset is Dictionary and media_asset.get("kind", "") == "video":
+			videos.append(media_asset)
+
+	var stations := storage.list_object_stations(object_id)
+	var directions := storage.list_route_directions(object_id)
+	var route_segments_by_direction := {}
+	for direction in directions:
+		if direction is Dictionary:
+			var direction_id := str(direction.get("id", ""))
+			if not direction_id.is_empty():
+				route_segments_by_direction[direction_id] = storage.list_route_segments(direction_id)
+
+	enriched_object["videos"] = videos
+	enriched_object["video_count"] = videos.size()
+	enriched_object["stations"] = stations
+	enriched_object["route_directions"] = directions
+	enriched_object["route_segments_by_direction"] = route_segments_by_direction
+	enriched_object["route_details_loaded"] = true
+	objects[index] = enriched_object

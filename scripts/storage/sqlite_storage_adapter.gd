@@ -381,13 +381,17 @@ func list_media_assets(object_id: String = "") -> Array[Dictionary]:
 	if object_id.is_empty():
 		return _query("""
 			SELECT id, transport_object_id, visit_id, kind, local_path,
-			       caption, taken_on, created_at
+			       caption, taken_on, latitude, longitude, coordinate_source,
+			       geo_note, station_id, route_direction_id, route_segment_id,
+			       created_at
 			FROM media_assets
 			ORDER BY created_at, id
 		""")
 	return _query("""
 		SELECT id, transport_object_id, visit_id, kind, local_path,
-		       caption, taken_on, created_at
+		       caption, taken_on, latitude, longitude, coordinate_source,
+		       geo_note, station_id, route_direction_id, route_segment_id,
+		       created_at
 		FROM media_assets
 		WHERE transport_object_id = ?
 		ORDER BY created_at, id
@@ -397,7 +401,9 @@ func list_media_assets(object_id: String = "") -> Array[Dictionary]:
 func list_object_photos(object_id: String) -> Array[Dictionary]:
 	return _query("""
 		SELECT id, transport_object_id, visit_id, kind, local_path,
-		       caption, taken_on, created_at
+		       caption, taken_on, latitude, longitude, coordinate_source,
+		       geo_note, station_id, route_direction_id, route_segment_id,
+		       created_at
 		FROM media_assets
 		WHERE transport_object_id = ? AND kind = ?
 		ORDER BY created_at, id
@@ -407,11 +413,44 @@ func list_object_photos(object_id: String) -> Array[Dictionary]:
 func get_media_asset(media_asset_id: String) -> Dictionary:
 	var rows := _query("""
 		SELECT id, transport_object_id, visit_id, kind, local_path,
-		       caption, taken_on, created_at
+		       caption, taken_on, latitude, longitude, coordinate_source,
+		       geo_note, station_id, route_direction_id, route_segment_id,
+		       created_at
 		FROM media_assets
 		WHERE id = ?
 	""", [media_asset_id])
 	return {} if rows.is_empty() else rows[0]
+
+
+func list_object_stations(object_id: String) -> Array[Dictionary]:
+	return _query("""
+		SELECT id, transport_object_id, title, station_role, latitude, longitude,
+		       sort_order, note, created_at, updated_at
+		FROM object_stations
+		WHERE transport_object_id = ?
+		ORDER BY sort_order, id
+	""", [object_id])
+
+
+func list_route_directions(object_id: String) -> Array[Dictionary]:
+	return _query("""
+		SELECT id, transport_object_id, from_station_id, to_station_id, title,
+		       direction_label, sort_order, note, created_at, updated_at
+		FROM route_directions
+		WHERE transport_object_id = ?
+		ORDER BY sort_order, id
+	""", [object_id])
+
+
+func list_route_segments(route_direction_id: String) -> Array[Dictionary]:
+	return _query("""
+		SELECT id, transport_object_id, route_direction_id, from_station_id,
+		       to_station_id, segment_order, title, direction_label, note,
+		       created_at, updated_at
+		FROM route_segments
+		WHERE route_direction_id = ?
+		ORDER BY segment_order, id
+	""", [route_direction_id])
 
 
 func upsert_media_asset(data: Dictionary) -> int:
@@ -420,15 +459,23 @@ func upsert_media_asset(data: Dictionary) -> int:
 	return _execute_with_bindings("""
 		INSERT INTO media_assets (
 			id, transport_object_id, visit_id, kind, local_path,
-			caption, taken_on, created_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+			caption, taken_on, latitude, longitude, coordinate_source,
+			geo_note, station_id, route_direction_id, route_segment_id, created_at
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			transport_object_id = excluded.transport_object_id,
 			visit_id = excluded.visit_id,
 			kind = excluded.kind,
 			local_path = excluded.local_path,
 			caption = excluded.caption,
-			taken_on = excluded.taken_on
+			taken_on = excluded.taken_on,
+			latitude = excluded.latitude,
+			longitude = excluded.longitude,
+			coordinate_source = excluded.coordinate_source,
+			geo_note = excluded.geo_note,
+			station_id = excluded.station_id,
+			route_direction_id = excluded.route_direction_id,
+			route_segment_id = excluded.route_segment_id
 	""", [
 		data.get("id", ""),
 		data.get("transport_object_id", null),
@@ -437,6 +484,13 @@ func upsert_media_asset(data: Dictionary) -> int:
 		data.get("local_path", ""),
 		data.get("caption", ""),
 		data.get("taken_on", null),
+		data.get("latitude", null),
+		data.get("longitude", null),
+		data.get("coordinate_source", "unknown"),
+		data.get("geo_note", ""),
+		data.get("station_id", null),
+		data.get("route_direction_id", null),
+		data.get("route_segment_id", null),
 		created_at,
 	])
 

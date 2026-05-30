@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MIGRATIONS_DIR = ROOT / "scripts" / "storage" / "migrations"
 MIGRATION = MIGRATIONS_DIR / "001_initial_schema.sql"
 OPERATIONAL_MIGRATION = MIGRATIONS_DIR / "002_operational_status.sql"
+MEDIA_GEO_ROUTES_MIGRATION = MIGRATIONS_DIR / "003_media_geo_routes.sql"
 DEMO_SEED = ROOT / "scripts" / "storage" / "seeds" / "demo_objects.sql"
 
 import sys
@@ -58,6 +59,7 @@ class StorageContractTest(unittest.TestCase):
     def test_migration_file_is_real_sqlite_schema(self) -> None:
         self.assertTrue(MIGRATION.exists())
         self.assertTrue(OPERATIONAL_MIGRATION.exists())
+        self.assertTrue(MEDIA_GEO_ROUTES_MIGRATION.exists())
         self.assertTrue(DEMO_SEED.exists())
 
         connection = sqlite3.connect(":memory:")
@@ -112,6 +114,45 @@ class StorageContractTest(unittest.TestCase):
         self.assertEqual(
             connection.execute("SELECT version FROM schema_migrations WHERE version = '002_operational_status'").fetchone()[0],
             "002_operational_status",
+        )
+
+    def test_media_geo_routes_migration_adds_ui_foundation(self) -> None:
+        connection = sqlite3.connect(":memory:")
+        connection.execute("PRAGMA foreign_keys = ON")
+        for path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+            connection.executescript(path.read_text(encoding="utf-8"))
+
+        tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        self.assertGreaterEqual(
+            tables,
+            {
+                "object_stations",
+                "route_directions",
+                "route_segments",
+            },
+        )
+        media_columns = {
+            row[1]
+            for row in connection.execute("PRAGMA table_info(media_assets)").fetchall()
+        }
+        for column in [
+            "latitude",
+            "longitude",
+            "coordinate_source",
+            "geo_note",
+            "station_id",
+            "route_direction_id",
+            "route_segment_id",
+        ]:
+            self.assertIn(column, media_columns)
+        self.assertEqual(
+            connection.execute("SELECT version FROM schema_migrations WHERE version = '003_media_geo_routes'").fetchone()[0],
+            "003_media_geo_routes",
         )
 
     def test_demo_seed_initializes_objects_once(self) -> None:
@@ -185,6 +226,60 @@ class StorageContractTest(unittest.TestCase):
         self.assertEqual(berlin["status_checked_at"], "2026-05-30")
         self.assertIn("gaertenderwelt.de", berlin["status_source_url"])
         self.assertIn("Сезонный график", berlin["status_note"])
+
+    def test_demo_seed_adds_gaerten_der_welt_route_contract(self) -> None:
+        self.storage.seed_demo_objects()
+
+        stations = self.storage.list_object_stations("berlin-gaerten-der-welt")
+        self.assertEqual(
+            [station["id"] for station in stations],
+            [
+                "berlin-gaerten-der-welt-station-kienbergpark",
+                "berlin-gaerten-der-welt-station-wolkenhain",
+                "berlin-gaerten-der-welt-station-gaerten-der-welt",
+            ],
+        )
+        self.assertEqual(
+            [station["title"] for station in stations],
+            ["Киенбергпарк", "Волькенхайн", "Сады мира"],
+        )
+        self.assertTrue(all(station["latitude"] and station["longitude"] for station in stations))
+
+        directions = self.storage.list_route_directions("berlin-gaerten-der-welt")
+        self.assertEqual(
+            [direction["id"] for direction in directions],
+            [
+                "berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten",
+                "berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark",
+            ],
+        )
+        self.assertEqual(
+            [direction["direction_label"] for direction in directions],
+            ["от Киенбергпарка к Садам мира", "от Садов мира к Киенбергпарку"],
+        )
+
+        outbound_segments = self.storage.list_route_segments(
+            "berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten"
+        )
+        self.assertEqual(
+            [segment["direction_label"] for segment in outbound_segments],
+            ["вверх к Волькенхайну", "вниз к Садам мира"],
+        )
+
+        video = self.storage.get_media_asset("berlin-gaerten-der-welt-demo-video-kienbergpark-to-gaerten")
+        self.assertIsNotNone(video)
+        assert video is not None
+        self.assertEqual(video["kind"], "video")
+        self.assertEqual(video["coordinate_source"], "manual")
+        self.assertIn("будущий UI", video["geo_note"])
+        self.assertEqual(
+            video["route_direction_id"],
+            "berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten",
+        )
+
+        self.storage.seed_demo_objects()
+        self.assertEqual(len(self.storage.list_object_stations("berlin-gaerten-der-welt")), 3)
+        self.assertEqual(len(self.storage.list_route_directions("berlin-gaerten-der-welt")), 2)
 
     def test_visit_status_update_does_not_change_operational_status(self) -> None:
         self.storage.seed_demo_objects()
@@ -320,12 +415,18 @@ class StorageContractTest(unittest.TestCase):
                 kind="photo",
                 local_path="media/vorobyovy-gory/photo-vorobyovy-mvp.jpg",
                 caption="Фото MVP: запись без копирования файла.",
+                latitude=55.7103,
+                longitude=37.5517,
+                coordinate_source="manual",
+                geo_note="Точка вручную поставлена у станции для проверки UI.",
             )
         )
 
         self.assertEqual(created["kind"], "photo")
         self.assertEqual(created["transport_object_id"], "vorobyovy-gory")
         self.assertEqual(created["local_path"], "media/vorobyovy-gory/photo-vorobyovy-mvp.jpg")
+        self.assertEqual(created["coordinate_source"], "manual")
+        self.assertEqual(created["geo_note"], "Точка вручную поставлена у станции для проверки UI.")
         self.assertEqual(
             self.storage.get_object("vorobyovy-gory")["photo_count"],
             1,

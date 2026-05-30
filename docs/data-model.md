@@ -87,9 +87,18 @@
 - `local_path` - путь к локальному файлу внутри пользовательского хранилища;
 - `caption` - подпись;
 - `taken_on` - дата съемки или создания, если известна;
+- `latitude` - широта точки съемки или опорной точки материала, если известна;
+- `longitude` - долгота точки съемки или опорной точки материала, если известна;
+- `coordinate_source` - источник координат: `exif`, `manual`, `unknown`;
+- `geo_note` - человекочитаемая русская заметка о координатах, точности или логике привязки;
+- `station_id` - ссылка на `ObjectStation`, если материал снят на станции;
+- `route_direction_id` - ссылка на `RouteDirection`, если материал относится к поездке в конкретном направлении;
+- `route_segment_id` - ссылка на `RouteSegment`, если материал относится к отрезку между двумя станциями;
 - `created_at` - дата добавления записи.
 
 Хотя MVP хранит данные локально, путь не должен зависеть от абсолютного пути на машине разработчика. Для синхронизации позже понадобится переносимый относительный путь или отдельный слой файлового хранилища.
+
+Координаты материала не заменяют координаты `TransportObject`: объект остается одной точкой на общей карте, а `MediaAsset.latitude`/`MediaAsset.longitude` помогают детальному экрану показать место съемки фотографии, точку начала видео или примерное положение материала на маршруте. Если координаты взяты из EXIF, `coordinate_source = 'exif'`; если поставлены пользователем или seed-данными, `coordinate_source = 'manual'`; если координаты отсутствуют или их источник неизвестен, используется `unknown`. Поле `geo_note` хранит пояснение для семьи и будущего UI, например «координата вручную поставлена примерно в середине маршрута».
 
 ### Будущая детальная схема объекта
 
@@ -98,13 +107,16 @@
 - объектная карта показывает каждый `TransportObject` одной точкой с координатами `latitude` и `longitude`; на этом уровне не нужны станции, платформы, приводные колеса, опоры и внутренний маршрут;
 - детальная схема объекта открывается после выбора объекта и описывает устройство конкретной линии: начало и конец, станции или платформы, инженерные точки, маршрут и направление видео.
 
-Будущие сущности для детальной схемы не входят в SQLite-схему MVP и потребуют отдельной миграции:
+Сущности детальной схемы добавлены как foundation для #20/#21 и не требуют полноценного UI карты:
 
 - `ObjectStation` - станция, платформа, нижняя или верхняя точка линии внутри выбранного `TransportObject`;
-- `RouteSegment` - отрезок маршрута между станциями, платформами или инженерными точками; хранит порядок линии и может задавать направление движения;
+- `RouteDirection` - направление поездки по объекту: начальная станция, конечная станция, русская подпись направления и порядок показа;
+- `RouteSegment` - отрезок маршрута между станциями, платформами или инженерными точками; хранит порядок линии внутри направления и русскую подпись вверх/вниз или откуда/куда;
 - `EngineeringPoint` - техническая точка объекта: приводное колесо, натяжное колесо, опора, поворотный узел или другая инженерная деталь.
 
-`MediaAsset` в будущей модели может относиться не только к объекту или посещению в целом, но и к точке, отрезку или направлению: например, видео подъема от нижней станции к верхней, фото приводного колеса или ролик вдоль конкретного `RouteSegment`. Для этого у материала понадобится явная связь с `ObjectStation`, `EngineeringPoint`, `RouteSegment` и/или поле направления съемки. Пока это только контракт для будущей реализации детального вида #8/#20/#21; текущая миграция `media_assets` не меняется.
+`RouteDirection` хранит `from_station_id`, `to_station_id`, `title` и `direction_label`. `title` может быть короткой подписью вида «Киенбергпарк -> Сады мира», а `direction_label` - человекочитаемым направлением «от Киенбергпарка к Садам мира». `RouteSegment` задает `from_station_id`, `to_station_id`, `segment_order`, `title` и `direction_label`, например «вверх к Волькенхайну» или «вниз к Садам мира».
+
+`MediaAsset` может относиться не только к объекту или посещению в целом, но и к станции, отрезку или направлению: например, видео подъема от нижней станции к верхней, фото приводного колеса или ролик вдоль конкретного `RouteSegment`. Связи `station_id`, `route_direction_id` и `route_segment_id` нужны будущему UI, чтобы показать станции и направление видео без EXIF-импорта.
 
 ### Ticket
 
@@ -153,7 +165,7 @@
 
 Схема рассчитана на локальную базу SQLite. Все идентификаторы текстовые, чтобы импорт из JSON и будущая синхронизация могли сохранять стабильные ключи.
 
-Каноническая SQL-версия базовой схемы хранится в `scripts/storage/migrations/001_initial_schema.sql`. Эксплуатационные поля добавлены обратимо-совместимой миграцией `scripts/storage/migrations/002_operational_status.sql`, чтобы уже созданные локальные базы получили новые колонки без пересоздания. Демо-инициализация объектов хранится отдельно в `scripts/storage/seeds/demo_objects.sql`, чтобы повторный запуск мог добавлять отсутствующие демо-записи без перезаписи пользовательских статусов посещения.
+Каноническая SQL-версия базовой схемы хранится в `scripts/storage/migrations/001_initial_schema.sql`. Эксплуатационные поля добавлены обратимо-совместимой миграцией `scripts/storage/migrations/002_operational_status.sql`, чтобы уже созданные локальные базы получили новые колонки без пересоздания. Геометки медиа, станции и направления маршрута добавлены миграцией `scripts/storage/migrations/003_media_geo_routes.sql`. Демо-инициализация объектов хранится отдельно в `scripts/storage/seeds/demo_objects.sql`, чтобы повторный запуск мог добавлять отсутствующие демо-записи без перезаписи пользовательских статусов посещения.
 
 ```sql
 PRAGMA foreign_keys = ON;
@@ -221,8 +233,60 @@ CREATE TABLE media_assets (
     local_path TEXT NOT NULL,
     caption TEXT NOT NULL DEFAULT '',
     taken_on TEXT,
+    latitude REAL,
+    longitude REAL,
+    coordinate_source TEXT NOT NULL DEFAULT 'unknown' CHECK (coordinate_source IN ('exif', 'manual', 'unknown')),
+    geo_note TEXT NOT NULL DEFAULT '',
+    station_id TEXT REFERENCES object_stations(id) ON DELETE SET NULL,
+    route_direction_id TEXT REFERENCES route_directions(id) ON DELETE SET NULL,
+    route_segment_id TEXT REFERENCES route_segments(id) ON DELETE SET NULL,
     created_at TEXT NOT NULL,
     CHECK (transport_object_id IS NOT NULL OR visit_id IS NOT NULL)
+);
+
+CREATE TABLE object_stations (
+    id TEXT PRIMARY KEY,
+    transport_object_id TEXT NOT NULL REFERENCES transport_objects(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    station_role TEXT NOT NULL DEFAULT 'unknown',
+    latitude REAL,
+    longitude REAL,
+    sort_order INTEGER NOT NULL,
+    note TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE (transport_object_id, sort_order)
+);
+
+CREATE TABLE route_directions (
+    id TEXT PRIMARY KEY,
+    transport_object_id TEXT NOT NULL REFERENCES transport_objects(id) ON DELETE CASCADE,
+    from_station_id TEXT NOT NULL REFERENCES object_stations(id) ON DELETE CASCADE,
+    to_station_id TEXT NOT NULL REFERENCES object_stations(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    direction_label TEXT NOT NULL,
+    sort_order INTEGER NOT NULL,
+    note TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    CHECK (from_station_id <> to_station_id),
+    UNIQUE (transport_object_id, sort_order)
+);
+
+CREATE TABLE route_segments (
+    id TEXT PRIMARY KEY,
+    transport_object_id TEXT NOT NULL REFERENCES transport_objects(id) ON DELETE CASCADE,
+    route_direction_id TEXT NOT NULL REFERENCES route_directions(id) ON DELETE CASCADE,
+    from_station_id TEXT NOT NULL REFERENCES object_stations(id) ON DELETE CASCADE,
+    to_station_id TEXT NOT NULL REFERENCES object_stations(id) ON DELETE CASCADE,
+    segment_order INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    direction_label TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    CHECK (from_station_id <> to_station_id),
+    UNIQUE (route_direction_id, segment_order)
 );
 
 CREATE TABLE tickets (
@@ -244,6 +308,12 @@ CREATE INDEX idx_transport_objects_operational_status ON transport_objects(opera
 CREATE INDEX idx_visits_object ON visits(transport_object_id);
 CREATE INDEX idx_media_assets_object ON media_assets(transport_object_id);
 CREATE INDEX idx_media_assets_visit ON media_assets(visit_id);
+CREATE INDEX idx_media_assets_station ON media_assets(station_id);
+CREATE INDEX idx_media_assets_route_direction ON media_assets(route_direction_id);
+CREATE INDEX idx_media_assets_route_segment ON media_assets(route_segment_id);
+CREATE INDEX idx_object_stations_object ON object_stations(transport_object_id);
+CREATE INDEX idx_route_directions_object ON route_directions(transport_object_id);
+CREATE INDEX idx_route_segments_direction ON route_segments(route_direction_id);
 CREATE INDEX idx_tickets_object ON tickets(transport_object_id);
 CREATE INDEX idx_tickets_visit ON tickets(visit_id);
 ```
@@ -265,6 +335,17 @@ INSERT INTO visit_statuses (id, title, sort_order) VALUES
 Текущие демо-данные в GDScript считаются временным представлением модели. SQL seed в `scripts/storage/seeds/demo_objects.sql` мапит те же записи на `TransportObject`, использует один `transport_type_id` из справочника, один `visit_status_id` из `VisitStatus` и независимые поля `operational_status`, `status_checked_at`, `status_source_url`, `status_note` для эксплуатационного статуса.
 
 Если у демо-объекта есть отметка посещения, она должна превращаться в статус `visited` или `not_visited`. Фото, видео и билеты в будущих демо-наборах должны добавляться как `MediaAsset` и `Ticket`, а не как произвольные поля внутри объекта.
+
+Для `berlin-gaerten-der-welt` seed фиксирует один детальный маршрут:
+
+- 3 станции `ObjectStation`: `berlin-gaerten-der-welt-station-kienbergpark`, `berlin-gaerten-der-welt-station-wolkenhain`, `berlin-gaerten-der-welt-station-gaerten-der-welt`;
+- 2 направления `RouteDirection`: `berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten` с подписью «от Киенбергпарка к Садам мира» и `berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark` с подписью «от Садов мира к Киенбергпарку»;
+- 4 отрезка `RouteSegment`, по два на каждое направление, с русскими подписями «вверх к Волькенхайну», «вниз к Садам мира», «вверх к Волькенхайну», «вниз к Киенбергпарку»;
+- демо-видео `berlin-gaerten-der-welt-demo-video-kienbergpark-to-gaerten` как `MediaAsset.kind = 'video'` с `coordinate_source = 'manual'`, русской `geo_note`, координатой и ссылкой на направление.
+
+Идентификаторы станций, направлений, сегментов и демо-видео стабильные ASCII. Русские названия и подписи хранятся только в полях display text: `title`, `direction_label`, `note`, `caption`, `geo_note`.
+
+Эти записи намеренно остаются небольшим демонстрационным набором, а не полной картой линии. Их задача - закрепить форму данных для будущего интерфейса: показать ребенку и родителю, где находятся станции, в какую сторону снято видео, какой участок маршрута виден на материале и почему координата считается точной или примерной. Импорт EXIF, редактирование маршрута и полноценная интерактивная схема будут отдельными продуктовыми задачами.
 
 ## Runtime SQLite в Godot
 

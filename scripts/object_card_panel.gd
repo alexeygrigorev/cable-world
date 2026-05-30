@@ -16,6 +16,9 @@ var status_option: OptionButton
 var description_label: Label
 var notes_label: Label
 var technical_label: Label
+var stations_label: Label
+var directions_label: Label
+var route_scheme_label: Label
 var photos_label: Label
 var photos_hint_label: Label
 var add_photo_button: Button
@@ -76,6 +79,12 @@ func _ready() -> void:
 	technical_label = _add_text_label(rows)
 
 	_add_separator(rows)
+	_add_section_title(rows, "Станции и направление")
+	stations_label = _add_text_label(rows)
+	directions_label = _add_text_label(rows)
+	route_scheme_label = _add_text_label(rows)
+
+	_add_separator(rows)
 	_add_section_title(rows, "Материалы и история")
 	photos_label = _add_text_label(rows)
 	photos_hint_label = _add_text_label(rows)
@@ -117,6 +126,9 @@ func show_empty_state() -> void:
 	description_label.text = "Описание: выберите объект из списка."
 	notes_label.text = "Семейные заметки: пока нет"
 	technical_label.text = _technical_text({})
+	stations_label.text = "Станции: объект не выбран"
+	directions_label.text = "Направление: объект не выбран"
+	route_scheme_label.text = "Схема маршрута: объект не выбран"
 	photos_label.text = "Фотографии: пока нет"
 	photos_hint_label.text = "Фотографии пока не добавлены."
 	add_photo_button.disabled = true
@@ -142,6 +154,9 @@ func show_object(object_data: Dictionary, can_register_photo: bool = false) -> v
 	description_label.text = _field_text("Описание", object_data.get("description", ""), "пока нет")
 	notes_label.text = _field_text("Семейные заметки", object_data.get("notes", ""), "пока нет")
 	technical_label.text = _technical_text(object_data)
+	stations_label.text = _stations_text(object_data)
+	directions_label.text = _directions_text(object_data)
+	route_scheme_label.text = _route_scheme_text(object_data)
 	photos_label.text = _photo_collection_text(object_data)
 	photos_hint_label.text = _photo_hint_text(can_register_photo)
 	add_photo_button.disabled = not can_register_photo
@@ -311,6 +326,95 @@ func _photo_collection_text(object_data: Dictionary) -> String:
 					rows.append("- Фото %d: %s" % [index + 1, caption])
 			return "\n".join(rows)
 	return _collection_status("Фотографии", object_data, "photos", "photo_count", "пока нет добавленных фотографий")
+
+func _stations_text(object_data: Dictionary) -> String:
+	var stations := _array_field(object_data, "stations")
+	if stations.is_empty():
+		return "Станции: детальная схема пока не добавлена."
+
+	var rows: Array[String] = ["Станции: %d" % stations.size()]
+	for index in stations.size():
+		var station: Dictionary = stations[index]
+		var title := _value_text(station.get("title", ""), "без названия")
+		var note := str(station.get("note", "")).strip_edges()
+		var line := "%d. %s" % [index + 1, title]
+		if not note.is_empty():
+			line += "\n   %s" % note
+		rows.append(line)
+	return "\n".join(rows)
+
+func _directions_text(object_data: Dictionary) -> String:
+	var directions := _array_field(object_data, "route_directions")
+	if directions.is_empty():
+		return "Направление: пока не указано."
+
+	var stations_by_id := _stations_by_id(object_data)
+	var rows: Array[String] = ["Направление: %d" % directions.size()]
+	for item in directions:
+		var direction: Dictionary = item
+		var from_title := _station_title(stations_by_id, str(direction.get("from_station_id", "")))
+		var to_title := _station_title(stations_by_id, str(direction.get("to_station_id", "")))
+		var direction_label := _value_text(direction.get("direction_label", ""), "подпись пока не указана")
+		rows.append("- Откуда: %s\n  Куда: %s\n  %s" % [from_title, to_title, direction_label])
+	return "\n".join(rows)
+
+func _route_scheme_text(object_data: Dictionary) -> String:
+	var directions := _array_field(object_data, "route_directions")
+	if directions.is_empty():
+		return "Схема маршрута: данных пока нет."
+
+	var stations_by_id := _stations_by_id(object_data)
+	var route_segments_by_direction: Dictionary = object_data.get("route_segments_by_direction", {})
+	var rows: Array[String] = []
+	for item in directions:
+		var direction: Dictionary = item
+		var direction_id := str(direction.get("id", ""))
+		var path_titles := _direction_path_titles(direction, route_segments_by_direction.get(direction_id, []), stations_by_id)
+		if path_titles.size() >= 2:
+			rows.append("%s: %s" % [
+				_value_text(direction.get("direction_label", ""), "Маршрут"),
+				" → ".join(path_titles),
+			])
+
+	if rows.is_empty():
+		return "Схема маршрута: данных пока нет."
+	rows.push_front("Схема маршрута")
+	return "\n".join(rows)
+
+func _array_field(object_data: Dictionary, key: String) -> Array:
+	if object_data.has(key) and object_data.get(key) is Array:
+		return object_data.get(key)
+	return []
+
+func _stations_by_id(object_data: Dictionary) -> Dictionary:
+	var stations_by_id := {}
+	for item in _array_field(object_data, "stations"):
+		var station: Dictionary = item
+		var station_id := str(station.get("id", ""))
+		if not station_id.is_empty():
+			stations_by_id[station_id] = station
+	return stations_by_id
+
+func _station_title(stations_by_id: Dictionary, station_id: String) -> String:
+	if stations_by_id.has(station_id):
+		var station: Dictionary = stations_by_id[station_id]
+		return _value_text(station.get("title", ""), "станция без названия")
+	return "станция не указана"
+
+func _direction_path_titles(direction: Dictionary, segments_value: Variant, stations_by_id: Dictionary) -> Array[String]:
+	var path_titles: Array[String] = []
+	if segments_value is Array:
+		var segments: Array = segments_value
+		for index in segments.size():
+			var segment: Dictionary = segments[index]
+			if index == 0:
+				path_titles.append(_station_title(stations_by_id, str(segment.get("from_station_id", ""))))
+			path_titles.append(_station_title(stations_by_id, str(segment.get("to_station_id", ""))))
+
+	if path_titles.is_empty():
+		path_titles.append(_station_title(stations_by_id, str(direction.get("from_station_id", ""))))
+		path_titles.append(_station_title(stations_by_id, str(direction.get("to_station_id", ""))))
+	return path_titles
 
 func _photo_hint_text(can_register_photo: bool) -> String:
 	if can_register_photo:

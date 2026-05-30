@@ -4,6 +4,7 @@ import shutil
 import sqlite3
 import subprocess
 import tempfile
+import uuid
 from pathlib import Path
 import unittest
 
@@ -13,6 +14,7 @@ LOG_DIR = ROOT / "build" / "logs"
 PACKAGED_SQL_FILES = (
     "scripts/storage/migrations/001_initial_schema.sql",
     "scripts/storage/migrations/002_operational_status.sql",
+    "scripts/storage/migrations/003_media_geo_routes.sql",
     "scripts/storage/seeds/demo_objects.sql",
 )
 
@@ -27,31 +29,46 @@ class GodotStorageRuntimeContractTest(unittest.TestCase):
             self.skipTest("Godot не установлен в PATH")
 
         LOG_DIR.mkdir(parents=True, exist_ok=True)
-        commands = [
-            [
-                godot,
-                "--headless",
-                "--path",
-                str(ROOT),
-                "--import",
-                "--quit",
-                "--log-file",
-                str(LOG_DIR / "godot-storage-import.log"),
-            ],
-            [
-                godot,
-                "--headless",
-                "--path",
-                str(ROOT),
-                "--script",
-                "tests/godot_storage_contract.gd",
-                "--log-file",
-                str(LOG_DIR / "godot-storage-contract.log"),
-            ],
-        ]
-        for command in commands:
-            result = subprocess.run(command, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=60)
-            self.assertEqual(result.returncode, 0, result.stdout)
+        with tempfile.TemporaryDirectory(prefix="mir-trossov-godot-storage-contract-") as user_data_dir:
+            contract_database = f"user://storage-contract-test-{uuid.uuid4().hex}.sqlite3"
+            test_env = {
+                **os.environ,
+                "XDG_DATA_HOME": user_data_dir,
+                "MIR_TROSSOV_STORAGE_CONTRACT_DB": contract_database,
+            }
+            commands = [
+                [
+                    godot,
+                    "--headless",
+                    "--path",
+                    str(ROOT),
+                    "--import",
+                    "--quit",
+                    "--log-file",
+                    str(LOG_DIR / "godot-storage-import.log"),
+                ],
+                [
+                    godot,
+                    "--headless",
+                    "--path",
+                    str(ROOT),
+                    "--script",
+                    "tests/godot_storage_contract.gd",
+                    "--log-file",
+                    str(LOG_DIR / "godot-storage-contract.log"),
+                ],
+            ]
+            for command in commands:
+                result = subprocess.run(
+                    command,
+                    cwd=ROOT,
+                    env=test_env,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    timeout=60,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn("Godot SQLite storage contract passed.", result.stdout)
 
     def test_linux_export_runs_with_packaged_sqlite_migrations(self) -> None:

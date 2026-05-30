@@ -63,6 +63,13 @@ class ObjectCardContractTest(unittest.TestCase):
             "Год открытия",
             "Оператор",
             "Производитель",
+            "Станции и направление",
+            "Станции",
+            "Направление",
+            "Откуда",
+            "Куда",
+            "Схема маршрута",
+            "детальная схема пока не добавлена",
             "Фотографии",
             "Добавить запись о фото",
             "Сейчас добавляется только запись о фотографии.",
@@ -185,6 +192,46 @@ class ObjectCardContractTest(unittest.TestCase):
             'label.add_theme_font_size_override("font_size", 20)',
         ]:
             self.assertIn(expected, card_text)
+
+    def test_card_renders_station_direction_and_route_arrow_contract(self) -> None:
+        card_text = (ROOT / "scripts" / "object_card_panel.gd").read_text(encoding="utf-8")
+        main_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "var stations_label: Label",
+            "var directions_label: Label",
+            "var route_scheme_label: Label",
+            "stations_label.text = _stations_text(object_data)",
+            "directions_label.text = _directions_text(object_data)",
+            "route_scheme_label.text = _route_scheme_text(object_data)",
+            'object_data, "stations"',
+            'object_data, "route_directions"',
+            '"route_segments_by_direction"',
+            '"Станции: %d"',
+            '"Направление: %d"',
+            '"- Откуда: %s\\n  Куда: %s\\n  %s"',
+            '"Схема маршрута"',
+            '" → ".join(path_titles)',
+            '"Станции: детальная схема пока не добавлена."',
+            '"Направление: пока не указано."',
+            '"Схема маршрута: данных пока нет."',
+        ]:
+            self.assertIn(expected, card_text)
+
+        for expected in [
+            "func _ensure_route_details(index: int) -> void:",
+            "_ensure_route_details(index)",
+            "storage.list_object_stations(object_id)",
+            "storage.list_route_directions(object_id)",
+            "storage.list_route_segments(direction_id)",
+            'enriched_object["stations"] = stations',
+            'enriched_object["route_directions"] = directions',
+            'enriched_object["route_segments_by_direction"] = route_segments_by_direction',
+            'media_asset.get("kind", "") == "video"',
+            'enriched_object["videos"] = videos',
+            'enriched_object["video_count"] = videos.size()',
+        ]:
+            self.assertIn(expected, main_text)
 
 
 if __name__ == "__main__":

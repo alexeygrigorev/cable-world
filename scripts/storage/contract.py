@@ -20,6 +20,13 @@ class MediaAsset:
     transport_object_id: str | None = None
     visit_id: str | None = None
     taken_on: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    coordinate_source: str = "unknown"
+    geo_note: str = ""
+    station_id: str | None = None
+    route_direction_id: str | None = None
+    route_segment_id: str | None = None
     created_at: str | None = None
 
 
@@ -275,7 +282,9 @@ class SQLiteStorage:
             return self._query_all(
                 """
                 SELECT id, transport_object_id, visit_id, kind, local_path,
-                       caption, taken_on, created_at
+                       caption, taken_on, latitude, longitude, coordinate_source,
+                       geo_note, station_id, route_direction_id, route_segment_id,
+                       created_at
                 FROM media_assets
                 ORDER BY created_at, id
                 """
@@ -283,7 +292,9 @@ class SQLiteStorage:
         return self._query_all(
             """
             SELECT id, transport_object_id, visit_id, kind, local_path,
-                   caption, taken_on, created_at
+                   caption, taken_on, latitude, longitude, coordinate_source,
+                   geo_note, station_id, route_direction_id, route_segment_id,
+                   created_at
             FROM media_assets
             WHERE transport_object_id = ?
             ORDER BY created_at, id
@@ -295,7 +306,9 @@ class SQLiteStorage:
         return self._query_all(
             """
             SELECT id, transport_object_id, visit_id, kind, local_path,
-                   caption, taken_on, created_at
+                   caption, taken_on, latitude, longitude, coordinate_source,
+                   geo_note, station_id, route_direction_id, route_segment_id,
+                   created_at
             FROM media_assets
             WHERE transport_object_id = ? AND kind = 'photo'
             ORDER BY created_at, id
@@ -307,11 +320,50 @@ class SQLiteStorage:
         return self._query_one(
             """
             SELECT id, transport_object_id, visit_id, kind, local_path,
-                   caption, taken_on, created_at
+                   caption, taken_on, latitude, longitude, coordinate_source,
+                   geo_note, station_id, route_direction_id, route_segment_id,
+                   created_at
             FROM media_assets
             WHERE id = ?
             """,
             (media_asset_id,),
+        )
+
+    def list_object_stations(self, object_id: str) -> list[dict[str, Any]]:
+        return self._query_all(
+            """
+            SELECT id, transport_object_id, title, station_role, latitude, longitude,
+                   sort_order, note, created_at, updated_at
+            FROM object_stations
+            WHERE transport_object_id = ?
+            ORDER BY sort_order, id
+            """,
+            (object_id,),
+        )
+
+    def list_route_directions(self, object_id: str) -> list[dict[str, Any]]:
+        return self._query_all(
+            """
+            SELECT id, transport_object_id, from_station_id, to_station_id, title,
+                   direction_label, sort_order, note, created_at, updated_at
+            FROM route_directions
+            WHERE transport_object_id = ?
+            ORDER BY sort_order, id
+            """,
+            (object_id,),
+        )
+
+    def list_route_segments(self, route_direction_id: str) -> list[dict[str, Any]]:
+        return self._query_all(
+            """
+            SELECT id, transport_object_id, route_direction_id, from_station_id,
+                   to_station_id, segment_order, title, direction_label, note,
+                   created_at, updated_at
+            FROM route_segments
+            WHERE route_direction_id = ?
+            ORDER BY segment_order, id
+            """,
+            (route_direction_id,),
         )
 
     def upsert_media_asset(self, data: dict[str, Any] | MediaAsset) -> dict[str, Any]:
@@ -324,6 +376,13 @@ class SQLiteStorage:
                 "local_path": data.local_path,
                 "caption": data.caption,
                 "taken_on": data.taken_on,
+                "latitude": data.latitude,
+                "longitude": data.longitude,
+                "coordinate_source": data.coordinate_source,
+                "geo_note": data.geo_note,
+                "station_id": data.station_id,
+                "route_direction_id": data.route_direction_id,
+                "route_segment_id": data.route_segment_id,
                 "created_at": data.created_at,
             }
         else:
@@ -341,15 +400,23 @@ class SQLiteStorage:
             """
             INSERT INTO media_assets (
                 id, transport_object_id, visit_id, kind, local_path,
-                caption, taken_on, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                caption, taken_on, latitude, longitude, coordinate_source,
+                geo_note, station_id, route_direction_id, route_segment_id, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 transport_object_id = excluded.transport_object_id,
                 visit_id = excluded.visit_id,
                 kind = excluded.kind,
                 local_path = excluded.local_path,
                 caption = excluded.caption,
-                taken_on = excluded.taken_on
+                taken_on = excluded.taken_on,
+                latitude = excluded.latitude,
+                longitude = excluded.longitude,
+                coordinate_source = excluded.coordinate_source,
+                geo_note = excluded.geo_note,
+                station_id = excluded.station_id,
+                route_direction_id = excluded.route_direction_id,
+                route_segment_id = excluded.route_segment_id
             """,
             (
                 asset_data["id"],
@@ -359,6 +426,13 @@ class SQLiteStorage:
                 asset_data["local_path"],
                 asset_data.get("caption", ""),
                 asset_data.get("taken_on"),
+                asset_data.get("latitude"),
+                asset_data.get("longitude"),
+                asset_data.get("coordinate_source", "unknown"),
+                asset_data.get("geo_note", ""),
+                asset_data.get("station_id"),
+                asset_data.get("route_direction_id"),
+                asset_data.get("route_segment_id"),
                 created_at,
             ),
         )

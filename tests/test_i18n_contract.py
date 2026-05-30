@@ -12,6 +12,7 @@ DEMO_SEED = ROOT / "scripts" / "storage" / "seeds" / "demo_objects.sql"
 STORAGE_ADAPTER = ROOT / "scripts" / "storage" / "sqlite_storage_adapter.gd"
 
 ASCII_ID_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+ASCII_DEMO_ID_RE = re.compile(r"^[a-z][a-z0-9_-]*$")
 CYRILLIC_RE = re.compile(r"[А-Яа-яЁё]")
 
 
@@ -120,6 +121,61 @@ class I18nContractTest(unittest.TestCase):
                 self.assertNotRegex(transport_type_id, CYRILLIC_RE)
                 self.assertNotRegex(visit_status_id, CYRILLIC_RE)
                 self.assertNotRegex(operational_status_id, CYRILLIC_RE)
+
+    def test_route_demo_ids_are_ascii_and_labels_are_russian(self) -> None:
+        connection = sqlite3.connect(":memory:")
+        connection.execute("PRAGMA foreign_keys = ON")
+        for migration in sorted(MIGRATIONS_DIR.glob("*.sql")):
+            connection.executescript(migration.read_text(encoding="utf-8"))
+        connection.executescript(self.seed_text)
+
+        station_rows = connection.execute(
+            """
+            SELECT id, title, note
+            FROM object_stations
+            WHERE transport_object_id = 'berlin-gaerten-der-welt'
+            ORDER BY sort_order
+            """
+        ).fetchall()
+        self.assertEqual(len(station_rows), 3)
+        for stable_id, title, note in station_rows:
+            with self.subTest(stable_id=stable_id):
+                self.assertRegex(stable_id, ASCII_DEMO_ID_RE)
+                self.assertNotRegex(stable_id, CYRILLIC_RE)
+                self.assertRegex(title, CYRILLIC_RE)
+                self.assertRegex(note, CYRILLIC_RE)
+
+        direction_rows = connection.execute(
+            """
+            SELECT id, title, direction_label, note
+            FROM route_directions
+            WHERE transport_object_id = 'berlin-gaerten-der-welt'
+            ORDER BY sort_order
+            """
+        ).fetchall()
+        self.assertEqual(len(direction_rows), 2)
+        for stable_id, title, direction_label, note in direction_rows:
+            with self.subTest(stable_id=stable_id):
+                self.assertRegex(stable_id, ASCII_DEMO_ID_RE)
+                self.assertNotRegex(stable_id, CYRILLIC_RE)
+                self.assertRegex(title, CYRILLIC_RE)
+                self.assertRegex(direction_label, CYRILLIC_RE)
+                self.assertRegex(note, CYRILLIC_RE)
+
+        media_row = connection.execute(
+            """
+            SELECT id, caption, coordinate_source, geo_note
+            FROM media_assets
+            WHERE id = 'berlin-gaerten-der-welt-demo-video-kienbergpark-to-gaerten'
+            """
+        ).fetchone()
+        self.assertIsNotNone(media_row)
+        stable_id, caption, coordinate_source, geo_note = media_row
+        self.assertRegex(stable_id, ASCII_DEMO_ID_RE)
+        self.assertNotRegex(stable_id, CYRILLIC_RE)
+        self.assertRegex(caption, CYRILLIC_RE)
+        self.assertRegex(geo_note, CYRILLIC_RE)
+        self.assertEqual(coordinate_source, "manual")
 
 
 if __name__ == "__main__":

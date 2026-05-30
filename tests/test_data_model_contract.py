@@ -29,12 +29,12 @@ class DataModelContractTest(unittest.TestCase):
             "одной точкой",
             "начало и конец",
             "направление видео",
-            "не входят в SQLite-схему MVP",
-            "текущая миграция `media_assets` не меняется",
+            "foundation для #20/#21",
+            "003_media_geo_routes.sql",
         ]:
             self.assertIn(term, self.text)
 
-        for entity in ["ObjectStation", "RouteSegment", "EngineeringPoint"]:
+        for entity in ["ObjectStation", "RouteDirection", "RouteSegment", "EngineeringPoint"]:
             self.assertIn(entity, self.text)
 
         for detail in [
@@ -42,9 +42,34 @@ class DataModelContractTest(unittest.TestCase):
             "платформа",
             "приводное колесо",
             "отрезок маршрута",
-            "направления съемки",
+            "направление поездки",
         ]:
             self.assertIn(detail, self.text)
+
+    def test_media_geotags_and_route_labels_are_documented(self) -> None:
+        for term in [
+            "coordinate_source",
+            "`exif`, `manual`, `unknown`",
+            "geo_note",
+            "человекочитаемая русская заметка",
+            "from_station_id",
+            "to_station_id",
+            "direction_label",
+            "от Киенбергпарка к Садам мира",
+            "вверх к Волькенхайну",
+            "вниз к Садам мира",
+        ]:
+            self.assertIn(term, self.text)
+
+        for stable_id in [
+            "berlin-gaerten-der-welt-station-kienbergpark",
+            "berlin-gaerten-der-welt-station-wolkenhain",
+            "berlin-gaerten-der-welt-station-gaerten-der-welt",
+            "berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten",
+            "berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark",
+            "berlin-gaerten-der-welt-demo-video-kienbergpark-to-gaerten",
+        ]:
+            self.assertIn(f"`{stable_id}`", self.text)
 
     def test_visit_statuses_are_fixed(self) -> None:
         expected_statuses = {
@@ -85,6 +110,9 @@ class DataModelContractTest(unittest.TestCase):
             "transport_objects",
             "visits",
             "media_assets",
+            "object_stations",
+            "route_directions",
+            "route_segments",
             "tickets",
         ]:
             self.assertRegex(self.text, rf"CREATE TABLE {table}\b")

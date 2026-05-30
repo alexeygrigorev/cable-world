@@ -568,3 +568,202 @@ SET operational_status = 'active_seasonal',
     status_source_url = 'https://www.stadtwerkekoeln.de/pressemitteilungen/saisonstart-kolner-seilbahn-ab-dem-12-marz-heben-die-gondeln-wieder-ab',
     status_note = 'Сезон 2026 стартовал 12 марта; регулярный сезон идет до начала ноября, далее запланированы адвентные рейсы.'
 WHERE id = 'koeln-seilbahn';
+
+INSERT INTO object_stations (
+    id,
+    transport_object_id,
+    title,
+    station_role,
+    latitude,
+    longitude,
+    sort_order,
+    note
+) VALUES
+(
+    'berlin-gaerten-der-welt-station-kienbergpark',
+    'berlin-gaerten-der-welt',
+    'Киенбергпарк',
+    'lower',
+    52.5281,
+    13.5903,
+    10,
+    'Нижняя станция у U5; удобная начальная точка семейной поездки.'
+),
+(
+    'berlin-gaerten-der-welt-station-wolkenhain',
+    'berlin-gaerten-der-welt',
+    'Волькенхайн',
+    'upper',
+    52.5268,
+    13.5838,
+    20,
+    'Промежуточная станция на Кинберге рядом со смотровой площадкой.'
+),
+(
+    'berlin-gaerten-der-welt-station-gaerten-der-welt',
+    'berlin-gaerten-der-welt',
+    'Сады мира',
+    'lower',
+    52.5254,
+    13.5753,
+    30,
+    'Станция у входа в парк со стороны Блумбергер-Дамм.'
+)
+ON CONFLICT(id) DO UPDATE SET
+    title = excluded.title,
+    station_role = excluded.station_role,
+    latitude = excluded.latitude,
+    longitude = excluded.longitude,
+    sort_order = excluded.sort_order,
+    note = excluded.note,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
+
+INSERT INTO route_directions (
+    id,
+    transport_object_id,
+    from_station_id,
+    to_station_id,
+    title,
+    direction_label,
+    sort_order,
+    note
+) VALUES
+(
+    'berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten',
+    'berlin-gaerten-der-welt',
+    'berlin-gaerten-der-welt-station-kienbergpark',
+    'berlin-gaerten-der-welt-station-gaerten-der-welt',
+    'Киенбергпарк -> Сады мира',
+    'от Киенбергпарка к Садам мира',
+    10,
+    'Направление через Волькенхайн от метро U5 к главному входу в парк.'
+),
+(
+    'berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark',
+    'berlin-gaerten-der-welt',
+    'berlin-gaerten-der-welt-station-gaerten-der-welt',
+    'berlin-gaerten-der-welt-station-kienbergpark',
+    'Сады мира -> Киенбергпарк',
+    'от Садов мира к Киенбергпарку',
+    20,
+    'Обратное направление к U5 с промежуточной остановкой на Кинберге.'
+)
+ON CONFLICT(id) DO UPDATE SET
+    from_station_id = excluded.from_station_id,
+    to_station_id = excluded.to_station_id,
+    title = excluded.title,
+    direction_label = excluded.direction_label,
+    sort_order = excluded.sort_order,
+    note = excluded.note,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
+
+INSERT INTO route_segments (
+    id,
+    transport_object_id,
+    route_direction_id,
+    from_station_id,
+    to_station_id,
+    segment_order,
+    title,
+    direction_label,
+    note
+) VALUES
+(
+    'berlin-gaerten-der-welt-segment-kienbergpark-wolkenhain',
+    'berlin-gaerten-der-welt',
+    'berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten',
+    'berlin-gaerten-der-welt-station-kienbergpark',
+    'berlin-gaerten-der-welt-station-wolkenhain',
+    10,
+    'Киенбергпарк -> Волькенхайн',
+    'вверх к Волькенхайну',
+    'Первый подъем от U5 к Кинбергу.'
+),
+(
+    'berlin-gaerten-der-welt-segment-wolkenhain-gaerten',
+    'berlin-gaerten-der-welt',
+    'berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten',
+    'berlin-gaerten-der-welt-station-wolkenhain',
+    'berlin-gaerten-der-welt-station-gaerten-der-welt',
+    20,
+    'Волькенхайн -> Сады мира',
+    'вниз к Садам мира',
+    'Спуск к входу в парк.'
+),
+(
+    'berlin-gaerten-der-welt-segment-gaerten-wolkenhain',
+    'berlin-gaerten-der-welt',
+    'berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark',
+    'berlin-gaerten-der-welt-station-gaerten-der-welt',
+    'berlin-gaerten-der-welt-station-wolkenhain',
+    10,
+    'Сады мира -> Волькенхайн',
+    'вверх к Волькенхайну',
+    'Обратный подъем от парка к Кинбергу.'
+),
+(
+    'berlin-gaerten-der-welt-segment-wolkenhain-kienbergpark',
+    'berlin-gaerten-der-welt',
+    'berlin-gaerten-der-welt-direction-gaerten-to-kienbergpark',
+    'berlin-gaerten-der-welt-station-wolkenhain',
+    'berlin-gaerten-der-welt-station-kienbergpark',
+    20,
+    'Волькенхайн -> Киенбергпарк',
+    'вниз к Киенбергпарку',
+    'Спуск к U5.'
+)
+ON CONFLICT(id) DO UPDATE SET
+    route_direction_id = excluded.route_direction_id,
+    from_station_id = excluded.from_station_id,
+    to_station_id = excluded.to_station_id,
+    segment_order = excluded.segment_order,
+    title = excluded.title,
+    direction_label = excluded.direction_label,
+    note = excluded.note,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');
+
+INSERT INTO media_assets (
+    id,
+    transport_object_id,
+    kind,
+    local_path,
+    caption,
+    taken_on,
+    latitude,
+    longitude,
+    coordinate_source,
+    geo_note,
+    station_id,
+    route_direction_id,
+    route_segment_id,
+    created_at
+) VALUES
+(
+    'berlin-gaerten-der-welt-demo-video-kienbergpark-to-gaerten',
+    'berlin-gaerten-der-welt',
+    'video',
+    'media/berlin-gaerten-der-welt/demo-video-kienbergpark-to-gaerten.mp4',
+    'Демо-видео поездки от Киенбергпарка к Садам мира через Волькенхайн.',
+    '2026-05-30',
+    52.5270,
+    13.5838,
+    'manual',
+    'Координата вручную поставлена примерно в середине маршрута, чтобы будущий UI мог показать направление видео.',
+    NULL,
+    'berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten',
+    'berlin-gaerten-der-welt-segment-kienbergpark-wolkenhain',
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+)
+ON CONFLICT(id) DO UPDATE SET
+    transport_object_id = excluded.transport_object_id,
+    kind = excluded.kind,
+    local_path = excluded.local_path,
+    caption = excluded.caption,
+    taken_on = excluded.taken_on,
+    latitude = excluded.latitude,
+    longitude = excluded.longitude,
+    coordinate_source = excluded.coordinate_source,
+    geo_note = excluded.geo_note,
+    station_id = excluded.station_id,
+    route_direction_id = excluded.route_direction_id,
+    route_segment_id = excluded.route_segment_id;

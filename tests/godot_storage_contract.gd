@@ -1,20 +1,20 @@
 extends SceneTree
 
-const TEST_DATABASE_PATH: String = "user://storage-contract-test.sqlite3"
+const TEST_DATABASE_ENV: String = "MIR_TROSSOV_STORAGE_CONTRACT_DB"
 const SQLiteStorageAdapterScript: GDScript = preload("res://scripts/storage/sqlite_storage_adapter.gd")
 
 var failed: bool = false
 
 
 func _init() -> void:
-	var database_absolute_path := ProjectSettings.globalize_path(TEST_DATABASE_PATH)
-	if FileAccess.file_exists(TEST_DATABASE_PATH):
-		DirAccess.remove_absolute(database_absolute_path)
+	var test_database_path := _test_database_path()
+	var database_absolute_path := _database_absolute_path(test_database_path)
+	_remove_database_files(database_absolute_path)
 
 	var storage: RefCounted = SQLiteStorageAdapterScript.new()
 	_expect(storage.is_runtime_available(), "SQLite runtime class must be available in Godot.")
-	_expect_ok(storage.open(TEST_DATABASE_PATH), storage, "open")
-	_expect(FileAccess.file_exists(TEST_DATABASE_PATH), "SQLite database file must be created.")
+	_expect_ok(storage.open(test_database_path), storage, "open")
+	_expect(FileAccess.file_exists(test_database_path), "SQLite database file must be created.")
 	_expect_ok(storage.migrate(), storage, "migrate")
 	_expect_ok(storage.seed_demo_objects(), storage, "seed")
 	_expect(storage.list_objects().size() >= 3, "Demo seed must create transport objects.")
@@ -30,13 +30,25 @@ func _init() -> void:
 	_expect(visited_object.get("visited", false), "Favorite status must be treated as visited in the open database.")
 	storage.close()
 
-	_expect_ok(storage.open(TEST_DATABASE_PATH), storage, "reopen")
+	_expect_ok(storage.open(test_database_path), storage, "reopen")
 	_expect_ok(storage.migrate(), storage, "repeat migrate")
 	_expect_ok(storage.seed_demo_objects(), storage, "repeat seed")
 	visited_object = storage.get_object("berlin-gaerten-der-welt")
 	_expect(visited_object.get("visit_status_id", "") == "favorite", "Favorite status must persist after reopen and repeat seed.")
 	_expect(visited_object.get("operational_status", "") == initial_operational_status, "Operational status must persist after visit status changes and repeat seed.")
 	_expect(visited_object.get("visited", false), "Favorite status must remain compatible with the visited field.")
+	var gaerten_stations: Array[Dictionary] = storage.list_object_stations("berlin-gaerten-der-welt")
+	_expect(gaerten_stations.size() == 3, "Gärten der Welt demo seed must expose three stations.")
+	_expect(gaerten_stations[0].get("title", "") == "Киенбергпарк", "Station labels must be Russian display text.")
+	var gaerten_directions: Array[Dictionary] = storage.list_route_directions("berlin-gaerten-der-welt")
+	_expect(gaerten_directions.size() == 2, "Gärten der Welt demo seed must expose two travel directions.")
+	_expect(gaerten_directions[0].get("direction_label", "") == "от Киенбергпарка к Садам мира", "Route direction must expose a Russian direction label.")
+	var gaerten_segments: Array[Dictionary] = storage.list_route_segments("berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten")
+	_expect(gaerten_segments.size() == 2, "Outbound direction must expose route segments for future UI.")
+	_expect(gaerten_segments[0].get("direction_label", "") == "вверх к Волькенхайну", "Route segment must expose an up/down Russian label.")
+	var demo_video: Dictionary = storage.get_media_asset("berlin-gaerten-der-welt-demo-video-kienbergpark-to-gaerten")
+	_expect(demo_video.get("coordinate_source", "") == "manual", "Demo route video must expose manual coordinate source.")
+	_expect(demo_video.get("route_direction_id", "") == "berlin-gaerten-der-welt-direction-kienbergpark-to-gaerten", "Demo route video must reference a route direction.")
 
 	_expect_ok(storage.upsert_object({
 		"id": "godot-contract-lift",
@@ -72,7 +84,7 @@ func _init() -> void:
 	_expect(storage.list_visits("vorobyovy-gory").size() >= 1, "Visit CRUD must list object visits.")
 	var object_before_visit: Dictionary = storage.get_object("vorobyovy-gory")
 	storage.close()
-	_expect_ok(storage.open(TEST_DATABASE_PATH), storage, "reopen after visit")
+	_expect_ok(storage.open(test_database_path), storage, "reopen after visit")
 	_expect_ok(storage.migrate(), storage, "migrate after visit")
 	_expect(storage.get_visit("godot-contract-visit").get("title", "") == "Контрактное посещение", "Visit CRUD must persist after reopen.")
 	var object_after_visit: Dictionary = storage.get_object("vorobyovy-gory")
@@ -87,8 +99,13 @@ func _init() -> void:
 		"kind": "photo",
 		"local_path": "media/vorobyovy-gory/godot-contract-photo.jpg",
 		"caption": "Фото MVP: запись без копирования файла.",
+		"latitude": 55.7103,
+		"longitude": 37.5517,
+		"coordinate_source": "manual",
+		"geo_note": "Точка вручную поставлена у станции для проверки UI.",
 	}), storage, "upsert_media_asset")
 	_expect(storage.get_media_asset("godot-contract-photo").get("kind", "") == "photo", "MediaAsset CRUD must read inserted photo.")
+	_expect(storage.get_media_asset("godot-contract-photo").get("coordinate_source", "") == "manual", "MediaAsset CRUD must preserve coordinate source.")
 	_expect(storage.list_object_photos("vorobyovy-gory").size() == 1, "MediaAsset CRUD must list object photos.")
 	var object_with_photo: Dictionary = storage.get_object("vorobyovy-gory")
 	_expect(int(object_with_photo.get("photo_count", 0)) == 1, "TransportObject must expose photo_count from MediaAsset records.")
@@ -142,12 +159,37 @@ func _init() -> void:
 	_expect(storage.get_object("vorobyovy-gory").get("photo_count", 0) == 0, "Ticket document must not change object photo_count.")
 
 	storage.close()
-	DirAccess.remove_absolute(database_absolute_path)
+	_remove_database_files(database_absolute_path)
 	if failed:
 		quit(1)
 		return
 	print("Godot SQLite storage contract passed.")
 	quit(0)
+
+
+func _test_database_path() -> String:
+	var env_database_path := OS.get_environment(TEST_DATABASE_ENV)
+	if not env_database_path.is_empty():
+		return env_database_path
+	return "user://storage-contract-test-%s.sqlite3" % OS.get_process_id()
+
+
+func _database_absolute_path(database_path: String) -> String:
+	if database_path.begins_with("user://") or database_path.begins_with("res://"):
+		return ProjectSettings.globalize_path(database_path)
+	return database_path
+
+
+func _remove_database_files(database_absolute_path: String) -> void:
+	for path in [
+		database_absolute_path,
+		"%s-wal" % database_absolute_path,
+		"%s-shm" % database_absolute_path,
+		"%s-journal" % database_absolute_path,
+	]:
+		if FileAccess.file_exists(path):
+			var remove_error := DirAccess.remove_absolute(path)
+			_expect(remove_error == OK or remove_error == ERR_FILE_NOT_FOUND, "Could not remove SQLite test file: %s" % path)
 
 
 func _expect(condition: bool, message: String) -> void:
