@@ -610,6 +610,8 @@ func _sync_content_width() -> void:
 	if content_viewport == null or content_scroll == null or sections_container == null:
 		return
 	var content_width: float = max(0.0, content_viewport.size.x - CONTENT_WIDTH_GUARD)
+	content_scroll.position = Vector2.ZERO
+	content_scroll.size = content_viewport.size
 	content_scroll.scroll_horizontal = 0
 	content_scroll.set_deferred("scroll_horizontal", 0)
 	sections_container.custom_minimum_size.x = content_width
