@@ -8,6 +8,14 @@ const STATUS_NOT_VISITED: String = "not_visited"
 const STATUS_PLANNED: String = "planned"
 const STATUS_VISITED: String = "visited"
 const STATUS_FAVORITE: String = "favorite"
+const MEDIA_KIND_PHOTO: String = "photo"
+const OPERATIONAL_ACTIVE: String = "active"
+const OPERATIONAL_ACTIVE_SEASONAL: String = "active_seasonal"
+const OPERATIONAL_TEMPORARILY_CLOSED_PLANNED: String = "temporarily_closed_planned"
+const OPERATIONAL_TEMPORARILY_CLOSED_UNPLANNED: String = "temporarily_closed_unplanned"
+const OPERATIONAL_CLOSED: String = "closed"
+const OPERATIONAL_HISTORICAL: String = "historical"
+const OPERATIONAL_UNKNOWN: String = "unknown"
 
 var last_error: String = ""
 var database: Object = null
@@ -109,8 +117,18 @@ func list_objects() -> Array[Dictionary]:
 		       transport_objects.opened_year,
 		       transport_objects.operator,
 		       transport_objects.manufacturer,
+		       transport_objects.operational_status,
+		       transport_objects.status_checked_at,
+		       transport_objects.status_source_url,
+		       transport_objects.status_note,
 		       transport_objects.created_at,
-		       transport_objects.updated_at
+		       transport_objects.updated_at,
+		       (
+			       SELECT count(*)
+			       FROM media_assets
+			       WHERE media_assets.transport_object_id = transport_objects.id
+			         AND media_assets.kind = 'photo'
+		       ) AS photo_count
 		FROM transport_objects
 		JOIN transport_types ON transport_types.id = transport_objects.transport_type_id
 		ORDER BY transport_objects.title
@@ -138,8 +156,18 @@ func get_object(object_id: String) -> Dictionary:
 		       transport_objects.opened_year,
 		       transport_objects.operator,
 		       transport_objects.manufacturer,
+		       transport_objects.operational_status,
+		       transport_objects.status_checked_at,
+		       transport_objects.status_source_url,
+		       transport_objects.status_note,
 		       transport_objects.created_at,
-		       transport_objects.updated_at
+		       transport_objects.updated_at,
+		       (
+			       SELECT count(*)
+			       FROM media_assets
+			       WHERE media_assets.transport_object_id = transport_objects.id
+			         AND media_assets.kind = 'photo'
+		       ) AS photo_count
 		FROM transport_objects
 		JOIN transport_types ON transport_types.id = transport_objects.transport_type_id
 		WHERE transport_objects.id = ?
@@ -156,8 +184,9 @@ func upsert_object(data: Dictionary) -> int:
 		INSERT INTO transport_objects (
 			id, title, transport_type_id, visit_status_id, country, region, city,
 			latitude, longitude, description, notes, opened_year, operator,
-			manufacturer, created_at, updated_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			manufacturer, operational_status, status_checked_at, status_source_url,
+			status_note, created_at, updated_at
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			title = excluded.title,
 			transport_type_id = excluded.transport_type_id,
@@ -172,6 +201,10 @@ func upsert_object(data: Dictionary) -> int:
 			opened_year = excluded.opened_year,
 			operator = excluded.operator,
 			manufacturer = excluded.manufacturer,
+			operational_status = excluded.operational_status,
+			status_checked_at = excluded.status_checked_at,
+			status_source_url = excluded.status_source_url,
+			status_note = excluded.status_note,
 			updated_at = excluded.updated_at
 	""", [
 		data.get("id", ""),
@@ -188,6 +221,10 @@ func upsert_object(data: Dictionary) -> int:
 		data.get("opened_year", null),
 		data.get("operator", null),
 		data.get("manufacturer", null),
+		normalized_operational_status(str(data.get("operational_status", OPERATIONAL_UNKNOWN))),
+		data.get("status_checked_at", ""),
+		data.get("status_source_url", ""),
+		data.get("status_note", ""),
 		created_at,
 		updated_at,
 	])
@@ -241,6 +278,39 @@ static func status_ids() -> Array[String]:
 		STATUS_FAVORITE,
 	]
 	return ids
+
+
+static func normalized_operational_status(operational_status: String) -> String:
+	if operational_status == OPERATIONAL_ACTIVE:
+		return OPERATIONAL_ACTIVE
+	if operational_status == OPERATIONAL_ACTIVE_SEASONAL:
+		return OPERATIONAL_ACTIVE_SEASONAL
+	if operational_status == OPERATIONAL_TEMPORARILY_CLOSED_PLANNED:
+		return OPERATIONAL_TEMPORARILY_CLOSED_PLANNED
+	if operational_status == OPERATIONAL_TEMPORARILY_CLOSED_UNPLANNED:
+		return OPERATIONAL_TEMPORARILY_CLOSED_UNPLANNED
+	if operational_status == OPERATIONAL_CLOSED:
+		return OPERATIONAL_CLOSED
+	if operational_status == OPERATIONAL_HISTORICAL:
+		return OPERATIONAL_HISTORICAL
+	return OPERATIONAL_UNKNOWN
+
+
+static func operational_status_title(operational_status: String) -> String:
+	var normalized_status := normalized_operational_status(operational_status)
+	if normalized_status == OPERATIONAL_ACTIVE:
+		return "работает"
+	if normalized_status == OPERATIONAL_ACTIVE_SEASONAL:
+		return "работает сезонно"
+	if normalized_status == OPERATIONAL_TEMPORARILY_CLOSED_PLANNED:
+		return "временно закрыт по плану"
+	if normalized_status == OPERATIONAL_TEMPORARILY_CLOSED_UNPLANNED:
+		return "временно закрыт внепланово"
+	if normalized_status == OPERATIONAL_CLOSED:
+		return "закрыт"
+	if normalized_status == OPERATIONAL_HISTORICAL:
+		return "исторический объект"
+	return "статус неизвестен"
 
 
 func delete_object(object_id: String) -> int:
@@ -305,6 +375,74 @@ func upsert_visit(data: Dictionary) -> int:
 
 func delete_visit(visit_id: String) -> int:
 	return _execute_with_bindings("DELETE FROM visits WHERE id = ?", [visit_id])
+
+
+func list_media_assets(object_id: String = "") -> Array[Dictionary]:
+	if object_id.is_empty():
+		return _query("""
+			SELECT id, transport_object_id, visit_id, kind, local_path,
+			       caption, taken_on, created_at
+			FROM media_assets
+			ORDER BY created_at, id
+		""")
+	return _query("""
+		SELECT id, transport_object_id, visit_id, kind, local_path,
+		       caption, taken_on, created_at
+		FROM media_assets
+		WHERE transport_object_id = ?
+		ORDER BY created_at, id
+	""", [object_id])
+
+
+func list_object_photos(object_id: String) -> Array[Dictionary]:
+	return _query("""
+		SELECT id, transport_object_id, visit_id, kind, local_path,
+		       caption, taken_on, created_at
+		FROM media_assets
+		WHERE transport_object_id = ? AND kind = ?
+		ORDER BY created_at, id
+	""", [object_id, MEDIA_KIND_PHOTO])
+
+
+func get_media_asset(media_asset_id: String) -> Dictionary:
+	var rows := _query("""
+		SELECT id, transport_object_id, visit_id, kind, local_path,
+		       caption, taken_on, created_at
+		FROM media_assets
+		WHERE id = ?
+	""", [media_asset_id])
+	return {} if rows.is_empty() else rows[0]
+
+
+func upsert_media_asset(data: Dictionary) -> int:
+	var existing := get_media_asset(data.get("id", ""))
+	var created_at: String = data.get("created_at", existing.get("created_at", _now()))
+	return _execute_with_bindings("""
+		INSERT INTO media_assets (
+			id, transport_object_id, visit_id, kind, local_path,
+			caption, taken_on, created_at
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT(id) DO UPDATE SET
+			transport_object_id = excluded.transport_object_id,
+			visit_id = excluded.visit_id,
+			kind = excluded.kind,
+			local_path = excluded.local_path,
+			caption = excluded.caption,
+			taken_on = excluded.taken_on
+	""", [
+		data.get("id", ""),
+		data.get("transport_object_id", null),
+		data.get("visit_id", null),
+		data.get("kind", MEDIA_KIND_PHOTO),
+		data.get("local_path", ""),
+		data.get("caption", ""),
+		data.get("taken_on", null),
+		created_at,
+	])
+
+
+func delete_media_asset(media_asset_id: String) -> int:
+	return _execute_with_bindings("DELETE FROM media_assets WHERE id = ?", [media_asset_id])
 
 
 func _execute(sql: String) -> int:
@@ -389,8 +527,13 @@ func _row_to_app_object(row: Dictionary) -> Dictionary:
 		"opened_year": row.get("opened_year", null),
 		"operator": row.get("operator", null),
 		"manufacturer": row.get("manufacturer", null),
+		"operational_status": normalized_operational_status(str(row.get("operational_status", OPERATIONAL_UNKNOWN))),
+		"status_checked_at": row.get("status_checked_at", ""),
+		"status_source_url": row.get("status_source_url", ""),
+		"status_note": row.get("status_note", ""),
 		"created_at": row.get("created_at", ""),
 		"updated_at": row.get("updated_at", ""),
+		"photo_count": int(row.get("photo_count", 0)),
 	}
 
 

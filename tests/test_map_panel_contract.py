@@ -81,7 +81,7 @@ class MapPanelContractTest(unittest.TestCase):
             "func _on_map_object_selected(index: int) -> void:",
             "_select_object(index, false)",
             "map_panel.select_object(index)",
-            "object_card.show_object(objects[index])",
+            "object_card.show_object(objects[index], storage_runtime_enabled)",
         ]:
             self.assertIn(expected, main_text)
 

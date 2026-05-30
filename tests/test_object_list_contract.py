@@ -40,8 +40,11 @@ class ObjectListContractTest(unittest.TestCase):
             "func _matches_filters(object_data: Dictionary) -> bool:",
             "func _is_object_visited(object_data: Dictionary) -> bool:",
             "func _visit_status_text(object_data: Dictionary) -> String:",
+            "func _operational_status_text(object_data: Dictionary) -> String:",
             "SQLiteStorageAdapter.status_is_visited",
             "SQLiteStorageAdapter.status_title",
+            "SQLiteStorageAdapter.operational_status_title",
+            "работа:",
             "object_selected.emit(visible_object_indices[index])",
             "Пока нет объектов.",
         ]:

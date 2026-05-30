@@ -19,7 +19,7 @@ class DataModelContractTest(unittest.TestCase):
         self.assertGreater(cyrillic_letters, latin_letters, "Документ должен быть преимущественно на русском")
 
     def test_required_entities_are_named(self) -> None:
-        for entity in ["TransportObject", "Visit", "MediaAsset", "Ticket", "VisitStatus"]:
+        for entity in ["TransportObject", "Visit", "MediaAsset", "Ticket", "VisitStatus", "OperationalStatus"]:
             self.assertIn(entity, self.text)
 
     def test_two_level_map_model_is_documented_without_schema_change(self) -> None:
@@ -56,6 +56,27 @@ class DataModelContractTest(unittest.TestCase):
         for status_id, title in expected_statuses.items():
             self.assertIn(f"`{status_id}`", self.text)
             self.assertIn(title, self.text)
+
+    def test_operational_statuses_are_separate_from_visit_statuses(self) -> None:
+        expected_statuses = [
+            "active",
+            "active_seasonal",
+            "temporarily_closed_planned",
+            "temporarily_closed_unplanned",
+            "closed",
+            "historical",
+            "unknown",
+        ]
+        for status_id in expected_statuses:
+            self.assertIn(f"`{status_id}`", self.text)
+        for field in [
+            "operational_status",
+            "status_checked_at",
+            "status_source_url",
+            "status_note",
+            "не связан с семейным посещением",
+        ]:
+            self.assertIn(field, self.text)
 
     def test_sqlite_tables_are_documented(self) -> None:
         for table in [
@@ -95,10 +116,10 @@ class DataModelContractTest(unittest.TestCase):
 
     def test_demo_data_mapping_is_documented_without_requiring_code_change(self) -> None:
         self.assertIn("Демо-данные", self.text)
-        self.assertIn("в этой задаче не меняются", self.text)
         self.assertIn("TransportObject", self.text)
         self.assertIn("transport_type_id", self.text)
         self.assertIn("visit_status_id", self.text)
+        self.assertIn("operational_status", self.text)
 
 
 if __name__ == "__main__":

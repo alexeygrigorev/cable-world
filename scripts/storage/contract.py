@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 import sqlite3
 from typing import Any
@@ -8,6 +9,18 @@ from typing import Any
 STORAGE_DIR = Path(__file__).resolve().parent
 MIGRATIONS_DIR = STORAGE_DIR / "migrations"
 SEEDS_DIR = STORAGE_DIR / "seeds"
+
+
+@dataclass(frozen=True)
+class MediaAsset:
+    id: str
+    kind: str
+    local_path: str
+    caption: str = ""
+    transport_object_id: str | None = None
+    visit_id: str | None = None
+    taken_on: str | None = None
+    created_at: str | None = None
 
 
 class SQLiteStorage:
@@ -40,7 +53,14 @@ class SQLiteStorage:
             """
             SELECT id, title, transport_type_id, visit_status_id, country, region, city,
                    latitude, longitude, description, notes, opened_year, operator,
-                   manufacturer, created_at, updated_at
+                   manufacturer, operational_status, status_checked_at, status_source_url,
+                   status_note, created_at, updated_at,
+                   (
+                       SELECT count(*)
+                       FROM media_assets
+                       WHERE media_assets.transport_object_id = transport_objects.id
+                         AND media_assets.kind = 'photo'
+                   ) AS photo_count
             FROM transport_objects
             ORDER BY title
             """
@@ -51,7 +71,14 @@ class SQLiteStorage:
             """
             SELECT id, title, transport_type_id, visit_status_id, country, region, city,
                    latitude, longitude, description, notes, opened_year, operator,
-                   manufacturer, created_at, updated_at
+                   manufacturer, operational_status, status_checked_at, status_source_url,
+                   status_note, created_at, updated_at,
+                   (
+                       SELECT count(*)
+                       FROM media_assets
+                       WHERE media_assets.transport_object_id = transport_objects.id
+                         AND media_assets.kind = 'photo'
+                   ) AS photo_count
             FROM transport_objects
             WHERE id = ?
             """,
@@ -82,8 +109,9 @@ class SQLiteStorage:
             INSERT INTO transport_objects (
                 id, title, transport_type_id, visit_status_id, country, region, city,
                 latitude, longitude, description, notes, opened_year, operator,
-                manufacturer, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                manufacturer, operational_status, status_checked_at, status_source_url,
+                status_note, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 title = excluded.title,
                 transport_type_id = excluded.transport_type_id,
@@ -98,6 +126,10 @@ class SQLiteStorage:
                 opened_year = excluded.opened_year,
                 operator = excluded.operator,
                 manufacturer = excluded.manufacturer,
+                operational_status = excluded.operational_status,
+                status_checked_at = excluded.status_checked_at,
+                status_source_url = excluded.status_source_url,
+                status_note = excluded.status_note,
                 updated_at = excluded.updated_at
             """,
             (
@@ -115,6 +147,10 @@ class SQLiteStorage:
                 data.get("opened_year"),
                 data.get("operator"),
                 data.get("manufacturer"),
+                data.get("operational_status", "unknown"),
+                data.get("status_checked_at", ""),
+                data.get("status_source_url", ""),
+                data.get("status_note", ""),
                 created_at,
                 updated_at,
             ),
@@ -218,6 +254,107 @@ class SQLiteStorage:
 
     def delete_visit(self, visit_id: str) -> None:
         self.connection.execute("DELETE FROM visits WHERE id = ?", (visit_id,))
+        self.connection.commit()
+
+    def list_media_assets(self, object_id: str | None = None) -> list[dict[str, Any]]:
+        if object_id is None:
+            return self._query_all(
+                """
+                SELECT id, transport_object_id, visit_id, kind, local_path,
+                       caption, taken_on, created_at
+                FROM media_assets
+                ORDER BY created_at, id
+                """
+            )
+        return self._query_all(
+            """
+            SELECT id, transport_object_id, visit_id, kind, local_path,
+                   caption, taken_on, created_at
+            FROM media_assets
+            WHERE transport_object_id = ?
+            ORDER BY created_at, id
+            """,
+            (object_id,),
+        )
+
+    def list_object_photos(self, object_id: str) -> list[dict[str, Any]]:
+        return self._query_all(
+            """
+            SELECT id, transport_object_id, visit_id, kind, local_path,
+                   caption, taken_on, created_at
+            FROM media_assets
+            WHERE transport_object_id = ? AND kind = 'photo'
+            ORDER BY created_at, id
+            """,
+            (object_id,),
+        )
+
+    def get_media_asset(self, media_asset_id: str) -> dict[str, Any] | None:
+        return self._query_one(
+            """
+            SELECT id, transport_object_id, visit_id, kind, local_path,
+                   caption, taken_on, created_at
+            FROM media_assets
+            WHERE id = ?
+            """,
+            (media_asset_id,),
+        )
+
+    def upsert_media_asset(self, data: dict[str, Any] | MediaAsset) -> dict[str, Any]:
+        if isinstance(data, MediaAsset):
+            asset_data = {
+                "id": data.id,
+                "transport_object_id": data.transport_object_id,
+                "visit_id": data.visit_id,
+                "kind": data.kind,
+                "local_path": data.local_path,
+                "caption": data.caption,
+                "taken_on": data.taken_on,
+                "created_at": data.created_at,
+            }
+        else:
+            asset_data = data
+
+        required = {"id", "kind", "local_path"}
+        missing = sorted(required - set(asset_data))
+        if missing:
+            raise ValueError(f"Missing media asset fields: {', '.join(missing)}")
+        if not asset_data.get("transport_object_id") and not asset_data.get("visit_id"):
+            raise ValueError("Media asset must reference a transport object or visit")
+
+        created_at = asset_data.get("created_at") or self._now()
+        self.connection.execute(
+            """
+            INSERT INTO media_assets (
+                id, transport_object_id, visit_id, kind, local_path,
+                caption, taken_on, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                transport_object_id = excluded.transport_object_id,
+                visit_id = excluded.visit_id,
+                kind = excluded.kind,
+                local_path = excluded.local_path,
+                caption = excluded.caption,
+                taken_on = excluded.taken_on
+            """,
+            (
+                asset_data["id"],
+                asset_data.get("transport_object_id"),
+                asset_data.get("visit_id"),
+                asset_data["kind"],
+                asset_data["local_path"],
+                asset_data.get("caption", ""),
+                asset_data.get("taken_on"),
+                created_at,
+            ),
+        )
+        self.connection.commit()
+        asset = self.get_media_asset(asset_data["id"])
+        assert asset is not None
+        return asset
+
+    def delete_media_asset(self, media_asset_id: str) -> None:
+        self.connection.execute("DELETE FROM media_assets WHERE id = ?", (media_asset_id,))
         self.connection.commit()
 
     def _applied_migrations(self) -> set[str]:

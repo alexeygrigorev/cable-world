@@ -49,10 +49,11 @@ func refresh() -> void:
 			continue
 
 		visible_object_indices.append(index)
-		var label := "%s — %s — %s" % [
+		var label := "%s — %s — %s — %s" % [
 			object_data.get("name", "Без названия"),
 			object_data.get("region", "Регион не указан"),
-			_visit_status_text(object_data)
+			_visit_status_text(object_data),
+			_operational_status_text(object_data)
 		]
 		add_item(label)
 	_update_empty_state()
@@ -92,6 +93,11 @@ func _visit_status_text(object_data: Dictionary) -> String:
 	if object_data.has("visit_status_id"):
 		return SQLiteStorageAdapter.status_title(str(object_data.get("visit_status_id", "")))
 	return SQLiteStorageAdapter.status_title(SQLiteStorageAdapter.STATUS_VISITED if object_data.get("visited", false) else SQLiteStorageAdapter.STATUS_NOT_VISITED)
+
+
+func _operational_status_text(object_data: Dictionary) -> String:
+	return "работа: %s" % SQLiteStorageAdapter.operational_status_title(str(object_data.get("operational_status", SQLiteStorageAdapter.OPERATIONAL_UNKNOWN)))
+
 
 func _update_empty_state() -> void:
 	if empty_state_label == null:

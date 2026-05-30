@@ -5,14 +5,16 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MIGRATION = ROOT / "scripts" / "storage" / "migrations" / "001_initial_schema.sql"
+MIGRATIONS_DIR = ROOT / "scripts" / "storage" / "migrations"
+MIGRATION = MIGRATIONS_DIR / "001_initial_schema.sql"
+OPERATIONAL_MIGRATION = MIGRATIONS_DIR / "002_operational_status.sql"
 DEMO_SEED = ROOT / "scripts" / "storage" / "seeds" / "demo_objects.sql"
 
 import sys
 
 sys.path.insert(0, str(ROOT))
 
-from scripts.storage import SQLiteStorage  # noqa: E402
+from scripts.storage import MediaAsset, SQLiteStorage  # noqa: E402
 
 
 MIN_GERMAN_DEMO_OBJECTS = 21
@@ -55,6 +57,7 @@ class StorageContractTest(unittest.TestCase):
 
     def test_migration_file_is_real_sqlite_schema(self) -> None:
         self.assertTrue(MIGRATION.exists())
+        self.assertTrue(OPERATIONAL_MIGRATION.exists())
         self.assertTrue(DEMO_SEED.exists())
 
         connection = sqlite3.connect(":memory:")
@@ -86,6 +89,29 @@ class StorageContractTest(unittest.TestCase):
         self.assertEqual(
             connection.execute("SELECT count(*) FROM transport_types").fetchone()[0],
             19,
+        )
+
+    def test_operational_status_migration_adds_independent_fields(self) -> None:
+        connection = sqlite3.connect(":memory:")
+        connection.execute("PRAGMA foreign_keys = ON")
+        for path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+            connection.executescript(path.read_text(encoding="utf-8"))
+
+        columns = {
+            row[1]
+            for row in connection.execute("PRAGMA table_info(transport_objects)").fetchall()
+        }
+        for column in [
+            "visit_status_id",
+            "operational_status",
+            "status_checked_at",
+            "status_source_url",
+            "status_note",
+        ]:
+            self.assertIn(column, columns)
+        self.assertEqual(
+            connection.execute("SELECT version FROM schema_migrations WHERE version = '002_operational_status'").fetchone()[0],
+            "002_operational_status",
         )
 
     def test_demo_seed_initializes_objects_once(self) -> None:
@@ -134,6 +160,47 @@ class StorageContractTest(unittest.TestCase):
                 self.assertEqual(obj["transport_type_id"], expected_type)
                 self.assertTrue(obj["city"])
                 self.assertTrue(obj["description"])
+                self.assertIn("operational_status", obj)
+                self.assertIn(
+                    obj["operational_status"],
+                    {
+                        "active",
+                        "active_seasonal",
+                        "temporarily_closed_planned",
+                        "temporarily_closed_unplanned",
+                        "closed",
+                        "historical",
+                        "unknown",
+                    },
+                )
+
+    def test_demo_seed_records_operational_status_source_and_check_date(self) -> None:
+        self.storage.seed_demo_objects()
+
+        berlin = self.storage.get_object("berlin-gaerten-der-welt")
+        self.assertIsNotNone(berlin)
+        assert berlin is not None
+        self.assertEqual(berlin["visit_status_id"], "not_visited")
+        self.assertEqual(berlin["operational_status"], "active_seasonal")
+        self.assertEqual(berlin["status_checked_at"], "2026-05-30")
+        self.assertIn("gaertenderwelt.de", berlin["status_source_url"])
+        self.assertIn("Сезонный график", berlin["status_note"])
+
+    def test_visit_status_update_does_not_change_operational_status(self) -> None:
+        self.storage.seed_demo_objects()
+
+        before = self.storage.get_object("berlin-gaerten-der-welt")
+        self.assertIsNotNone(before)
+        assert before is not None
+        self.storage.update_object_status("berlin-gaerten-der-welt", "favorite")
+        after = self.storage.get_object("berlin-gaerten-der-welt")
+        self.assertIsNotNone(after)
+        assert after is not None
+
+        self.assertEqual(after["visit_status_id"], "favorite")
+        self.assertEqual(after["operational_status"], before["operational_status"])
+        self.assertEqual(after["status_checked_at"], before["status_checked_at"])
+        self.assertEqual(after["status_source_url"], before["status_source_url"])
 
     def test_object_crud_and_status_persist_after_reopen(self) -> None:
         self.storage.upsert_object(
@@ -225,6 +292,48 @@ class StorageContractTest(unittest.TestCase):
         )
         self.storage.delete_object("vorobyovy-gory")
         self.assertEqual(self.storage.list_visits("vorobyovy-gory"), [])
+
+    def test_media_asset_photo_crud_and_object_listing(self) -> None:
+        self.storage.seed_demo_objects()
+
+        created = self.storage.upsert_media_asset(
+            MediaAsset(
+                id="photo-vorobyovy-mvp",
+                transport_object_id="vorobyovy-gory",
+                kind="photo",
+                local_path="media/vorobyovy-gory/photo-vorobyovy-mvp.jpg",
+                caption="Фото MVP: запись без копирования файла.",
+            )
+        )
+
+        self.assertEqual(created["kind"], "photo")
+        self.assertEqual(created["transport_object_id"], "vorobyovy-gory")
+        self.assertEqual(created["local_path"], "media/vorobyovy-gory/photo-vorobyovy-mvp.jpg")
+        self.assertEqual(
+            self.storage.get_object("vorobyovy-gory")["photo_count"],
+            1,
+        )
+
+        photos = self.storage.list_object_photos("vorobyovy-gory")
+        self.assertEqual([photo["id"] for photo in photos], ["photo-vorobyovy-mvp"])
+
+        self.storage.upsert_media_asset(
+            {
+                "id": "photo-vorobyovy-mvp",
+                "transport_object_id": "vorobyovy-gory",
+                "kind": "photo",
+                "local_path": "media/vorobyovy-gory/photo-vorobyovy-mvp.jpg",
+                "caption": "Обновленная подпись MVP.",
+            }
+        )
+        self.assertEqual(
+            self.storage.get_media_asset("photo-vorobyovy-mvp")["caption"],
+            "Обновленная подпись MVP.",
+        )
+
+        self.storage.delete_media_asset("photo-vorobyovy-mvp")
+        self.assertIsNone(self.storage.get_media_asset("photo-vorobyovy-mvp"))
+        self.assertEqual(self.storage.list_object_photos("vorobyovy-gory"), [])
 
     def test_constraints_reject_invalid_references_and_ratings(self) -> None:
         with self.assertRaises(sqlite3.IntegrityError):

@@ -23,6 +23,10 @@
 - `opened_year` - год открытия, если известен;
 - `operator` - оператор, если известен;
 - `manufacturer` - производитель, если известен;
+- `operational_status` - текущий эксплуатационный статус объекта;
+- `status_checked_at` - дата проверки эксплуатационного статуса в формате ISO `YYYY-MM-DD`, если известна;
+- `status_source_url` - ссылка на источник статуса, если он есть;
+- `status_note` - короткое русское пояснение к эксплуатационному статусу;
 - `created_at` - дата создания записи;
 - `updated_at` - дата последнего изменения записи.
 
@@ -38,6 +42,22 @@
 - `favorite` - любимый.
 
 Статус `любимый` означает, что объект уже особенно отмечен семьей. Если понадобится разделить «посещен» и «любимый» как независимые признаки, это будет отдельная миграция после MVP.
+
+### OperationalStatus
+
+Эксплуатационный статус описывает, работает сам объект или нет. Он не связан с семейным посещением: объект может быть любимым и временно закрытым, либо не посещенным и действующим.
+
+Допустимые значения:
+
+- `active` - работает;
+- `active_seasonal` - работает сезонно или по сезонному графику;
+- `temporarily_closed_planned` - временно закрыт по плану;
+- `temporarily_closed_unplanned` - временно закрыт внепланово;
+- `closed` - закрыт;
+- `historical` - исторический объект без регулярной эксплуатации;
+- `unknown` - статус неизвестен.
+
+Поля источника (`status_checked_at`, `status_source_url`, `status_note`) хранят дату и основание проверки, если они есть в seed или импортируемом каталоге.
 
 ### Visit
 
@@ -133,7 +153,7 @@
 
 Схема рассчитана на локальную базу SQLite. Все идентификаторы текстовые, чтобы импорт из JSON и будущая синхронизация могли сохранять стабильные ключи.
 
-Каноническая SQL-версия схемы хранится в `scripts/storage/migrations/001_initial_schema.sql`. Демо-инициализация объектов хранится отдельно в `scripts/storage/seeds/demo_objects.sql`, чтобы повторный запуск мог добавлять отсутствующие демо-записи без перезаписи пользовательских статусов.
+Каноническая SQL-версия базовой схемы хранится в `scripts/storage/migrations/001_initial_schema.sql`. Эксплуатационные поля добавлены обратимо-совместимой миграцией `scripts/storage/migrations/002_operational_status.sql`, чтобы уже созданные локальные базы получили новые колонки без пересоздания. Демо-инициализация объектов хранится отдельно в `scripts/storage/seeds/demo_objects.sql`, чтобы повторный запуск мог добавлять отсутствующие демо-записи без перезаписи пользовательских статусов посещения.
 
 ```sql
 PRAGMA foreign_keys = ON;
@@ -166,6 +186,18 @@ CREATE TABLE transport_objects (
     opened_year INTEGER,
     operator TEXT,
     manufacturer TEXT,
+    operational_status TEXT NOT NULL DEFAULT 'unknown' CHECK (operational_status IN (
+        'active',
+        'active_seasonal',
+        'temporarily_closed_planned',
+        'temporarily_closed_unplanned',
+        'closed',
+        'historical',
+        'unknown'
+    )),
+    status_checked_at TEXT NOT NULL DEFAULT '',
+    status_source_url TEXT NOT NULL DEFAULT '',
+    status_note TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
@@ -208,6 +240,7 @@ CREATE TABLE tickets (
 
 CREATE INDEX idx_transport_objects_type ON transport_objects(transport_type_id);
 CREATE INDEX idx_transport_objects_status ON transport_objects(visit_status_id);
+CREATE INDEX idx_transport_objects_operational_status ON transport_objects(operational_status);
 CREATE INDEX idx_visits_object ON visits(transport_object_id);
 CREATE INDEX idx_media_assets_object ON media_assets(transport_object_id);
 CREATE INDEX idx_media_assets_visit ON media_assets(visit_id);
@@ -229,7 +262,7 @@ INSERT INTO visit_statuses (id, title, sort_order) VALUES
 
 ## Демо-данные
 
-Текущие демо-данные в GDScript считаются временным представлением модели и в этой задаче не меняются. SQL seed в `scripts/storage/seeds/demo_objects.sql` мапит те же записи на `TransportObject`, использует один `transport_type_id` из справочника и один `visit_status_id` из `VisitStatus`.
+Текущие демо-данные в GDScript считаются временным представлением модели. SQL seed в `scripts/storage/seeds/demo_objects.sql` мапит те же записи на `TransportObject`, использует один `transport_type_id` из справочника, один `visit_status_id` из `VisitStatus` и независимые поля `operational_status`, `status_checked_at`, `status_source_url`, `status_note` для эксплуатационного статуса.
 
 Если у демо-объекта есть отметка посещения, она должна превращаться в статус `visited` или `not_visited`. Фото, видео и билеты в будущих демо-наборах должны добавляться как `MediaAsset` и `Ticket`, а не как произвольные поля внутри объекта.
 
@@ -244,6 +277,6 @@ Godot 4.6 не содержит встроенного SQLite API, поэтом�
 
 Полный релиз addon'а содержит сборки для других платформ, но они не добавлены в проект, чтобы не раздувать репозиторий неиспользуемыми бинарными файлами. Источник и версия зафиксированы здесь, а лицензия MIT лежит рядом с vendored-файлами.
 
-`scripts/storage/sqlite_storage_adapter.gd` открывает `user://mir-trossov.sqlite3`, применяет SQL migrations из `scripts/storage/migrations`, выполняет seed из `scripts/storage/seeds/demo_objects.sql` и предоставляет CRUD для `transport_objects` и `visits`. Главное окно использует этот адаптер для загрузки объектов и сохранения статуса посещения; повторный запуск видит сохраненный `visit_status_id`.
+`scripts/storage/sqlite_storage_adapter.gd` открывает `user://mir-trossov.sqlite3`, применяет SQL migrations из `scripts/storage/migrations`, выполняет seed из `scripts/storage/seeds/demo_objects.sql` и предоставляет CRUD для `transport_objects`, `visits` и `media_assets`. Главное окно использует этот адаптер для загрузки объектов, сохранения статуса посещения и регистрации MVP-записей фото как `MediaAsset` с переносимым относительным `local_path`; повторный запуск видит сохраненный `visit_status_id` и список фото.
 
 На платформах без загруженного класса `SQLite`, включая текущий Web export, `is_runtime_available()` возвращает `false`. Приложение в этом случае использует встроенный `DemoCatalog` и не обещает сохранение пользовательских изменений между запусками.

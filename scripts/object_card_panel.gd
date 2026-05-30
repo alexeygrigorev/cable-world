@@ -2,6 +2,7 @@ extends PanelContainer
 class_name ObjectCardPanel
 
 signal status_changed(object_id: String, status_id: String)
+signal photo_registration_requested(object_id: String)
 
 var current_object: Dictionary = {}
 var title_label: Label
@@ -9,11 +10,14 @@ var type_label: Label
 var location_label: Label
 var coordinates_label: Label
 var status_label: Label
+var operational_status_label: Label
 var status_option: OptionButton
 var description_label: Label
 var notes_label: Label
 var technical_label: Label
 var photos_label: Label
+var photos_hint_label: Label
+var add_photo_button: Button
 var videos_label: Label
 var tickets_label: Label
 var visits_label: Label
@@ -48,6 +52,7 @@ func _ready() -> void:
 	location_label = _add_text_label(rows)
 	coordinates_label = _add_text_label(rows)
 	status_label = _add_text_label(rows)
+	operational_status_label = _add_text_label(rows)
 	status_option = OptionButton.new()
 	_configure_status_option()
 	status_option.item_selected.connect(_on_status_selected)
@@ -68,6 +73,12 @@ func _ready() -> void:
 	_add_separator(rows)
 	_add_section_title(rows, "Материалы и история")
 	photos_label = _add_text_label(rows)
+	photos_hint_label = _add_text_label(rows)
+	add_photo_button = Button.new()
+	add_photo_button.text = "Добавить запись о фото"
+	add_photo_button.tooltip_text = "Сейчас сохраняется подпись к фотографии. Выбор настоящего файла появится следующим шагом."
+	add_photo_button.pressed.connect(_on_add_photo_pressed)
+	rows.add_child(add_photo_button)
 	videos_label = _add_text_label(rows)
 	tickets_label = _add_text_label(rows)
 	visits_label = _add_text_label(rows)
@@ -81,27 +92,33 @@ func show_empty_state() -> void:
 	location_label.text = "Место: не указано"
 	coordinates_label.text = "Координаты: не указаны"
 	status_label.text = "Статус посещения: не указано"
+	operational_status_label.text = "Работа объекта: статус неизвестен"
 	description_label.text = "Описание: выберите объект из списка."
 	notes_label.text = "Семейные заметки: пока нет"
 	technical_label.text = _technical_text({})
 	photos_label.text = "Фотографии: пока нет"
+	photos_hint_label.text = "Фотографии пока не добавлены."
+	add_photo_button.disabled = true
 	videos_label.text = "Видео: пока нет"
 	tickets_label.text = "Билеты: пока нет"
 	visits_label.text = "Посещения: пока нет"
 	status_option.disabled = true
 	_select_status_option(SQLiteStorageAdapter.STATUS_NOT_VISITED)
 
-func show_object(object_data: Dictionary) -> void:
+func show_object(object_data: Dictionary, can_register_photo: bool = false) -> void:
 	current_object = object_data
 	title_label.text = object_data.get("name", "Без названия")
 	type_label.text = "Тип транспорта: %s" % _value_text(object_data.get("kind", ""))
 	location_label.text = _location_text(object_data)
 	coordinates_label.text = _coordinates_text(object_data)
 	status_label.text = "Статус посещения: %s" % _visit_status_text(object_data)
+	operational_status_label.text = _operational_status_text(object_data)
 	description_label.text = _field_text("Описание", object_data.get("description", ""), "пока нет")
 	notes_label.text = _field_text("Семейные заметки", object_data.get("notes", ""), "пока нет")
 	technical_label.text = _technical_text(object_data)
-	photos_label.text = _collection_status("Фотографии", object_data, "photos", "photo_count", "пока нет добавленных фотографий")
+	photos_label.text = _photo_collection_text(object_data)
+	photos_hint_label.text = _photo_hint_text(can_register_photo)
+	add_photo_button.disabled = not can_register_photo
 	videos_label.text = _collection_status("Видео", object_data, "videos", "video_count", "пока нет добавленных видео")
 	tickets_label.text = _collection_status("Билеты", object_data, "tickets", "ticket_count", "пока нет сохраненных билетов")
 	visits_label.text = _visits_status(object_data)
@@ -124,6 +141,11 @@ func _on_status_selected(index: int) -> void:
 
 	var status_id := str(status_option.get_item_metadata(index))
 	status_changed.emit(current_object.get("id", ""), status_id)
+
+func _on_add_photo_pressed() -> void:
+	if current_object.is_empty():
+		return
+	photo_registration_requested.emit(current_object.get("id", ""))
 
 func _select_status_option(status_id: String) -> void:
 	status_option_is_refreshing = true
@@ -181,6 +203,26 @@ func _coordinates_text(object_data: Dictionary) -> String:
 func _visit_status_text(object_data: Dictionary) -> String:
 	return SQLiteStorageAdapter.status_title(_object_status_id(object_data))
 
+
+func _operational_status_text(object_data: Dictionary) -> String:
+	var status := SQLiteStorageAdapter.operational_status_title(str(object_data.get("operational_status", SQLiteStorageAdapter.OPERATIONAL_UNKNOWN)))
+	var lines: Array[String] = ["Работа объекта: %s" % status]
+	var checked_at := str(object_data.get("status_checked_at", "")).strip_edges()
+	if not checked_at.is_empty():
+		lines.append("Проверено: %s" % checked_at)
+	var note := str(object_data.get("status_note", "")).strip_edges()
+	if not note.is_empty():
+		lines.append("Примечание: %s" % note)
+	var source_url := str(object_data.get("status_source_url", "")).strip_edges()
+	if not source_url.is_empty():
+		lines.append("Источник: %s" % source_url)
+
+	var text := lines[0]
+	for index in range(1, lines.size()):
+		text += "\n%s" % lines[index]
+	return text
+
+
 func _object_status_id(object_data: Dictionary) -> String:
 	if object_data.has("visit_status_id"):
 		return SQLiteStorageAdapter.normalized_status_id(str(object_data.get("visit_status_id", "")))
@@ -215,6 +257,25 @@ func _collection_status(title: String, object_data: Dictionary, list_key: String
 	if count > 0:
 		return "%s: %d" % [title, count]
 	return "%s: %s" % [title, empty_text]
+
+func _photo_collection_text(object_data: Dictionary) -> String:
+	if object_data.has("photos") and object_data.get("photos") is Array:
+		var photos: Array = object_data.get("photos")
+		if not photos.is_empty():
+			var rows: Array[String] = ["Фотографии: %d" % photos.size()]
+			for index in photos.size():
+				var item = photos[index]
+				if item is Dictionary:
+					var photo: Dictionary = item
+					var caption := _value_text(photo.get("caption", ""), "без подписи")
+					rows.append("- Фото %d: %s" % [index + 1, caption])
+			return "\n".join(rows)
+	return _collection_status("Фотографии", object_data, "photos", "photo_count", "пока нет добавленных фотографий")
+
+func _photo_hint_text(can_register_photo: bool) -> String:
+	if can_register_photo:
+		return "Сейчас добавляется только запись о фотографии. Выбор настоящего файла появится следующим шагом."
+	return "Добавление фото сейчас недоступно: локальное хранилище не открыто."
 
 func _visits_status(object_data: Dictionary) -> String:
 	var count := -1

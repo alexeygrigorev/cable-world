@@ -58,6 +58,7 @@ func _ready() -> void:
 	object_list.set_objects(objects)
 	object_list.object_selected.connect(_on_object_selected)
 	object_card.status_changed.connect(_on_status_changed)
+	object_card.photo_registration_requested.connect(_on_photo_registration_requested)
 	map_panel.set_objects(objects)
 	map_panel.object_selected.connect(_on_map_object_selected)
 
@@ -76,11 +77,11 @@ func _load_objects_from_local_source() -> Array[Dictionary]:
 			var stored_objects := storage.list_objects()
 			if not stored_objects.is_empty():
 				storage_runtime_enabled = true
-				return stored_objects
-		push_warning("SQLite storage fallback: %s" % storage.last_error)
+				return _attach_photo_lists(stored_objects)
+		push_warning("Локальное хранилище недоступно, открыт встроенный каталог: %s" % storage.last_error)
 		storage.close()
 	else:
-		push_warning("SQLite storage unavailable: %s" % storage.last_error)
+		push_warning("Локальное хранилище недоступно: %s" % storage.last_error)
 
 	storage_runtime_enabled = false
 	return DemoCatalog.get_objects()
@@ -113,7 +114,7 @@ func _on_status_changed(object_id: String, status_id: String) -> void:
 			if storage_runtime_enabled:
 				var update_result := storage.update_object_status(object_id, normalized_status)
 				if update_result != OK:
-					push_warning("SQLite status update failed: %s" % storage.last_error)
+					push_warning("Не удалось сохранить статус посещения: %s" % storage.last_error)
 			var visited := SQLiteStorageAdapter.status_is_visited(normalized_status)
 			objects[index]["visited"] = visited
 			objects[index]["visit_status_id"] = normalized_status
@@ -121,6 +122,41 @@ func _on_status_changed(object_id: String, status_id: String) -> void:
 			_select_object(index, false)
 			_add_journal_entry(objects[index], normalized_status)
 			return
+
+func _on_photo_registration_requested(object_id: String) -> void:
+	if not storage_runtime_enabled:
+		push_warning("Добавление фото сейчас недоступно: локальное хранилище не открыто.")
+		return
+
+	for index in objects.size():
+		if objects[index].get("id", "") != object_id:
+			continue
+
+		var sequence := int(objects[index].get("photo_count", 0)) + 1
+		var media_id := "%s-photo-%d-%d" % [
+			object_id,
+			int(Time.get_unix_time_from_system()),
+			Time.get_ticks_msec(),
+		]
+		var local_path := "media/%s/%s.jpg" % [object_id, media_id]
+		var caption := "Фото %d: запись без выбранного файла" % sequence
+		var save_result := storage.upsert_media_asset({
+			"id": media_id,
+			"transport_object_id": object_id,
+			"kind": SQLiteStorageAdapter.MEDIA_KIND_PHOTO,
+			"local_path": local_path,
+			"caption": caption,
+		})
+		if save_result != OK:
+			push_warning("Не удалось сохранить запись о фото: %s" % storage.last_error)
+			return
+
+		objects[index]["photos"] = storage.list_object_photos(object_id)
+		objects[index]["photo_count"] = objects[index]["photos"].size()
+		object_list.refresh()
+		_select_object(index, false)
+		_add_photo_journal_entry(objects[index], caption)
+		return
 
 func _exit_tree() -> void:
 	storage.close()
@@ -181,7 +217,7 @@ func _select_object(index: int, open_card: bool) -> void:
 
 	selected_index = index
 	object_list.select_visual_object(index)
-	object_card.show_object(objects[index])
+	object_card.show_object(objects[index], storage_runtime_enabled)
 	map_panel.select_object(index)
 	_update_map_selection(objects[index])
 	if open_card:
@@ -210,3 +246,19 @@ func _add_journal_entry(object_data: Dictionary, status_id: String) -> void:
 	journal_entries.push_front("%s: %s" % [object_data.get("name", "Объект"), status])
 	journal_entries = journal_entries.slice(0, 6)
 	journal_label.text = "[b]Журнал[/b]\n%s" % "\n".join(journal_entries)
+
+func _add_photo_journal_entry(object_data: Dictionary, caption: String) -> void:
+	journal_entries.push_front("%s: добавлена запись фото (%s)" % [object_data.get("name", "Объект"), caption])
+	journal_entries = journal_entries.slice(0, 6)
+	journal_label.text = "[b]Журнал[/b]\n%s" % "\n".join(journal_entries)
+
+func _attach_photo_lists(source_objects: Array[Dictionary]) -> Array[Dictionary]:
+	var objects_with_photos: Array[Dictionary] = []
+	for object_data in source_objects:
+		var enriched_object := object_data.duplicate(true)
+		var object_id: String = enriched_object.get("id", "")
+		var photos := storage.list_object_photos(object_id)
+		enriched_object["photos"] = photos
+		enriched_object["photo_count"] = photos.size()
+		objects_with_photos.append(enriched_object)
+	return objects_with_photos

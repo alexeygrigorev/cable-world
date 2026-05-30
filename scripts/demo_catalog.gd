@@ -1,8 +1,144 @@
 extends RefCounted
 class_name DemoCatalog
 
+const DEFAULT_OPERATIONAL_STATUS := {
+	"operational_status": "unknown",
+	"status_checked_at": "",
+	"status_source_url": "",
+	"status_note": "Эксплуатационный статус еще не проверен."
+}
+
+const OPERATIONAL_STATUS_BY_ID := {
+	"berlin-gaerten-der-welt": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.gaertenderwelt.de/erlebnisse/seilbahn/",
+		"status_note": "Сезонный график на 2026 год: апрель-сентябрь ежедневно 10:00-19:00; при сильном ветре или грозе возможна остановка."
+	},
+	"thale-hexentanzplatz": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.seilbahnen-thale.de/en/rosstrappe",
+		"status_note": "Оператор показывает дневную доступность аттракционов; перед поездкой нужно проверить часы и погоду."
+	},
+	"thale-rosstrappe": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.seilbahnen-thale.de/en/rosstrappe",
+		"status_note": "Оператор показывает дневную доступность аттракционов; перед поездкой нужно проверить часы и погоду."
+	},
+	"stuttgart-standseilbahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://embedded.ssb-ag.de/unternehmen/informationen-fakten/fahrzeuge/seilbahn/",
+		"status_note": "Городская линия 20 SSB, действующий маршрут общественного транспорта."
+	},
+	"stuttgart-zahnradbahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.ssb-ag.de/unternehmen/informationen-fakten/fahrzeuge/zahnradbahn/",
+		"status_note": "Городская линия 10 SSB; действующая зубчатая дорога с регулярным расписанием."
+	},
+	"bayerische-zugspitzbahn": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://zugspitze.de/de/Service-Informationen/Betriebszeiten-Fahrplaene",
+		"status_note": "Опубликованы рабочие часы и плановые ревизии на 2026 год; перед поездкой проверить погоду и текущий статус."
+	},
+	"seilbahn-zugspitze": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://zugspitze.de/de/Service-Informationen/Betriebszeiten-Fahrplaene",
+		"status_note": "Опубликованы рабочие часы и плановые ревизии на 2026 год; перед поездкой проверить погоду и текущий статус."
+	},
+	"zugspitze-gletscherbahn": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://zugspitze.de/de/Service-Informationen/Betriebszeiten-Fahrplaene",
+		"status_note": "Опубликованы рабочие часы и плановые ревизии на 2026 год; перед поездкой проверить погоду и текущий статус."
+	},
+	"wuppertaler-schwebebahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://schwebebahn.de/",
+		"status_note": "Регулярный городской транспорт; перед поездкой проверить текущие Verkehrsinformationen."
+	},
+	"dresden-schwebebahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.dvb.de/de-de/entdecken/bergbahnen/",
+		"status_note": "DVB публикует рабочие графики и периоды ревизии для дрезденских горных дорог."
+	},
+	"dresden-standseilbahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.dvb.de/de-de/entdecken/bergbahnen/",
+		"status_note": "DVB публикует рабочие графики и периоды ревизии для дрезденских горных дорог."
+	},
+	"nerobergbahn": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.wiesbaden.de/fr/leben-in-wiesbaden/freizeit/ausfluege/nerobergbahn-neroberg",
+		"status_note": "Сезон 2026 начался 3 апреля; линия работает ежедневно до конца осени."
+	},
+	"bad-schandau-lift": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.saechsische-schweiz.de/ausflugsziele/historischer-personenaufzug-badschandau",
+		"status_note": "Опубликованы круглогодичные часы работы с разным временем по месяцам."
+	},
+	"heidelberg-bergbahn": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.bergbahn-heidelberg.de/",
+		"status_note": "Горная железная дорога работает по сезонным графикам; перед поездкой проверить текущий летний или зимний Fahrplan."
+	},
+	"bad-harzburg-burgbergseilbahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.bad-harzburg.de/wanderland/burgberg-seilbahn/",
+		"status_note": "Опубликованы летние и зимние Fahrzeiten; плановая ревизия указана на ноябрь 2026 года."
+	},
+	"wurmbergseilbahn": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://wurmberg-seilbahn.de/sommer.html",
+		"status_note": "Оператор показывает текущий статус как открыто и публикует дневные часы работы."
+	},
+	"dortmund-h-bahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.bus-und-bahn.de/h-bahn",
+		"status_note": "Действующий автоматический транспорт TU Dortmund; оператор публикует Fahrplan и Verkehrsmeldungen."
+	},
+	"duesseldorf-skytrain": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.dus.com/en/to-and-from/bus-and-train",
+		"status_note": "SkyTrain аэропорта работает ежедневно 03:45-00:45; ночью есть автобусная подмена."
+	},
+	"baden-baden-merkurbergbahn": {
+		"operational_status": "active",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.stadtwerke-baden-baden.de/de/mobilitaet-freizeit/merkurbahn/",
+		"status_note": "Оператор публикует часы MerkurBergbahn; после ревизии 2026 объект готов к регулярной работе."
+	},
+	"koblenz-seilbahn": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.seilbahn-koblenz.de/",
+		"status_note": "Туристическая канатная дорога через Рейн; перед поездкой проверить сезонный календарь и спецсобытия."
+	},
+	"koeln-seilbahn": {
+		"operational_status": "active_seasonal",
+		"status_checked_at": "2026-05-30",
+		"status_source_url": "https://www.stadtwerkekoeln.de/pressemitteilungen/saisonstart-kolner-seilbahn-ab-dem-12-marz-heben-die-gondeln-wieder-ab",
+		"status_note": "Сезон 2026 стартовал 12 марта; регулярный сезон идет до начала ноября, далее запланированы адвентные рейсы."
+	}
+}
+
 static func get_objects() -> Array[Dictionary]:
-	return [
+	var objects: Array[Dictionary] = [
 		{
 			"id": "vorobyovy-gory",
 			"name": "Канатная дорога на Воробьевых горах",
@@ -460,3 +596,15 @@ static func get_objects() -> Array[Dictionary]:
 			"manufacturer": "Julius Pohlig"
 		}
 	]
+	_apply_operational_status(objects)
+	return objects
+
+
+static func _apply_operational_status(objects: Array[Dictionary]) -> void:
+	for object_data in objects:
+		var object_id := str(object_data.get("id", ""))
+		var metadata: Dictionary = DEFAULT_OPERATIONAL_STATUS
+		if OPERATIONAL_STATUS_BY_ID.has(object_id):
+			metadata = OPERATIONAL_STATUS_BY_ID[object_id]
+		for key in metadata.keys():
+			object_data[key] = metadata[key]

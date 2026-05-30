@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LOG_DIR = ROOT / "build" / "logs"
 PACKAGED_SQL_FILES = (
     "scripts/storage/migrations/001_initial_schema.sql",
+    "scripts/storage/migrations/002_operational_status.sql",
     "scripts/storage/seeds/demo_objects.sql",
 )
 
