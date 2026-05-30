@@ -9,7 +9,7 @@ class AppShellContractTest(unittest.TestCase):
     def test_main_scene_declares_mvp_sections_and_navigation(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
 
-        for node_name in ["MapSection", "ListSection", "CardSection", "CollectionSection", "JournalSection"]:
+        for node_name in ["MapSection", "ListSection", "CardSection", "MemorySection", "CollectionSection", "JournalSection"]:
             self.assertIn(f'name="{node_name}"', scene_text)
             self.assertIn("unique_name_in_owner = true", scene_text)
 
@@ -17,6 +17,7 @@ class AppShellContractTest(unittest.TestCase):
             "MapButton": "Карта",
             "ListButton": "Список",
             "CardButton": "Карточка",
+            "MemoryButton": "Воспоминание",
             "CollectionButton": "Коллекция",
             "JournalButton": "Журнал",
         }.items():
@@ -24,7 +25,9 @@ class AppShellContractTest(unittest.TestCase):
             self.assertIn(f'text = "{button_text}"', scene_text)
 
         self.assertIn('name="MapPanel" type="PanelContainer"', scene_text)
+        self.assertIn('name="MemoryPanel" type="PanelContainer"', scene_text)
         self.assertIn('path="res://scripts/map_panel.gd"', scene_text)
+        self.assertIn('path="res://scripts/memory_panel.gd"', scene_text)
         self.assertIn("Выбрано: пока нет", scene_text)
 
     def test_main_scene_uses_mobile_readable_theme_and_touch_targets(self) -> None:
@@ -49,7 +52,7 @@ class AppShellContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, scene_text)
 
-        for button_name in ["MapButton", "ListButton", "CardButton", "CollectionButton", "JournalButton"]:
+        for button_name in ["MapButton", "ListButton", "CardButton", "MemoryButton", "CollectionButton", "JournalButton"]:
             button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
             self.assertIn("custom_minimum_size = Vector2(0, 52)", button_block)
 
@@ -70,15 +73,18 @@ class AppShellContractTest(unittest.TestCase):
     def test_main_controller_routes_selection_between_sections(self) -> None:
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
 
-        for section_name in ['"map"', '"list"', '"card"', '"collection"', '"journal"']:
+        for section_name in ['"map"', '"list"', '"card"', '"memory"', '"collection"', '"journal"']:
             self.assertIn(section_name, script_text)
 
         self.assertIn("object_list.object_selected.connect(_on_object_selected)", script_text)
         self.assertIn("map_panel.object_selected.connect(_on_map_object_selected)", script_text)
+        self.assertIn("memory_panel.back_requested.connect", script_text)
         self.assertIn("_select_object(index, true)", script_text)
         self.assertIn("_select_object(index, false)", script_text)
         self.assertIn('_show_section("card")', script_text)
+        self.assertIn('_show_section("memory")', script_text)
         self.assertIn("map_panel.select_object(index)", script_text)
+        self.assertIn("memory_panel.show_object(objects[index])", script_text)
         self.assertIn("_update_map_selection(objects[index])", script_text)
         self.assertIn("selected_object_label.text", script_text)
         self.assertIn('selected_object_label.text = "Выбрано: %s\\n%s\\n%.4f, %.4f"', script_text)

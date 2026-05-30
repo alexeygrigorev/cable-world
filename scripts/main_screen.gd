@@ -8,6 +8,7 @@ const ACHIEVEMENTS_SCRIPT_PATH := "res://scripts/achievements.gd"
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
+@onready var memory_panel: MemoryPanel = %MemoryPanel
 @onready var map_panel: MapPanelScript = %MapPanel
 @onready var type_filter_option: OptionButton = %TypeFilterOption
 @onready var visit_filter_option: OptionButton = %VisitFilterOption
@@ -19,11 +20,13 @@ const ACHIEVEMENTS_SCRIPT_PATH := "res://scripts/achievements.gd"
 @onready var map_button: Button = %MapButton
 @onready var list_button: Button = %ListButton
 @onready var card_button: Button = %CardButton
+@onready var memory_button: Button = %MemoryButton
 @onready var collection_button: Button = %CollectionButton
 @onready var journal_button: Button = %JournalButton
 @onready var map_section: VBoxContainer = %MapSection
 @onready var list_section: VBoxContainer = %ListSection
 @onready var card_section: VBoxContainer = %CardSection
+@onready var memory_section: VBoxContainer = %MemorySection
 @onready var collection_section: VBoxContainer = %CollectionSection
 @onready var journal_section: VBoxContainer = %JournalSection
 @onready var collection_rows: VBoxContainer = %CollectionRows
@@ -50,6 +53,7 @@ func _ready() -> void:
 		"map": map_section,
 		"list": list_section,
 		"card": card_section,
+		"memory": memory_section,
 		"collection": collection_section,
 		"journal": journal_section,
 	}
@@ -57,6 +61,7 @@ func _ready() -> void:
 		"map": map_button,
 		"list": list_button,
 		"card": card_button,
+		"memory": memory_button,
 		"collection": collection_button,
 		"journal": journal_button,
 	}
@@ -64,6 +69,7 @@ func _ready() -> void:
 	map_button.pressed.connect(func() -> void: _show_section("map"))
 	list_button.pressed.connect(func() -> void: _show_section("list"))
 	card_button.pressed.connect(func() -> void: _show_section("card"))
+	memory_button.pressed.connect(func() -> void: _show_section("memory"))
 	collection_button.pressed.connect(func() -> void: _show_section("collection"))
 	journal_button.pressed.connect(func() -> void: _show_section("journal"))
 	orientation_option.item_selected.connect(_on_orientation_selected)
@@ -75,6 +81,7 @@ func _ready() -> void:
 	object_card.status_changed.connect(_on_status_changed)
 	object_card.photo_registration_requested.connect(_on_photo_registration_requested)
 	object_card.visit_registration_requested.connect(_on_visit_registration_requested)
+	memory_panel.back_requested.connect(func() -> void: _show_section("card"))
 	map_panel.set_objects(objects)
 	map_panel.object_selected.connect(_on_map_object_selected)
 
@@ -178,6 +185,8 @@ func _on_photo_registration_requested(object_id: String) -> void:
 
 		objects[index]["photos"] = storage.list_object_photos(object_id)
 		objects[index]["photo_count"] = objects[index]["photos"].size()
+		objects[index]["tickets"] = storage.list_tickets(object_id)
+		objects[index]["ticket_count"] = objects[index]["tickets"].size()
 		object_list.refresh()
 		_select_object(index, false)
 		_add_photo_journal_entry(objects[index], caption)
@@ -220,6 +229,8 @@ func _on_visit_registration_requested(object_id: String, title: String, notes: S
 
 		objects[index]["visits"] = storage.list_visits(object_id)
 		objects[index]["visit_count"] = objects[index]["visits"].size()
+		objects[index]["tickets"] = storage.list_tickets(object_id)
+		objects[index]["ticket_count"] = objects[index]["tickets"].size()
 		object_list.refresh()
 		_select_object(index, false)
 		_add_visit_journal_entry(objects[index], visit_title, visited_on)
@@ -485,6 +496,7 @@ func _select_object(index: int, open_card: bool) -> void:
 	if storage_runtime_enabled:
 		_ensure_route_details(index)
 	object_card.show_object(objects[index], storage_runtime_enabled)
+	memory_panel.show_object(objects[index])
 	map_panel.select_object(index)
 	_update_map_selection(objects[index])
 	if open_card:
@@ -531,10 +543,13 @@ func _attach_photo_lists(source_objects: Array[Dictionary]) -> Array[Dictionary]
 		var object_id: String = enriched_object.get("id", "")
 		var photos := storage.list_object_photos(object_id)
 		var visits := storage.list_visits(object_id)
+		var tickets := storage.list_tickets(object_id)
 		enriched_object["photos"] = photos
 		enriched_object["photo_count"] = photos.size()
 		enriched_object["visits"] = visits
 		enriched_object["visit_count"] = visits.size()
+		enriched_object["tickets"] = tickets
+		enriched_object["ticket_count"] = tickets.size()
 		objects_with_photos.append(enriched_object)
 	return objects_with_photos
 

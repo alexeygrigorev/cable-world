@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://mir_trossov_main"]
+[gd_scene load_steps=7 format=3 uid="uid://mir_trossov_main"]
 
 [ext_resource type="Script" path="res://scripts/main_screen.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/object_list_panel.gd" id="2_list"]
 [ext_resource type="Script" path="res://scripts/object_card_panel.gd" id="3_card"]
 [ext_resource type="Script" path="res://scripts/map_panel.gd" id="4_map"]
+[ext_resource type="Script" path="res://scripts/memory_panel.gd" id="5_memory"]
 
 [sub_resource type="Theme" id="Theme_mobile_touch"]
 default_font_size = 18
@@ -103,6 +104,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 text = "Карточка"
+
+[node name="MemoryButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Воспоминание"
 
 [node name="CollectionButton" type="Button" parent="Отступы/Оболочка/Навигация"]
 unique_name_in_owner = true
@@ -290,6 +299,25 @@ custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("3_card")
+
+[node name="MemorySection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ВоспоминаниеЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MemorySection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Воспоминание"
+
+[node name="MemoryPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MemorySection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("5_memory")
 
 [node name="JournalSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
 unique_name_in_owner = true
