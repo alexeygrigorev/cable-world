@@ -1,0 +1,68 @@
+[gd_scene load_steps=4 format=3 uid="uid://mir_trossov_main"]
+
+[ext_resource type="Script" path="res://scripts/main_screen.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/object_list_panel.gd" id="2_list"]
+[ext_resource type="Script" path="res://scripts/object_card_panel.gd" id="3_card"]
+
+[node name="ГлавныйЭкран" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Отступы" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Колонки" type="HSplitContainer" parent="Отступы"]
+layout_mode = 2
+split_offset = 420
+
+[node name="ЛеваяПанель" type="VBoxContainer" parent="Отступы/Колонки"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Заголовок" type="Label" parent="Отступы/Колонки/ЛеваяПанель"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Мир Троссов"
+
+[node name="Подзаголовок" type="Label" parent="Отступы/Колонки/ЛеваяПанель"]
+layout_mode = 2
+text = "Канатные дороги, фуникулеры и другие инженерные маршруты"
+autowrap_mode = 3
+
+[node name="ObjectList" type="ItemList" parent="Отступы/Колонки/ЛеваяПанель"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_list")
+
+[node name="ПраваяПанель" type="VBoxContainer" parent="Отступы/Колонки"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ObjectCard" type="PanelContainer" parent="Отступы/Колонки/ПраваяПанель"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("3_card")
+
+[node name="JournalLabel" type="RichTextLabel" parent="Отступы/Колонки/ПраваяПанель"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+text = "[b]Журнал[/b]\nПока нет действий."

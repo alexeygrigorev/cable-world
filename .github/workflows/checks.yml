@@ -1,0 +1,22 @@
+name: Проверки
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  static:
+    name: Статические проверки без Godot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код
+        uses: actions/checkout@v4
+
+      - name: Настроить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Запустить быстрые проверки
+        run: python3 -m unittest discover -s tests

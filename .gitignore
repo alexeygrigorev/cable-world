@@ -1,0 +1,15 @@
+.godot/
+.import/
+export_presets.cfg
+*.translation
+
+# Локальные данные MVP
+*.sqlite
+*.sqlite3
+*.db
+
+# Системные и редакторские файлы
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
