@@ -9,7 +9,7 @@ class AppShellContractTest(unittest.TestCase):
     def test_main_scene_declares_mvp_sections_and_navigation(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
 
-        for node_name in ["MapSection", "ListSection", "CardSection", "JournalSection"]:
+        for node_name in ["MapSection", "ListSection", "CardSection", "CollectionSection", "JournalSection"]:
             self.assertIn(f'name="{node_name}"', scene_text)
             self.assertIn("unique_name_in_owner = true", scene_text)
 
@@ -17,6 +17,7 @@ class AppShellContractTest(unittest.TestCase):
             "MapButton": "Карта",
             "ListButton": "Список",
             "CardButton": "Карточка",
+            "CollectionButton": "Коллекция",
             "JournalButton": "Журнал",
         }.items():
             self.assertIn(f'name="{button_name}" type="Button"', scene_text)
@@ -24,7 +25,40 @@ class AppShellContractTest(unittest.TestCase):
 
         self.assertIn('name="MapPanel" type="PanelContainer"', scene_text)
         self.assertIn('path="res://scripts/map_panel.gd"', scene_text)
-        self.assertIn("Выбранный объект: пока не выбран", scene_text)
+        self.assertIn("Выбрано: пока нет", scene_text)
+
+    def test_main_scene_uses_mobile_readable_theme_and_touch_targets(self) -> None:
+        scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
+        project_text = (ROOT / "project.godot").read_text(encoding="utf-8")
+
+        for expected in [
+            "window/size/viewport_width=390",
+            "window/size/viewport_height=844",
+            'window/stretch/mode="canvas_items"',
+            'window/stretch/aspect="expand"',
+        ]:
+            self.assertIn(expected, project_text)
+
+        for expected in [
+            'SubResource("Theme_mobile_touch")',
+            "default_font_size = 18",
+            "Button/font_sizes/font_size = 18",
+            'name="ContentScroll" type="ScrollContainer"',
+            "horizontal_scroll_mode = 0",
+            "columns = 3",
+        ]:
+            self.assertIn(expected, scene_text)
+
+        for button_name in ["MapButton", "ListButton", "CardButton", "CollectionButton", "JournalButton"]:
+            button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
+            self.assertIn("custom_minimum_size = Vector2(0, 52)", button_block)
+
+        for control_name in ["OrientationOption", "TypeFilterOption", "VisitFilterOption"]:
+            control_block = scene_text.split(f'name="{control_name}"', 1)[1].split("[node ", 1)[0]
+            self.assertIn("custom_minimum_size = Vector2(0, 48)", control_block)
+
+        self.assertNotIn("Канатные дороги, фуникулеры и другие инженерные маршруты", scene_text)
+        self.assertIn("Канатные дороги и фуникулеры", scene_text)
 
     def test_main_scene_declares_orientation_setting_in_russian(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
@@ -36,7 +70,7 @@ class AppShellContractTest(unittest.TestCase):
     def test_main_controller_routes_selection_between_sections(self) -> None:
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
 
-        for section_name in ['"map"', '"list"', '"card"', '"journal"']:
+        for section_name in ['"map"', '"list"', '"card"', '"collection"', '"journal"']:
             self.assertIn(section_name, script_text)
 
         self.assertIn("object_list.object_selected.connect(_on_object_selected)", script_text)
@@ -47,6 +81,7 @@ class AppShellContractTest(unittest.TestCase):
         self.assertIn("map_panel.select_object(index)", script_text)
         self.assertIn("_update_map_selection(objects[index])", script_text)
         self.assertIn("selected_object_label.text", script_text)
+        self.assertIn('selected_object_label.text = "Выбрано: %s\\n%s\\n%.4f, %.4f"', script_text)
 
     def test_main_controller_persists_and_applies_orientation_setting(self) -> None:
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")

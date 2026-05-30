@@ -10,6 +10,7 @@ const FILTER_NOT_VISITED := "not_visited"
 var objects: Array[Dictionary] = []
 var type_filter: String = FILTER_ALL
 var visit_filter: String = FILTER_ALL
+var country_filter: String = FILTER_ALL
 var visible_object_indices: Array[int] = []
 var empty_state_label: Label
 
@@ -25,9 +26,10 @@ func set_objects(next_objects: Array[Dictionary]) -> void:
 	objects = next_objects
 	refresh()
 
-func set_filters(next_type_filter: String, next_visit_filter: String) -> void:
+func set_filters(next_type_filter: String, next_visit_filter: String, next_country_filter: String = FILTER_ALL) -> void:
 	type_filter = next_type_filter
 	visit_filter = next_visit_filter
+	country_filter = next_country_filter
 	refresh()
 
 func get_transport_types() -> Array[String]:
@@ -49,7 +51,7 @@ func refresh() -> void:
 			continue
 
 		visible_object_indices.append(index)
-		var label := "%s — %s — %s — %s" % [
+		var label := "%s\n%s · %s · %s" % [
 			object_data.get("name", "Без названия"),
 			object_data.get("region", "Регион не указан"),
 			_visit_status_text(object_data),
@@ -74,6 +76,8 @@ func select_visual_object(index: int) -> void:
 
 func _matches_filters(object_data: Dictionary) -> bool:
 	if type_filter != FILTER_ALL and object_data.get("kind", "") != type_filter:
+		return false
+	if country_filter != FILTER_ALL and object_data.get("country", "") != country_filter:
 		return false
 
 	var is_visited := _is_object_visited(object_data)

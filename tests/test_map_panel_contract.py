@@ -38,7 +38,6 @@ class MapPanelContractTest(unittest.TestCase):
         forbidden_details = [
             "station",
             "platform",
-            "wheel",
             "станц",
             "платформ",
             "колес",
@@ -59,11 +58,81 @@ class MapPanelContractTest(unittest.TestCase):
             "каждая точка показывает один объект",
             "Выбранная точка: пока не выбрана",
             "Выбрать объект",
+            "Нет точек с координатами",
+            "Выбрано:",
         ]:
             self.assertIn(text, script_text)
 
         user_strings = re.findall(r'"([^"]*[А-Яа-яЁё][^"]*)"', script_text)
         self.assertGreaterEqual(len(user_strings), 8)
+
+    def test_mobile_map_has_visible_contract(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+        scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
+
+        self.assertIn("const MARKER_SIZE := Vector2(46.0, 38.0)", script_text)
+        self.assertIn("const MAP_MIN_HEIGHT := 420.0", script_text)
+        self.assertIn("const MAP_VIEW_HEIGHT := 270.0", script_text)
+        self.assertIn("custom_minimum_size = Vector2(0, 420)", scene_text)
+        self.assertIn('map_layer.custom_minimum_size = Vector2(0.0, MAP_VIEW_HEIGHT)', script_text)
+        self.assertIn("OfflineMapLayer.new()", script_text)
+        self.assertIn("draw_rect(rect", script_text)
+        self.assertIn("draw_line", script_text)
+        self.assertIn("MARKER_SPREAD_DISTANCE", script_text)
+        self.assertIn("MARKER_SPREAD_STEP", script_text)
+        self.assertIn("GRID_LAYOUT_MIN_MARKERS", script_text)
+        self.assertIn("func _grid_marker_position(", script_text)
+        self.assertIn("сетка для читаемости", script_text)
+        self.assertIn("func _spread_marker_position(", script_text)
+        self.assertIn("func _is_clear_marker_position(", script_text)
+        self.assertIn("func _compact_text(", script_text)
+        self.assertIn("empty_state_label.visible = marker_buttons.is_empty()", script_text)
+
+    def test_map_panel_supports_pan_zoom_and_touch_controls(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "var pan_offset := Vector2.ZERO",
+            "var zoom := 1.0",
+            "func _on_map_layer_gui_input(event: InputEvent) -> void:",
+            "InputEventMouseButton",
+            "InputEventMouseMotion",
+            "InputEventScreenTouch",
+            "InputEventScreenDrag",
+            "InputEventMagnifyGesture",
+            "MOUSE_BUTTON_WHEEL_UP",
+            "MOUSE_BUTTON_WHEEL_DOWN",
+            "pan_offset += event.relative",
+            "func _zoom_at(pivot: Vector2, factor: float) -> void:",
+            "clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM)",
+            'button.text = title',
+            '"+"',
+            '"-"',
+            "custom_minimum_size = MAP_CONTROL_SIZE",
+        ]:
+            self.assertIn(expected, script_text)
+
+    def test_map_panel_filters_markers_by_visit_status(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            'const MAP_FILTER_ALL := "all"',
+            'const MAP_FILTER_VISITED := "visited"',
+            'const MAP_FILTER_NOT_VISITED := "not_visited"',
+            "var map_filter := MAP_FILTER_ALL",
+            "func set_map_filter(next_filter: String) -> void:",
+            "func _object_matches_filter(object_data: Dictionary) -> bool:",
+            "func _is_object_visited(object_data: Dictionary) -> bool:",
+            'status_id == "visited" or status_id == "favorite"',
+            'return object_data.get("visited", false)',
+            'marker.visible = _object_matches_filter(objects[index])',
+            "Выбранная точка скрыта фильтром карты",
+            "Нет точек для выбранного фильтра",
+            '"Все"',
+            '"Посещенные"',
+            '"Непосещенные"',
+        ]:
+            self.assertIn(expected, script_text)
 
     def test_main_scene_and_controller_wire_map_selection(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
@@ -82,6 +151,7 @@ class MapPanelContractTest(unittest.TestCase):
             "_select_object(index, false)",
             "map_panel.select_object(index)",
             "object_card.show_object(objects[index], storage_runtime_enabled)",
+            "map_panel.set_objects(objects)",
         ]:
             self.assertIn(expected, main_text)
 

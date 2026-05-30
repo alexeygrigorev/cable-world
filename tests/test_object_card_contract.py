@@ -173,6 +173,19 @@ class ObjectCardContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, main_text)
 
+    def test_card_controls_keep_mobile_touch_targets(self) -> None:
+        card_text = (ROOT / "scripts" / "object_card_panel.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "status_option.custom_minimum_size = Vector2(0, 48)",
+            "add_photo_button.custom_minimum_size = Vector2(0, 52)",
+            "visit_title_edit.custom_minimum_size = Vector2(0, 48)",
+            "visit_notes_edit.custom_minimum_size = Vector2(0, 112)",
+            "add_visit_button.custom_minimum_size = Vector2(0, 52)",
+            'label.add_theme_font_size_override("font_size", 20)',
+        ]:
+            self.assertIn(expected, card_text)
+
 
 if __name__ == "__main__":
     unittest.main()

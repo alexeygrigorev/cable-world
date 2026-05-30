@@ -18,8 +18,8 @@ class ObjectListContractTest(unittest.TestCase):
             self.assertIn("unique_name_in_owner = true", scene_text)
 
         for visible_text in [
-            "Тип транспорта",
-            "Статус посещения",
+            "Тип",
+            "Статус",
             "Все виды транспорта",
             "Все объекты",
             "Еще не посещали",
@@ -35,7 +35,7 @@ class ObjectListContractTest(unittest.TestCase):
             "const FILTER_VISITED",
             "const FILTER_NOT_VISITED",
             "var visible_object_indices: Array[int]",
-            "func set_filters(next_type_filter: String, next_visit_filter: String) -> void:",
+            "func set_filters(next_type_filter: String, next_visit_filter: String, next_country_filter: String = FILTER_ALL) -> void:",
             "func get_transport_types() -> Array[String]:",
             "func _matches_filters(object_data: Dictionary) -> bool:",
             "func _is_object_visited(object_data: Dictionary) -> bool:",
@@ -47,6 +47,7 @@ class ObjectListContractTest(unittest.TestCase):
             "работа:",
             "object_selected.emit(visible_object_indices[index])",
             "Пока нет объектов.",
+            'var label := "%s\\n%s · %s · %s"',
         ]:
             self.assertIn(expected, script_text)
 

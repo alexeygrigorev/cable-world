@@ -1,9 +1,18 @@
-[gd_scene load_steps=5 format=3 uid="uid://mir_trossov_main"]
+[gd_scene load_steps=6 format=3 uid="uid://mir_trossov_main"]
 
 [ext_resource type="Script" path="res://scripts/main_screen.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/object_list_panel.gd" id="2_list"]
 [ext_resource type="Script" path="res://scripts/object_card_panel.gd" id="3_card"]
 [ext_resource type="Script" path="res://scripts/map_panel.gd" id="4_map"]
+
+[sub_resource type="Theme" id="Theme_mobile_touch"]
+default_font_size = 18
+Button/font_sizes/font_size = 18
+ItemList/font_sizes/font_size = 18
+Label/font_sizes/font_size = 18
+LineEdit/font_sizes/font_size = 18
+OptionButton/font_sizes/font_size = 18
+TextEdit/font_sizes/font_size = 18
 
 [node name="ГлавныйЭкран" type="Control"]
 layout_mode = 3
@@ -12,6 +21,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_mobile_touch")
 script = ExtResource("1_main")
 
 [node name="Отступы" type="MarginContainer" parent="."]
@@ -21,23 +31,23 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
 
 [node name="Оболочка" type="VBoxContainer" parent="Отступы"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="Заголовок" type="Label" parent="Отступы/Оболочка"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 28
 text = "Мир Троссов"
 
 [node name="Подзаголовок" type="Label" parent="Отступы/Оболочка"]
 layout_mode = 2
-text = "Канатные дороги, фуникулеры и другие инженерные маршруты"
+text = "Канатные дороги и фуникулеры"
 autowrap_mode = 3
 
 [node name="Настройки" type="GridContainer" parent="Отступы/Оболочка"]
@@ -52,6 +62,7 @@ text = "Ориентация"
 
 [node name="OrientationOption" type="OptionButton" parent="Отступы/Оболочка/Настройки"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 3
@@ -67,10 +78,11 @@ popup/item_2/id = 2
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
-columns = 2
+columns = 3
 
 [node name="MapButton" type="Button" parent="Отступы/Оболочка/Навигация"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
@@ -78,6 +90,7 @@ text = "Карта"
 
 [node name="ListButton" type="Button" parent="Отступы/Оболочка/Навигация"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
@@ -85,13 +98,23 @@ text = "Список"
 
 [node name="CardButton" type="Button" parent="Отступы/Оболочка/Навигация"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 text = "Карточка"
 
+[node name="CollectionButton" type="Button" parent="Отступы/Оболочка/Навигация"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Коллекция"
+
 [node name="JournalButton" type="Button" parent="Отступы/Оболочка/Навигация"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
@@ -101,67 +124,82 @@ text = "Журнал"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Секции" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое"]
+[node name="ContentScroll" type="ScrollContainer" parent="Отступы/Оболочка/Содержимое"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="MapSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
+[node name="Секции" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MapSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="КартаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/MapSection"]
+[node name="КартаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MapSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Карта"
 
-[node name="MapPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/Секции/MapSection"]
+[node name="MapPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MapSection"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 260)
+custom_minimum_size = Vector2(0, 420)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("4_map")
 
-[node name="SelectedObjectLabel" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/MapSection"]
+[node name="SelectedObjectLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/MapSection"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Выбранный объект: пока не выбран"
+text = "Выбрано: пока нет"
 autowrap_mode = 3
 
-[node name="ListSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
+[node name="ListSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="СписокЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+[node name="СписокЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Список объектов"
 
-[node name="СписокПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+[node name="СписокПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
 layout_mode = 2
-text = "Выберите объект, чтобы открыть его карточку."
+text = "Нажмите объект, чтобы открыть карточку."
 autowrap_mode = 3
 
-[node name="ФильтрыСписка" type="GridContainer" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+[node name="ListActiveCollectionFilterLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Фильтр: не выбран"
+autowrap_mode = 3
+
+[node name="ФильтрыСписка" type="GridContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="ТипФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+[node name="ТипФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
 layout_mode = 2
-text = "Тип транспорта"
+text = "Тип"
 
-[node name="СтатусФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+[node name="СтатусФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
 layout_mode = 2
-text = "Статус посещения"
+text = "Статус"
 
-[node name="TypeFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+[node name="TypeFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 1
@@ -169,8 +207,9 @@ selected = 0
 popup/item_0/text = "Все виды транспорта"
 popup/item_0/id = 0
 
-[node name="VisitFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+[node name="VisitFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection/ФильтрыСписка"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 3
@@ -182,50 +221,89 @@ popup/item_1/id = 1
 popup/item_2/text = "Уже посещали"
 popup/item_2/id = 2
 
-[node name="ListEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+[node name="ListEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "По таким фильтрам ничего не нашлось. Попробуйте выбрать другой тип или статус посещения."
 autowrap_mode = 3
 
-[node name="ObjectList" type="ItemList" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+[node name="ObjectList" type="ItemList" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/ListSection"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 260)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("2_list")
 
-[node name="CardSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
+[node name="CollectionSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="КарточкаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/CardSection"]
+[node name="КоллекцияЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Коллекция"
+
+[node name="КоллекцияПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+layout_mode = 2
+text = "Прогресс по странам и типам транспорта."
+autowrap_mode = 3
+
+[node name="CollectionScroll" type="ScrollContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="CollectionRows" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection/CollectionScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="CollectionEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CollectionSection"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Коллекция пока пуста. Здесь появится прогресс по странам и типам."
+autowrap_mode = 3
+
+[node name="CardSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="КарточкаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CardSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Карточка объекта"
 
-[node name="ObjectCard" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/Секции/CardSection"]
+[node name="ObjectCard" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/CardSection"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("3_card")
 
-[node name="JournalSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/Секции"]
+[node name="JournalSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="ЖурналЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/JournalSection"]
+[node name="ЖурналЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/JournalSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Журнал"
 
-[node name="JournalLabel" type="RichTextLabel" parent="Отступы/Оболочка/Содержимое/Секции/JournalSection"]
+[node name="JournalLabel" type="RichTextLabel" parent="Отступы/Оболочка/Содержимое/ContentScroll/Секции/JournalSection"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3

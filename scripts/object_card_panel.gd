@@ -58,6 +58,7 @@ func _ready() -> void:
 	status_label = _add_text_label(rows)
 	operational_status_label = _add_text_label(rows)
 	status_option = OptionButton.new()
+	status_option.custom_minimum_size = Vector2(0, 48)
 	_configure_status_option()
 	status_option.item_selected.connect(_on_status_selected)
 	rows.add_child(status_option)
@@ -81,6 +82,7 @@ func _ready() -> void:
 	add_photo_button = Button.new()
 	add_photo_button.text = "Добавить запись о фото"
 	add_photo_button.tooltip_text = "Сейчас сохраняется подпись к фотографии. Выбор настоящего файла появится следующим шагом."
+	add_photo_button.custom_minimum_size = Vector2(0, 52)
 	add_photo_button.pressed.connect(_on_add_photo_pressed)
 	rows.add_child(add_photo_button)
 	videos_label = _add_text_label(rows)
@@ -88,15 +90,17 @@ func _ready() -> void:
 	visits_label = _add_text_label(rows)
 	visit_title_edit = LineEdit.new()
 	visit_title_edit.placeholder_text = "Короткое название поездки"
+	visit_title_edit.custom_minimum_size = Vector2(0, 48)
 	rows.add_child(visit_title_edit)
 	visit_notes_edit = TextEdit.new()
 	visit_notes_edit.placeholder_text = "Заметка о посещении"
-	visit_notes_edit.custom_minimum_size = Vector2(0, 88)
+	visit_notes_edit.custom_minimum_size = Vector2(0, 112)
 	visit_notes_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	rows.add_child(visit_notes_edit)
 	add_visit_button = Button.new()
 	add_visit_button.text = "Сохранить посещение"
 	add_visit_button.tooltip_text = "Записать дату, время и заметку о поездке."
+	add_visit_button.custom_minimum_size = Vector2(0, 52)
 	add_visit_button.pressed.connect(_on_add_visit_pressed)
 	rows.add_child(add_visit_button)
 
@@ -199,7 +203,7 @@ func _add_separator(rows: VBoxContainer) -> void:
 func _add_section_title(rows: VBoxContainer, text: String) -> void:
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 16)
+	label.add_theme_font_size_override("font_size", 20)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	rows.add_child(label)
 

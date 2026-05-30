@@ -3,6 +3,7 @@ class_name MainScreen
 
 const AppSettings := preload("res://scripts/app_settings.gd")
 const MapPanelScript := preload("res://scripts/map_panel.gd")
+const COLLECTION_STATS_SCRIPT_PATH := "res://scripts/collection_stats.gd"
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
@@ -11,18 +12,24 @@ const MapPanelScript := preload("res://scripts/map_panel.gd")
 @onready var visit_filter_option: OptionButton = %VisitFilterOption
 @onready var orientation_option: OptionButton = %OrientationOption
 @onready var list_empty_state_label: Label = %ListEmptyStateLabel
+@onready var list_active_collection_filter_label: Label = %ListActiveCollectionFilterLabel
 @onready var journal_label: RichTextLabel = %JournalLabel
 @onready var selected_object_label: Label = %SelectedObjectLabel
 @onready var map_button: Button = %MapButton
 @onready var list_button: Button = %ListButton
 @onready var card_button: Button = %CardButton
+@onready var collection_button: Button = %CollectionButton
 @onready var journal_button: Button = %JournalButton
 @onready var map_section: VBoxContainer = %MapSection
 @onready var list_section: VBoxContainer = %ListSection
 @onready var card_section: VBoxContainer = %CardSection
+@onready var collection_section: VBoxContainer = %CollectionSection
 @onready var journal_section: VBoxContainer = %JournalSection
+@onready var collection_rows: VBoxContainer = %CollectionRows
+@onready var collection_empty_state_label: Label = %CollectionEmptyStateLabel
 
 var objects: Array[Dictionary] = []
+var collection_stats: Dictionary = {}
 var journal_entries: Array[String] = []
 var selected_index: int = -1
 var sections: Dictionary = {}
@@ -30,26 +37,31 @@ var navigation_buttons: Dictionary = {}
 var storage: SQLiteStorageAdapter = SQLiteStorageAdapter.new()
 var storage_runtime_enabled: bool = false
 var app_settings: RefCounted = AppSettings.new()
+var collection_stats_script: Resource = null
 var orientation_option_is_refreshing: bool = false
 
 func _ready() -> void:
+	collection_stats_script = load(COLLECTION_STATS_SCRIPT_PATH) if ResourceLoader.exists(COLLECTION_STATS_SCRIPT_PATH) else null
 	objects = _load_objects_from_local_source()
 	sections = {
 		"map": map_section,
 		"list": list_section,
 		"card": card_section,
+		"collection": collection_section,
 		"journal": journal_section,
 	}
 	navigation_buttons = {
 		"map": map_button,
 		"list": list_button,
 		"card": card_button,
+		"collection": collection_button,
 		"journal": journal_button,
 	}
 
 	map_button.pressed.connect(func() -> void: _show_section("map"))
 	list_button.pressed.connect(func() -> void: _show_section("list"))
 	card_button.pressed.connect(func() -> void: _show_section("card"))
+	collection_button.pressed.connect(func() -> void: _show_section("collection"))
 	journal_button.pressed.connect(func() -> void: _show_section("journal"))
 	orientation_option.item_selected.connect(_on_orientation_selected)
 	type_filter_option.item_selected.connect(_on_filter_changed)
@@ -65,9 +77,15 @@ func _ready() -> void:
 
 	_configure_orientation_setting()
 	_configure_list_filters()
+	_refresh_collection()
 	if not objects.is_empty():
 		_select_object(0, false)
 	_show_section("map")
+
+func set_collection_stats(next_stats: Dictionary) -> void:
+	collection_stats = next_stats
+	if collection_rows != null:
+		_refresh_collection()
 
 func _load_objects_from_local_source() -> Array[Dictionary]:
 	var open_result := storage.open()
@@ -105,6 +123,7 @@ func _on_filter_changed(_item_index: int) -> void:
 		visit_filter = ObjectListPanel.FILTER_VISITED
 
 	object_list.set_filters(type_filter, visit_filter)
+	list_active_collection_filter_label.visible = false
 	if selected_index >= 0:
 		object_list.select_visual_object(selected_index)
 
@@ -120,6 +139,8 @@ func _on_status_changed(object_id: String, status_id: String) -> void:
 			objects[index]["visited"] = visited
 			objects[index]["visit_status_id"] = normalized_status
 			object_list.refresh()
+			map_panel.set_objects(objects)
+			_refresh_collection()
 			_select_object(index, false)
 			_add_journal_entry(objects[index], normalized_status)
 			return
@@ -216,6 +237,162 @@ func _configure_list_filters() -> void:
 	visit_filter_option.add_item("Уже посещали")
 	object_list.set_filters(ObjectListPanel.FILTER_ALL, ObjectListPanel.FILTER_ALL)
 
+func _refresh_collection() -> void:
+	for child in collection_rows.get_children():
+		collection_rows.remove_child(child)
+		child.queue_free()
+
+	var stats := collection_stats if not collection_stats.is_empty() else _calculate_collection_stats(objects)
+	var countries: Array = stats.get("countries", [])
+	var transport_types: Array = stats.get("transport_types", [])
+	var has_rows := not countries.is_empty() or not transport_types.is_empty()
+	collection_empty_state_label.visible = not has_rows
+	collection_rows.visible = has_rows
+	if not has_rows:
+		return
+
+	_add_collection_group("Страны", countries, "country")
+	_add_collection_group("Типы транспорта", transport_types, "type")
+
+func _calculate_collection_stats(source_objects: Array[Dictionary]) -> Dictionary:
+	if collection_stats_script != null and collection_stats_script.has_method("calculate"):
+		return collection_stats_script.calculate(source_objects)
+
+	var country_stats: Dictionary = {}
+	var type_stats: Dictionary = {}
+	var total_count := 0
+	var visited_count := 0
+	for object_data in source_objects:
+		total_count += 1
+		var is_visited := _is_collection_object_visited(object_data)
+		if is_visited:
+			visited_count += 1
+		_add_collection_stat(country_stats, object_data.get("country", "Страна не указана"), object_data.get("country", "country_unknown"), is_visited)
+		_add_collection_stat(type_stats, object_data.get("kind", "Тип не указан"), object_data.get("transport_type_id", "transport_type_unknown"), is_visited)
+
+	return {
+		"overall": _collection_progress("overall", "Вся коллекция", total_count, visited_count),
+		"visited_count": visited_count,
+		"total_count": total_count,
+		"progress_percent": _collection_progress_percent(total_count, visited_count),
+		"countries": _sorted_collection_stats(country_stats),
+		"transport_types": _sorted_collection_stats(type_stats),
+	}
+
+func _add_collection_stat(stats: Dictionary, title_value: Variant, id_value: Variant, is_visited: bool) -> void:
+	var title := str(title_value).strip_edges()
+	if title.is_empty():
+		title = "Не указано"
+	var id := str(id_value).strip_edges()
+	if id.is_empty():
+		id = title
+	if not stats.has(id):
+		stats[id] = _collection_progress(id, title, 0, 0)
+
+	stats[id]["total_count"] = int(stats[id].get("total_count", 0)) + 1
+	if is_visited:
+		stats[id]["visited_count"] = int(stats[id].get("visited_count", 0)) + 1
+	stats[id]["progress_percent"] = _collection_progress_percent(
+		int(stats[id].get("total_count", 0)),
+		int(stats[id].get("visited_count", 0))
+	)
+
+func _collection_progress(id: String, title: String, total_count: int, visited_count: int) -> Dictionary:
+	return {
+		"id": id,
+		"title": title,
+		"total_count": total_count,
+		"visited_count": visited_count,
+		"progress_percent": _collection_progress_percent(total_count, visited_count),
+	}
+
+func _collection_progress_percent(total_count: int, visited_count: int) -> int:
+	if total_count <= 0:
+		return 0
+	return int(round(float(visited_count) * 100.0 / float(total_count)))
+
+func _sorted_collection_stats(stats: Dictionary) -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	for id in stats.keys():
+		rows.append(stats[id])
+	rows.sort_custom(func(left: Dictionary, right: Dictionary) -> bool:
+		return str(left.get("title", "")) < str(right.get("title", ""))
+	)
+	return rows
+
+func _add_collection_group(title: String, rows: Array, filter_kind: String) -> void:
+	var title_label := Label.new()
+	title_label.text = title
+	title_label.add_theme_font_size_override("font_size", 20)
+	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	collection_rows.add_child(title_label)
+
+	for row in rows:
+		if row is Dictionary:
+			_add_collection_row(row, filter_kind)
+
+func _add_collection_row(row: Dictionary, filter_kind: String) -> void:
+	var title := str(row.get("title", "Не указано"))
+	var total := int(row.get("total_count", row.get("total", 0)))
+	var visited := int(row.get("visited_count", row.get("visited", 0)))
+	var percent := float(row.get("progress_percent", 0.0 if total <= 0 else float(visited) / float(total) * 100.0))
+
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 6)
+	collection_rows.add_child(box)
+
+	var button := Button.new()
+	button.text = "%s\n%d из %d, %d%%" % [title, visited, total, int(round(percent))]
+	button.tooltip_text = "Открыть список с фильтром: %s" % title
+	button.custom_minimum_size = Vector2(0, 52)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.pressed.connect(func() -> void: _apply_collection_filter(filter_kind, title))
+	box.add_child(button)
+
+	var progress := ProgressBar.new()
+	progress.custom_minimum_size = Vector2(0, 36)
+	progress.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	progress.max_value = 100.0
+	progress.value = percent
+	progress.tooltip_text = "Прогресс: %d%%" % int(round(percent))
+	box.add_child(progress)
+
+func _apply_collection_filter(filter_kind: String, value: String) -> void:
+	var type_filter := ObjectListPanel.FILTER_ALL
+	var country_filter := ObjectListPanel.FILTER_ALL
+	if filter_kind == "type":
+		type_filter = value
+		_select_type_filter_option(value)
+	else:
+		_select_type_filter_option(ObjectListPanel.FILTER_ALL)
+		country_filter = value
+
+	visit_filter_option.select(0)
+	object_list.set_filters(type_filter, ObjectListPanel.FILTER_ALL, country_filter)
+	list_active_collection_filter_label.text = "Фильтр: %s\n%s" % [
+		"тип транспорта" if filter_kind == "type" else "страна",
+		value,
+	]
+	list_active_collection_filter_label.visible = true
+	if selected_index >= 0:
+		object_list.select_visual_object(selected_index)
+	_show_section("list")
+
+func _select_type_filter_option(value: String) -> void:
+	type_filter_option.select(0)
+	if value == ObjectListPanel.FILTER_ALL:
+		return
+	for index in type_filter_option.get_item_count():
+		if type_filter_option.get_item_text(index) == value:
+			type_filter_option.select(index)
+			return
+
+func _is_collection_object_visited(object_data: Dictionary) -> bool:
+	if object_data.has("visit_status_id"):
+		return SQLiteStorageAdapter.status_is_visited(str(object_data.get("visit_status_id", "")))
+	return object_data.get("visited", false)
+
 func _configure_orientation_setting() -> void:
 	orientation_option.clear()
 	for option in AppSettings.orientation_options():
@@ -277,7 +454,7 @@ func _show_section(section_name: String) -> void:
 
 func _update_map_selection(object_data: Dictionary) -> void:
 	var coordinates: Vector2 = object_data.get("coordinates", Vector2.ZERO)
-	selected_object_label.text = "Выбранный объект: %s, %s (%.4f, %.4f)" % [
+	selected_object_label.text = "Выбрано: %s\n%s\n%.4f, %.4f" % [
 		object_data.get("name", "без названия"),
 		object_data.get("region", "регион не указан"),
 		coordinates.y,
