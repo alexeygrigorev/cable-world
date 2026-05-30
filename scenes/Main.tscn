@@ -137,6 +137,49 @@ layout_mode = 2
 text = "Выберите объект, чтобы открыть его карточку."
 autowrap_mode = 3
 
+[node name="ФильтрыСписка" type="GridContainer" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="ТипФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+layout_mode = 2
+text = "Тип транспорта"
+
+[node name="СтатусФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+layout_mode = 2
+text = "Статус посещения"
+
+[node name="TypeFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 1
+selected = 0
+popup/item_0/text = "Все виды транспорта"
+popup/item_0/id = 0
+
+[node name="VisitFilterOption" type="OptionButton" parent="Отступы/Оболочка/Содержимое/Секции/ListSection/ФильтрыСписка"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 3
+selected = 0
+popup/item_0/text = "Все объекты"
+popup/item_0/id = 0
+popup/item_1/text = "Еще не посещали"
+popup/item_1/id = 1
+popup/item_2/text = "Уже посещали"
+popup/item_2/id = 2
+
+[node name="ListEmptyStateLabel" type="Label" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "По таким фильтрам ничего не нашлось. Попробуйте выбрать другой тип или статус посещения."
+autowrap_mode = 3
+
 [node name="ObjectList" type="ItemList" parent="Отступы/Оболочка/Содержимое/Секции/ListSection"]
 unique_name_in_owner = true
 layout_mode = 2

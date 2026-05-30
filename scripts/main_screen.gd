@@ -3,6 +3,9 @@ class_name MainScreen
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
+@onready var type_filter_option: OptionButton = %TypeFilterOption
+@onready var visit_filter_option: OptionButton = %VisitFilterOption
+@onready var list_empty_state_label: Label = %ListEmptyStateLabel
 @onready var journal_label: RichTextLabel = %JournalLabel
 @onready var selected_object_label: Label = %SelectedObjectLabel
 @onready var map_button: Button = %MapButton
@@ -21,7 +24,7 @@ var sections: Dictionary = {}
 var navigation_buttons: Dictionary = {}
 
 func _ready() -> void:
-	objects = DemoCatalog.get_objects()
+	objects = _load_objects_from_local_source()
 	sections = {
 		"map": map_section,
 		"list": list_section,
@@ -39,17 +42,38 @@ func _ready() -> void:
 	list_button.pressed.connect(func() -> void: _show_section("list"))
 	card_button.pressed.connect(func() -> void: _show_section("card"))
 	journal_button.pressed.connect(func() -> void: _show_section("journal"))
-	object_list.objects = objects
+	type_filter_option.item_selected.connect(_on_filter_changed)
+	visit_filter_option.item_selected.connect(_on_filter_changed)
+	object_list.set_empty_state_label(list_empty_state_label)
+	object_list.set_objects(objects)
 	object_list.object_selected.connect(_on_object_selected)
 	object_card.visit_toggled.connect(_on_visit_toggled)
 
-	object_list.refresh()
+	_configure_list_filters()
 	if not objects.is_empty():
 		_select_object(0, false)
 	_show_section("map")
 
+func _load_objects_from_local_source() -> Array[Dictionary]:
+	return DemoCatalog.get_objects()
+
 func _on_object_selected(index: int) -> void:
 	_select_object(index, true)
+
+func _on_filter_changed(_item_index: int) -> void:
+	var type_filter := ObjectListPanel.FILTER_ALL
+	if type_filter_option.selected > 0:
+		type_filter = type_filter_option.get_item_text(type_filter_option.selected)
+
+	var visit_filter := ObjectListPanel.FILTER_ALL
+	if visit_filter_option.selected == 1:
+		visit_filter = ObjectListPanel.FILTER_NOT_VISITED
+	elif visit_filter_option.selected == 2:
+		visit_filter = ObjectListPanel.FILTER_VISITED
+
+	object_list.set_filters(type_filter, visit_filter)
+	if selected_index >= 0:
+		object_list.select_visual_object(selected_index)
 
 func _on_visit_toggled(object_id: String, visited: bool) -> void:
 	for index in objects.size():
@@ -59,6 +83,18 @@ func _on_visit_toggled(object_id: String, visited: bool) -> void:
 			_select_object(index, false)
 			_add_journal_entry(objects[index], visited)
 			return
+
+func _configure_list_filters() -> void:
+	type_filter_option.clear()
+	type_filter_option.add_item("Все виды транспорта")
+	for transport_type in object_list.get_transport_types():
+		type_filter_option.add_item(transport_type)
+
+	visit_filter_option.clear()
+	visit_filter_option.add_item("Все объекты")
+	visit_filter_option.add_item("Еще не посещали")
+	visit_filter_option.add_item("Уже посещали")
+	object_list.set_filters(ObjectListPanel.FILTER_ALL, ObjectListPanel.FILTER_ALL)
 
 func _select_object(index: int, open_card: bool) -> void:
 	if index < 0 or index >= objects.size():
