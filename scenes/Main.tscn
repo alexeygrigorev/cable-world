@@ -45,11 +45,13 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Заголовок" type="Label" parent="Отступы/Оболочка"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Мир Троссов"
 
 [node name="Подзаголовок" type="Label" parent="Отступы/Оболочка"]
+visible = false
 layout_mode = 2
 text = "Канатные дороги и фуникулеры"
 autowrap_mode = 3
@@ -199,6 +201,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 10
 
 [node name="КартаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Карта"
@@ -207,7 +210,7 @@ text = "Карта"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 4
 script = ExtResource("4_map")
 
 [node name="SelectedObjectLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection"]
@@ -239,11 +242,13 @@ size_flags_vertical = 3
 theme_override_constants/separation = 8
 
 [node name="СписокЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Список объектов"
 
 [node name="СписокПодсказка" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
+visible = false
 layout_mode = 2
 text = "Касание открывает карточку, движение прокручивает список."
 autowrap_mode = 3
@@ -256,6 +261,7 @@ text = "Фильтр: не выбран"
 autowrap_mode = 3
 
 [node name="ПоискФильтрПодпись" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
+visible = false
 layout_mode = 2
 text = "Поиск по названию, региону или стране"
 autowrap_mode = 3
