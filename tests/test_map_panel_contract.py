@@ -54,13 +54,11 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("https://", script_text)
         for text in [
             "Карта объектов",
-            "Выбранная точка: пока не выбрана",
             "Выбрать объект",
             "Нет точек с координатами",
             "Вписать все точки на экран",
             "Приблизить карту",
             "Отдалить карту",
-            "Выбрано:",
         ]:
             self.assertIn(text, script_text)
 
@@ -71,35 +69,37 @@ class MapPanelContractTest(unittest.TestCase):
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
 
-        self.assertIn("const MARKER_SIZE := Vector2(52.0, 48.0)", script_text)
-        self.assertIn("const MAP_MIN_HEIGHT := 620.0", script_text)
-        self.assertIn("const MAP_VIEW_HEIGHT := 560.0", script_text)
-        self.assertIn("const MAP_LANDSCAPE_MIN_HEIGHT := 360.0", script_text)
-        self.assertIn("custom_minimum_size = Vector2(0, 420)", scene_text)
+        self.assertIn("const MARKER_SIZE := Vector2(44.0, 44.0)", script_text)
+        self.assertIn("const MAP_MIN_HEIGHT := 140.0", script_text)
+        self.assertIn("const MAP_VIEW_HEIGHT := 200.0", script_text)
+        self.assertIn("const MAP_LANDSCAPE_MIN_HEIGHT := 100.0", script_text)
+        self.assertIn("custom_minimum_size = Vector2(0, 200)", scene_text)
         self.assertIn('map_layer.custom_minimum_size = Vector2(0.0, MAP_VIEW_HEIGHT)', script_text)
         self.assertIn("resized.connect(_sync_map_canvas_height)", script_text)
         self.assertIn('call_deferred("_sync_map_canvas_height")', script_text)
         self.assertIn("func _sync_map_canvas_height() -> void:", script_text)
         self.assertIn("map_layer.custom_minimum_size.y = target_height", script_text)
+        self.assertIn("custom_minimum_size.y = target_height + 14.0", script_text)
         self.assertIn("if size.x > size.y:", script_text)
         self.assertIn("OfflineMapLayer.new()", script_text)
         self.assertIn("draw_rect(rect", script_text)
         self.assertIn("draw_line", script_text)
         self.assertIn("geo_bounds", script_text)
         self.assertIn("_draw_graticule()", script_text)
-        self.assertIn("_draw_scale_bar()", script_text)
+        self.assertIn("_draw_land_mass()", script_text)
+        self.assertIn("_draw_place_labels()", script_text)
+        for place_name in ["Берлин", "Гарц", "Штутгарт", "Цугшпитце"]:
+            self.assertIn(place_name, script_text)
         self.assertIn("static func _project_coordinates(", script_text)
         self.assertIn("static func _mercator_y(", script_text)
         self.assertIn("_update_map_reference_data()", script_text)
-        self.assertIn("summary_label.visible = false", script_text)
-        self.assertIn("selected_label.mouse_filter = Control.MOUSE_FILTER_IGNORE", script_text)
+        self.assertIn('toolbar.name = "ПанельИнструментов"', script_text)
         self.assertNotIn("hint_label", script_text)
         self.assertIn("MARKER_SPREAD_DISTANCE", script_text)
         self.assertIn("MARKER_SPREAD_STEP", script_text)
         self.assertNotIn("GRID_LAYOUT_MIN_MARKERS", script_text)
         self.assertNotIn("func _grid_marker_position(", script_text)
         self.assertNotIn("сетка для читаемости", script_text)
-        self.assertNotIn("func _draw_land_mass(", script_text)
         self.assertNotIn("func _draw_reference_routes(", script_text)
         self.assertNotIn("_draw_geo_labels(", script_text)
         self.assertIn("func _spread_marker_position(", script_text)
@@ -128,14 +128,14 @@ class MapPanelContractTest(unittest.TestCase):
             "func _clamp_pan_offset() -> void:",
             "const MIN_ZOOM := 0.45",
             "const MAX_ZOOM := 4.0",
-            "const FIT_CONTROL_SIZE := Vector2(104.0, 56.0)",
+            "const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)",
             "const PAN_LIMIT_PADDING := 72.0",
             "const DRAG_TAP_SUPPRESS_DISTANCE := 10.0",
             'button.text = title',
             '"+"',
             '"-"',
-            '"Вписать"',
-            "const MAP_CONTROL_SIZE := Vector2(64.0, 56.0)",
+            '"⤢"',
+            "const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)",
             'filter_controls.name = "ФильтрКарты"',
             "button.custom_minimum_size = Vector2(52.0, 48.0)",
             "button.custom_minimum_size = minimum_size",
@@ -143,7 +143,7 @@ class MapPanelContractTest(unittest.TestCase):
             '_add_filter_button(filter_controls, "✓", MAP_FILTER_VISITED)',
             '_add_filter_button(filter_controls, "○", MAP_FILTER_NOT_VISITED)',
             "marker.mouse_filter = Control.MOUSE_FILTER_PASS",
-            "zoom_controls.position = Vector2(max(10.0, map_layer.size.x - FIT_CONTROL_SIZE.x - 10.0), 10.0)",
+            'zoom_controls.name = "МасштабКарты"',
             "var suppress_next_marker_press := false",
             "marker.gui_input.connect(_on_marker_gui_input)",
             "func _on_marker_gui_input(event: InputEvent) -> void:",
@@ -162,17 +162,49 @@ class MapPanelContractTest(unittest.TestCase):
             "var map_filter := MAP_FILTER_ALL",
             "func set_map_filter(next_filter: String) -> void:",
             "func _object_matches_filter(object_data: Dictionary) -> bool:",
+            "func _object_visible_in_scope(object_data: Dictionary) -> bool:",
+            "if not _object_visible_in_scope(object_data):",
             "func _is_object_visited(object_data: Dictionary) -> bool:",
             'status_id == "visited" or status_id == "favorite"',
             'return object_data.get("visited", false)',
             'marker.visible = _object_matches_filter(objects[index])',
-            "Выбранная точка скрыта фильтром карты",
+
             "Нет точек для выбранного фильтра",
             '"Все"',
             '"✓"',
             '"○"',
             "Показать посещенные",
             "Показать непосещенные",
+        ]:
+            self.assertIn(expected, script_text)
+
+    def test_map_panel_initially_focuses_germany_when_present(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            'const MAP_SCOPE_GERMANY := "germany"',
+            'const MAP_SCOPE_ALL := "all"',
+            "var map_scope := MAP_SCOPE_GERMANY",
+            "map_scope = MAP_SCOPE_GERMANY if _has_germany_object() else MAP_SCOPE_ALL",
+            "func _active_coordinate_bounds() -> Dictionary:",
+            "var germany_objects := _germany_objects()",
+            "return _coordinate_bounds_for_objects(germany_objects)",
+            "func _coordinate_bounds_for_objects(source_objects: Array) -> Dictionary:",
+            "func _germany_objects() -> Array[Dictionary]:",
+            "func _has_germany_object() -> bool:",
+            "func _is_germany_object(object_data: Dictionary) -> bool:",
+            'value.contains("германия")',
+            'value.contains("deutschland")',
+            'value.contains("germany")',
+            "layer.geo_bounds = _active_coordinate_bounds()",
+            "var bounds := _active_coordinate_bounds()",
+            "func _coordinates_inside_bounds(coordinates: Vector2, bounds: Dictionary) -> bool:",
+            "if not _coordinates_inside_bounds(coordinates, bounds):",
+            "return _is_germany_object(object_data)",
+            "map_scope = MAP_SCOPE_ALL",
+            "_update_map_reference_data()",
+            '"⤢"',
+            "Вписать все точки на экран",
         ]:
             self.assertIn(expected, script_text)
 

@@ -18,6 +18,7 @@ class AppShellContractTest(unittest.TestCase):
             "MemorySection",
             "RideSection",
             "ObserverSection",
+            "ObjectModeSection",
             "SettingsSection",
         ]:
             self.assertIn(f'name="{node_name}"', scene_text)
@@ -32,6 +33,7 @@ class AppShellContractTest(unittest.TestCase):
             "MemoryButton": "Воспоминание",
             "RideButton": "Поездка",
             "ObserverButton": "Наблюдатель",
+            "ObjectModeButton": "Объект",
             "SettingsButton": "Настройки",
         }.items():
             self.assertIn(f'name="{button_name}" type="Button"', scene_text)
@@ -69,13 +71,21 @@ class AppShellContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, scene_text)
 
-        for button_name in ["MapButton", "ListButton", "CardButton", "CollectionButton", "JournalButton", "RideButton", "SettingsButton"]:
+        for button_name in ["MapButton", "ListButton"]:
+            button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
+            self.assertIn("custom_minimum_size = Vector2(0, 48)", button_block)
+            self.assertIn("size_flags_horizontal = 3", button_block)
+            self.assertNotIn("visible = false", button_block)
+
+        for button_name in ["CardButton", "CollectionButton", "JournalButton", "RideButton", "SettingsButton"]:
             button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
             self.assertIn("custom_minimum_size = Vector2(116, 48)", button_block)
+            self.assertIn("visible = false", button_block)
 
-        for button_name in ["MemoryButton", "ObserverButton"]:
+        for button_name in ["MemoryButton", "ObserverButton", "ObjectModeButton"]:
             button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
             self.assertIn("custom_minimum_size = Vector2(144, 48)", button_block)
+            self.assertIn("visible = false", button_block)
 
         for control_name in ["OrientationOption", "SearchLineEdit", "CountryFilterOption", "TypeFilterOption", "VisitFilterOption"]:
             control_block = scene_text.split(f'name="{control_name}"', 1)[1].split("[node ", 1)[0]
@@ -83,6 +93,26 @@ class AppShellContractTest(unittest.TestCase):
 
         self.assertNotIn("Канатные дороги, фуникулеры и другие инженерные маршруты", scene_text)
         self.assertIn("Канатные дороги и фуникулеры", scene_text)
+
+    def test_start_navigation_only_exposes_map_and_list(self) -> None:
+        scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
+
+        for button_name in ["MapButton", "ListButton"]:
+            button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
+            self.assertNotIn("visible = false", button_block)
+
+        for button_name in [
+            "CardButton",
+            "ObjectModeButton",
+            "CollectionButton",
+            "JournalButton",
+            "MemoryButton",
+            "RideButton",
+            "ObserverButton",
+            "SettingsButton",
+        ]:
+            button_block = scene_text.split(f'name="{button_name}" type="Button"', 1)[1].split("[node ", 1)[0]
+            self.assertIn("visible = false", button_block)
 
     def test_main_scene_declares_orientation_setting_in_russian(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
@@ -113,7 +143,7 @@ class AppShellContractTest(unittest.TestCase):
         self.assertIn("_update_map_selection(objects[index])", script_text)
         self.assertIn("settings_button.pressed.connect", script_text)
         self.assertIn("selected_object_label.text", script_text)
-        self.assertIn('selected_object_label.text = "Выбрано: %s\\n%s\\n%.4f, %.4f"', script_text)
+        self.assertIn('selected_object_label.text = "Выбрано: %s, %s"', script_text)
 
     def test_current_section_indicator_and_navigation_scroll_contract(self) -> None:
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
@@ -128,12 +158,14 @@ class AppShellContractTest(unittest.TestCase):
             '"settings": "Настройки"',
             'current_section_label.text = "Раздел: %s" % title',
             "_scroll_navigation_to_current(section_name)",
+            "if not button.visible:",
             'navigation_scroll.set_deferred("scroll_horizontal"',
         ]:
             self.assertIn(expected, script_text)
 
         current_section_block = scene_text.split('name="CurrentSectionLabel" type="Label"', 1)[1].split("[node ", 1)[0]
         self.assertIn("unique_name_in_owner = true", current_section_block)
+        self.assertIn("visible = false", current_section_block)
         self.assertIn('text = "Раздел: Карта"', current_section_block)
         self.assertIn("autowrap_mode = 3", current_section_block)
 

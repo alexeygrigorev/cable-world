@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://mir_trossov_main"]
+[gd_scene load_steps=10 format=3 uid="uid://mir_trossov_main"]
 
 [ext_resource type="Script" path="res://scripts/main_screen.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/object_list_panel.gd" id="2_list"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/memory_panel.gd" id="5_memory"]
 [ext_resource type="Script" path="res://scripts/ride_panel.gd" id="6_ride"]
 [ext_resource type="Script" path="res://scripts/observer_panel.gd" id="7_observer"]
+[ext_resource type="Script" path="res://scripts/object_mode_panel.gd" id="8_object_mode"]
 
 [sub_resource type="Theme" id="Theme_mobile_touch"]
 default_font_size = 18
@@ -55,7 +56,7 @@ autowrap_mode = 3
 
 [node name="НавигацияОбласть" type="Control" parent="Отступы/Оболочка"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 48)
 size_flags_horizontal = 3
 clip_contents = true
 
@@ -77,27 +78,39 @@ theme_override_constants/separation = 8
 
 [node name="MapButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(116, 48)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+size_flags_horizontal = 3
 toggle_mode = true
 text = "Карта"
 
 [node name="ListButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(116, 48)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+size_flags_horizontal = 3
 toggle_mode = true
 text = "Список"
 
 [node name="CardButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
 toggle_mode = true
 text = "Карточка"
 
+[node name="ObjectModeButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(144, 48)
+layout_mode = 2
+toggle_mode = true
+text = "Объект"
+
 [node name="CollectionButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
 toggle_mode = true
@@ -105,6 +118,7 @@ text = "Коллекция"
 
 [node name="JournalButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
 toggle_mode = true
@@ -112,6 +126,7 @@ text = "Журнал"
 
 [node name="MemoryButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(144, 48)
 layout_mode = 2
 toggle_mode = true
@@ -119,6 +134,7 @@ text = "Воспоминание"
 
 [node name="RideButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
 toggle_mode = true
@@ -126,6 +142,7 @@ text = "Поездка"
 
 [node name="ObserverButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(144, 48)
 layout_mode = 2
 toggle_mode = true
@@ -133,6 +150,7 @@ text = "Наблюдатель"
 
 [node name="SettingsButton" type="Button" parent="Отступы/Оболочка/НавигацияОбласть/НавигацияПрокрутка/Навигация"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
 toggle_mode = true
@@ -140,6 +158,7 @@ text = "Настройки"
 
 [node name="CurrentSectionLabel" type="Label" parent="Отступы/Оболочка"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Раздел: Карта"
 autowrap_mode = 3
@@ -186,7 +205,7 @@ text = "Карта"
 
 [node name="MapPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 420)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("4_map")
@@ -384,6 +403,29 @@ custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("3_card")
+
+[node name="ObjectModeSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="РежимОбъектаЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ObjectModeSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+text = "Режим объекта"
+autowrap_mode = 3
+
+[node name="ObjectModePanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ObjectModeSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("8_object_mode")
 
 [node name="ObserverSection" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции"]
 unique_name_in_owner = true

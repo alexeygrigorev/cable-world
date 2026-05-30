@@ -3,6 +3,7 @@ class_name MainScreen
 
 const AppSettings := preload("res://scripts/app_settings.gd")
 const MapPanelScript := preload("res://scripts/map_panel.gd")
+const ObjectModePanelScript := preload("res://scripts/object_mode_panel.gd")
 const RidePanelScript := preload("res://scripts/ride_panel.gd")
 const COLLECTION_STATS_SCRIPT_PATH := "res://scripts/collection_stats.gd"
 const ACHIEVEMENTS_SCRIPT_PATH := "res://scripts/achievements.gd"
@@ -11,6 +12,7 @@ const CONTENT_WIDTH_GUARD := 2.0
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
 @onready var memory_panel: MemoryPanel = %MemoryPanel
+@onready var object_mode_panel: ObjectModePanelScript = %ObjectModePanel
 @onready var observer_panel: ObserverPanel = %ObserverPanel
 @onready var map_panel: MapPanelScript = %MapPanel
 @onready var ride_panel: RidePanelScript = %RidePanel
@@ -26,6 +28,7 @@ const CONTENT_WIDTH_GUARD := 2.0
 @onready var map_button: Button = %MapButton
 @onready var list_button: Button = %ListButton
 @onready var card_button: Button = %CardButton
+@onready var object_mode_button: Button = %ObjectModeButton
 @onready var observer_button: Button = %ObserverButton
 @onready var memory_button: Button = %MemoryButton
 @onready var ride_button: Button = %RideButton
@@ -37,6 +40,7 @@ const CONTENT_WIDTH_GUARD := 2.0
 @onready var map_section: VBoxContainer = %MapSection
 @onready var list_section: VBoxContainer = %ListSection
 @onready var card_section: VBoxContainer = %CardSection
+@onready var object_mode_section: VBoxContainer = %ObjectModeSection
 @onready var observer_section: VBoxContainer = %ObserverSection
 @onready var memory_section: VBoxContainer = %MemorySection
 @onready var ride_section: VBoxContainer = %RideSection
@@ -71,6 +75,7 @@ func _ready() -> void:
 		"map": map_section,
 		"list": list_section,
 		"card": card_section,
+		"object_mode": object_mode_section,
 		"observer": observer_section,
 		"memory": memory_section,
 		"ride": ride_section,
@@ -82,6 +87,7 @@ func _ready() -> void:
 		"map": map_button,
 		"list": list_button,
 		"card": card_button,
+		"object_mode": object_mode_button,
 		"observer": observer_button,
 		"memory": memory_button,
 		"ride": ride_button,
@@ -93,6 +99,7 @@ func _ready() -> void:
 		"map": "Карта",
 		"list": "Список",
 		"card": "Карточка",
+		"object_mode": "Режим объекта",
 		"observer": "Наблюдатель",
 		"memory": "Воспоминание",
 		"ride": "Поездка",
@@ -104,6 +111,7 @@ func _ready() -> void:
 	map_button.pressed.connect(func() -> void: _show_section("map"))
 	list_button.pressed.connect(func() -> void: _show_section("list"))
 	card_button.pressed.connect(func() -> void: _show_section("card"))
+	object_mode_button.pressed.connect(func() -> void: _show_section("object_mode"))
 	observer_button.pressed.connect(func() -> void: _show_section("observer"))
 	memory_button.pressed.connect(func() -> void: _show_section("memory"))
 	ride_button.pressed.connect(func() -> void: _show_section("ride"))
@@ -121,8 +129,11 @@ func _ready() -> void:
 	object_card.status_changed.connect(_on_status_changed)
 	object_card.photo_registration_requested.connect(_on_photo_registration_requested)
 	object_card.visit_registration_requested.connect(_on_visit_registration_requested)
+	object_card.object_mode_requested.connect(func() -> void: _show_section("object_mode"))
 	object_card.observer_requested.connect(func() -> void: _show_section("observer"))
 	memory_panel.back_requested.connect(func() -> void: _show_section("card"))
+	object_mode_panel.card_requested.connect(func() -> void: _show_section("card"))
+	object_mode_panel.ride_requested.connect(func() -> void: _show_section("ride"))
 	observer_panel.back_requested.connect(func() -> void: _show_section("card"))
 	ride_panel.card_requested.connect(func() -> void: _show_section("card"))
 	map_panel.set_objects(objects)
@@ -573,6 +584,7 @@ func _select_object(index: int, open_card: bool) -> void:
 		_ensure_route_details(index)
 	object_card.show_object(objects[index], storage_runtime_enabled)
 	memory_panel.show_object(objects[index])
+	object_mode_panel.show_object(objects[index])
 	observer_panel.show_object(objects[index])
 	ride_panel.show_object(objects[index])
 	map_panel.select_object(index)
@@ -609,6 +621,8 @@ func _scroll_navigation_to_current(section_name: String) -> void:
 	if navigation_scroll == null or not navigation_buttons.has(section_name):
 		return
 	var button: Button = navigation_buttons[section_name]
+	if not button.visible:
+		return
 	var button_left := int(button.position.x)
 	var button_right := int(button.position.x + button.size.x)
 	var viewport_width := int(navigation_scroll.size.x)
@@ -620,12 +634,9 @@ func _scroll_navigation_to_current(section_name: String) -> void:
 	navigation_scroll.set_deferred("scroll_horizontal", max(0, target))
 
 func _update_map_selection(object_data: Dictionary) -> void:
-	var coordinates: Vector2 = object_data.get("coordinates", Vector2.ZERO)
-	selected_object_label.text = "Выбрано: %s\n%s\n%.4f, %.4f" % [
+	selected_object_label.text = "Выбрано: %s, %s" % [
 		object_data.get("name", "без названия"),
 		object_data.get("region", "регион не указан"),
-		coordinates.y,
-		coordinates.x
 	]
 
 func _add_journal_entry(object_data: Dictionary, status_id: String) -> void:

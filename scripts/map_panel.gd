@@ -14,6 +14,8 @@ class OfflineMapLayer:
 		var rect := Rect2(Vector2.ZERO, size)
 		draw_rect(rect, Color("#dfe8e2"))
 		_draw_graticule()
+		_draw_land_mass()
+		_draw_place_labels()
 		_draw_scale_bar()
 		draw_rect(rect, Color("#2f4b45"), false, 2.0)
 
@@ -51,6 +53,54 @@ class OfflineMapLayer:
 		draw_line(bar_origin + Vector2(bar_width, 0.0), bar_origin + Vector2(bar_width, -6.0), Color("#263b36"), 2.0, true)
 		draw_string(get_theme_default_font(), bar_origin + Vector2(0.0, -8.0), "масштаб", HORIZONTAL_ALIGNMENT_LEFT, -1.0, 10, Color("#263b36"))
 
+	func _draw_land_mass() -> void:
+		if geo_bounds.is_empty() or size.x <= 0.0 or size.y <= 0.0:
+			return
+		var germany_outline := [
+			Vector2(7.4, 54.9), Vector2(9.8, 54.8), Vector2(14.0, 53.7),
+			Vector2(14.9, 51.1), Vector2(13.2, 50.0), Vector2(12.6, 48.3),
+			Vector2(10.2, 47.2), Vector2(8.1, 47.6), Vector2(6.1, 49.0),
+			Vector2(6.0, 51.4), Vector2(7.4, 54.9),
+		]
+		var points: PackedVector2Array = []
+		for coordinates in germany_outline:
+			points.append(_geo_to_screen(coordinates))
+		if points.size() >= 3:
+			draw_colored_polygon(points, Color("#f3edd2"))
+			draw_polyline(points, Color("#7b8a62"), 2.0, true)
+		var route_line := [
+			Vector2(13.59, 52.52), Vector2(11.10, 51.75),
+			Vector2(9.18, 48.78), Vector2(11.02, 47.42),
+		]
+		var route_points: PackedVector2Array = []
+		for coordinates in route_line:
+			route_points.append(_geo_to_screen(coordinates))
+		if route_points.size() >= 2:
+			draw_polyline(route_points, Color("#e0a934"), 3.0, true)
+
+	func _draw_place_labels() -> void:
+		if geo_bounds.is_empty():
+			return
+		var places := [
+			{"title": "Берлин", "coordinates": Vector2(13.405, 52.52)},
+			{"title": "Гарц", "coordinates": Vector2(11.04, 51.75)},
+			{"title": "Штутгарт", "coordinates": Vector2(9.18, 48.78)},
+			{"title": "Цугшпитце", "coordinates": Vector2(11.02, 47.42)},
+		]
+		for place in places:
+			var position := _geo_to_screen(place["coordinates"])
+			if position.x < -20.0 or position.x > size.x + 20.0 or position.y < -20.0 or position.y > size.y + 20.0:
+				continue
+			draw_circle(position, 4.0, Color("#31544d"))
+			draw_string(
+				get_theme_default_font(),
+				position + Vector2(7.0, -6.0),
+				str(place["title"]),
+				HORIZONTAL_ALIGNMENT_LEFT,
+				120.0, 12,
+				Color("#263b36")
+			)
+
 	func _geo_to_screen(coordinates: Vector2) -> Vector2:
 		return _map_point(_project_coordinates(coordinates, geo_bounds, size))
 
@@ -58,7 +108,7 @@ class OfflineMapLayer:
 		if bounds.is_empty():
 			return Vector2.ZERO
 
-		var marker_size := Vector2(52.0, 48.0)
+		var marker_size := Vector2(44.0, 48.0)
 		var map_padding := 24.0
 		var min_longitude: float = float(bounds["min_longitude"])
 		var max_longitude: float = float(bounds["max_longitude"])
@@ -80,10 +130,10 @@ class OfflineMapLayer:
 		var radians: float = deg_to_rad(clamped_latitude)
 		return log(tan(PI / 4.0 + radians / 2.0))
 
-const MARKER_SIZE := Vector2(52.0, 48.0)
-const MAP_MIN_HEIGHT := 620.0
-const MAP_VIEW_HEIGHT := 560.0
-const MAP_LANDSCAPE_MIN_HEIGHT := 360.0
+const MARKER_SIZE := Vector2(44.0, 44.0)
+const MAP_MIN_HEIGHT := 140.0
+const MAP_VIEW_HEIGHT := 200.0
+const MAP_LANDSCAPE_MIN_HEIGHT := 100.0
 const MAP_PADDING := 24.0
 const MARKER_SPREAD_DISTANCE := 58.0
 const MARKER_SPREAD_STEP := 42.0
@@ -91,11 +141,13 @@ const SELECTED_NAME_LIMIT := 42
 const MAP_FILTER_ALL := "all"
 const MAP_FILTER_VISITED := "visited"
 const MAP_FILTER_NOT_VISITED := "not_visited"
+const MAP_SCOPE_GERMANY := "germany"
+const MAP_SCOPE_ALL := "all"
 const MIN_ZOOM := 0.45
 const MAX_ZOOM := 4.0
 const ZOOM_STEP := 1.25
-const MAP_CONTROL_SIZE := Vector2(64.0, 56.0)
-const FIT_CONTROL_SIZE := Vector2(104.0, 56.0)
+const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
+const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
 const DRAG_TAP_SUPPRESS_DISTANCE := 10.0
 
@@ -105,12 +157,12 @@ var marker_buttons: Array[Button] = []
 var pan_offset := Vector2.ZERO
 var zoom := 1.0
 var map_filter := MAP_FILTER_ALL
+var map_scope := MAP_SCOPE_GERMANY
 var map_layer: Control
 var map_content: Control
-var summary_label: Label
-var selected_label: Label
 var empty_state_label: Label
-var zoom_controls: VBoxContainer
+var summary_label: Label
+var zoom_controls: HBoxContainer
 var filter_controls: HBoxContainer
 var filter_buttons: Dictionary = {}
 var dragging := false
@@ -136,7 +188,7 @@ func _ready() -> void:
 	add_child(margin)
 
 	var rows := VBoxContainer.new()
-	rows.add_theme_constant_override("separation", 0)
+	rows.add_theme_constant_override("separation", 4)
 	rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rows.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	margin.add_child(rows)
@@ -173,40 +225,38 @@ func _ready() -> void:
 	empty_state_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	map_layer.add_child(empty_state_label)
 
-	selected_label = Label.new()
-	selected_label.text = "Выбранная точка: пока не выбрана"
-	selected_label.add_theme_color_override("font_color", Color("#15211e"))
-	selected_label.add_theme_color_override("font_shadow_color", Color(1.0, 1.0, 1.0, 0.85))
-	selected_label.add_theme_constant_override("shadow_offset_x", 1)
-	selected_label.add_theme_constant_override("shadow_offset_y", 1)
-	selected_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	selected_label.custom_minimum_size = Vector2(0.0, 56.0)
-	selected_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	map_layer.add_child(selected_label)
-
-	zoom_controls = VBoxContainer.new()
-	zoom_controls.name = "МасштабКарты"
-	zoom_controls.add_theme_constant_override("separation", 8)
-	zoom_controls.position = Vector2(10.0, 10.0)
-	map_layer.add_child(zoom_controls)
-	_add_zoom_button(zoom_controls, "+", ZOOM_STEP)
-	_add_zoom_button(zoom_controls, "-", 1.0 / ZOOM_STEP)
-	_add_fit_button(zoom_controls)
+	var toolbar := HBoxContainer.new()
+	toolbar.name = "ПанельИнструментов"
+	toolbar.add_theme_constant_override("separation", 6)
+	toolbar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rows.add_child(toolbar)
 
 	filter_controls = HBoxContainer.new()
 	filter_controls.name = "ФильтрКарты"
 	filter_controls.add_theme_constant_override("separation", 6)
-	filter_controls.position = Vector2(10.0, 10.0)
-	map_layer.add_child(filter_controls)
+	toolbar.add_child(filter_controls)
 	_add_filter_button(filter_controls, "Все", MAP_FILTER_ALL)
 	_add_filter_button(filter_controls, "✓", MAP_FILTER_VISITED)
 	_add_filter_button(filter_controls, "○", MAP_FILTER_NOT_VISITED)
+
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	toolbar.add_child(spacer)
+
+	zoom_controls = HBoxContainer.new()
+	zoom_controls.name = "МасштабКарты"
+	zoom_controls.add_theme_constant_override("separation", 6)
+	toolbar.add_child(zoom_controls)
+	_add_zoom_button(zoom_controls, "-", 1.0 / ZOOM_STEP)
+	_add_zoom_button(zoom_controls, "+", ZOOM_STEP)
+	_add_fit_button(zoom_controls)
 
 	_refresh_markers()
 	call_deferred("_sync_map_canvas_height")
 
 func set_objects(next_objects: Array[Dictionary]) -> void:
 	objects = next_objects
+	map_scope = MAP_SCOPE_GERMANY if _has_germany_object() else MAP_SCOPE_ALL
 	if is_node_ready():
 		_refresh_markers()
 
@@ -214,7 +264,6 @@ func select_object(index: int) -> void:
 	selected_index = index if index >= 0 and index < objects.size() else -1
 	if is_node_ready():
 		_refresh_marker_styles()
-		_update_selection_label()
 
 func set_map_filter(next_filter: String) -> void:
 	if next_filter == MAP_FILTER_VISITED:
@@ -229,7 +278,6 @@ func set_map_filter(next_filter: String) -> void:
 		_refresh_marker_styles()
 		_update_summary_label()
 		_update_empty_state()
-		_update_selection_label()
 
 func _refresh_markers() -> void:
 	if map_layer == null:
@@ -273,10 +321,11 @@ func _sync_map_canvas_height() -> void:
 	if size.y > 0.0:
 		var available_height: float = max(1.0, size.y - 12.0)
 		if size.x > size.y:
-			target_height = max(MAP_LANDSCAPE_MIN_HEIGHT, available_height)
+			target_height = max(MAP_LANDSCAPE_MIN_HEIGHT, min(MAP_LANDSCAPE_MIN_HEIGHT, available_height))
 		else:
 			target_height = max(MAP_LANDSCAPE_MIN_HEIGHT, min(MAP_VIEW_HEIGHT, available_height))
 	map_layer.custom_minimum_size.y = target_height
+	custom_minimum_size.y = target_height + 14.0
 
 func _on_map_layer_resized() -> void:
 	map_layer.queue_redraw()
@@ -284,13 +333,6 @@ func _on_map_layer_resized() -> void:
 		map_content.size = map_layer.size
 	if empty_state_label != null:
 		empty_state_label.size = map_layer.size
-	if zoom_controls != null:
-		zoom_controls.position = Vector2(max(10.0, map_layer.size.x - FIT_CONTROL_SIZE.x - 10.0), 10.0)
-	if filter_controls != null:
-		filter_controls.position = Vector2(10.0, 10.0)
-	if selected_label != null:
-		selected_label.position = Vector2(12.0, max(12.0, map_layer.size.y - 72.0))
-		selected_label.size = Vector2(max(1.0, map_layer.size.x - FIT_CONTROL_SIZE.x - 34.0), 64.0)
 	_update_map_reference_data()
 	_apply_map_transform()
 	_position_markers()
@@ -299,7 +341,7 @@ func _position_markers() -> void:
 	if map_layer == null:
 		return
 
-	var bounds := _coordinate_bounds()
+	var bounds := _active_coordinate_bounds()
 	if bounds.is_empty():
 		return
 
@@ -313,6 +355,9 @@ func _position_markers() -> void:
 
 		var coordinates := _object_coordinates(objects[index])
 		var base_position := OfflineMapLayer._project_coordinates(coordinates, bounds, map_layer.size)
+		if not _coordinates_inside_bounds(coordinates, bounds):
+			marker.position = _map_point_to_screen(base_position)
+			continue
 		var spread_position := _spread_marker_position(base_position, placed_positions, map_layer.size)
 		var clamped_position := Vector2(
 			clamp(spread_position.x, MAP_PADDING, max(MAP_PADDING, map_layer.size.x - MARKER_SIZE.x - MAP_PADDING)),
@@ -327,8 +372,8 @@ func _refresh_marker_styles() -> void:
 		marker.visible = _object_matches_filter(objects[index]) if index >= 0 and index < objects.size() else false
 		var is_selected := index == selected_index
 		marker.button_pressed = is_selected
-		marker.text = "✓" if is_selected else str(index + 1)
-		marker.add_theme_font_size_override("font_size", 22 if is_selected else 18)
+		marker.text = "✓" if is_selected else "•"
+		marker.add_theme_font_size_override("font_size", 20)
 		marker.add_theme_color_override("font_color", Color("#ffffff") if is_selected else Color("#10231f"))
 		marker.add_theme_color_override("font_pressed_color", Color("#ffffff"))
 		_apply_marker_style(marker, is_selected)
@@ -336,8 +381,6 @@ func _refresh_marker_styles() -> void:
 			"Выбранный объект" if is_selected else "Выбрать объект",
 			objects[index].get("name", "без названия") if index >= 0 and index < objects.size() else "без названия"
 		]
-
-	_update_selection_label()
 
 func _update_summary_label() -> void:
 	if summary_label == null:
@@ -357,24 +400,6 @@ func _update_empty_state() -> void:
 	empty_state_label.visible = marker_buttons.is_empty() or _visible_marker_count() == 0
 	empty_state_label.text = "Нет точек с координатами" if marker_buttons.is_empty() else "Нет точек для выбранного фильтра"
 	empty_state_label.size = map_layer.size if map_layer != null else Vector2.ZERO
-
-func _update_selection_label() -> void:
-	if selected_label == null:
-		return
-
-	if selected_index < 0 or selected_index >= objects.size():
-		selected_label.text = "Выбранная точка: пока не выбрана"
-		return
-
-	if not _object_matches_filter(objects[selected_index]):
-		selected_label.text = "Выбранная точка скрыта фильтром карты"
-		return
-
-	var object_data := objects[selected_index]
-	selected_label.text = "Выбрано: %s\n%s" % [
-		_compact_text(str(object_data.get("name", "без названия")), SELECTED_NAME_LIMIT),
-		_compact_text(str(object_data.get("region", "регион не указан")), 32),
-	]
 
 func _spread_marker_position(base_position: Vector2, placed_positions: Array[Vector2], map_size: Vector2) -> Vector2:
 	if _is_clear_marker_position(base_position, placed_positions):
@@ -428,7 +453,7 @@ func _add_zoom_button(parent: Container, title: String, factor: float) -> void:
 	_add_map_control_button(parent, title, tooltip, MAP_CONTROL_SIZE, func() -> void: _zoom_at(map_layer.size * 0.5, factor))
 
 func _add_fit_button(parent: Container) -> void:
-	_add_map_control_button(parent, "Вписать", "Вписать все точки на экран", FIT_CONTROL_SIZE, _reset_map_view)
+	_add_map_control_button(parent, "⤢", "Вписать все точки на экран", FIT_CONTROL_SIZE, _reset_map_view)
 
 func _add_map_control_button(parent: Container, title: String, tooltip: String, minimum_size: Vector2, on_pressed: Callable) -> void:
 	var button := Button.new()
@@ -535,6 +560,8 @@ func _zoom_at(pivot: Vector2, factor: float) -> void:
 	_apply_map_transform()
 
 func _reset_map_view() -> void:
+	map_scope = MAP_SCOPE_ALL
+	_update_map_reference_data()
 	zoom = 1.0
 	pan_offset = Vector2.ZERO
 	_apply_map_transform()
@@ -578,12 +605,19 @@ func _visible_marker_count() -> int:
 	return count
 
 func _object_matches_filter(object_data: Dictionary) -> bool:
+	if not _object_visible_in_scope(object_data):
+		return false
 	if map_filter == MAP_FILTER_ALL:
 		return true
 	var is_visited := _is_object_visited(object_data)
 	if map_filter == MAP_FILTER_VISITED:
 		return is_visited
 	return not is_visited
+
+func _object_visible_in_scope(object_data: Dictionary) -> bool:
+	if map_scope != MAP_SCOPE_GERMANY:
+		return true
+	return _is_germany_object(object_data)
 
 func _is_object_visited(object_data: Dictionary) -> bool:
 	if object_data.has("visit_status_id"):
@@ -648,12 +682,79 @@ func _coordinate_bounds() -> Dictionary:
 		"max_latitude": clamp(max_latitude + latitude_padding, -85.0, 85.0),
 	}
 
+func _active_coordinate_bounds() -> Dictionary:
+	if map_scope == MAP_SCOPE_GERMANY:
+		var germany_objects := _germany_objects()
+		if not germany_objects.is_empty():
+			return _coordinate_bounds_for_objects(germany_objects)
+	return _coordinate_bounds()
+
+func _coordinate_bounds_for_objects(source_objects: Array) -> Dictionary:
+	var has_any_coordinates := false
+	var min_longitude := 0.0
+	var max_longitude := 0.0
+	var min_latitude := 0.0
+	var max_latitude := 0.0
+	for object_data in source_objects:
+		if not _has_coordinates(object_data):
+			continue
+		var coordinates := _object_coordinates(object_data)
+		if not has_any_coordinates:
+			min_longitude = coordinates.x
+			max_longitude = coordinates.x
+			min_latitude = coordinates.y
+			max_latitude = coordinates.y
+			has_any_coordinates = true
+			continue
+		min_longitude = min(min_longitude, coordinates.x)
+		max_longitude = max(max_longitude, coordinates.x)
+		min_latitude = min(min_latitude, coordinates.y)
+		max_latitude = max(max_latitude, coordinates.y)
+	if not has_any_coordinates:
+		return {}
+	var longitude_padding: float = max(2.0, (max_longitude - min_longitude) * 0.08)
+	var latitude_padding: float = max(1.0, (max_latitude - min_latitude) * 0.12)
+	return {
+		"min_longitude": min_longitude - longitude_padding,
+		"max_longitude": max_longitude + longitude_padding,
+		"min_latitude": clamp(min_latitude - latitude_padding, -85.0, 85.0),
+		"max_latitude": clamp(max_latitude + latitude_padding, -85.0, 85.0),
+	}
+
+func _germany_objects() -> Array[Dictionary]:
+	var matching_objects: Array[Dictionary] = []
+	for object_data in objects:
+		if _is_germany_object(object_data):
+			matching_objects.append(object_data)
+	return matching_objects
+
+func _has_germany_object() -> bool:
+	for object_data in objects:
+		if _is_germany_object(object_data):
+			return true
+	return false
+
+func _is_germany_object(object_data: Dictionary) -> bool:
+	for key in object_data:
+		if not (object_data[key] is String):
+			continue
+		var value := str(object_data[key]).to_lower()
+		if value.contains("германия") or value.contains("deutschland") or value.contains("germany"):
+			return true
+	return false
+
+func _coordinates_inside_bounds(coordinates: Vector2, bounds: Dictionary) -> bool:
+	return coordinates.x >= float(bounds["min_longitude"]) \
+		and coordinates.x <= float(bounds["max_longitude"]) \
+		and coordinates.y >= float(bounds["min_latitude"]) \
+		and coordinates.y <= float(bounds["max_latitude"])
+
 func _update_map_reference_data() -> void:
 	if map_layer == null:
 		return
 
 	var layer := map_layer as OfflineMapLayer
-	layer.geo_bounds = _coordinate_bounds()
+	layer.geo_bounds = _active_coordinate_bounds()
 	layer.queue_redraw()
 
 func _has_coordinates(object_data: Dictionary) -> bool:

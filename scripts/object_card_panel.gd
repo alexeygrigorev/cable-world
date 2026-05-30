@@ -4,6 +4,7 @@ class_name ObjectCardPanel
 signal status_changed(object_id: String, status_id: String)
 signal photo_registration_requested(object_id: String)
 signal visit_registration_requested(object_id: String, title: String, notes: String)
+signal object_mode_requested
 signal observer_requested
 
 var current_object: Dictionary = {}
@@ -20,6 +21,7 @@ var technical_label: Label
 var stations_label: Label
 var directions_label: Label
 var route_scheme_label: Label
+var object_mode_button: Button
 var observer_button: Button
 var photos_label: Label
 var photos_hint_label: Label
@@ -85,6 +87,13 @@ func _ready() -> void:
 	stations_label = _add_text_label(rows)
 	directions_label = _add_text_label(rows)
 	route_scheme_label = _add_text_label(rows)
+	object_mode_button = Button.new()
+	object_mode_button.text = "Открыть режим объекта"
+	object_mode_button.tooltip_text = "Показать схему станций и отрезков выбранного объекта."
+	object_mode_button.custom_minimum_size = Vector2(0, 52)
+	object_mode_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	object_mode_button.pressed.connect(_on_object_mode_pressed)
+	rows.add_child(object_mode_button)
 	observer_button = Button.new()
 	observer_button.text = "Открыть наблюдателя"
 	observer_button.tooltip_text = "Показать выбранный объект как схему со стороны."
@@ -138,6 +147,7 @@ func show_empty_state() -> void:
 	stations_label.text = "Станции: объект не выбран"
 	directions_label.text = "Направление: объект не выбран"
 	route_scheme_label.text = "Схема маршрута: объект не выбран"
+	object_mode_button.disabled = true
 	observer_button.disabled = true
 	photos_label.text = "Фотографии: пока нет"
 	photos_hint_label.text = "Фотографии пока не добавлены."
@@ -167,6 +177,7 @@ func show_object(object_data: Dictionary, can_register_photo: bool = false) -> v
 	stations_label.text = _stations_text(object_data)
 	directions_label.text = _directions_text(object_data)
 	route_scheme_label.text = _route_scheme_text(object_data)
+	object_mode_button.disabled = false
 	observer_button.disabled = false
 	photos_label.text = _photo_collection_text(object_data)
 	photos_hint_label.text = _photo_hint_text(can_register_photo)
@@ -217,6 +228,11 @@ func _on_observer_pressed() -> void:
 	if current_object.is_empty():
 		return
 	observer_requested.emit()
+
+func _on_object_mode_pressed() -> void:
+	if current_object.is_empty():
+		return
+	object_mode_requested.emit()
 
 func _select_status_option(status_id: String) -> void:
 	status_option_is_refreshing = true
