@@ -7,8 +7,10 @@ on:
 
 jobs:
   static:
-    name: Статические проверки без Godot
+    name: Проверки проекта
     runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: "4.6.3-stable"
     steps:
       - name: Получить код
         uses: actions/checkout@v4
@@ -18,12 +20,34 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Установить Godot
+      - name: Настроить Java для Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Настроить Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Установить Android SDK packages
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install \
+            "platform-tools" \
+            "build-tools;35.0.1" \
+            "platforms;android-35" \
+            "cmdline-tools;latest" \
+            "cmake;3.10.2.4988404" \
+            "ndk;28.1.13356709"
+
+      - name: Установить Godot и export templates
+        env:
+          CONFIGURE_GODOT_ANDROID_EXPORT: "true"
         run: |
           mkdir -p "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           export PATH="$HOME/.local/bin:$PATH"
-          INSTALL_EXPORT_TEMPLATES=false scripts/install-godot.sh
+          scripts/install-godot.sh
 
-      - name: Запустить быстрые проверки
+      - name: Запустить проверки
         run: python3 -m unittest discover -s tests
