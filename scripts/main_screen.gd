@@ -34,7 +34,7 @@ func _on_visit_toggled(object_id: String, visited: bool) -> void:
 			return
 
 func _add_journal_entry(object_data: Dictionary, visited: bool) -> void:
-	var status := "посещено" if visited else "снята отметка посещения"
+	var status: String = "посещено" if visited else "снята отметка посещения"
 	journal_entries.push_front("%s: %s" % [object_data.get("name", "Объект"), status])
 	journal_entries = journal_entries.slice(0, 6)
 	journal_label.text = "[b]Журнал[/b]\n%s" % "\n".join(journal_entries)

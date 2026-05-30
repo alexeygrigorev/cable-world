@@ -2,6 +2,8 @@
 .import/
 export_presets.cfg
 *.translation
+build/
+__pycache__/
 
 # Локальные данные MVP
 *.sqlite

@@ -79,5 +79,6 @@ func _on_visit_pressed() -> void:
 	if current_object.is_empty():
 		return
 
-	var next_visited := not current_object.get("visited", false)
+	var current_visited: bool = current_object.get("visited", false)
+	var next_visited: bool = not current_visited
 	visit_toggled.emit(current_object.get("id", ""), next_visited)
