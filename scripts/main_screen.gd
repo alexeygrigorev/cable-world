@@ -1,10 +1,15 @@
 extends Control
 class_name MainScreen
 
+const AppSettings := preload("res://scripts/app_settings.gd")
+const MapPanelScript := preload("res://scripts/map_panel.gd")
+
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
+@onready var map_panel: MapPanelScript = %MapPanel
 @onready var type_filter_option: OptionButton = %TypeFilterOption
 @onready var visit_filter_option: OptionButton = %VisitFilterOption
+@onready var orientation_option: OptionButton = %OrientationOption
 @onready var list_empty_state_label: Label = %ListEmptyStateLabel
 @onready var journal_label: RichTextLabel = %JournalLabel
 @onready var selected_object_label: Label = %SelectedObjectLabel
@@ -24,6 +29,8 @@ var sections: Dictionary = {}
 var navigation_buttons: Dictionary = {}
 var storage: SQLiteStorageAdapter = SQLiteStorageAdapter.new()
 var storage_runtime_enabled: bool = false
+var app_settings: RefCounted = AppSettings.new()
+var orientation_option_is_refreshing: bool = false
 
 func _ready() -> void:
 	objects = _load_objects_from_local_source()
@@ -44,13 +51,17 @@ func _ready() -> void:
 	list_button.pressed.connect(func() -> void: _show_section("list"))
 	card_button.pressed.connect(func() -> void: _show_section("card"))
 	journal_button.pressed.connect(func() -> void: _show_section("journal"))
+	orientation_option.item_selected.connect(_on_orientation_selected)
 	type_filter_option.item_selected.connect(_on_filter_changed)
 	visit_filter_option.item_selected.connect(_on_filter_changed)
 	object_list.set_empty_state_label(list_empty_state_label)
 	object_list.set_objects(objects)
 	object_list.object_selected.connect(_on_object_selected)
 	object_card.status_changed.connect(_on_status_changed)
+	map_panel.set_objects(objects)
+	map_panel.object_selected.connect(_on_map_object_selected)
 
+	_configure_orientation_setting()
 	_configure_list_filters()
 	if not objects.is_empty():
 		_select_object(0, false)
@@ -76,6 +87,9 @@ func _load_objects_from_local_source() -> Array[Dictionary]:
 
 func _on_object_selected(index: int) -> void:
 	_select_object(index, true)
+
+func _on_map_object_selected(index: int) -> void:
+	_select_object(index, false)
 
 func _on_filter_changed(_item_index: int) -> void:
 	var type_filter := ObjectListPanel.FILTER_ALL
@@ -123,6 +137,44 @@ func _configure_list_filters() -> void:
 	visit_filter_option.add_item("Уже посещали")
 	object_list.set_filters(ObjectListPanel.FILTER_ALL, ObjectListPanel.FILTER_ALL)
 
+func _configure_orientation_setting() -> void:
+	orientation_option.clear()
+	for option in AppSettings.orientation_options():
+		orientation_option.add_item(str(option.get("title", "")))
+		orientation_option.set_item_metadata(orientation_option.get_item_count() - 1, option.get("id", AppSettings.ORIENTATION_SYSTEM))
+
+	var saved_orientation: String = app_settings.load_orientation()
+	_select_orientation_option(saved_orientation)
+	_apply_screen_orientation(saved_orientation)
+
+func _on_orientation_selected(index: int) -> void:
+	if orientation_option_is_refreshing:
+		return
+	if index < 0 or index >= orientation_option.get_item_count():
+		return
+
+	var orientation_id: String = str(orientation_option.get_item_metadata(index))
+	app_settings.save_orientation(orientation_id)
+	_apply_screen_orientation(orientation_id)
+
+func _select_orientation_option(orientation_id: String) -> void:
+	orientation_option_is_refreshing = true
+	var normalized_orientation: String = AppSettings.normalize_orientation(orientation_id)
+	for index in orientation_option.get_item_count():
+		if orientation_option.get_item_metadata(index) == normalized_orientation:
+			orientation_option.select(index)
+			break
+	orientation_option_is_refreshing = false
+
+func _apply_screen_orientation(orientation_id: String) -> void:
+	if not _screen_orientation_can_change():
+		return
+
+	DisplayServer.screen_set_orientation(AppSettings.display_server_orientation(orientation_id))
+
+func _screen_orientation_can_change() -> bool:
+	return OS.has_feature("android") or OS.has_feature("ios")
+
 func _select_object(index: int, open_card: bool) -> void:
 	if index < 0 or index >= objects.size():
 		return
@@ -130,6 +182,7 @@ func _select_object(index: int, open_card: bool) -> void:
 	selected_index = index
 	object_list.select_visual_object(index)
 	object_card.show_object(objects[index])
+	map_panel.select_object(index)
 	_update_map_selection(objects[index])
 	if open_card:
 		_show_section("card")

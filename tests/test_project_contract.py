@@ -5,6 +5,32 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 
+MIN_GERMAN_FALLBACK_OBJECTS = 21
+
+REQUIRED_GERMAN_FALLBACK_IDS = {
+    "berlin-gaerten-der-welt",
+    "thale-hexentanzplatz",
+    "thale-rosstrappe",
+    "stuttgart-standseilbahn",
+    "stuttgart-zahnradbahn",
+    "bayerische-zugspitzbahn",
+    "seilbahn-zugspitze",
+    "zugspitze-gletscherbahn",
+    "wuppertaler-schwebebahn",
+    "dresden-schwebebahn",
+    "dresden-standseilbahn",
+    "nerobergbahn",
+    "bad-schandau-lift",
+    "heidelberg-bergbahn",
+    "bad-harzburg-burgbergseilbahn",
+    "wurmbergseilbahn",
+    "dortmund-h-bahn",
+    "duesseldorf-skytrain",
+    "baden-baden-merkurbergbahn",
+    "koblenz-seilbahn",
+    "koeln-seilbahn",
+}
+
 
 class ProjectContractTest(unittest.TestCase):
     def test_godot_project_points_to_existing_main_scene(self) -> None:
@@ -26,6 +52,20 @@ class ProjectContractTest(unittest.TestCase):
         text = (ROOT / "scripts" / "demo_catalog.gd").read_text(encoding="utf-8")
         for field in ["id", "name", "kind", "region", "coordinates", "description", "visited", "notes"]:
             self.assertIn(f'"{field}"', text)
+
+    def test_demo_catalog_contains_german_fallback_objects(self) -> None:
+        text = (ROOT / "scripts" / "demo_catalog.gd").read_text(encoding="utf-8")
+        object_ids = set(re.findall(r'"id": "([^"]+)"', text))
+        german_object_count = text.count('"country": "Германия"')
+
+        self.assertGreaterEqual(german_object_count, MIN_GERMAN_FALLBACK_OBJECTS)
+        self.assertIn('"transport_type_id": "rail_cog"', text)
+        self.assertIn('"transport_type_id": "rail_suspended"', text)
+        self.assertIn('"transport_type_id": "funicular_water"', text)
+
+        for object_id in REQUIRED_GERMAN_FALLBACK_IDS:
+            with self.subTest(object_id=object_id):
+                self.assertIn(object_id, object_ids)
 
     def test_user_facing_docs_are_russian(self) -> None:
         for relative_path in ["README.md", "process.md", "agents.md", "docs/architecture.md"]:

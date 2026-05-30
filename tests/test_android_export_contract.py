@@ -63,6 +63,16 @@ class AndroidExportContractTest(unittest.TestCase):
         project_text = (ROOT / "project.godot").read_text(encoding="utf-8")
         self.assertIn("textures/vram_compression/import_etc2_astc=true", project_text)
 
+    def test_android_orientation_is_not_forced_to_landscape(self) -> None:
+        self.assertIsNotNone(self.android_preset, "Нужен Android export preset")
+        options = self.parser[f"{self.android_preset}.options"]
+
+        if "screen/orientation" in options:
+            self.assertNotIn(_unquote(options["screen/orientation"]), {"0", "landscape"})
+
+        project_text = (ROOT / "project.godot").read_text(encoding="utf-8")
+        self.assertIn("window/handheld/orientation=6", project_text)
+
 
 if __name__ == "__main__":
     unittest.main()

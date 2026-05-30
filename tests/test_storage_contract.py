@@ -15,6 +15,33 @@ sys.path.insert(0, str(ROOT))
 from scripts.storage import SQLiteStorage  # noqa: E402
 
 
+MIN_GERMAN_DEMO_OBJECTS = 21
+
+REQUIRED_GERMAN_OBJECTS = {
+    "berlin-gaerten-der-welt": ("Берлин", "cable_gondola"),
+    "thale-hexentanzplatz": ("Саксония-Анхальт", "cable_gondola"),
+    "thale-rosstrappe": ("Саксония-Анхальт", "cable_tourist"),
+    "stuttgart-standseilbahn": ("Баден-Вюртемберг", "funicular_classic"),
+    "stuttgart-zahnradbahn": ("Баден-Вюртемберг", "rail_cog"),
+    "bayerische-zugspitzbahn": ("Бавария", "rail_cog"),
+    "seilbahn-zugspitze": ("Бавария", "cable_aerial_tram"),
+    "zugspitze-gletscherbahn": ("Бавария", "cable_aerial_tram"),
+    "wuppertaler-schwebebahn": ("Северный Рейн-Вестфалия", "rail_suspended"),
+    "dresden-schwebebahn": ("Саксония", "rail_suspended"),
+    "dresden-standseilbahn": ("Саксония", "funicular_classic"),
+    "nerobergbahn": ("Гессен", "funicular_water"),
+    "bad-schandau-lift": ("Саксония", "elevator_vertical"),
+    "heidelberg-bergbahn": ("Баден-Вюртемберг", "funicular_classic"),
+    "bad-harzburg-burgbergseilbahn": ("Нижняя Саксония", "cable_aerial_tram"),
+    "wurmbergseilbahn": ("Нижняя Саксония", "cable_gondola"),
+    "dortmund-h-bahn": ("Северный Рейн-Вестфалия", "suspended_train"),
+    "duesseldorf-skytrain": ("Северный Рейн-Вестфалия", "suspended_train"),
+    "baden-baden-merkurbergbahn": ("Баден-Вюртемберг", "funicular_classic"),
+    "koblenz-seilbahn": ("Рейнланд-Пфальц", "cable_urban"),
+    "koeln-seilbahn": ("Северный Рейн-Вестфалия", "cable_tourist"),
+}
+
+
 class StorageContractTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
@@ -64,14 +91,13 @@ class StorageContractTest(unittest.TestCase):
     def test_demo_seed_initializes_objects_once(self) -> None:
         self.storage.seed_demo_objects()
         self.storage.update_object_status("vorobyovy-gory", "visited")
+        self.storage.update_object_status("berlin-gaerten-der-welt", "planned")
         self.storage.seed_demo_objects()
 
         objects = self.storage.list_objects()
-        self.assertEqual(len(objects), 3)
-        self.assertEqual(
-            {obj["id"] for obj in objects},
-            {"vorobyovy-gory", "nizhny-novgorod", "vladivostok-funicular"},
-        )
+        self.assertGreaterEqual(len(objects), 15)
+        self.assertIn("vorobyovy-gory", {obj["id"] for obj in objects})
+        self.assertIn("berlin-gaerten-der-welt", {obj["id"] for obj in objects})
         self.assertEqual(
             self.storage.get_object("vorobyovy-gory")["transport_type_id"],
             "cable_urban",
@@ -80,6 +106,34 @@ class StorageContractTest(unittest.TestCase):
             self.storage.get_object("vorobyovy-gory")["visit_status_id"],
             "visited",
         )
+        self.assertEqual(
+            self.storage.get_object("berlin-gaerten-der-welt")["visit_status_id"],
+            "planned",
+        )
+
+    def test_demo_seed_contains_required_german_catalog_objects(self) -> None:
+        self.storage.seed_demo_objects()
+
+        objects_by_id = {obj["id"]: obj for obj in self.storage.list_objects()}
+        german_objects_by_id = {
+            object_id: obj
+            for object_id, obj in objects_by_id.items()
+            if obj["country"] == "Германия"
+        }
+        self.assertGreaterEqual(
+            len(german_objects_by_id),
+            MIN_GERMAN_DEMO_OBJECTS,
+        )
+
+        for object_id, (expected_region, expected_type) in REQUIRED_GERMAN_OBJECTS.items():
+            with self.subTest(object_id=object_id):
+                obj = german_objects_by_id.get(object_id)
+                self.assertIsNotNone(obj)
+                assert obj is not None
+                self.assertEqual(obj["region"], expected_region)
+                self.assertEqual(obj["transport_type_id"], expected_type)
+                self.assertTrue(obj["city"])
+                self.assertTrue(obj["description"])
 
     def test_object_crud_and_status_persist_after_reopen(self) -> None:
         self.storage.upsert_object(
