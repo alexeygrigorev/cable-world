@@ -34,7 +34,8 @@ class RussiaResearchContractTest(unittest.TestCase):
             self.assertIn(term, self.report_text)
 
     def test_report_declares_no_production_seed_change(self) -> None:
-        self.assertIn("не добавляет объекты в production seed", self.report_text)
+        self.assertIn("не меняет UI, release-процесс или `VERSION`", self.report_text)
+        self.assertIn("Production seed уже содержит утвержденный первый российский набор", self.report_text)
         self.assertIn("Staging JSON", self.report_text)
 
     def test_candidates_are_russian_and_cover_core_types(self) -> None:
@@ -52,13 +53,28 @@ class RussiaResearchContractTest(unittest.TestCase):
         ]:
             self.assertIn(transport_type, transport_types)
 
-    def test_candidates_keep_manual_review_state(self) -> None:
+    def test_candidates_are_approved_with_review_evidence(self) -> None:
         for candidate in self.candidates:
             with self.subTest(candidate=candidate["id"]):
-                self.assertEqual(candidate["review"]["state"], "candidate")
+                self.assertEqual(candidate["review"]["state"], "approved")
+                self.assertEqual(candidate["review"]["reviewed_by"], "Codex worker #36")
+                self.assertEqual(candidate["review"]["reviewed_at"], "2026-05-30")
+                self.assertIn("Approved for Russia seed 1.0", candidate["review"]["notes"])
+                self.assertRegex(candidate["review"]["notes"], r"OSM/Wikidata ids (not_required|не обязательны)")
                 self.assertIn("source_urls", candidate)
+                self.assertTrue(candidate["source_urls"])
+                self.assertTrue(candidate["source_ids"])
                 self.assertTrue(candidate["localized"]["ru"]["title"])
                 self.assertRegex(candidate["id"], r"^[a-z][a-z0-9-]*$")
+
+    def test_report_records_monorail_and_granularity_decisions(self) -> None:
+        self.assertIn("Московский монорельс утвержден как historical-кейс", self.report_text)
+        self.assertIn('operational_status = "historical"', self.report_text)
+        self.assertIn("Для 1.0 Эльбрус, Архыз, Домбай, Роза Хутор и Бобровый лог не входят", self.report_text)
+        for resort in ["Эльбрус", "Архыз", "Домбай", "Роза Хутор", "Бобровый лог"]:
+            self.assertIn(resort, self.report_text)
+        self.assertIn("resort-system", self.report_text)
+        self.assertIn("line-level", self.report_text)
 
     def test_candidates_pass_staging_validator(self) -> None:
         result = subprocess.run(

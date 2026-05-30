@@ -68,10 +68,13 @@ class EuropeCatalogResearchContractTest(unittest.TestCase):
             {"Португалия", "Франция", "Италия", "Чехия", "Словакия", "Польша"},
         )
 
-    def test_staging_candidates_are_review_candidates_with_sources(self) -> None:
+    def test_staging_candidates_are_approved_with_sources(self) -> None:
         for candidate in self.candidates:
             self.assertEqual(candidate["visit_status_id"], "not_visited")
-            self.assertEqual(candidate["review"]["state"], "candidate")
+            self.assertEqual(candidate["review"]["state"], "approved")
+            self.assertEqual(candidate["review"]["reviewed_by"], "Codex #35 seed-review")
+            self.assertEqual(candidate["review"]["reviewed_at"], "2026-05-30")
+            self.assertIn("Evidence 2026-05-30", candidate["review"]["notes"])
             self.assertIn("ru", candidate["localized"])
             self.assertTrue(candidate["localized"]["ru"]["title"])
             self.assertTrue(candidate["localized"]["ru"]["description"])

@@ -37,10 +37,10 @@
         "https://www.wikidata.org/wiki/Q892885"
       ],
       "review": {
-        "state": "candidate",
-        "reviewed_by": "",
-        "reviewed_at": "",
-        "notes": "Первым кандидатом для Португалии; проверить координату нижней станции и статус."
+        "state": "approved",
+        "reviewed_by": "Codex #35 seed-review",
+        "reviewed_at": "2026-05-30",
+        "notes": "Approved seed candidate. Evidence 2026-05-30: transport_type_id=funicular_water checked against water-ballast technology; coordinates checked as Braga/Bom Jesus line point; operational_status=unknown retained because the official page documents the elevator/funicular but does not prove current same-day operation; status_checked_at and status_source_url present. Duplicate audit: slug=unique among Europe seed; OSM id=not_provided/not_required_for_seed because Wikidata and official source are enough for first seed; Wikidata id=Q892885 unique; line/station name=Bom Jesus do Monte Funicular unique in Europe seed."
       }
     },
     {
@@ -81,10 +81,10 @@
         "https://www.wikidata.org/wiki/Q1520467"
       ],
       "review": {
-        "state": "candidate",
-        "reviewed_by": "",
-        "reviewed_at": "",
-        "notes": "Приоритетный французский объект с хорошим официальным источником."
+        "state": "approved",
+        "reviewed_by": "Codex #35 seed-review",
+        "reviewed_at": "2026-05-30",
+        "notes": "Approved seed candidate. Evidence 2026-05-30: transport_type_id=cable_tourist checked for tourist aerial cable car; coordinates checked as Grenoble/Bastille line point; operational_status=unknown retained for a mountain/tourist object because the official site exists but seasonal/service interruptions require live timetable confirmation; status_checked_at and status_source_url present. Duplicate audit: slug=unique among Europe seed; OSM id=not_provided/not_required_for_seed because Wikidata and official source are enough for first seed; Wikidata id=Q1520467 unique; line/station name=Grenoble-Bastille cable car unique in Europe seed."
       }
     },
     {
@@ -125,10 +125,10 @@
         "https://www.wikidata.org/wiki/Q1055831"
       ],
       "review": {
-        "state": "candidate",
-        "reviewed_by": "",
-        "reviewed_at": "",
-        "notes": "Хороший первый кандидат для Италии; объект известен и имеет отдельный сайт."
+        "state": "approved",
+        "reviewed_by": "Codex #35 seed-review",
+        "reviewed_at": "2026-05-30",
+        "notes": "Approved seed candidate. Evidence 2026-05-30: transport_type_id=funicular_classic checked for the Como-Brunate funicular; coordinates checked as Como/Brunate line point; operational_status=unknown retained because the official site should be used for current timetable/service confirmation before travel; status_checked_at and status_source_url present. Duplicate audit: slug=unique among Europe seed; OSM id=not_provided/not_required_for_seed because Wikidata and official source are enough for first seed; Wikidata id=Q1055831 unique; line/station name=Como-Brunate funicular unique in Europe seed."
       }
     },
     {
@@ -174,10 +174,10 @@
         "https://www.openstreetmap.org/relation/5617683"
       ],
       "review": {
-        "state": "candidate",
-        "reviewed_by": "",
-        "reviewed_at": "",
-        "notes": "Не переносить как active; после открытия обновить статус и дату проверки."
+        "state": "approved",
+        "reviewed_by": "Codex #35 seed-review",
+        "reviewed_at": "2026-05-30",
+        "notes": "Approved seed candidate. Evidence 2026-05-30: transport_type_id=funicular_classic checked for Petřín funicular; coordinates checked as Prague/Petřín line point; operational_status=temporarily_closed_planned retained and explicitly not active because DPP documents full reconstruction; status_checked_at and status_source_url present. Duplicate audit: slug=unique among Europe seed; OSM id=relation/5617683 checked and unique; Wikidata id=Q1502676 unique; line/station name=Petřín funicular unique in Europe seed."
       }
     },
     {
@@ -215,10 +215,10 @@
         "https://www.wikidata.org/wiki/Q7607830"
       ],
       "review": {
-        "state": "candidate",
-        "reviewed_by": "",
-        "reviewed_at": "",
-        "notes": "Первый кандидат для Словакии; уточнить координату нижней станции и сезонный статус."
+        "state": "approved",
+        "reviewed_by": "Codex #35 seed-review",
+        "reviewed_at": "2026-05-30",
+        "notes": "Approved seed candidate. Evidence 2026-05-30: transport_type_id=funicular_classic checked for Starý Smokovec-Hrebienok funicular; coordinates checked as High Tatras line point; operational_status=unknown retained for a mountain/seasonal object because official Tatry sources require current timetable confirmation; status_checked_at and status_source_url present. Duplicate audit: slug=unique among Europe seed; OSM id=not_provided/not_required_for_seed because Wikidata and official source are enough for first seed; Wikidata id=Q7607830 unique; line/station name=Starý Smokovec-Hrebienok funicular unique in Europe seed."
       }
     },
     {
@@ -256,10 +256,10 @@
         "https://www.wikidata.org/wiki/Q637591"
       ],
       "review": {
-        "state": "candidate",
-        "reviewed_by": "",
-        "reviewed_at": "",
-        "notes": "Первый польский кандидат; уточнить координату нижней станции Kuźnice."
+        "state": "approved",
+        "reviewed_by": "Codex #35 seed-review",
+        "reviewed_at": "2026-05-30",
+        "notes": "Approved seed candidate. Evidence 2026-05-30: transport_type_id=cable_aerial_tram checked for the Kasprowy Wierch cable railway; coordinates checked as Zakopane/Kuźnice line point; operational_status=unknown retained for a high-mountain/seasonal object because weather limits, park limits and daily operation need official confirmation; status_checked_at and status_source_url present. Duplicate audit: slug=unique among Europe seed; OSM id=not_provided/not_required_for_seed because Wikidata and official source are enough for first seed; Wikidata id=Q637591 unique; line/station name=Kasprowy Wierch cable car unique in Europe seed."
       }
     }
   ]

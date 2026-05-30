@@ -209,6 +209,42 @@
 
 См. `examples/staging/europe_catalog_candidates.json`. В файле намеренно только 6 кандидатов - по одному на страну - чтобы проверить совместимость со схемой и дать редакторский шаблон без массового импорта.
 
+## Seed review 2026-05-30
+
+Статус review: все 6 staging-кандидатов переведены в `review.state = "approved"` без изменения UI, release-файлов, `VERSION`, SQLite seed или runtime-сцен. Проверка выполнялась как редакторский seed-review для #35; перенос в текущий demo/SQLite seed уже был сделан отдельным инкрементом, а этот review фиксирует доказательства.
+
+Approved-кандидаты:
+
+| Страна | ID | Тип | Статус | Решение |
+|---|---|---|---|---|
+| Португалия | `braga-bom-jesus-funicular` | `funicular_water` | `unknown` | Редкая водобалластная технология подтверждена источниками; статус оставлен `unknown`, потому что официальный источник не доказывает текущее расписание на дату проверки. |
+| Франция | `grenoble-bastille-cable-car` | `cable_tourist` | `unknown` | Туристическая горная канатка; статус оставлен `unknown`, потому что сезонность и техобслуживание требуют проверки live-расписания перед поездкой. |
+| Италия | `como-brunate-funicular` | `funicular_classic` | `unknown` | Классический фуникулер с отдельным официальным сайтом; статус оставлен `unknown`, потому что расписание нужно подтверждать по официальному источнику перед поездкой. |
+| Чехия | `prague-petrin-funicular` | `funicular_classic` | `temporarily_closed_planned` | Petřín нельзя показывать как `active`: DPP сообщает о полной реконструкции и плановой приостановке работы. |
+| Словакия | `stary-smokovec-hrebienok-funicular` | `funicular_classic` | `unknown` | Горный объект в Высоких Татрах; статус оставлен `unknown`, потому что расписание зависит от сезона и текущих условий. |
+| Польша | `zakopane-kasprowy-wierch-cable-car` | `cable_aerial_tram` | `unknown` | Высокогорная канатная дорога; статус оставлен `unknown`, потому что работа зависит от погоды, лимитов нацпарка и текущего расписания PKL. |
+
+Обязательные поля перед seed:
+
+- `transport_type_id` проверен для каждого объекта и не смешивает линию, станцию и оператора.
+- Координаты сохранены как точка будущего `TransportObject`: нижняя станция или центр линии, достаточный для map seed.
+- `operational_status`, `status_checked_at = "2026-05-30"` и официальный `status_source_url` заполнены у каждого кандидата.
+- Для Petřín сохранен `temporarily_closed_planned`; `active` запрещен до новой проверки после открытия.
+- Для Франции, Италии, Словакии и Польши сезонность/горный режим явно отражены в `review.notes` и статусных пояснениях.
+
+Duplicate audit:
+
+| ID | Slug | OSM | Wikidata | Название линии/станции |
+|---|---|---|---|---|
+| `braga-bom-jesus-funicular` | unique | `not_provided/not_required_for_seed` | `Q892885` unique | Bom Jesus do Monte Funicular unique |
+| `grenoble-bastille-cable-car` | unique | `not_provided/not_required_for_seed` | `Q1520467` unique | Grenoble-Bastille cable car unique |
+| `como-brunate-funicular` | unique | `not_provided/not_required_for_seed` | `Q1055831` unique | Como-Brunate funicular unique |
+| `prague-petrin-funicular` | unique | `relation/5617683` unique | `Q1502676` unique | Petřín funicular unique |
+| `stary-smokovec-hrebienok-funicular` | unique | `not_provided/not_required_for_seed` | `Q7607830` unique | Starý Smokovec-Hrebienok funicular unique |
+| `zakopane-kasprowy-wierch-cable-car` | unique | `not_provided/not_required_for_seed` | `Q637591` unique | Kasprowy Wierch cable car unique |
+
+Если OSM id отсутствует, это не пустое поле review: в `review.notes` зафиксировано `OSM id=not_provided/not_required_for_seed`, потому что для первого seed достаточно официального источника, Wikidata id и ручной проверки названия. Для более крупного импорта OSM id нужно добирать отдельным import-review этапом.
+
 ## Рекомендация для future seed
 
 Пакет 1, высокий сигнал и низкий риск дублей:
