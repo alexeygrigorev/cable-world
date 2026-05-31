@@ -1,7 +1,7 @@
 {
   "cropped_size_px": [
-    3208,
-    1199
+    3363,
+    1586
   ],
   "extends_to": [
     "France",
@@ -12,9 +12,9 @@
   ],
   "geo_bounds": {
     "max_latitude": 48.60314,
-    "max_longitude": 16.03921,
-    "min_latitude": 46.01714,
-    "min_longitude": 5.82741
+    "max_longitude": 16.14107,
+    "min_latitude": 45.15539,
+    "min_longitude": 5.43587
   },
   "glyphs": [],
   "id": "alps",
@@ -22,147 +22,172 @@
   "kind": "cross_border_mountain",
   "label": "Alps",
   "map_bbox_px": [
-    208.5,
+    147.0,
     1850.5,
-    1812.5,
-    2450.0
+    1828.5,
+    2643.5
   ],
   "massif_segments": [
     "western_alps_massif",
     "swiss_alps_massif",
     "bavarian_tyrol_alps_massif",
     "german_alpine_edge_massif",
-    "austrian_alps_massif"
+    "austrian_alps_massif",
+    "northern_italy_alps_massif"
   ],
   "placement_policy": "dem_or_named_massif_segments",
   "region_polygon": [
     {
-      "latitude": 46.45,
-      "longitude": 5.95
+      "latitude": 45.46,
+      "longitude": 5.75
     },
     {
-      "latitude": 46.05,
-      "longitude": 7.15
+      "latitude": 45.18,
+      "longitude": 7.65
     },
     {
-      "latitude": 45.78,
-      "longitude": 8.75
+      "latitude": 45.16,
+      "longitude": 9.8
     },
     {
-      "latitude": 45.82,
-      "longitude": 10.35
+      "latitude": 45.56,
+      "longitude": 12.15
     },
     {
-      "latitude": 46.02,
-      "longitude": 12.05
-    },
-    {
-      "latitude": 46.38,
-      "longitude": 14.05
+      "latitude": 46.28,
+      "longitude": 14.1
     },
     {
       "latitude": 46.92,
       "longitude": 16.05
     },
     {
-      "latitude": 47.7,
+      "latitude": 47.72,
       "longitude": 16.25
     },
     {
-      "latitude": 48.18,
-      "longitude": 14.4
+      "latitude": 48.22,
+      "longitude": 14.35
     },
     {
       "latitude": 48.3,
-      "longitude": 12.05
+      "longitude": 12.1
     },
     {
-      "latitude": 48.05,
-      "longitude": 10.1
+      "latitude": 48.06,
+      "longitude": 10.05
     },
     {
       "latitude": 47.55,
-      "longitude": 8.35
+      "longitude": 8.3
     },
     {
-      "latitude": 47.18,
-      "longitude": 6.65
+      "latitude": 47.22,
+      "longitude": 6.45
+    },
+    {
+      "latitude": 46.58,
+      "longitude": 5.88
     }
   ],
   "render_bbox_px": [
-    417,
+    294,
     3701,
-    3625,
-    4900
+    3657,
+    5287
   ],
-  "replacement_status": "needs_elevation_derived_art",
+  "replacement_status": "production_slice_alpine_visibility_v1_pre_dem",
   "ridge_bands": [
     {
-      "height": 82,
+      "height": 68,
       "id": "main_alpine_wall",
       "points": [
         {
-          "latitude": 46.62,
-          "longitude": 6.25
+          "latitude": 46.58,
+          "longitude": 6.15
         },
         {
-          "latitude": 46.34,
+          "latitude": 46.24,
           "longitude": 7.45
         },
         {
-          "latitude": 46.23,
+          "latitude": 46.14,
           "longitude": 8.85
         },
         {
-          "latitude": 46.3,
+          "latitude": 46.22,
           "longitude": 10.25
         },
         {
-          "latitude": 46.43,
-          "longitude": 11.7
+          "latitude": 46.44,
+          "longitude": 11.85
         },
         {
-          "latitude": 46.66,
-          "longitude": 13.2
+          "latitude": 46.7,
+          "longitude": 13.25
         },
         {
-          "latitude": 47.0,
-          "longitude": 14.8
+          "latitude": 47.04,
+          "longitude": 14.85
         },
         {
-          "latitude": 47.3,
-          "longitude": 15.8
+          "latitude": 47.34,
+          "longitude": 15.85
+        }
+      ],
+      "step": 38,
+      "style": "alpine"
+    },
+    {
+      "height": 46,
+      "id": "northern_alpine_foothills",
+      "points": [
+        {
+          "latitude": 47.32,
+          "longitude": 8.0
+        },
+        {
+          "latitude": 47.1,
+          "longitude": 9.55
+        },
+        {
+          "latitude": 47.18,
+          "longitude": 10.95
+        },
+        {
+          "latitude": 47.38,
+          "longitude": 12.35
+        },
+        {
+          "latitude": 47.6,
+          "longitude": 13.75
         }
       ],
       "step": 42,
       "style": "alpine"
     },
     {
-      "height": 50,
-      "id": "northern_alpine_foothills",
+      "height": 42,
+      "id": "german_edge_alpine_wall",
       "points": [
         {
-          "latitude": 47.28,
-          "longitude": 8.0
+          "latitude": 47.62,
+          "longitude": 10.05
         },
         {
-          "latitude": 47.08,
-          "longitude": 9.55
+          "latitude": 47.54,
+          "longitude": 10.9
         },
         {
-          "latitude": 47.12,
-          "longitude": 10.95
+          "latitude": 47.62,
+          "longitude": 11.75
         },
         {
-          "latitude": 47.32,
-          "longitude": 12.35
-        },
-        {
-          "latitude": 47.55,
-          "longitude": 13.75
+          "latitude": 47.78,
+          "longitude": 12.7
         }
       ],
-      "step": 48,
+      "step": 34,
       "style": "alpine"
     }
   ],

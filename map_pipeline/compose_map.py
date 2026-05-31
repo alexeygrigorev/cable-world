@@ -192,37 +192,49 @@ ALPINE_MASSIF_SEGMENTS = [
         "id": "western_alps_massif",
         "label": "Western Alps",
         "source_extent_id": "western_alps_massif",
-        "arc": [(6.20, 46.78), (7.10, 46.55), (8.05, 46.45)],
-        "shadow": [(6.00, 46.95), (7.05, 46.66), (8.35, 46.58), (8.55, 47.18), (7.25, 47.30), (6.10, 47.22)],
+        "arc": [(5.95, 46.92), (6.80, 46.54), (7.78, 46.38), (8.35, 46.48)],
+        "shadow": [(5.75, 46.98), (6.70, 46.38), (8.35, 46.30), (8.60, 47.02), (7.55, 47.30), (6.10, 47.26)],
+        "foothill_arcs": [
+            {"points": [(6.10, 47.10), (7.20, 46.94), (8.30, 47.02)], "height": 42, "step": 38},
+        ],
+        "peak_band": {"height": 42, "step": 34},
         "glyphs": [
-            ("alps_range_3", 6.75, 46.78, 300, 0.00),
-            ("alps_peak_1", 7.45, 46.58, 150, -0.03),
-            ("alps_range_1", 7.92, 46.72, 255, 0.04),
+            ("alps_range_3", 6.45, 46.86, 330, 0.00),
+            ("alps_peak_1", 7.18, 46.50, 175, -0.05),
+            ("alps_range_1", 7.85, 46.68, 310, 0.02),
         ],
     },
     {
         "id": "swiss_alps_massif",
         "label": "Swiss Alps",
         "source_extent_id": "swiss_alps_massif",
-        "arc": [(8.05, 46.48), (9.10, 46.46), (10.20, 46.58)],
-        "shadow": [(7.75, 46.70), (9.05, 46.46), (10.45, 46.62), (10.65, 47.28), (9.25, 47.28), (7.80, 47.14)],
+        "arc": [(7.85, 46.50), (8.72, 46.24), (9.62, 46.26), (10.45, 46.54)],
+        "shadow": [(7.55, 46.72), (8.65, 46.18), (10.55, 46.42), (10.75, 47.20), (9.28, 47.32), (7.72, 47.14)],
+        "foothill_arcs": [
+            {"points": [(8.10, 47.00), (9.10, 46.90), (10.25, 47.06)], "height": 40, "step": 38},
+        ],
+        "peak_band": {"height": 46, "step": 32},
         "glyphs": [
-            ("alps_range_1", 8.60, 46.72, 330, 0.00),
-            ("alps_peak_2", 9.35, 46.52, 170, -0.05),
-            ("alps_range_3", 10.00, 46.82, 300, 0.03),
+            ("alps_range_1", 8.45, 46.70, 365, 0.00),
+            ("alps_peak_2", 9.25, 46.40, 195, -0.06),
+            ("alps_range_3", 10.08, 46.74, 340, 0.02),
         ],
     },
     {
         "id": "bavarian_tyrol_alps_massif",
         "label": "Bavarian and Tyrol Alps",
         "source_extent_id": "bavarian_tyrol_alps_massif",
-        "arc": [(10.20, 46.60), (11.30, 46.82), (12.45, 47.05)],
-        "shadow": [(9.95, 46.84), (11.25, 46.74), (12.75, 47.06), (12.95, 47.78), (11.25, 47.78), (10.05, 47.46)],
+        "arc": [(10.10, 46.54), (11.00, 46.62), (11.85, 46.84), (12.70, 47.04)],
+        "shadow": [(9.82, 46.80), (10.95, 46.50), (12.95, 46.92), (13.10, 47.66), (11.42, 47.90), (10.00, 47.48)],
+        "foothill_arcs": [
+            {"points": [(10.28, 47.32), (11.15, 47.30), (12.10, 47.42), (12.88, 47.58)], "height": 46, "step": 40},
+        ],
+        "peak_band": {"height": 48, "step": 32},
         "glyphs": [
-            ("alps_range_2", 10.55, 46.96, 330, 0.00),
-            ("alps_range_1", 11.42, 47.12, 320, -0.01),
-            ("alps_peak_1", 12.05, 46.95, 160, -0.06),
-            ("alps_range_3", 12.45, 47.24, 275, 0.03),
+            ("alps_range_2", 10.50, 46.96, 365, 0.00),
+            ("alps_range_1", 11.32, 47.10, 360, -0.01),
+            ("alps_peak_1", 12.03, 46.88, 190, -0.07),
+            ("alps_range_3", 12.55, 47.20, 320, 0.02),
         ],
     },
     {
@@ -230,26 +242,52 @@ ALPINE_MASSIF_SEGMENTS = [
         "label": "German Alpine Edge",
         "source_extent_id": "german_alpine_edge_massif",
         "required_country_overlap": "Germany",
-        "arc": [(10.15, 47.55), (11.10, 47.55), (12.25, 47.62), (13.05, 47.70)],
-        "shadow": [(9.85, 47.48), (10.95, 47.36), (12.45, 47.46), (13.35, 47.70), (13.20, 48.04), (11.45, 47.98), (10.00, 47.86)],
+        "arc": [(9.90, 47.56), (10.60, 47.44), (11.28, 47.48), (12.10, 47.54), (13.10, 47.70)],
+        "shadow": [(9.72, 47.46), (10.52, 47.32), (11.55, 47.36), (12.55, 47.48), (13.45, 47.76), (13.15, 48.12), (11.40, 48.04), (9.84, 47.88)],
+        "foothill_arcs": [
+            {"points": [(9.95, 47.82), (10.78, 47.74), (11.70, 47.82), (12.80, 47.96)], "height": 44, "step": 36},
+            {"points": [(10.10, 47.64), (10.90, 47.58), (11.72, 47.62), (12.68, 47.76)], "height": 34, "step": 34},
+        ],
+        "peak_band": {"height": 40, "step": 28},
         "glyphs": [
-            ("alps_range_2", 10.55, 47.57, 185, -0.02),
-            ("alps_peak_1", 10.98, 47.45, 125, -0.08),
-            ("alps_range_1", 11.65, 47.64, 195, -0.01),
-            ("alps_range_3", 12.55, 47.74, 175, 0.00),
+            ("alps_range_2", 10.35, 47.56, 245, -0.02),
+            ("alps_peak_1", 10.92, 47.43, 150, -0.08),
+            ("alps_range_1", 11.58, 47.60, 255, -0.01),
+            ("alps_range_3", 12.48, 47.73, 230, 0.00),
         ],
     },
     {
         "id": "austrian_alps_massif",
         "label": "Austrian Alps",
         "source_extent_id": "austrian_alps_massif",
-        "arc": [(12.45, 47.05), (13.70, 47.28), (15.25, 47.62)],
-        "shadow": [(12.20, 47.26), (13.75, 47.18), (15.75, 47.60), (15.95, 48.18), (14.05, 48.15), (12.35, 47.82)],
+        "arc": [(12.45, 47.02), (13.46, 47.10), (14.62, 47.36), (15.65, 47.70)],
+        "shadow": [(12.16, 47.24), (13.68, 47.04), (15.85, 47.52), (16.05, 48.16), (14.05, 48.22), (12.30, 47.82)],
+        "foothill_arcs": [
+            {"points": [(12.70, 47.70), (13.80, 47.76), (15.10, 47.96)], "height": 42, "step": 38},
+        ],
+        "peak_band": {"height": 46, "step": 32},
         "glyphs": [
-            ("alps_range_1", 13.05, 47.34, 300, 0.00),
-            ("alps_peak_2", 13.82, 47.24, 145, -0.04),
-            ("alps_range_3", 14.45, 47.56, 290, 0.02),
-            ("alps_range_2", 15.20, 47.78, 245, 0.04),
+            ("alps_range_1", 12.95, 47.32, 340, 0.00),
+            ("alps_peak_2", 13.78, 47.16, 170, -0.04),
+            ("alps_range_3", 14.52, 47.48, 335, 0.02),
+            ("alps_range_2", 15.28, 47.74, 285, 0.03),
+        ],
+    },
+    {
+        "id": "northern_italy_alps_massif",
+        "label": "Northern Italy Alpine Foothills",
+        "source_extent_id": "northern_italy_alps_massif",
+        "arc": [(6.70, 45.62), (8.35, 45.44), (10.15, 45.48), (12.15, 45.84), (13.20, 46.18)],
+        "shadow": [(6.45, 45.44), (8.30, 45.20), (10.40, 45.30), (12.75, 45.74), (13.40, 46.20), (12.45, 46.54), (10.15, 46.16), (7.80, 46.05)],
+        "foothill_arcs": [
+            {"points": [(7.10, 46.00), (8.90, 45.88), (10.85, 46.06), (12.60, 46.32)], "height": 38, "step": 42},
+        ],
+        "peak_band": {"height": 18, "step": 54},
+        "glyphs": [
+            ("alps_range_3", 7.10, 45.90, 300, 0.02),
+            ("alps_range_1", 8.80, 45.78, 330, 0.02),
+            ("alps_range_2", 10.55, 45.86, 320, 0.03),
+            ("alps_range_3", 12.25, 46.20, 285, 0.02),
         ],
     },
 ]
@@ -281,28 +319,34 @@ RELIEF_REGIONS = [
         "label": "Alps",
         "kind": "cross_border_mountain",
         "glyph": "alpine",
-        "fill": (58, 112, 63, 112),
-        "blur": 20,
+        "fill": (55, 103, 60, 70),
+        "blur": 16,
         "extends_to": ["France", "Switzerland", "Italy", "Austria", "Slovenia"],
         "points": [
-            (5.95, 46.45), (7.15, 46.05), (8.75, 45.78), (10.35, 45.82),
-            (12.05, 46.02), (14.05, 46.38), (16.05, 46.92), (16.25, 47.70),
-            (14.40, 48.18), (12.05, 48.30), (10.10, 48.05), (8.35, 47.55),
-            (6.65, 47.18),
+            (5.75, 45.46), (7.65, 45.18), (9.80, 45.16), (12.15, 45.56),
+            (14.10, 46.28), (16.05, 46.92), (16.25, 47.72), (14.35, 48.22),
+            (12.10, 48.30), (10.05, 48.06), (8.30, 47.55), (6.45, 47.22),
+            (5.88, 46.58),
         ],
         "trees": [(8.45, 47.35, 50), (10.0, 48.2, 44), (11.0, 48.05, 50), (12.35, 48.0, 46), (14.15, 47.75, 44)],
         "ridge_bands": [
             {
                 "id": "main_alpine_wall",
-                "points": [(6.25, 46.62), (7.45, 46.34), (8.85, 46.23), (10.25, 46.30), (11.70, 46.43), (13.20, 46.66), (14.80, 47.00), (15.80, 47.30)],
-                "height": 82,
-                "step": 42,
+                "points": [(6.15, 46.58), (7.45, 46.24), (8.85, 46.14), (10.25, 46.22), (11.85, 46.44), (13.25, 46.70), (14.85, 47.04), (15.85, 47.34)],
+                "height": 68,
+                "step": 38,
             },
             {
                 "id": "northern_alpine_foothills",
-                "points": [(8.00, 47.28), (9.55, 47.08), (10.95, 47.12), (12.35, 47.32), (13.75, 47.55)],
-                "height": 50,
-                "step": 48,
+                "points": [(8.00, 47.32), (9.55, 47.10), (10.95, 47.18), (12.35, 47.38), (13.75, 47.60)],
+                "height": 46,
+                "step": 42,
+            },
+            {
+                "id": "german_edge_alpine_wall",
+                "points": [(10.05, 47.62), (10.90, 47.54), (11.75, 47.62), (12.70, 47.78)],
+                "height": 42,
+                "step": 34,
             },
         ],
         "massif_segments": ALPINE_MASSIF_SEGMENTS,
@@ -1778,19 +1822,22 @@ def _render_alpine_massif_segment_layer(size, proj, segment):
     if len(shadow_points) >= 3:
         shadow_layer = Image.new("RGBA", size, (0, 0, 0, 0))
         shadow_draw = ImageDraw.Draw(shadow_layer)
-        shadow_draw.polygon(shadow_points, fill=(47, 75, 45, 52))
-        shadow_draw.line(shadow_points + [shadow_points[0]], fill=(108, 113, 68, 46), width=4 * RENDER_SCALE, joint="curve")
-        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(6 * RENDER_SCALE))
+        shadow_draw.polygon(shadow_points, fill=(42, 73, 43, 42))
+        shadow_draw.line(shadow_points + [shadow_points[0]], fill=(113, 121, 72, 34), width=3 * RENDER_SCALE, joint="curve")
+        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(4 * RENDER_SCALE))
         massif_layer.alpha_composite(shadow_layer)
+
+    for foothill in segment.get("foothill_arcs", []):
+        _draw_alpine_foothill_arc(massif_layer, proj, foothill, segment["id"])
 
     arc_points = [_project_point(proj, lon, lat) for lon, lat in segment.get("arc", [])]
     if len(arc_points) >= 2:
         line_layer = Image.new("RGBA", size, (0, 0, 0, 0))
         line_draw = ImageDraw.Draw(line_layer)
-        line_draw.line(arc_points, fill=(43, 59, 40, 82), width=8 * RENDER_SCALE, joint="curve")
-        line_draw.line([(x, y - 5 * RENDER_SCALE) for x, y in arc_points], fill=(180, 168, 112, 62), width=3 * RENDER_SCALE, joint="curve")
-        _draw_massif_crest_peaks(line_draw, arc_points, segment["id"])
-        line_layer = line_layer.filter(ImageFilter.GaussianBlur(1.2 * RENDER_SCALE))
+        line_draw.line(arc_points, fill=(43, 52, 35, 96), width=10 * RENDER_SCALE, joint="curve")
+        line_draw.line([(x, y - 5 * RENDER_SCALE) for x, y in arc_points], fill=(202, 188, 126, 74), width=4 * RENDER_SCALE, joint="curve")
+        _draw_massif_crest_peaks(line_draw, arc_points, segment["id"], segment.get("peak_band", {}))
+        line_layer = line_layer.filter(ImageFilter.GaussianBlur(0.65 * RENDER_SCALE))
         massif_layer.alpha_composite(line_layer)
 
     for glyph_name, lon, lat, width, y_offset in segment.get("glyphs", []):
@@ -1799,7 +1846,45 @@ def _render_alpine_massif_segment_layer(size, proj, segment):
     return massif_layer
 
 
-def _draw_massif_crest_peaks(draw, arc_points, segment_id):
+def _draw_alpine_foothill_arc(canvas, proj, foothill, segment_id):
+    points = [_project_point(proj, lon, lat) for lon, lat in foothill.get("points", [])]
+    if len(points) < 2:
+        return
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    height = int(foothill.get("height", 40) * RENDER_SCALE)
+    draw.line(points, fill=(38, 76, 44, 82), width=max(3, int(height * 0.48)), joint="curve")
+    draw.line([(x, y - int(height * 0.16)) for x, y in points], fill=(123, 132, 74, 76), width=max(2, int(height * 0.18)), joint="curve")
+    draw.line([(x, y + int(height * 0.18)) for x, y in points], fill=(30, 57, 38, 58), width=max(2, int(height * 0.22)), joint="curve")
+    step = max(22 * RENDER_SCALE, int(foothill.get("step", 38) * RENDER_SCALE))
+    for segment_index, (start, end) in enumerate(zip(points, points[1:])):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        segment_length = max(1.0, math.hypot(dx, dy))
+        count = max(2, int(segment_length / step))
+        tangent_x = dx / segment_length
+        tangent_y = dy / segment_length
+        normal_x = -dy / segment_length
+        normal_y = dx / segment_length
+        if normal_y < 0.0:
+            normal_x *= -1.0
+            normal_y *= -1.0
+        for mark_index in range(count):
+            seed = _stable_hash("alpine_foothill", segment_id, segment_index, mark_index)
+            t = (mark_index + 0.45) / count
+            cx = start[0] + dx * t
+            cy = start[1] + dy * t
+            mark = (8 + seed % 8) * RENDER_SCALE
+            left = (int(cx - tangent_x * mark), int(cy - tangent_y * mark))
+            peak = (int(cx - normal_x * mark * 1.10), int(cy - normal_y * mark * 1.10))
+            right = (int(cx + tangent_x * mark), int(cy + tangent_y * mark))
+            draw.line([left, peak, right], fill=(46, 48, 31, 82), width=max(1, RENDER_SCALE), joint="curve")
+    layer = layer.filter(ImageFilter.GaussianBlur(0.45 * RENDER_SCALE))
+    canvas.alpha_composite(layer)
+
+
+def _draw_massif_crest_peaks(draw, arc_points, segment_id, peak_band=None):
+    peak_band = peak_band or {}
     for segment_index, (start, end) in enumerate(zip(arc_points, arc_points[1:])):
         dx = end[0] - start[0]
         dy = end[1] - start[1]
@@ -1811,15 +1896,16 @@ def _draw_massif_crest_peaks(draw, arc_points, segment_id):
         if normal_y < 0.0:
             normal_x *= -1.0
             normal_y *= -1.0
-        step = 30 * RENDER_SCALE
+        step = max(20 * RENDER_SCALE, int(peak_band.get("step", 30) * RENDER_SCALE))
         count = max(2, int(segment_length / step))
         for peak_index in range(count):
             seed = _stable_hash("massif_crest", segment_id, segment_index, peak_index)
             t = (peak_index + 0.5) / count
             cx = start[0] + dx * t
             cy = start[1] + dy * t
-            half_width = (14 + seed % 10) * RENDER_SCALE
-            height = (18 + (seed >> 5) % 14) * RENDER_SCALE
+            height_base = int(peak_band.get("height", 34))
+            half_width = (max(12, int(height_base * 0.42)) + seed % 10) * RENDER_SCALE
+            height = (height_base + (seed >> 5) % 16) * RENDER_SCALE
             base_y_shift = (3 + (seed >> 10) % 6) * RENDER_SCALE
             left = (
                 int(cx - tangent_x * half_width + normal_x * base_y_shift),
@@ -1902,6 +1988,15 @@ def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj
         },
         "arc": [{"longitude": lon, "latitude": lat} for lon, lat in segment.get("arc", [])],
         "shadow": [{"longitude": lon, "latitude": lat} for lon, lat in segment.get("shadow", [])],
+        "foothill_arcs": [
+            {
+                "points": [{"longitude": lon, "latitude": lat} for lon, lat in foothill.get("points", [])],
+                "height": foothill.get("height", 40),
+                "step": foothill.get("step", 38),
+            }
+            for foothill in segment.get("foothill_arcs", [])
+        ],
+        "peak_band": segment.get("peak_band", {}),
         "glyphs": [
             {
                 "glyph": glyph_name,

@@ -53,17 +53,23 @@
       "source_type": "cross_border_mountain_region",
       "placement_policy": "dem_or_named_massif_segments",
       "source_confidence": "pre_dem_guardrailed",
+      "required_ridge_bands": [
+        "main_alpine_wall",
+        "northern_alpine_foothills",
+        "german_edge_alpine_wall"
+      ],
       "required_child_layers": [
         "western_alps_massif",
         "swiss_alps_massif",
         "bavarian_tyrol_alps_massif",
         "german_alpine_edge_massif",
-        "austrian_alps_massif"
+        "austrian_alps_massif",
+        "northern_italy_alps_massif"
       ],
       "allowed_glyph_prefixes": [
         "alps_"
       ],
-      "replacement_status": "needs_elevation_derived_art"
+      "replacement_status": "production_slice_alpine_visibility_v1_pre_dem"
     },
     {
       "id": "harz",

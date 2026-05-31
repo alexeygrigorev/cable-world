@@ -1,90 +1,118 @@
 {
   "arc": [
     {
-      "latitude": 46.78,
-      "longitude": 6.2
+      "latitude": 46.92,
+      "longitude": 5.95
     },
     {
-      "latitude": 46.55,
-      "longitude": 7.1
+      "latitude": 46.54,
+      "longitude": 6.8
     },
     {
-      "latitude": 46.45,
-      "longitude": 8.05
+      "latitude": 46.38,
+      "longitude": 7.78
+    },
+    {
+      "latitude": 46.48,
+      "longitude": 8.35
     }
   ],
   "cropped_size_px": [
-    903,
-    447
+    1057,
+    497
+  ],
+  "foothill_arcs": [
+    {
+      "height": 42,
+      "points": [
+        {
+          "latitude": 47.1,
+          "longitude": 6.1
+        },
+        {
+          "latitude": 46.94,
+          "longitude": 7.2
+        },
+        {
+          "latitude": 47.02,
+          "longitude": 8.3
+        }
+      ],
+      "step": 38
+    }
   ],
   "geo_bounds": {
-    "max_latitude": 47.36153,
-    "max_longitude": 8.70186,
-    "min_latitude": 46.3893,
-    "min_longitude": 5.82741
+    "max_latitude": 47.33998,
+    "max_longitude": 8.80054,
+    "min_latitude": 46.25746,
+    "min_longitude": 5.43587
   },
   "glyphs": [
     {
       "glyph": "alps_range_3",
-      "latitude": 46.78,
-      "longitude": 6.75,
-      "width": 300,
+      "latitude": 46.86,
+      "longitude": 6.45,
+      "width": 330,
       "y_offset": 0.0
     },
     {
       "glyph": "alps_peak_1",
-      "latitude": 46.58,
-      "longitude": 7.45,
-      "width": 150,
-      "y_offset": -0.03
+      "latitude": 46.5,
+      "longitude": 7.18,
+      "width": 175,
+      "y_offset": -0.05
     },
     {
       "glyph": "alps_range_1",
-      "latitude": 46.72,
-      "longitude": 7.92,
-      "width": 255,
-      "y_offset": 0.04
+      "latitude": 46.68,
+      "longitude": 7.85,
+      "width": 310,
+      "y_offset": 0.02
     }
   ],
   "id": "western_alps_massif",
   "image": "western_alps_massif.png",
   "label": "Western Alps",
   "map_bbox_px": [
-    208.5,
-    2142.0,
-    660.0,
-    2365.5
+    147.0,
+    2147.0,
+    675.5,
+    2395.5
   ],
+  "peak_band": {
+    "height": 42,
+    "step": 34
+  },
   "render_bbox_px": [
-    417,
-    4284,
-    1320,
-    4731
+    294,
+    4294,
+    1351,
+    4791
   ],
   "required_country_overlap": "",
   "shadow": [
     {
-      "latitude": 46.95,
-      "longitude": 6.0
+      "latitude": 46.98,
+      "longitude": 5.75
     },
     {
-      "latitude": 46.66,
-      "longitude": 7.05
+      "latitude": 46.38,
+      "longitude": 6.7
     },
     {
-      "latitude": 46.58,
+      "latitude": 46.3,
       "longitude": 8.35
     },
     {
-      "latitude": 47.18,
-      "longitude": 8.55
+      "latitude": 47.02,
+      "longitude": 8.6
     },
     {
       "latitude": 47.3,
-      "longitude": 7.25
+      "longitude": 7.55
     },
     {
-      "latitude": 47.22,
+      "latitude": 47.26,
       "longitude": 6.1
     }
   ],

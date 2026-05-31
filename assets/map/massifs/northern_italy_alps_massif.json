@@ -1,0 +1,144 @@
+{
+  "arc": [
+    {
+      "latitude": 45.62,
+      "longitude": 6.7
+    },
+    {
+      "latitude": 45.44,
+      "longitude": 8.35
+    },
+    {
+      "latitude": 45.48,
+      "longitude": 10.15
+    },
+    {
+      "latitude": 45.84,
+      "longitude": 12.15
+    },
+    {
+      "latitude": 46.18,
+      "longitude": 13.2
+    }
+  ],
+  "cropped_size_px": [
+    2286,
+    643
+  ],
+  "foothill_arcs": [
+    {
+      "height": 38,
+      "points": [
+        {
+          "latitude": 46.0,
+          "longitude": 7.1
+        },
+        {
+          "latitude": 45.88,
+          "longitude": 8.9
+        },
+        {
+          "latitude": 46.06,
+          "longitude": 10.85
+        },
+        {
+          "latitude": 46.32,
+          "longitude": 12.6
+        }
+      ],
+      "step": 42
+    }
+  ],
+  "geo_bounds": {
+    "max_latitude": 46.57991,
+    "max_longitude": 13.45443,
+    "min_latitude": 45.15539,
+    "min_longitude": 6.17756
+  },
+  "glyphs": [
+    {
+      "glyph": "alps_range_3",
+      "latitude": 45.9,
+      "longitude": 7.1,
+      "width": 300,
+      "y_offset": 0.02
+    },
+    {
+      "glyph": "alps_range_1",
+      "latitude": 45.78,
+      "longitude": 8.8,
+      "width": 330,
+      "y_offset": 0.02
+    },
+    {
+      "glyph": "alps_range_2",
+      "latitude": 45.86,
+      "longitude": 10.55,
+      "width": 320,
+      "y_offset": 0.03
+    },
+    {
+      "glyph": "alps_range_3",
+      "latitude": 46.2,
+      "longitude": 12.25,
+      "width": 285,
+      "y_offset": 0.02
+    }
+  ],
+  "id": "northern_italy_alps_massif",
+  "image": "northern_italy_alps_massif.png",
+  "label": "Northern Italy Alpine Foothills",
+  "map_bbox_px": [
+    263.5,
+    2322.0,
+    1406.5,
+    2643.5
+  ],
+  "peak_band": {
+    "height": 18,
+    "step": 54
+  },
+  "render_bbox_px": [
+    527,
+    4644,
+    2813,
+    5287
+  ],
+  "required_country_overlap": "",
+  "shadow": [
+    {
+      "latitude": 45.44,
+      "longitude": 6.45
+    },
+    {
+      "latitude": 45.2,
+      "longitude": 8.3
+    },
+    {
+      "latitude": 45.3,
+      "longitude": 10.4
+    },
+    {
+      "latitude": 45.74,
+      "longitude": 12.75
+    },
+    {
+      "latitude": 46.2,
+      "longitude": 13.4
+    },
+    {
+      "latitude": 46.54,
+      "longitude": 12.45
+    },
+    {
+      "latitude": 46.16,
+      "longitude": 10.15
+    },
+    {
+      "latitude": 46.05,
+      "longitude": 7.8
+    }
+  ],
+  "source_extent_id": "northern_italy_alps_massif",
+  "source_type": "massif_segment"
+}

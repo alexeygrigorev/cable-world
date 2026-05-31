@@ -118,6 +118,21 @@ class MapGeographyAuditTest(unittest.TestCase):
                 self.assertIn("pending_dem", extent["geometry_source"])
                 self.assertTrue(extent["coverage_regions"])
 
+    def test_alpine_visibility_slice_has_cross_border_massif_children(self) -> None:
+        from map_pipeline.compose_map import ALPINE_MASSIF_SEGMENTS, RELIEF_REGIONS
+
+        segment_ids = {segment["id"] for segment in ALPINE_MASSIF_SEGMENTS}
+        self.assertIn("northern_italy_alps_massif", segment_ids)
+        self.assertIn("german_alpine_edge_massif", segment_ids)
+
+        german_edge = next(segment for segment in ALPINE_MASSIF_SEGMENTS if segment["id"] == "german_alpine_edge_massif")
+        self.assertGreaterEqual(len(german_edge.get("foothill_arcs", [])), 2)
+        self.assertGreaterEqual(sum(width for _glyph, _lon, _lat, width, _offset in german_edge["glyphs"]), 850)
+
+        alps = next(region for region in RELIEF_REGIONS if region["id"] == "alps")
+        ridge_ids = {ridge["id"] for ridge in alps["ridge_bands"]}
+        self.assertIn("german_edge_alpine_wall", ridge_ids)
+
     def test_exported_relief_regions_have_source_extent_contract(self) -> None:
         from map_pipeline.compose_map import RELIEF_REGIONS, TERRAIN_MASSIF_LAYERS_PATH
         import json

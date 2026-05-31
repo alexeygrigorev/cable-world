@@ -23,7 +23,9 @@ They must not be shipped as full-map production underlays.
 
 ## Current Named Layers
 
-- `alps`: composite cross-border layer, backed by Alpine child segments and `map_pipeline/data/alpine_relief_extents.json`; still pre-DEM and not production-approved.
+- `alps`: composite cross-border layer, backed by Alpine child segments and `map_pipeline/data/alpine_relief_extents.json`; current #68/#69 production slice strengthens the German Alpine edge and adds a northern-Italy-ready continuation, but it is still pre-DEM and not production-approved.
+- `german_alpine_edge_massif`: readable northern Alpine rim tied to Germany/Bavaria, rendered as a reusable transparent source layer with stronger foothill arcs and larger Alpine glyphs.
+- `northern_italy_alps_massif`: reusable southern continuation layer for the Alpine wall, added so the Alps read as a cross-border massif instead of ending at Germany/Austria.
 - `harz`: isolated central massif layer with `harz_brocken_spine` and `harz_south_spur`; readable placeholder, needs custom Harz asset.
 - `black_forest`: named forested highland spine; needs custom forested massif glyph.
 - `bavarian_forest`: named forested highland spine; needs custom forested massif glyph.

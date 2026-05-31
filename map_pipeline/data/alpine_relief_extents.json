@@ -1,6 +1,6 @@
 {
   "schema": "cable-world.alpine-relief-extents.v1",
-  "review_status": "first_pass_metadata_guardrail",
+  "review_status": "production_slice_alpine_visibility_v1_pre_dem",
   "notes": [
     "This file is a source/elevation contract for the current Alpine render anchors.",
     "It is not a processed DEM output yet; render art must not claim final elevation accuracy until raster clips, hillshade masks and elevation-band polygons are produced.",
@@ -72,7 +72,7 @@
       "id": "northern_italy",
       "label": "Northern Italy Alpine / pre-Alpine continuation",
       "bbox": [6.55, 44.0, 13.25, 46.95],
-      "minimum_rendered_segments": 2
+      "minimum_rendered_segments": 3
     },
     {
       "id": "german_alpine_edge",
@@ -146,6 +146,15 @@
       "geometry_source": "named_massif_first_pass_pending_dem_ridge_extraction",
       "elevation_band_m": "1000m+ planned, 2000m+ crest mask required before final art",
       "coverage_regions": ["austria", "northern_italy"],
+      "review_status": "pre_dem_contract"
+    },
+    {
+      "id": "northern_italy_alps_massif",
+      "label": "Northern Italy Alpine Foothills",
+      "source_dataset": "copernicus_dem_glo_30",
+      "geometry_source": "named_massif_first_pass_pending_dem_ridge_extraction",
+      "elevation_band_m": "1000m+ planned, 1500m+ southern Alpine wall mask required before final art",
+      "coverage_regions": ["northern_italy", "switzerland", "austria"],
       "review_status": "pre_dem_contract"
     }
   ]
