@@ -1202,3 +1202,36 @@ Current map quality note:
 
 - The map must still be treated as rejected baseline until the strict reviewer returns `ACCEPT`.
 - User-visible blockers remain: reusable massif glyphs are not yet production art, Alps are not yet elevation-derived, some details may still be too small/noisy, and current map quality is not accepted above roughly `6/10`.
+
+## Iteration 2026-06-01 00:18
+
+Integrated/reviewed since `v0.1.23`:
+
+- `491e187` / #70 guardrail slice:
+  - added coastal runtime landmark land audits for Hamburg, Kiel, Luebeck and Rostock;
+  - added regression coverage proving Rostock needs the landward icon offset;
+  - #70 remains open because strict visual review still rejects Rostock placement as too close to the Baltic edge.
+- `b805765` / #83:
+  - added native Godot runtime coverage for live `Main.tscn` map-first chrome, map/list toggle, and `ObjectListPanel` filtering/selection/empty-state behavior;
+  - closed #83 and parent #78 after the testing strategy acceptance criteria were satisfied.
+- `a23ced5` / #67 clutter slice:
+  - enlarged forest masses and relief tree clusters;
+  - reduced procedural land/detail density and alpha;
+  - limited default atlas details to bridge/port/ship and raised detail minimum size;
+  - made route dots larger but less frequent;
+  - regenerated `assets/map/germany_styled.png` and affected massif source layers;
+  - #67 remains open until strict reviewer accepts clutter scope.
+- `149ca75` / #86:
+  - moved icon-only map/list switch to the top-left corner;
+  - kept zoom controls top-right, avoiding a cluttered control blob;
+  - closed #86 after Python/Godot runtime checks.
+
+Strict review status:
+
+- Current accepted release `v0.1.23` was reviewed as `5/10`, `Decision: REJECT`.
+- The rejection was recorded on #54 with bundle `/tmp/cable-world-review-v0123/tmp/map-review/issue-current-map-review-20260531T215311Z`.
+- New post-release commits improve specific scopes but do not make the full map accepted yet.
+
+Parallel work still running:
+
+- #69 worker is still active on the real production glyph-layer terrain pass. This is the main blocker for moving from prototype quality toward the requested reusable-glyph reference-map direction.
