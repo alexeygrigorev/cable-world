@@ -1617,3 +1617,4 @@ Parallel work started:
 
 - `Kepler`: #91 ride navigation UX from selected map/object flow into playable ride and back, without touching ride art or map assets.
 - `Lagrange`: #64 Germany terrain accuracy audit/contract, focused on source-backed terrain checks and documentation, not a visual art pass.
+- `Faraday`: #55 city landmark coordinate calibration/contract, focused on city positions, pictogram coverage and label attachment without changing terrain art.
