@@ -1568,3 +1568,39 @@ Remaining work:
 
 - #63 stays open.
 - #74/#76/#77 remain open child implementation blocks; this contract makes their scope auditable but does not implement those regions.
+
+## Iteration 2026-06-01 03:48
+
+Integrated reviewed #67 clutter/readability pass:
+
+- Worker: `Hume`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-67-map-clutter-readable-details-v2`.
+- Worker branch: `issue-67-map-clutter-readable-details-v2`.
+- Worker commit: `940e307 Reduce default map clutter for issue 67`.
+- Integrated commit on `main`: `5f96316 Reduce default map clutter for issue 67`.
+- Decision: `ACCEPT` for #67 clutter/readability scope; #67 closed.
+
+What landed:
+
+- Default atlas routes are hidden so dotted route marks do not read as dust.
+- Default atlas details are reduced to readable ship glyphs only; bridge/port/town-like tiny details are hidden at default zoom.
+- Integrated land pattern is sparser, larger and more transparent.
+- Tests guard disabled default clutter and minimum visual-size parameters.
+
+Screenshot evidence reviewed:
+
+- Bundle: `/home/alexey/git/cable-world/worktrees/issue-67-map-clutter-readable-details-v2/tmp/map-review/issue-67-20260531T234317Z`.
+- Checked: `mobile-390x844-initial.png`, `mobile-390x844-zoom-200.png`, `desktop-1280x800-initial.png`.
+- Result: #67 tiny-house/tiny-tree/route-dust problem is visibly improved. Remaining forests/details read as larger atlas glyphs rather than scattered dust.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_map_geography_audit tests.test_map_panel_contract`: PASS, 23 tests, 9 skipped.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 269 tests, 9 skipped.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Important limitation:
+
+- Full map quality is still not accepted as 10/10. Alpine band/stripe artifacts and broader terrain/art polish remain in #62/#64/#68/#69 and related issues.
