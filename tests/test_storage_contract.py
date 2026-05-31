@@ -118,6 +118,18 @@ class StorageContractTest(unittest.TestCase):
             19,
         )
 
+    def test_godot_storage_adapter_supports_test_database_path_override(self) -> None:
+        adapter_text = (ROOT / "scripts" / "storage" / "sqlite_storage_adapter.gd").read_text(encoding="utf-8")
+
+        self.assertIn('const DATABASE_PATH_ENV: String = "MIR_TROSSOV_DATABASE_PATH"', adapter_text)
+        self.assertIn("func _resolved_database_path(database_path: String) -> String:", adapter_text)
+        self.assertIn("OS.get_environment(DATABASE_PATH_ENV)", adapter_text)
+
+        app_shell_text = (ROOT / "tests" / "godot_runtime_app_shell.gd").read_text(encoding="utf-8")
+        self.assertIn('const TEST_DATABASE_ENV := "MIR_TROSSOV_DATABASE_PATH"', app_shell_text)
+        self.assertIn("OS.set_environment(TEST_DATABASE_ENV, TEST_DATABASE_PATH)", app_shell_text)
+        self.assertIn("OS.unset_environment(TEST_DATABASE_ENV)", app_shell_text)
+
     def test_operational_status_migration_adds_independent_fields(self) -> None:
         connection = sqlite3.connect(":memory:")
         connection.execute("PRAGMA foreign_keys = ON")

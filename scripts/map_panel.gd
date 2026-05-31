@@ -600,9 +600,9 @@ func _on_map_layer_resized() -> void:
 	if map_content != null:
 		map_content.size = map_layer.size
 	if map_label_layer != null:
-		map_label_layer.size = map_layer.size
+		map_label_layer.set_deferred("size", map_layer.size)
 	if empty_state_label != null:
-		empty_state_label.size = map_layer.size
+		empty_state_label.set_deferred("size", map_layer.size)
 	_update_map_reference_data()
 	if not map_view_initialized:
 		_reset_map_view()

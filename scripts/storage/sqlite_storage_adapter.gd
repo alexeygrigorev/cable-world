@@ -2,6 +2,7 @@ extends RefCounted
 class_name SQLiteStorageAdapter
 
 const DATABASE_PATH: String = "user://mir-trossov.sqlite3"
+const DATABASE_PATH_ENV: String = "MIR_TROSSOV_DATABASE_PATH"
 const MIGRATIONS_PATH: String = "res://scripts/storage/migrations"
 const DEMO_SEED_PATH: String = "res://scripts/storage/seeds/demo_objects.sql"
 const STATUS_NOT_VISITED: String = "not_visited"
@@ -36,7 +37,7 @@ func open(database_path: String = DATABASE_PATH) -> int:
 		last_error = "SQLite runtime class exists, but instance creation failed."
 		return ERR_UNAVAILABLE
 
-	database.set("path", database_path)
+	database.set("path", _resolved_database_path(database_path))
 	database.set("foreign_keys", true)
 	database.set("verbosity_level", 0)
 	if not database.call("open_db"):
@@ -46,6 +47,13 @@ func open(database_path: String = DATABASE_PATH) -> int:
 
 	last_error = ""
 	return OK
+
+
+func _resolved_database_path(database_path: String) -> String:
+	if database_path != DATABASE_PATH:
+		return database_path
+	var override_path := OS.get_environment(DATABASE_PATH_ENV).strip_edges()
+	return override_path if not override_path.is_empty() else database_path
 
 
 func close() -> void:

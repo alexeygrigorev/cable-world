@@ -31,6 +31,29 @@ godot --headless --path . --script tests/godot_runtime_runner.gd
 Он выполняет GDScript smoke/runtime checks из `tests/godot_runtime_smoke.gd` и возвращает non-zero при failure. Новые маленькие runtime checks можно добавлять отдельными `test_*` методами или подключать новым script path в runner.
 Для локальной проверки другого набора scripts runner принимает comma-separated override через `MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS`.
 
+## Headless diagnostics
+
+Issue #65 audit split current Godot headless output into project-owned problems and known engine/headless teardown diagnostics.
+
+Project-owned findings fixed in the runtime/test layer:
+
+- run `godot --headless --path . --import --quit` before headless scene checks in a fresh worktree; otherwise missing `.godot/imported/*.ctex` and `.fontdata` resources create noisy load errors and shutdown leaks;
+- `MapPanel._on_map_layer_resized()` must not write `size` directly to full-rect anchored child controls during `_ready()` resize notifications;
+- runtime tests that instantiate `Main.tscn` must use `MIR_TROSSOV_DATABASE_PATH` to isolate SQLite `user://` data and avoid stale database locks;
+- `tests/godot_runtime_runner.gd` treats a loaded but non-instantiable GDScript as a failure, so parse/load errors cannot be hidden behind a zero-check pass.
+
+Known remaining Godot 4.6.3 headless diagnostics:
+
+- `godot --headless --path . --quit-after 1` exits `0` but can print `CanvasItem`, `DummyTexture`, `ShapedTextDataAdvanced` and `FontAdvanced` leak diagnostics after loading the live main scene;
+- the full runtime runner can still print `CanvasItem`/`FontAdvanced` diagnostics when a test instantiates `Main.tscn`;
+- the narrower smoke runner without live `Main.tscn` is clean after import:
+
+```bash
+MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS=res://tests/godot_runtime_smoke.gd godot --headless --path . --script tests/godot_runtime_runner.gd
+```
+
+These remaining diagnostics are treated as known headless teardown noise for now, not as proof of a project resource leak. New parse errors, missing resources, SQL lock errors, anchor warnings, non-zero exit codes, or new leak categories are not covered by this exception and should fail review.
+
 ## UI/static migration inventory
 
 File-level classification for current `tests/test_*contract.py` files:

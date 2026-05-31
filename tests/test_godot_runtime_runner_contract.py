@@ -35,6 +35,8 @@ class GodotRuntimeRunnerContractTest(unittest.TestCase):
         self.assertIn("res://tests/godot_runtime_smoke.gd", runner_text)
         self.assertIn("res://tests/godot_runtime_app_shell.gd", runner_text)
         self.assertIn("MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS", runner_text)
+        self.assertIn("can_instantiate()", runner_text)
+        self.assertIn("test script loaded but cannot be instantiated", runner_text)
         self.assertIn("test_collection_stats_and_achievements_runtime", smoke_text)
         self.assertIn("CollectionStatsScript.calculate", smoke_text)
         self.assertIn("AchievementsScript.calculate", smoke_text)

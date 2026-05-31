@@ -2,12 +2,16 @@ extends RefCounted
 
 const MainScene: PackedScene = preload("res://scenes/Main.tscn")
 const ObjectListPanelScript: GDScript = preload("res://scripts/object_list_panel.gd")
+const TEST_DATABASE_ENV := "MIR_TROSSOV_DATABASE_PATH"
+const TEST_DATABASE_PATH := "user://godot-runtime-app-shell.sqlite3"
 
 
 func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 	var failures: Array[String] = []
 	var tree := Engine.get_main_loop() as SceneTree
+	OS.set_environment(TEST_DATABASE_ENV, TEST_DATABASE_PATH)
 	var screen: MainScreen = MainScene.instantiate()
+	screen.visible = false
 	tree.root.add_child(screen)
 
 	_expect(screen.map_section.visible, "Main scene must start on the fullscreen map section.", failures)
@@ -36,8 +40,8 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 	_expect(not screen.map_list_toggle_button.visible, "Map/list toggle must hide outside the map.", failures)
 	_expect(screen.current_section_label.text == "Раздел: Список", "Current section label must track the runtime list transition.", failures)
 
-	tree.root.remove_child(screen)
-	screen.free()
+	_free_screen(screen)
+	OS.unset_environment(TEST_DATABASE_ENV)
 	return failures
 
 
@@ -108,6 +112,14 @@ func test_object_list_filtering_and_selection_runtime() -> Array[String]:
 func _expect(condition: bool, message: String, failures: Array[String]) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _free_screen(screen: MainScreen) -> void:
+	if screen == null:
+		return
+	if screen.is_inside_tree():
+		screen.get_parent().remove_child(screen)
+	screen.free()
 
 
 func _expect_int_array(actual: Array[int], expected: Array[int], message: String, failures: Array[String]) -> void:

@@ -48,6 +48,9 @@ func _run_test_script(test_script_path: String) -> void:
 	if test_script == null:
 		_fail("%s: could not load test script." % test_script_path)
 		return
+	if test_script is GDScript and not test_script.can_instantiate():
+		_fail("%s: test script loaded but cannot be instantiated. Check preceding parse/load errors." % test_script_path)
+		return
 
 	var test_instance: Object = test_script.new()
 	if test_instance == null:

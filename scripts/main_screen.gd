@@ -319,6 +319,7 @@ func _on_visit_registration_requested(object_id: String, title: String, notes: S
 
 func _exit_tree() -> void:
 	storage.close()
+	storage_runtime_enabled = false
 
 func _configure_list_filters() -> void:
 	type_filter_option.clear()
