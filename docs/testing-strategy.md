@@ -31,6 +31,27 @@ godot --headless --path . --script tests/godot_runtime_runner.gd
 Он выполняет GDScript smoke/runtime checks из `tests/godot_runtime_smoke.gd` и возвращает non-zero при failure. Новые маленькие runtime checks можно добавлять отдельными `test_*` методами или подключать новым script path в runner.
 Для локальной проверки другого набора scripts runner принимает comma-separated override через `MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS`.
 
+## UI/static migration inventory
+
+File-level classification for current `tests/test_*contract.py` files:
+
+| Contract files | Primary layer | Decision |
+| --- | --- | --- |
+| `test_map_panel_contract.py`, `test_map_geography_audit.py`, `test_europe_expansion_plan_contract.py`, `test_europe_catalog_research_contract.py`, `test_europe_seed_review_contract.py`, `test_russia_research_contract.py`, `test_russia_seed_review_contract.py`, `test_visual_style_directions_contract.py` | map pipeline/data/geography | Keep Python: data, source asset and geography contracts are not runtime UI checks. |
+| `test_android_export_contract.py`, `test_export_payload_contract.py`, `test_web_serve_contract.py`, `test_infra_reproducibility_contract.py`, `test_1_0_readiness_contract.py`, `test_map_review_bundle_contract.py` | export/release/process | Keep Python: these assert files, workflows, scripts and release gates. |
+| `test_data_model_contract.py`, `test_project_contract.py`, `test_collection_contract.py`, `test_storage_contract.py`, `test_media_metadata_contract.py`, `test_i18n_contract.py` | schema/domain/storage/static | Keep Python: these are cheap source/data contracts. Runtime storage remains covered by `test_godot_storage_contract.py`. |
+| `test_demo_catalog_europe_contract.py`, `test_demo_catalog_russia_contract.py` | catalog/data | Keep Python: catalog completeness and seed geography are data contracts. |
+| `test_app_shell_contract.py`, `test_object_list_contract.py`, `test_object_card_contract.py`, `test_memory_screen_contract.py`, `test_object_mode_contract.py`, `test_object_mode_ui_contract.py`, `test_observer_mode_contract.py`, `test_ride_mode_contract.py`, `test_v3_scene_contract.py`, `test_v3_scene_modes_contract.py`, `test_engineering_scene_contract.py` | UI/static scene | Keep static coverage, but migrate user-facing runtime behavior to Godot when touched. #83 duplicates the map/list shell and object-list filtering checks natively. |
+| `test_godot_runtime_runner_contract.py`, `test_godot_storage_contract.py`, `test_testing_strategy_contract.py` | test infrastructure/docs/runtime bridge | Keep Python: these verify the runner, bridge command and strategy docs. |
+
+Migrated high-value runtime checks:
+
+| Python contract | Runtime risk | Decision |
+| --- | --- | --- |
+| `tests/test_app_shell_contract.py::test_map_list_toggle_opens_secondary_list_without_breaking_map_first_chrome` | Map-first chrome, icon-only map/list toggle and section visibility can regress while static source strings still exist. | Duplicate temporarily: `tests/godot_runtime_app_shell.gd::test_main_scene_map_list_toggle_runtime` loads `Main.tscn` and verifies live section/chrome state. Keep Python as cheap scene/source guard. |
+| `tests/test_object_list_contract.py::test_list_panel_filters_visible_objects_before_emitting_selection` | Filter composition, row rebuilding, empty-state visibility and emitted source indices depend on runtime state. | Duplicate temporarily: `tests/godot_runtime_app_shell.gd::test_object_list_filtering_and_selection_runtime` exercises `ObjectListPanel` behavior directly in Godot. Keep Python static checks for helper/API presence. |
+| `tests/test_object_list_contract.py::test_list_section_has_left_safe_area_without_horizontal_overflow` | Layout overflow is scene/runtime-sensitive, but needs visual/device review to prove pixels. | Keep Python static contract for now; migrate later with screenshot/runtime layout bounds coverage. |
+
 ## Что проверяет Python
 
 Python остается владельцем проверок, где запуск Godot runtime не нужен или является только внешним smoke/packaging шагом:

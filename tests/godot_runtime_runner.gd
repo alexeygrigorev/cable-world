@@ -3,6 +3,7 @@ extends SceneTree
 const TEST_SCRIPT_PATHS: Array[String] = [
 	"res://tests/godot_runtime_smoke.gd",
 	"res://tests/godot_runtime_map_panel.gd",
+	"res://tests/godot_runtime_app_shell.gd",
 ]
 const TEST_SCRIPTS_ENV: String = "MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS"
 

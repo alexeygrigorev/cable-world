@@ -33,6 +33,7 @@ class GodotRuntimeRunnerContractTest(unittest.TestCase):
         runner_text = (ROOT / "tests" / "godot_runtime_runner.gd").read_text(encoding="utf-8")
         smoke_text = (ROOT / "tests" / "godot_runtime_smoke.gd").read_text(encoding="utf-8")
         self.assertIn("res://tests/godot_runtime_smoke.gd", runner_text)
+        self.assertIn("res://tests/godot_runtime_app_shell.gd", runner_text)
         self.assertIn("MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS", runner_text)
         self.assertIn("test_collection_stats_and_achievements_runtime", smoke_text)
         self.assertIn("CollectionStatsScript.calculate", smoke_text)
