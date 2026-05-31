@@ -140,7 +140,7 @@ class OfflineMapLayer:
 		var is_town := str(label_data.get("kind", "")) == "town"
 		if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:
 			return
-		var label_size := 18 if is_capital else (12 if is_town else 15)
+		var label_size := 17 if is_capital else (14 if is_town else 15)
 		var icon_rect := _city_icon_rect(label_data, position)
 		var label_rect := Rect2()
 		if icon_rect.size != Vector2.ZERO:

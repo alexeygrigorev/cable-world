@@ -1055,3 +1055,31 @@ Checks already run before this documentation pass:
 
 - `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 OK, 2 skipped.
 - `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 OK.
+
+## Iteration 2026-05-31 21:38
+
+Implemented:
+
+- Strengthened Harz as a readable central mountain region:
+  - expanded the Harz region polygon while keeping it centered on the real Harz area;
+  - increased region fill/blur and ridge height;
+  - added `harz_south_spur`;
+  - replaced the single small highland glyph with two larger `highland_forest_*` glyphs.
+- Moved the baked `Harz` label onto the stronger massif center and increased it from `22` to `24`.
+- Removed `castle` from `DEFAULT_ATLAS_DETAIL_KINDS`, because the rendered castle glyphs were visually reading as small house clutter on the live map.
+- Reduced city label size randomness: Berlin is now `17`, normal major cities remain `15`, and secondary town labels are `14` when they appear after zoom `1.20`.
+- Regenerated `assets/map/germany_styled.png` and the Harz source layer metadata.
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated `assets/map/germany_styled.png`.
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 OK, 2 skipped.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 OK.
+- `godot --headless --path . --import --quit`: OK with the known nested-worktree warning.
+- Web export rebuilt and gzip verified: `index.pck` returns `Content-Encoding: gzip`, `Content-Length: 5770237`, `Cache-Control: no-store`.
+- Playwright screenshots regenerated:
+  - `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+  - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+  - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
+
+Self-audit: Harz is clearly more visible on desktop and small house clutter is reduced, but this is still not `8/10`. On mobile, Harz can still be visually busy because the transport cluster overlaps the region; Alps/elevation accuracy remains the bigger blocker.

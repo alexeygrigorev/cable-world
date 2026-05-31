@@ -298,20 +298,27 @@ RELIEF_REGIONS = [
         "label": "Harz",
         "kind": "isolated_mountain_range",
         "glyph": "forested_highland",
-        "fill": (73, 125, 66, 64),
-        "blur": 20,
-        "points": [(10.0, 52.05), (10.85, 52.15), (11.35, 51.65), (10.75, 51.35), (9.9, 51.55)],
-        "trees": [(10.55, 51.75, 58)],
+        "fill": (55, 112, 59, 96),
+        "blur": 24,
+        "points": [(9.76, 52.14), (10.55, 52.22), (11.36, 51.92), (11.48, 51.52), (10.72, 51.24), (9.72, 51.42)],
+        "trees": [(10.36, 51.88, 72), (10.84, 51.58, 64)],
         "ridge_bands": [
             {
                 "id": "harz_brocken_spine",
                 "style": "forested",
-                "points": [(10.08, 51.88), (10.55, 51.80), (11.05, 51.65)],
+                "points": [(9.95, 51.94), (10.36, 51.84), (10.82, 51.72), (11.20, 51.56)],
+                "height": 52,
+                "step": 26,
+            },
+            {
+                "id": "harz_south_spur",
+                "style": "forested",
+                "points": [(10.05, 51.58), (10.48, 51.50), (10.92, 51.42)],
                 "height": 34,
-                "step": 30,
+                "step": 28,
             },
         ],
-        "mountain_glyphs": [("highland_forest_1", 10.62, 51.78, 118)],
+        "mountain_glyphs": [("highland_forest_1", 10.50, 51.78, 188), ("highland_forest_2", 10.92, 51.55, 138)],
         "mountains": [],
     },
     {
@@ -578,7 +585,7 @@ ATLAS_DETAIL_KIND_SCALE = {
     "windmill": 1.55,
 }
 MIN_ATLAS_DETAIL_WIDTH = 78
-DEFAULT_ATLAS_DETAIL_KINDS = {"bridge", "castle", "lighthouse", "port", "ship", "tower"}
+DEFAULT_ATLAS_DETAIL_KINDS = {"bridge", "lighthouse", "port", "ship", "tower"}
 
 
 def audit_geography_layers():
@@ -1766,7 +1773,7 @@ def _draw_town(draw, proj, lon, lat, size):
 
 
 MAP_LABELS = [
-    {"name": "Harz", "lon": 10.3600, "lat": 51.7000, "size": 22, "kind": "relief"},
+    {"name": "Harz", "lon": 10.5200, "lat": 51.7600, "size": 24, "kind": "relief"},
     {"name": "Zugspitze", "lon": 10.9900, "lat": 47.4300, "size": 19, "kind": "peak"},
     {"name": "Alpen", "lon": 11.7000, "lat": 47.1200, "size": 25, "kind": "relief"},
     {"name": "Müritz", "lon": 12.7500, "lat": 53.4300, "size": 20, "kind": "water"},
