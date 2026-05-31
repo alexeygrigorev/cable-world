@@ -1,28 +1,36 @@
 {
   "cropped_size_px": [
-    443,
+    523,
     465
   ],
+  "custom_renderer": "harz_production_v1",
   "extends_to": [],
   "geo_bounds": {
-    "max_latitude": 52.25336,
-    "max_longitude": 11.33439,
-    "min_latitude": 51.33834,
-    "min_longitude": 9.92422
+    "max_latitude": 52.27089,
+    "max_longitude": 11.39806,
+    "min_latitude": 51.35622,
+    "min_longitude": 9.73323
   },
   "glyphs": [
     {
       "glyph": "highland_forest_1",
-      "latitude": 51.78,
-      "longitude": 10.5,
-      "width": 188,
+      "latitude": 51.82,
+      "longitude": 10.42,
+      "width": 226,
       "y_offset": 0.0
     },
     {
       "glyph": "highland_forest_2",
-      "latitude": 51.55,
-      "longitude": 10.92,
-      "width": 138,
+      "latitude": 51.6,
+      "longitude": 10.86,
+      "width": 176,
+      "y_offset": 0.0
+    },
+    {
+      "glyph": "atlas_forest_pine_dense",
+      "latitude": 51.92,
+      "longitude": 10.15,
+      "width": 132,
       "y_offset": 0.0
     }
   ],
@@ -31,10 +39,10 @@
   "kind": "isolated_mountain_range",
   "label": "Harz",
   "map_bbox_px": [
-    852.0,
-    949.5,
-    1073.5,
-    1182.0
+    822.0,
+    945.0,
+    1083.5,
+    1177.5
   ],
   "massif_segments": [],
   "placement_policy": "named_region_polygon_and_brocken_spine",
@@ -65,12 +73,12 @@
     }
   ],
   "render_bbox_px": [
-    1704,
-    1899,
-    2147,
-    2364
+    1644,
+    1890,
+    2167,
+    2355
   ],
-  "replacement_status": "readability_placeholder_needs_custom_harz_asset",
+  "replacement_status": "production_candidate_custom_harz_v1",
   "ridge_bands": [
     {
       "height": 52,
@@ -122,14 +130,24 @@
   "source_type": "relief_region",
   "trees": [
     {
-      "latitude": 51.88,
-      "longitude": 10.36,
+      "latitude": 51.96,
+      "longitude": 10.18,
       "radius": 72
     },
     {
-      "latitude": 51.58,
-      "longitude": 10.84,
-      "radius": 64
+      "latitude": 51.86,
+      "longitude": 10.42,
+      "radius": 78
+    },
+    {
+      "latitude": 51.72,
+      "longitude": 10.72,
+      "radius": 66
+    },
+    {
+      "latitude": 51.55,
+      "longitude": 10.96,
+      "radius": 62
     }
   ]
 }

@@ -97,6 +97,21 @@ class MapGeographyAuditTest(unittest.TestCase):
                 with self.subTest(region=region["id"], tree_size=tree_size):
                     self.assertGreaterEqual(_relief_tree_cluster_width(tree_size), RELIEF_TREE_CLUSTER_MIN_WIDTH)
 
+    def test_harz_uses_custom_production_renderer(self) -> None:
+        from map_pipeline.compose_map import RELIEF_REGIONS, TERRAIN_MASSIF_LAYERS_PATH
+        import json
+
+        harz = next(region for region in RELIEF_REGIONS if region["id"] == "harz")
+        self.assertEqual("harz_production_v1", harz["custom_renderer"])
+        self.assertGreaterEqual(len(harz["trees"]), 4)
+        self.assertIn(("atlas_forest_pine_dense", 10.15, 51.92, 132), harz["mountain_glyphs"])
+
+        with open(TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
+            contract = json.load(file)
+        harz_contract = next(layer for layer in contract["source_layers"] if layer["id"] == "harz")
+        self.assertEqual("production_candidate_custom_harz_v1", harz_contract["replacement_status"])
+        self.assertIn("atlas_forest_pine_dense", harz_contract["allowed_glyphs"])
+
     def test_alpine_rendered_segments_are_not_decorative_only_anchors(self) -> None:
         from map_pipeline.compose_map import ALPINE_MASSIF_SEGMENTS, ALPINE_RELIEF_EXTENTS_PATH
         import json

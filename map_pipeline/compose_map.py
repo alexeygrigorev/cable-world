@@ -336,10 +336,11 @@ RELIEF_REGIONS = [
         "label": "Harz",
         "kind": "isolated_mountain_range",
         "glyph": "forested_highland",
+        "custom_renderer": "harz_production_v1",
         "fill": (55, 112, 59, 96),
         "blur": 24,
         "points": [(9.76, 52.14), (10.55, 52.22), (11.36, 51.92), (11.48, 51.52), (10.72, 51.24), (9.72, 51.42)],
-        "trees": [(10.36, 51.88, 72), (10.84, 51.58, 64)],
+        "trees": [(10.18, 51.96, 72), (10.42, 51.86, 78), (10.72, 51.72, 66), (10.96, 51.55, 62)],
         "ridge_bands": [
             {
                 "id": "harz_brocken_spine",
@@ -356,7 +357,11 @@ RELIEF_REGIONS = [
                 "step": 28,
             },
         ],
-        "mountain_glyphs": [("highland_forest_1", 10.50, 51.78, 188), ("highland_forest_2", 10.92, 51.55, 138)],
+        "mountain_glyphs": [
+            ("highland_forest_1", 10.42, 51.82, 226),
+            ("highland_forest_2", 10.86, 51.60, 176),
+            ("atlas_forest_pine_dense", 10.15, 51.92, 132),
+        ],
         "mountains": [],
     },
     {
@@ -1383,6 +1388,9 @@ def _draw_terrain(canvas, proj, land_mask):
 
 
 def _render_relief_region_decor_layer(size, proj, region):
+    if region.get("custom_renderer") == "harz_production_v1":
+        return _render_harz_production_layer(size, proj, region)
+
     layer = Image.new("RGBA", size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
     for lon, lat, tree_size in region.get("trees", []):
@@ -1396,6 +1404,32 @@ def _render_relief_region_decor_layer(size, proj, region):
     for lon, lat, mountain_size in region.get("mountains", []):
         _draw_mountains(layer, draw, proj, lon, lat, mountain_size, region.get("glyph", "alpine"))
     return layer
+
+
+def _render_harz_production_layer(size, proj, region):
+    layer = Image.new("RGBA", size, (0, 0, 0, 0))
+    region_mask = _relief_region_alpha_mask(size, proj, region)
+
+    for lon, lat, radius in region.get("trees", []):
+        _draw_tree_cluster(layer, proj, lon, lat, radius)
+
+    glyph_layer = Image.new("RGBA", size, (0, 0, 0, 0))
+    for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):
+        _draw_glyph_center(glyph_layer, proj, glyph_name, lon, lat, width)
+    glyph_alpha = Image.composite(glyph_layer.getchannel("A"), Image.new("L", size, 0), region_mask)
+    glyph_layer.putalpha(glyph_alpha)
+    layer.alpha_composite(glyph_layer)
+    return layer
+
+
+def _relief_region_alpha_mask(size, proj, region):
+    mask = Image.new("L", size, 0)
+    draw = ImageDraw.Draw(mask)
+    polygon = [_project_point(proj, lon, lat) for lon, lat in region.get("points", [])]
+    if len(polygon) >= 3:
+        draw.polygon(polygon, fill=230)
+        mask = mask.filter(ImageFilter.GaussianBlur(4 * RENDER_SCALE))
+    return mask
 
 
 def _should_export_relief_region_source_layer(region):
@@ -1919,43 +1953,44 @@ def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj
 def _relief_region_source_metadata(region, image_name, render_bbox, cropped_size, proj):
     contract_layer = _terrain_massif_contract_layers().get(region["id"], {})
     metadata = _source_layer_base_metadata(region, image_name, render_bbox, cropped_size, proj)
-    metadata.update(
-        {
-            "source_extent_id": contract_layer.get("source_extent_id", region["id"]),
-            "source_type": "relief_region",
-            "kind": region.get("kind", ""),
-            "placement_policy": contract_layer.get("placement_policy", "named_region_layer"),
-            "source_confidence": contract_layer.get("source_confidence", "uncontracted"),
-            "replacement_status": contract_layer.get("replacement_status", "needs_custom_asset"),
-            "region_polygon": [{"longitude": lon, "latitude": lat} for lon, lat in region.get("points", [])],
-            "trees": [
-                {"longitude": lon, "latitude": lat, "radius": radius}
-                for lon, lat, radius in region.get("trees", [])
-            ],
-            "ridge_bands": [
-                {
-                    "id": ridge_band["id"],
-                    "style": ridge_band.get("style", "alpine"),
-                    "points": [{"longitude": lon, "latitude": lat} for lon, lat in ridge_band.get("points", [])],
-                    "height": ridge_band.get("height", 72),
-                    "step": ridge_band.get("step", 44),
-                }
-                for ridge_band in region.get("ridge_bands", [])
-            ],
-            "massif_segments": [segment["id"] for segment in region.get("massif_segments", [])],
-            "glyphs": [
-                {
-                    "glyph": glyph_name,
-                    "longitude": lon,
-                    "latitude": lat,
-                    "width": width,
-                    "y_offset": 0.0,
-                }
-                for glyph_name, lon, lat, width in region.get("mountain_glyphs", [])
-            ],
-            "extends_to": region.get("extends_to", []),
-        }
-    )
+    extra = {
+        "source_extent_id": contract_layer.get("source_extent_id", region["id"]),
+        "source_type": "relief_region",
+        "kind": region.get("kind", ""),
+        "placement_policy": contract_layer.get("placement_policy", "named_region_layer"),
+        "source_confidence": contract_layer.get("source_confidence", "uncontracted"),
+        "replacement_status": contract_layer.get("replacement_status", "needs_custom_asset"),
+        "region_polygon": [{"longitude": lon, "latitude": lat} for lon, lat in region.get("points", [])],
+        "trees": [
+            {"longitude": lon, "latitude": lat, "radius": radius}
+            for lon, lat, radius in region.get("trees", [])
+        ],
+        "ridge_bands": [
+            {
+                "id": ridge_band["id"],
+                "style": ridge_band.get("style", "alpine"),
+                "points": [{"longitude": lon, "latitude": lat} for lon, lat in ridge_band.get("points", [])],
+                "height": ridge_band.get("height", 72),
+                "step": ridge_band.get("step", 44),
+            }
+            for ridge_band in region.get("ridge_bands", [])
+        ],
+        "massif_segments": [segment["id"] for segment in region.get("massif_segments", [])],
+        "glyphs": [
+            {
+                "glyph": glyph_name,
+                "longitude": lon,
+                "latitude": lat,
+                "width": width,
+                "y_offset": 0.0,
+            }
+            for glyph_name, lon, lat, width in region.get("mountain_glyphs", [])
+        ],
+        "extends_to": region.get("extends_to", []),
+    }
+    if region.get("custom_renderer"):
+        extra["custom_renderer"] = region["custom_renderer"]
+    metadata.update(extra)
     return metadata
 
 

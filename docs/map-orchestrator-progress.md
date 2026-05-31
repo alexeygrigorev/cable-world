@@ -1235,3 +1235,21 @@ Strict review status:
 Parallel work still running:
 
 - #69 worker is still active on the real production glyph-layer terrain pass. This is the main blocker for moving from prototype quality toward the requested reusable-glyph reference-map direction.
+
+## Iteration 2026-06-01 00:20
+
+Worker pass for #69 in worktree `/tmp/cable-world-issue-69-production-terrain-glyphs`:
+
+- Started the production glyph-layer terrain pass instead of another guardrail-only change.
+- Replaced the Harz rendering path with `custom_renderer: "harz_production_v1"`.
+- The Harz source layer now composes larger reusable transparent glyphs (`highland_forest_1`, `highland_forest_2`, `atlas_forest_pine_dense`) and expanded forest masses.
+- Removed the old visible green ridge-band rectangle from the Harz source PNG; ridge-band geometry remains in metadata for source accuracy and future art passes.
+- Updated `map_pipeline/data/terrain_massif_layers.json` so Harz is marked `production_candidate_custom_harz_v1`.
+- Regenerated `assets/map/germany_styled.png`, `assets/map/massifs/harz.png`, `assets/map/massifs/harz.json` and `assets/map/massifs/manifest.json`.
+
+Evidence:
+
+- `assets/map/massifs/harz.png` was visually checked directly. It is now a transparent reusable Harz terrain layer without the previous rectangular band artifact.
+- `assets/map/germany_styled.png` was visually checked directly. Harz is cleaner and more readable, but the full map is still not `10/10`.
+
+Self-audit: this is a useful production-art slice for #69, not final acceptance. Current overall map remains rejected below `10/10` because Alps and the other massif layers still need equivalent custom/elevation-backed art passes and strict Web screenshot review.

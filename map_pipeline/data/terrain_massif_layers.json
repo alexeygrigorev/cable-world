@@ -79,9 +79,10 @@
       ],
       "allowed_glyphs": [
         "highland_forest_1",
-        "highland_forest_2"
+        "highland_forest_2",
+        "atlas_forest_pine_dense"
       ],
-      "replacement_status": "readability_placeholder_needs_custom_harz_asset"
+      "replacement_status": "production_candidate_custom_harz_v1"
     },
     {
       "id": "black_forest",

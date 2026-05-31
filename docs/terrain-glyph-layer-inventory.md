@@ -24,7 +24,7 @@ They must not be shipped as full-map production underlays.
 ## Current Named Layers
 
 - `alps`: composite cross-border layer, backed by Alpine child segments and `map_pipeline/data/alpine_relief_extents.json`; still pre-DEM and not production-approved.
-- `harz`: isolated central massif layer with `harz_brocken_spine` and `harz_south_spur`; readable placeholder, needs custom Harz asset.
+- `harz`: isolated central massif layer with `harz_brocken_spine` and `harz_south_spur`; first production-candidate custom renderer `harz_production_v1` replaces the generic ridge-band rectangle with one reusable transparent source layer composed from larger forest/mountain glyphs.
 - `black_forest`: named forested highland spine; needs custom forested massif glyph.
 - `bavarian_forest`: named forested highland spine; needs custom forested massif glyph.
 - `erzgebirge`: named border ridge; needs custom Erzgebirge asset.
