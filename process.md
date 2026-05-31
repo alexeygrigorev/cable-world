@@ -41,17 +41,22 @@
 
 ## Проверки
 
-Сейчас обязательна команда:
+Граница тестов описана в [Testing Strategy](docs/testing-strategy.md): Python отвечает за map pipeline, data/schema/export и небольшие static contracts; Godot-native проверки отвечают за GDScript runtime, UI, input и scene behavior.
+
+Сейчас обязательный быстрый gate:
 
 ```bash
 python3 -m unittest discover -s tests
+godot --headless --path . --import --quit
+godot --headless --path . --quit-after 1
 ```
 
-Для map-related задач обязательный reviewer набор расширяется документом [Map Reviewer Gate](docs/map-reviewer-gate.md): full tests, Godot import/run, Web export, local serve на `:9000`, Playwright screenshots и gzip header check.
+Команда `python3 -m unittest discover -s tests` покрывает Python pipeline/static contracts, но не заменяет runtime/UI тесты Godot. Новые runtime/UI/input/scenes issues должны по умолчанию требовать Godot-native тест или явно фиксировать, что задача ограничена static contract.
+
+Для map-related задач обязательный reviewer набор расширяется документом [Map Reviewer Gate](docs/map-reviewer-gate.md): full Python tests, Godot import/run, Web export, local serve на `:9000`, Playwright screenshots и gzip header check.
 
 Позже обязательный набор расширяется:
 
-- headless-запуск Godot;
 - GdUnit4;
 - проверка миграций SQLite;
 - ручная проверка карты и вложений на целевых устройствах.

@@ -14,8 +14,12 @@
 ```bash
 scripts/install-godot.sh
 python3 -m unittest discover -s tests
+godot --headless --path . --import --quit
+godot --headless --path . --quit-after 1
 scripts/export-release.sh "$(cat VERSION)"
 ```
+
+Python test gate покрывает pipeline/data/schema/export/static contracts. Godot import/run gate покрывает engine import, GDScript compile/load и минимальный runtime startup. Подробная граница между ними зафиксирована в [Testing Strategy](testing-strategy.md).
 
 ## APK smoke test
 
