@@ -133,6 +133,9 @@ class MapPanelContractTest(unittest.TestCase):
             "const MARKER_ZOOM_SIZE_MIN := 48.0",
             "const MARKER_ZOOM_SIZE_MAX := 78.0",
             "const CLUSTER_MARKER_ZOOM_SIZE_MAX := 70.0",
+            "const ICON_VIEWPORT_REFERENCE_WIDTH := 390.0",
+            "const ICON_VIEWPORT_SCALE_MIN := 0.92",
+            "const ICON_VIEWPORT_SCALE_MAX := 1.30",
             "func _on_map_layer_gui_input(event: InputEvent) -> void:",
             "InputEventMouseButton",
             "InputEventMouseMotion",
@@ -194,7 +197,6 @@ class MapPanelContractTest(unittest.TestCase):
             'marker.text = ""',
             "func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZE) -> Vector2:",
             "func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:",
-            "clamp(ICON_MARKER_SIZE.x * sqrt(max(zoom, 0.75)), MARKER_ZOOM_SIZE_MIN, max_size)",
             "func _apply_marker_visual_size(marker: Button, marker_size: Vector2) -> void:",
             "marker.size = marker_size",
             "func _marker_icon_texture(icon_id: String) -> Texture2D:",
@@ -204,6 +206,10 @@ class MapPanelContractTest(unittest.TestCase):
             'marker.set_meta("is_cluster_marker"',
             'marker.set_meta("cluster_center"',
             '"Группа объектов: %s"',
+            "func _map_visual_scale() -> float:",
+            "viewport_width = map_layer.size.x",
+            "clamp(sqrt(viewport_width / ICON_VIEWPORT_REFERENCE_WIDTH), ICON_VIEWPORT_SCALE_MIN, ICON_VIEWPORT_SCALE_MAX)",
+            "clamp(ICON_MARKER_SIZE.x * _map_visual_scale(), MARKER_ZOOM_SIZE_MIN, max_size)",
         ]:
             self.assertIn(expected, script_text)
 
@@ -235,19 +241,25 @@ class MapPanelContractTest(unittest.TestCase):
 
     def test_city_landmark_icons_are_drawn_after_successful_load(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
-        city_icon_body = script_text.split("func _draw_city_icon", 1)[1].split("func _city_icon_texture", 1)[0]
+        city_icon_rect_body = script_text.split("func _city_icon_rect", 1)[1].split("func _draw_city_icon", 1)[0]
+        city_icon_draw_body = script_text.split("func _draw_city_icon", 1)[1].split("func _city_icon_texture", 1)[0]
         city_label_body = script_text.split("func _draw_city_label", 1)[1].split("func _draw_city_icon", 1)[0]
 
-        self.assertIn("if texture == null:", city_icon_body)
-        self.assertIn("return", city_icon_body)
-        self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_body)
-        self.assertIn("_draw_centered_label_text", city_label_body)
+        self.assertIn("if texture == null:", city_icon_rect_body)
+        self.assertIn("return Rect2()", city_icon_rect_body)
+        self.assertIn("icon_rect = _clamp_landmark_rect(icon_rect)", city_icon_rect_body)
+        self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_draw_body)
+        self.assertIn("_centered_label_rect", city_label_body)
+        self.assertIn("_rect_overlaps_any", city_label_body)
+        self.assertIn("occupied_rects.append(occupied_rect)", city_label_body)
         self.assertNotIn("draw_circle(position", city_label_body)
-        self.assertNotIn("draw_circle", city_icon_body)
-        self.assertNotIn("draw_rect", city_icon_body)
+        self.assertNotIn("draw_circle", city_icon_rect_body)
+        self.assertNotIn("draw_rect", city_icon_rect_body)
+        self.assertIn("func _landmark_visual_scale() -> float:", script_text)
+        self.assertIn("clamp(54.0 * _landmark_visual_scale(), 46.0, 88.0)", script_text)
         self.assertLess(
-            city_icon_body.index("if texture == null:"),
-            city_icon_body.index("draw_texture_rect(texture, icon_rect, false)"),
+            city_icon_rect_body.index("if texture == null:"),
+            city_icon_rect_body.index("return icon_rect"),
         )
 
     def test_map_pipeline_uses_named_relief_layers(self) -> None:

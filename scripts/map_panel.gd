@@ -13,7 +13,13 @@ class OfflineMapLayer:
 	var _germany_texture: Texture2D = null
 	var _city_icon_textures: Dictionary = {}
 	const LANDMARK_EDGE_MARGIN := 96.0
+	const LANDMARK_VIEWPORT_MARGIN := 6.0
+	const OVERLAY_CONTROL_SAFE_WIDTH := 176.0
+	const OVERLAY_CONTROL_SAFE_HEIGHT := 78.0
 	const SECONDARY_CITY_LABEL_ZOOM := 1.20
+	const LANDMARK_VIEWPORT_REFERENCE_WIDTH := 390.0
+	const LANDMARK_VIEWPORT_SCALE_MIN := 0.92
+	const LANDMARK_VIEWPORT_SCALE_MAX := 1.30
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
 		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
@@ -109,12 +115,13 @@ class OfflineMapLayer:
 
 	func _draw_landmark_labels() -> void:
 		var font := get_theme_default_font()
+		var occupied_rects: Array[Rect2] = []
 		for label_data in CITY_LABELS:
-			_draw_city_label(font, label_data)
+			_draw_city_label(font, label_data, occupied_rects)
 		for label_data in TERRAIN_LABELS:
 			_draw_terrain_label(font, label_data)
 
-	func _draw_city_label(font: Font, label_data: Dictionary) -> void:
+	func _draw_city_label(font: Font, label_data: Dictionary, occupied_rects: Array[Rect2]) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
 		if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):
 			return
@@ -123,27 +130,40 @@ class OfflineMapLayer:
 		if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:
 			return
 		var label_size := 18 if is_capital else (12 if is_town else 15)
-		var icon_rect := _draw_city_icon(label_data, position)
+		var icon_rect := _city_icon_rect(label_data, position)
+		var label_rect := Rect2()
 		if icon_rect.size != Vector2.ZERO:
 			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 4.0 * zoom
-			_draw_centered_label_text(font, str(label_data["name"]), icon_rect.get_center().x, label_baseline_y, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
+			label_rect = _centered_label_rect(font, str(label_data["name"]), icon_rect.get_center().x, label_baseline_y, label_size)
 		else:
-			_draw_centered_label_text(font, str(label_data["name"]), position.x, position.y + 12.0 * zoom, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
+			label_rect = _centered_label_rect(font, str(label_data["name"]), position.x, position.y + 12.0 * zoom, label_size)
+		var occupied_rect := label_rect if icon_rect.size == Vector2.ZERO else icon_rect.merge(label_rect)
+		if is_town and _rect_overlaps_any(occupied_rect, occupied_rects):
+			return
+		if icon_rect.size != Vector2.ZERO:
+			_draw_city_icon(label_data, icon_rect)
+		_draw_label_text(font, str(label_data["name"]), label_rect.position + Vector2(0.0, label_rect.size.y), label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
+		occupied_rects.append(occupied_rect)
 
-	func _draw_city_icon(label_data: Dictionary, position: Vector2) -> Rect2:
+	func _city_icon_rect(label_data: Dictionary, position: Vector2) -> Rect2:
 		var icon_id := str(label_data.get("icon", ""))
 		if icon_id.is_empty():
 			return Rect2()
 		var texture: Texture2D = _city_icon_texture(icon_id)
 		if texture == null:
 			return Rect2()
-		var icon_size: float = clamp(54.0 * sqrt(max(zoom, 0.75)), 46.0, 78.0)
+		var icon_size: float = clamp(54.0 * _landmark_visual_scale(), 46.0, 88.0)
 		var icon_rect := Rect2(
 			position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom),
 			Vector2(icon_size, icon_size)
 		)
-		draw_texture_rect(texture, icon_rect, false)
+		icon_rect = _clamp_landmark_rect(icon_rect)
 		return icon_rect
+
+	func _draw_city_icon(label_data: Dictionary, icon_rect: Rect2) -> void:
+		var texture: Texture2D = _city_icon_texture(str(label_data.get("icon", "")))
+		if texture != null:
+			draw_texture_rect(texture, icon_rect, false)
 
 	func _city_icon_texture(icon_id: String) -> Texture2D:
 		if not _city_icon_textures.has(icon_id):
@@ -164,6 +184,46 @@ class OfflineMapLayer:
 			and position.y >= -margin \
 			and position.y <= size.y + margin
 
+	func _clamp_landmark_rect(rect: Rect2) -> Rect2:
+		var clamped_position := rect.position
+		clamped_position.x = clamp(
+			clamped_position.x,
+			LANDMARK_VIEWPORT_MARGIN,
+			max(LANDMARK_VIEWPORT_MARGIN, size.x - rect.size.x - LANDMARK_VIEWPORT_MARGIN)
+		)
+		clamped_position.y = clamp(
+			clamped_position.y,
+			LANDMARK_VIEWPORT_MARGIN,
+			max(LANDMARK_VIEWPORT_MARGIN, size.y - rect.size.y - LANDMARK_VIEWPORT_MARGIN)
+		)
+		var clamped_rect := Rect2(clamped_position, rect.size)
+		var overlay_rect := _top_right_overlay_rect()
+		if clamped_rect.intersects(overlay_rect, true):
+			var left_position := overlay_rect.position.x - rect.size.x - LANDMARK_VIEWPORT_MARGIN
+			if left_position >= LANDMARK_VIEWPORT_MARGIN:
+				clamped_rect.position.x = left_position
+			else:
+				clamped_rect.position.y = overlay_rect.end.y + LANDMARK_VIEWPORT_MARGIN
+		return clamped_rect
+
+	func _top_right_overlay_rect() -> Rect2:
+		return Rect2(
+			Vector2(max(0.0, size.x - OVERLAY_CONTROL_SAFE_WIDTH), 0.0),
+			Vector2(OVERLAY_CONTROL_SAFE_WIDTH, OVERLAY_CONTROL_SAFE_HEIGHT)
+		)
+
+	func _rect_overlaps_any(rect: Rect2, occupied_rects: Array[Rect2]) -> bool:
+		var padded_rect := rect.grow(3.0)
+		for occupied_rect in occupied_rects:
+			if padded_rect.intersects(occupied_rect.grow(3.0), true):
+				return true
+		return false
+
+	func _landmark_visual_scale() -> float:
+		var viewport_width: float = max(1.0, size.x)
+		var viewport_scale: float = clamp(sqrt(viewport_width / LANDMARK_VIEWPORT_REFERENCE_WIDTH), LANDMARK_VIEWPORT_SCALE_MIN, LANDMARK_VIEWPORT_SCALE_MAX)
+		return sqrt(max(zoom, 0.75)) * viewport_scale
+
 	func _draw_label_text(font: Font, text: String, position: Vector2, font_size: int, text_color: Color, shadow_color: Color) -> void:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
 		var shadow_offset := Vector2(1.7, 1.7)
@@ -174,12 +234,18 @@ class OfflineMapLayer:
 		draw_string(font, position + shadow_offset, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
 		draw_string(font, position, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, text_color)
 
-	func _draw_centered_label_text(font: Font, text: String, center_x: float, baseline_y: float, font_size: int, text_color: Color, shadow_color: Color) -> void:
+	func _centered_label_rect(font: Font, text: String, center_x: float, baseline_y: float, font_size: int) -> Rect2:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
 		var position := Vector2(center_x - text_size.x * 0.5, baseline_y)
 		position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))
 		position.y = clamp(position.y, float(scaled_size) + 4.0, max(float(scaled_size) + 4.0, size.y - 6.0))
+		var label_rect := Rect2(position - Vector2(0.0, float(scaled_size)), text_size + Vector2(0.0, float(scaled_size)))
+		return _clamp_landmark_rect(label_rect)
+
+	func _draw_centered_label_text(font: Font, text: String, center_x: float, baseline_y: float, font_size: int, text_color: Color, shadow_color: Color) -> void:
+		var label_rect := _centered_label_rect(font, text, center_x, baseline_y, font_size)
+		var position := label_rect.position + Vector2(0.0, label_rect.size.y)
 		_draw_label_text(font, text, position, font_size, text_color, shadow_color)
 
 	func _geo_to_screen(coordinates: Vector2) -> Vector2:
@@ -232,6 +298,9 @@ const ICON_MARKER_SIZE := Vector2(52.0, 52.0)
 const MARKER_ZOOM_SIZE_MIN := 48.0
 const MARKER_ZOOM_SIZE_MAX := 78.0
 const CLUSTER_MARKER_ZOOM_SIZE_MAX := 70.0
+const ICON_VIEWPORT_REFERENCE_WIDTH := 390.0
+const ICON_VIEWPORT_SCALE_MIN := 0.92
+const ICON_VIEWPORT_SCALE_MAX := 1.30
 const MAP_MIN_HEIGHT := 360.0
 const MAP_VIEW_HEIGHT := 720.0
 const MAP_LANDSCAPE_MIN_HEIGHT := 320.0
@@ -858,8 +927,15 @@ func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZ
 
 func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:
 	var max_size: float = CLUSTER_MARKER_ZOOM_SIZE_MAX if is_cluster_marker else MARKER_ZOOM_SIZE_MAX
-	var size_value: float = clamp(ICON_MARKER_SIZE.x * sqrt(max(zoom, 0.75)), MARKER_ZOOM_SIZE_MIN, max_size)
+	var size_value: float = clamp(ICON_MARKER_SIZE.x * _map_visual_scale(), MARKER_ZOOM_SIZE_MIN, max_size)
 	return Vector2(size_value, size_value)
+
+func _map_visual_scale() -> float:
+	var viewport_width := ICON_VIEWPORT_REFERENCE_WIDTH
+	if map_layer != null and map_layer.size.x > 0.0:
+		viewport_width = map_layer.size.x
+	var viewport_scale: float = clamp(sqrt(viewport_width / ICON_VIEWPORT_REFERENCE_WIDTH), ICON_VIEWPORT_SCALE_MIN, ICON_VIEWPORT_SCALE_MAX)
+	return sqrt(max(zoom, 0.75)) * viewport_scale
 
 func _apply_marker_visual_size(marker: Button, marker_size: Vector2) -> void:
 	marker.custom_minimum_size = marker_size

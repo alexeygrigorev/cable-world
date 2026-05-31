@@ -168,3 +168,25 @@ Checks:
 - `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
 
 Self-audit: current map is approximately `6/10`. The underlay now reads as an adventure atlas instead of a procedural/GIS canvas, but it is not `8/10`: generated decorative geography still needs an audit, edge labels need clipping fixes, dense terrain competes with markers in places, and the Web payload increased to about 15 MB gzip.
+
+## Iteration 2026-05-31 15:24
+
+Implemented:
+
+- City landmark icons and labels now clamp inside the viewport and avoid the top-right controls.
+- Secondary city/town labels are skipped when they collide with higher-priority city landmark blocks.
+- Runtime transport markers scale with both zoom and viewport width, so resizing the map also changes marker size.
+- City landmark pictograms scale with both zoom and viewport width, with a maximum cap to preserve pixel-art readability.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 12 OK.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Self-audit: still around `6/10`. This fixes the user-reported resize behavior and reduces edge clipping, but the map still needs geography/aesthetic work before it can honestly be `8/10`.

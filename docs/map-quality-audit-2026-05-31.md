@@ -242,3 +242,22 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
 
 Rubric estimate after screenshot review: 6/10. This is no longer capped at 4/10 by the procedural/GIS-underlay rule because the base image now reads as an adventure atlas. It is still not 8/10: geography is not sufficiently audited, generated decorative towns/rivers may conflict with real coordinates, some labels are clipped near viewport edges, dense terrain competes with interactive icons, and the Web payload grew.
+
+Viewport-aware icon iteration:
+
+- City landmark rectangles are clamped inside the visible viewport and outside the top-right zoom/list controls.
+- Secondary town labels are skipped when they would overlap higher-priority city landmark rectangles.
+- Transport markers now scale with both zoom and viewport width via `_map_visual_scale()`, with min/max caps.
+- City landmark pictograms now scale with both zoom and viewport width via `_landmark_visual_scale()`, with min/max caps.
+- Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns gzip/no-store.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
+
+Rubric estimate remains around 6/10. This fixes an interaction/responsive rendering problem, but it does not solve the remaining 8/10 blockers: generated geography audit, visual hierarchy over dense terrain, and payload size.
