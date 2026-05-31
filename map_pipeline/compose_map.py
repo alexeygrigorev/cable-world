@@ -12,7 +12,7 @@ MAP_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "map")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "natural_earth")
 GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 
-GERMANY_BOUNDS = (4.5, 46.5, 15.5, 55.5)
+GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
 MAP_SIZE = (1568, 2048)
 RENDER_SCALE = 2
 
@@ -145,9 +145,12 @@ ATLAS_DETAILS = [
     {"id": "north_sea_sail", "kind": "ship", "glyph": "detail_ship", "lon": 7.85, "lat": 54.28, "width": 52, "region": "north_sea"},
     {"id": "kiel_ferry", "kind": "ship", "glyph": "detail_ship", "lon": 10.28, "lat": 54.42, "width": 46, "region": "baltic_sea"},
     {"id": "rostock_ferry", "kind": "ship", "glyph": "detail_ship", "lon": 12.25, "lat": 54.22, "width": 46, "region": "baltic_sea"},
+    {"id": "ruegen_sail", "kind": "ship", "glyph": "detail_ship", "lon": 13.70, "lat": 54.57, "width": 38, "region": "baltic_sea"},
     {"id": "hamburg_port", "kind": "port", "glyph": "detail_port", "lon": 9.90, "lat": 53.48, "width": 54, "region": "lower_elbe"},
     {"id": "luebeck_port", "kind": "port", "glyph": "detail_port", "lon": 10.82, "lat": 53.95, "width": 42, "region": "baltic_sea"},
+    {"id": "bremerhaven_port", "kind": "port", "glyph": "detail_port", "lon": 8.58, "lat": 53.55, "width": 42, "region": "north_sea"},
     {"id": "rhein_bridge", "kind": "bridge", "glyph": "detail_bridge", "lon": 6.96, "lat": 50.94, "width": 48, "region": "rhein"},
+    {"id": "main_bridge_wuerzburg", "kind": "bridge", "glyph": "detail_bridge", "lon": 9.93, "lat": 49.79, "width": 38, "region": "main"},
     {"id": "dresden_elbe_bridge", "kind": "bridge", "glyph": "detail_bridge", "lon": 13.74, "lat": 51.05, "width": 42, "region": "elbe"},
     {"id": "heidelberg_castle", "kind": "castle", "glyph": "detail_castle", "lon": 8.7150, "lat": 49.4106, "width": 44, "region": "neckar"},
     {"id": "wartburg_castle", "kind": "castle", "glyph": "detail_castle", "lon": 10.3067, "lat": 50.9669, "width": 40, "region": "thuringian_forest"},
@@ -155,7 +158,49 @@ ATLAS_DETAILS = [
     {"id": "neuschwanstein_castle", "kind": "castle", "glyph": "detail_castle", "lon": 10.7498, "lat": 47.5576, "width": 42, "region": "alps"},
     {"id": "schwerin_castle", "kind": "castle", "glyph": "detail_castle", "lon": 11.4175, "lat": 53.6244, "width": 40, "region": "north_german_plain"},
     {"id": "harz_tower", "kind": "tower", "glyph": "detail_tower", "lon": 10.62, "lat": 51.80, "width": 34, "region": "harz"},
+    {"id": "helgoland_lighthouse", "kind": "lighthouse", "glyph": "detail_lighthouse", "lon": 7.89, "lat": 54.18, "width": 34, "region": "north_sea"},
+    {"id": "ruegen_lighthouse", "kind": "lighthouse", "glyph": "detail_lighthouse", "lon": 13.66, "lat": 54.68, "width": 34, "region": "ruegen"},
+    {"id": "frisian_windmill", "kind": "windmill", "glyph": "detail_windmill", "lon": 7.55, "lat": 53.58, "width": 32, "region": "frisia"},
+    {"id": "altmark_windmill", "kind": "windmill", "glyph": "detail_windmill", "lon": 11.55, "lat": 52.86, "width": 32, "region": "altmark"},
+    {"id": "spreewald_watermill", "kind": "watermill", "glyph": "detail_watermill", "lon": 14.06, "lat": 51.87, "width": 34, "region": "spreewald"},
+    {"id": "black_forest_watermill", "kind": "watermill", "glyph": "detail_watermill", "lon": 8.22, "lat": 48.24, "width": 34, "region": "black_forest"},
+    {"id": "teutoburg_chapel", "kind": "chapel", "glyph": "detail_chapel", "lon": 8.88, "lat": 52.02, "width": 32, "region": "teutoburg"},
+    {"id": "harz_chapel", "kind": "chapel", "glyph": "detail_chapel", "lon": 10.93, "lat": 51.61, "width": 30, "region": "harz"},
+    {"id": "thuringian_ruins", "kind": "ruins", "glyph": "detail_ruins", "lon": 11.12, "lat": 50.63, "width": 32, "region": "thuringian_forest"},
+    {"id": "rhine_ruins", "kind": "ruins", "glyph": "detail_ruins", "lon": 7.69, "lat": 50.17, "width": 32, "region": "middle_rhine"},
+    {"id": "mosel_village", "kind": "village", "glyph": "detail_village", "lon": 7.17, "lat": 49.96, "width": 34, "region": "mosel"},
+    {"id": "luneburg_village", "kind": "village", "glyph": "detail_village", "lon": 10.42, "lat": 53.05, "width": 34, "region": "lueneburg_heath"},
+    {"id": "mueritz_village", "kind": "village", "glyph": "detail_village", "lon": 12.64, "lat": 53.33, "width": 32, "region": "mecklenburg_lakes"},
+    {"id": "swabian_village", "kind": "village", "glyph": "detail_village", "lon": 9.45, "lat": 48.42, "width": 32, "region": "swabian_alb"},
+    {"id": "franconian_village", "kind": "village", "glyph": "detail_village", "lon": 11.26, "lat": 49.78, "width": 32, "region": "franconia"},
+    {"id": "oberlausitz_village", "kind": "village", "glyph": "detail_village", "lon": 14.64, "lat": 51.15, "width": 32, "region": "oberlausitz"},
+    {"id": "holstein_chapel", "kind": "chapel", "glyph": "detail_chapel", "lon": 10.20, "lat": 54.02, "width": 30, "region": "holstein"},
+    {"id": "lower_saxony_village", "kind": "village", "glyph": "detail_village", "lon": 9.42, "lat": 52.78, "width": 32, "region": "lower_saxony"},
+    {"id": "weser_watermill", "kind": "watermill", "glyph": "detail_watermill", "lon": 9.36, "lat": 51.76, "width": 32, "region": "weser_uplands"},
+    {"id": "sauerland_village", "kind": "village", "glyph": "detail_village", "lon": 8.05, "lat": 51.18, "width": 32, "region": "sauerland"},
+    {"id": "eifel_chapel", "kind": "chapel", "glyph": "detail_chapel", "lon": 6.72, "lat": 50.28, "width": 30, "region": "eifel"},
+    {"id": "palatinate_ruins", "kind": "ruins", "glyph": "detail_ruins", "lon": 8.05, "lat": 49.22, "width": 32, "region": "palatinate"},
+    {"id": "odenwald_village", "kind": "village", "glyph": "detail_village", "lon": 8.82, "lat": 49.67, "width": 32, "region": "odenwald"},
+    {"id": "rhoen_chapel", "kind": "chapel", "glyph": "detail_chapel", "lon": 10.00, "lat": 50.50, "width": 30, "region": "rhoen"},
+    {"id": "spessart_village", "kind": "village", "glyph": "detail_village", "lon": 9.42, "lat": 50.08, "width": 32, "region": "spessart"},
+    {"id": "altmuehl_watermill", "kind": "watermill", "glyph": "detail_watermill", "lon": 11.05, "lat": 48.96, "width": 32, "region": "altmuehl"},
+    {"id": "bavarian_village", "kind": "village", "glyph": "detail_village", "lon": 12.10, "lat": 48.44, "width": 34, "region": "bavaria"},
+    {"id": "lausitz_windmill", "kind": "windmill", "glyph": "detail_windmill", "lon": 14.33, "lat": 51.72, "width": 32, "region": "lausitz"},
 ]
+
+ATLAS_DETAIL_KIND_SCALE = {
+    "bridge": 1.15,
+    "castle": 1.25,
+    "chapel": 1.55,
+    "lighthouse": 1.45,
+    "port": 1.15,
+    "ruins": 1.55,
+    "ship": 1.18,
+    "tower": 1.45,
+    "village": 1.60,
+    "watermill": 1.55,
+    "windmill": 1.55,
+}
 
 
 def _scale_size(size):
@@ -334,6 +379,12 @@ def _draw_terrain(canvas, proj, land_mask):
         (13.7, 52.0, 23), (14.1, 53.0, 20), (10.1, 53.2, 44),
         (13.9, 52.2, 42), (11.1, 50.8, 46), (9.2, 51.0, 40),
         (7.6, 50.2, 36), (10.4, 48.0, 40), (12.2, 49.2, 38),
+        (7.6, 53.2, 34), (8.4, 52.2, 34), (9.2, 52.8, 30),
+        (10.9, 53.4, 32), (12.1, 53.9, 30), (13.0, 53.6, 32),
+        (13.8, 51.3, 30), (12.8, 51.1, 28), (11.7, 51.2, 30),
+        (10.2, 50.6, 34), (8.6, 50.7, 30), (7.1, 49.5, 32),
+        (8.2, 48.8, 32), (9.7, 48.6, 34), (11.7, 48.6, 32),
+        (12.8, 48.3, 34), (13.4, 49.5, 36), (14.4, 50.4, 30),
     ]:
         _draw_tree_cluster(decor, proj, lon, lat, size)
     if BAKED_TOWN_DETAILS_ENABLED:
@@ -345,6 +396,9 @@ def _draw_terrain(canvas, proj, land_mask):
         (10.8, 48.6, 56, 30), (13.2, 51.35, 54, 30),
         (6.9, 52.7, 58, 28), (9.9, 52.9, 60, 28), (11.2, 52.7, 52, 26),
         (12.2, 50.1, 48, 24), (7.4, 48.3, 44, 24), (10.0, 49.6, 50, 24),
+        (7.9, 53.0, 54, 24), (8.9, 52.4, 52, 24), (11.6, 53.2, 52, 24),
+        (12.9, 52.9, 48, 22), (13.8, 51.7, 48, 22), (8.4, 50.7, 50, 22),
+        (9.2, 48.9, 48, 22), (11.8, 49.5, 48, 22), (12.7, 48.1, 44, 22),
     ]:
         _draw_field_patch(draw, proj, lon, lat, width, height)
     for lon, lat, size in [
@@ -360,13 +414,14 @@ def _draw_terrain(canvas, proj, land_mask):
 def _draw_atlas_details(canvas, proj):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     for detail in ATLAS_DETAILS:
+        kind_scale = ATLAS_DETAIL_KIND_SCALE.get(detail["kind"], 1.0)
         _draw_glyph_center(
             layer,
             proj,
             detail["glyph"],
             detail["lon"],
             detail["lat"],
-            detail["width"],
+            detail["width"] * kind_scale,
         )
     canvas.alpha_composite(layer)
 
@@ -673,6 +728,16 @@ def _draw_routes(canvas, proj, germany_mask):
         ((9.2, 48.8), (9.9, 48.1), (10.4, 47.7), (11.1, 47.5)),
         ((8.2, 50.1), (9.3, 50.4), (11.0, 50.7), (13.8, 51.1)),
         ((10.6, 51.8), (10.4, 50.8), (10.8, 49.4), (11.5, 48.1)),
+        ((7.4, 53.4), (8.6, 53.6), (9.5, 53.7), (10.8, 53.9)),
+        ((10.8, 53.9), (11.5, 54.0), (12.4, 54.1), (13.4, 54.4)),
+        ((9.9, 53.5), (10.0, 52.7), (10.3, 52.2), (10.6, 51.8)),
+        ((8.6, 53.1), (9.4, 52.6), (9.8, 52.1), (10.6, 51.8)),
+        ((11.6, 52.1), (12.1, 52.6), (12.4, 53.0), (12.7, 53.4)),
+        ((13.4, 52.5), (14.0, 52.1), (14.2, 51.6), (14.4, 51.1)),
+        ((8.7, 49.4), (9.4, 49.6), (10.1, 49.8), (11.3, 49.8)),
+        ((11.3, 49.8), (12.0, 49.4), (12.7, 49.1), (13.3, 48.8)),
+        ((7.7, 50.4), (7.4, 49.9), (7.3, 49.6), (7.1, 49.3)),
+        ((8.0, 48.3), (8.5, 48.6), (9.0, 48.7), (9.6, 48.8)),
     ]
     for route in routes:
         p0, p1, p2, p3 = [_project_point(proj, lon, lat) for lon, lat in route]
@@ -684,13 +749,13 @@ def _draw_routes(canvas, proj, germany_mask):
 
 
 def _draw_dotted_route(draw, pts):
-    draw.line(pts, fill=(79, 62, 37, 82), width=3 * RENDER_SCALE, joint="curve")
-    draw.line(pts, fill=(238, 214, 141, 92), width=max(1, RENDER_SCALE), joint="curve")
-    for index, p in enumerate(pts[::10]):
+    draw.line(pts, fill=(67, 52, 31, 122), width=4 * RENDER_SCALE, joint="curve")
+    draw.line(pts, fill=(238, 214, 141, 146), width=max(1, RENDER_SCALE * 2), joint="curve")
+    for index, p in enumerate(pts[::8]):
         rr = (3 if index % 2 == 0 else 2) * RENDER_SCALE
-        draw.ellipse((p[0] - rr, p[1] - rr, p[0] + rr, p[1] + rr), fill=(75, 56, 32, 150))
+        draw.ellipse((p[0] - rr, p[1] - rr, p[0] + rr, p[1] + rr), fill=(75, 56, 32, 190))
         inner = max(1, rr - RENDER_SCALE)
-        draw.ellipse((p[0] - inner, p[1] - inner, p[0] + inner, p[1] + inner), fill=(244, 224, 153, 226))
+        draw.ellipse((p[0] - inner, p[1] - inner, p[0] + inner, p[1] + inner), fill=(244, 224, 153, 238))
 
 
 def main():

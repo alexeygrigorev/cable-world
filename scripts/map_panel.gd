@@ -352,8 +352,8 @@ const TRANSPORT_TYPE_ICON := {
 	"special_transport_system": "icon_station",
 	"unique_engineering_object": "icon_station",
 }
-const MIN_ZOOM := 1.0
-const MAX_ZOOM := 4.0
+const MIN_ZOOM := 0.5
+const MAX_ZOOM := 1.5
 const ZOOM_STEP := 1.25
 const DEFAULT_ZOOM := 1.10
 const DEFAULT_LANDSCAPE_ZOOM := 1.0
@@ -1191,9 +1191,9 @@ func _active_coordinate_bounds() -> Dictionary:
 	if map_scope == MAP_SCOPE_GERMANY:
 		return {
 			"min_longitude": 4.5,
-			"max_longitude": 15.5,
-			"min_latitude": 46.5,
-			"max_latitude": 55.5,
+			"max_longitude": 16.8,
+			"min_latitude": 43.2,
+			"max_latitude": 55.8,
 		}
 	return _coordinate_bounds()
 

@@ -284,3 +284,36 @@ Evidence:
 - `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
 
 Self-audit: still around `6/10`. This improves the production architecture and adds visual detail, but the map still needs stronger art direction, better regional density, and a relief/lake/city-position audit before claiming `8/10`.
+
+## Iteration 2026-05-31 16:17
+
+Implemented:
+
+- Used the previous monolithic RPG-atlas map as a detail donor, but did not restore it as the runtime background.
+- Added six more reproducible atlas glyph types:
+  - `detail_village`
+  - `detail_chapel`
+  - `detail_ruins`
+  - `detail_windmill`
+  - `detail_lighthouse`
+  - `detail_watermill`
+- Added more `ATLAS_DETAILS` placements for villages, chapels, ruins, windmills, lighthouses, watermills, ships, ports and bridges.
+- Added more route segments, tree clusters and field patches to reduce the empty-map feeling.
+- Expanded the coordinate/map bounds from Germany-only `4.5..15.5 / 46.5..55.5` to `4.5..16.8 / 43.2..55.8`, so the user can pan south below Germany and see neighboring country outlines around Switzerland, Austria and northern Italy.
+- Limited runtime zoom to `50%..150%` instead of allowing `400%`, because higher zoom was making the current raster/glyph composition visibly pixelated.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows München and the Alps in the initial frame instead of hard clipping them out.
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` shows the new `150%` zoom cap and denser map details.
+- `assets/map/germany_styled.png`: about 301 KB.
+- `build/web/index.pck.gz`: about 7.0 MB.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 12 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. This fixes the immediate south-pan/cropped-München problem and makes the map less empty, but it is not yet the requested `8/10`: the Alps/relief glyph set still needs a dedicated quality pass, and glyph assets should be regenerated or resized around the `150%` maximum so details stay clean at the chosen zoom cap.

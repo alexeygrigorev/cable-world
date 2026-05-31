@@ -15,6 +15,9 @@
 - [ ] Перевести текущую карту в glyph-based production pipeline: чистая база без baked городов + отдельные переиспользуемые glyph layers для гор, лесов, озер, кораблей и atlas details.
 - [x] Первый production cut: `map_pipeline.compose_map` больше не рисует baked town/city pictograms в underlay; runtime city landmarks остаются единственным городским слоем.
 - [x] Добавить первый atlas detail layer: reproducible glyphs для ships/ports/bridges/castles/tower + explicit `ATLAS_DETAILS` placement по координатам.
+- [x] Расширить runtime map bounds южнее Германии: можно панорамировать вниз к München/Alps и видеть соседние страны как контурную основу без ручных overlay-глифов.
+- [x] Ограничить zoom диапазоном `50%..150%`, чтобы пользователь мог оценить читаемый максимум и карта не уходила в пиксельную кашу на `400%`.
+- [x] Добавить второй atlas detail pass из монолитной карты-донора: деревни, часовни, руины, мельницы, маяки, водяные мельницы и более плотные маршруты как отдельные glyph placements.
 - [ ] Перестать считать текущую procedural/GIS underlay улучшаемой до 8/10 мелкими правками: пользовательская оценка 2026-05-31 — около 4/10. Следующий крупный шаг должен заменить или радикально переработать сам визуальный слой карты.
 - [x] Заменить текущую procedural/GIS underlay на цельную generated RPG-atlas подложку для проверки направления. Текущая самооценка после screenshot review: 6/10, не 8/10.
 - [ ] Провести geography audit новой generated подложки: декоративные AI-города/реки/озера не должны конфликтовать с реальными city/object координатами.
@@ -43,6 +46,7 @@
 - [ ] #64 Провести terrain accuracy audit текущей Германии: убрать ложные большие горы у Hamburg/севера и проверить, что все видимые горы соответствуют реальности.
 - [ ] #63 Спроектировать Europe map pipeline для следующих стран и регионов: France, Spain, Italy, Switzerland, Austria, Germany neighbors, Scandinavia, Finland, Baltics, Russia, Belarus, Ukraine до украинских гор, Turkey; рельефные слои должны продолжаться через границы.
 - [ ] #63 Позже разбить большую Europe pipeline issue на маленькие блоки по странам/регионам/слоям, но пока держать общий список в одной issue, чтобы ничего не потерять.
+- [ ] Перегенерировать/переразмерить glyph source assets под рабочий максимум `150%`, чтобы atlas details и terrain glyphs были четкими на максимальном приближении без лишней пиксельности.
 - [ ] Оформить list mode отдельной задачей: список при переключении с карты должен соответствовать стилю карты, а не выглядеть как чужой UI.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.
 - [ ] #65 Разобрать Godot headless shutdown warnings/RID leaks: сейчас `godot --headless --path . --quit-after 1` выходит с кодом 0, но печатает CanvasItem/ObjectDB/DummyTexture/ShapedText/Font leak warnings.
@@ -51,5 +55,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending atlas detail glyph layer iteration.
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат и дальнейшая Европа через explicit layers.
+- Последний map commit на момент обновления backlog: pending expanded south bounds + atlas detail density iteration.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, отдельные high-quality mountain glyphs for Alps/etc. и дальнейшая Европа через explicit layers.
