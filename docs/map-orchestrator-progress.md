@@ -874,3 +874,38 @@ Checks:
 - `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
 
 Self-audit: still about `6.8/10`. This does not improve the screenshot by itself, but it removes a major process weakness: terrain sprites now carry enough placement metadata to audit and replace them deterministically. Next visual pass should use this to improve the Alpine/Harz/forest art rather than editing a monolithic map.
+
+## Iteration 2026-05-31 19:55
+
+Implemented:
+
+- Extended the source-layer pipeline beyond Alpine segments:
+  - each named relief region now renders through `_render_relief_region_decor_layer()`;
+  - the composed map still uses the same layer output, so source assets and final map do not diverge.
+- Added per-region source PNG/JSON layers for:
+  - `alps`
+  - `black_forest`
+  - `bavarian_forest`
+  - `harz`
+  - `erzgebirge`
+  - `saxon_switzerland`
+  - `eifel_hunsrueck`
+- Kept `northern_lowlands` out of the source-layer export on purpose; it is not a mountain/massif layer and must not become a false terrain asset.
+- Expanded source metadata with `source_type`, region polygon, trees, ridge bands, massif segment references, glyph anchors and cross-border `extends_to` data.
+
+Evidence:
+
+- `assets/map/massifs/manifest.json` now contains 12 layers: 5 Alpine massif segments plus 7 named relief regions.
+- `assets/map/massifs/harz.png` is a standalone transparent source layer for Harz.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` and `/tmp/cable-world-web-map/desktop-1280x800-initial.png` regenerated from the current Web build.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6439692`, `Cache-Control: no-store`.
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated final map and all terrain source layers.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 tests OK.
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
+- Godot import/export completed, with the known nested worktree and adb warnings only.
+- Web server restarted on `http://127.0.0.1:9000/`; Playwright screenshots regenerated.
+
+Self-audit: still about `6.8/10`. The pipeline is now much closer to the requested component-based direction, but visual quality is unchanged. The next user-visible improvement should be replacing weak region glyph art/placement, especially making Alps and Harz look less like repeated generic sprites.

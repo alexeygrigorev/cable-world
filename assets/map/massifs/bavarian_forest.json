@@ -1,0 +1,78 @@
+{
+  "cropped_size_px": [
+    375,
+    416
+  ],
+  "extends_to": [
+    "Czechia",
+    "Austria"
+  ],
+  "geo_bounds": {
+    "max_latitude": 49.73893,
+    "max_longitude": 13.5722,
+    "min_latitude": 48.87593,
+    "min_longitude": 12.37849
+  },
+  "glyphs": [
+    {
+      "glyph": "highland_forest_3",
+      "latitude": 49.2,
+      "longitude": 12.95,
+      "width": 150,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "bavarian_forest",
+  "image": "bavarian_forest.png",
+  "kind": "forested_highland",
+  "label": "Bavarian Forest",
+  "map_bbox_px": [
+    1237.5,
+    1577.5,
+    1425.0,
+    1785.5
+  ],
+  "massif_segments": [],
+  "region_polygon": [
+    {
+      "latitude": 49.35,
+      "longitude": 11.8
+    },
+    {
+      "latitude": 48.8,
+      "longitude": 12.55
+    },
+    {
+      "latitude": 48.8,
+      "longitude": 13.7
+    },
+    {
+      "latitude": 49.35,
+      "longitude": 13.85
+    },
+    {
+      "latitude": 49.85,
+      "longitude": 12.7
+    }
+  ],
+  "render_bbox_px": [
+    2475,
+    3155,
+    2850,
+    3571
+  ],
+  "ridge_bands": [],
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 49.35,
+      "longitude": 12.8,
+      "radius": 72
+    },
+    {
+      "latitude": 49.05,
+      "longitude": 13.2,
+      "radius": 62
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "cropped_size_px": [
+    243,
+    209
+  ],
+  "extends_to": [],
+  "geo_bounds": {
+    "max_latitude": 52.00921,
+    "max_longitude": 10.98106,
+    "min_latitude": 51.598,
+    "min_longitude": 10.20753
+  },
+  "glyphs": [
+    {
+      "glyph": "highland_forest_1",
+      "latitude": 51.78,
+      "longitude": 10.62,
+      "width": 118,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "harz",
+  "image": "harz.png",
+  "kind": "isolated_mountain_range",
+  "label": "Harz",
+  "map_bbox_px": [
+    896.5,
+    1012.0,
+    1018.0,
+    1116.5
+  ],
+  "massif_segments": [],
+  "region_polygon": [
+    {
+      "latitude": 52.05,
+      "longitude": 10.0
+    },
+    {
+      "latitude": 52.15,
+      "longitude": 10.85
+    },
+    {
+      "latitude": 51.65,
+      "longitude": 11.35
+    },
+    {
+      "latitude": 51.35,
+      "longitude": 10.75
+    },
+    {
+      "latitude": 51.55,
+      "longitude": 9.9
+    }
+  ],
+  "render_bbox_px": [
+    1793,
+    2024,
+    2036,
+    2233
+  ],
+  "ridge_bands": [],
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 51.75,
+      "longitude": 10.55,
+      "radius": 58
+    }
+  ]
+}

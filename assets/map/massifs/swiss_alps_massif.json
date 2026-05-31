@@ -87,5 +87,6 @@
       "latitude": 47.14,
       "longitude": 7.8
     }
-  ]
+  ],
+  "source_type": "massif_segment"
 }

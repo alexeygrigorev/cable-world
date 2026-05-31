@@ -1,0 +1,76 @@
+{
+  "cropped_size_px": [
+    210,
+    154
+  ],
+  "extends_to": [
+    "Czechia"
+  ],
+  "geo_bounds": {
+    "max_latitude": 51.1531,
+    "max_longitude": 14.50489,
+    "min_latitude": 50.84472,
+    "min_longitude": 13.83641
+  },
+  "glyphs": [
+    {
+      "glyph": "border_highland_2",
+      "latitude": 50.95,
+      "longitude": 14.18,
+      "width": 108,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "saxon_switzerland",
+  "image": "saxon_switzerland.png",
+  "kind": "sandstone_highland",
+  "label": "Saxon Switzerland / Elbe Sandstone",
+  "map_bbox_px": [
+    1466.5,
+    1228.5,
+    1571.5,
+    1305.5
+  ],
+  "massif_segments": [],
+  "region_polygon": [
+    {
+      "latitude": 51.05,
+      "longitude": 13.65
+    },
+    {
+      "latitude": 50.82,
+      "longitude": 14.05
+    },
+    {
+      "latitude": 50.78,
+      "longitude": 14.45
+    },
+    {
+      "latitude": 50.98,
+      "longitude": 14.75
+    },
+    {
+      "latitude": 51.18,
+      "longitude": 14.35
+    },
+    {
+      "latitude": 51.22,
+      "longitude": 13.85
+    }
+  ],
+  "render_bbox_px": [
+    2933,
+    2457,
+    3143,
+    2611
+  ],
+  "ridge_bands": [],
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 50.96,
+      "longitude": 14.18,
+      "radius": 42
+    }
+  ]
+}

@@ -631,7 +631,7 @@ def audit_massif_source_manifest():
     with open(MASSIF_MANIFEST_PATH, "r", encoding="utf-8") as file:
         manifest = json.load(file)
 
-    expected_ids = {segment["id"] for segment in ALPINE_MASSIF_SEGMENTS}
+    expected_ids = _expected_source_layer_ids()
     layers = manifest.get("layers", [])
     actual_ids = {layer.get("id") for layer in layers}
     missing_ids = sorted(expected_ids - actual_ids)
@@ -663,6 +663,12 @@ def audit_massif_source_manifest():
             if width <= 0.10 or height <= 0.10:
                 errors.append(f"massif source layer {layer_id} geo bounds are too small")
     return errors
+
+
+def _expected_source_layer_ids():
+    ids = {segment["id"] for segment in ALPINE_MASSIF_SEGMENTS}
+    ids.update(region["id"] for region in RELIEF_REGIONS if _should_export_relief_region_source_layer(region))
+    return ids
 
 
 def _runtime_map_base_size_for_viewport(viewport_size):
@@ -962,18 +968,12 @@ def _draw_terrain(canvas, proj, land_mask):
         )
 
     decor = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    draw = ImageDraw.Draw(decor)
     for region in RELIEF_REGIONS:
-        for lon, lat, size in region.get("trees", []):
-            _draw_tree_cluster(decor, proj, lon, lat, size)
-        for ridge_band in region.get("ridge_bands", []):
-            _draw_alpine_ridge_band(decor, proj, ridge_band)
-        for massif_segment in region.get("massif_segments", []):
-            _draw_alpine_massif_segment(decor, proj, massif_segment)
-        for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):
-            _draw_glyph_center(decor, proj, glyph_name, lon, lat, width)
-        for lon, lat, size in region.get("mountains", []):
-            _draw_mountains(decor, draw, proj, lon, lat, size, region.get("glyph", "alpine"))
+        region_layer = _render_relief_region_decor_layer(canvas.size, proj, region)
+        if _should_export_relief_region_source_layer(region):
+            _save_relief_region_source_layer(region_layer, region, proj)
+        decor.alpha_composite(region_layer)
+    draw = ImageDraw.Draw(decor)
     if BAKED_TOWN_DETAILS_ENABLED:
         for lon, lat, size in BAKED_TOWN_DETAILS:
             _draw_town(draw, proj, lon, lat, size)
@@ -985,6 +985,31 @@ def _draw_terrain(canvas, proj, land_mask):
         _draw_marsh_patch(draw, proj, lon, lat, size)
 
     canvas.alpha_composite(decor)
+
+
+def _render_relief_region_decor_layer(size, proj, region):
+    layer = Image.new("RGBA", size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    for lon, lat, tree_size in region.get("trees", []):
+        _draw_tree_cluster(layer, proj, lon, lat, tree_size)
+    for ridge_band in region.get("ridge_bands", []):
+        _draw_alpine_ridge_band(layer, proj, ridge_band)
+    for massif_segment in region.get("massif_segments", []):
+        _draw_alpine_massif_segment(layer, proj, massif_segment)
+    for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):
+        _draw_glyph_center(layer, proj, glyph_name, lon, lat, width)
+    for lon, lat, mountain_size in region.get("mountains", []):
+        _draw_mountains(layer, draw, proj, lon, lat, mountain_size, region.get("glyph", "alpine"))
+    return layer
+
+
+def _should_export_relief_region_source_layer(region):
+    if region["id"] == "northern_lowlands":
+        return False
+    return any(
+        region.get(key)
+        for key in ("trees", "ridge_bands", "massif_segments", "mountain_glyphs", "mountains")
+    )
 
 
 def _draw_atlas_details(canvas, proj):
@@ -1252,6 +1277,23 @@ def _save_massif_source_layer(layer, segment, proj):
     MASSIF_SOURCE_MANIFEST.append(metadata)
 
 
+def _save_relief_region_source_layer(layer, region, proj):
+    bbox = layer.getbbox()
+    if bbox is None:
+        return
+    os.makedirs(MASSIF_DIR, exist_ok=True)
+    cropped = layer.crop(bbox)
+    image_name = f"{region['id']}.png"
+    metadata_name = f"{region['id']}.json"
+    cropped.save(os.path.join(MASSIF_DIR, image_name), optimize=True)
+
+    metadata = _relief_region_source_metadata(region, image_name, bbox, cropped.size, proj)
+    with open(os.path.join(MASSIF_DIR, metadata_name), "w", encoding="utf-8") as file:
+        json.dump(metadata, file, ensure_ascii=False, indent=2, sort_keys=True)
+        file.write("\n")
+    MASSIF_SOURCE_MANIFEST.append(metadata)
+
+
 def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj):
     left, top, right, bottom = render_bbox
     map_bbox = [value / RENDER_SCALE for value in render_bbox]
@@ -1260,6 +1302,7 @@ def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj
     return {
         "id": segment["id"],
         "label": segment["label"],
+        "source_type": "massif_segment",
         "image": image_name,
         "render_bbox_px": [int(value) for value in render_bbox],
         "map_bbox_px": [round(value, 2) for value in map_bbox],
@@ -1283,6 +1326,63 @@ def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj
             for glyph_name, lon, lat, width, y_offset in segment.get("glyphs", [])
         ],
         "required_country_overlap": segment.get("required_country_overlap", ""),
+    }
+
+
+def _relief_region_source_metadata(region, image_name, render_bbox, cropped_size, proj):
+    metadata = _source_layer_base_metadata(region, image_name, render_bbox, cropped_size, proj)
+    metadata.update(
+        {
+            "source_type": "relief_region",
+            "kind": region.get("kind", ""),
+            "region_polygon": [{"longitude": lon, "latitude": lat} for lon, lat in region.get("points", [])],
+            "trees": [
+                {"longitude": lon, "latitude": lat, "radius": radius}
+                for lon, lat, radius in region.get("trees", [])
+            ],
+            "ridge_bands": [
+                {
+                    "id": ridge_band["id"],
+                    "points": [{"longitude": lon, "latitude": lat} for lon, lat in ridge_band.get("points", [])],
+                    "height": ridge_band.get("height", 72),
+                    "step": ridge_band.get("step", 44),
+                }
+                for ridge_band in region.get("ridge_bands", [])
+            ],
+            "massif_segments": [segment["id"] for segment in region.get("massif_segments", [])],
+            "glyphs": [
+                {
+                    "glyph": glyph_name,
+                    "longitude": lon,
+                    "latitude": lat,
+                    "width": width,
+                    "y_offset": 0.0,
+                }
+                for glyph_name, lon, lat, width in region.get("mountain_glyphs", [])
+            ],
+            "extends_to": region.get("extends_to", []),
+        }
+    )
+    return metadata
+
+
+def _source_layer_base_metadata(source, image_name, render_bbox, cropped_size, proj):
+    map_bbox = [value / RENDER_SCALE for value in render_bbox]
+    west, north = proj.inverse(map_bbox[0], map_bbox[1])
+    east, south = proj.inverse(map_bbox[2], map_bbox[3])
+    return {
+        "id": source["id"],
+        "label": source["label"],
+        "image": image_name,
+        "render_bbox_px": [int(value) for value in render_bbox],
+        "map_bbox_px": [round(value, 2) for value in map_bbox],
+        "cropped_size_px": [int(cropped_size[0]), int(cropped_size[1])],
+        "geo_bounds": {
+            "min_longitude": round(min(west, east), 5),
+            "max_longitude": round(max(west, east), 5),
+            "min_latitude": round(min(south, north), 5),
+            "max_latitude": round(max(south, north), 5),
+        },
     }
 
 
