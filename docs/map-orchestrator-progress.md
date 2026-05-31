@@ -1281,3 +1281,17 @@ Checks:
 Remaining branding note:
 
 - If the cableway construction in the splash needs another art pass later, open a narrower visual asset issue. #59's configured themed splash/icon requirement is complete.
+
+## Iteration 2026-06-01 01:04
+
+Backlog triage for #52:
+
+- Current `RidePanel` is a data-driven route/step viewer with `RideRouteView`, not the playable side-scrolling ride requested in #52.
+- #52 remains open because speed control, passenger boarding/exiting, score and ride completion are still missing.
+- Created #87 as a smaller child slice: `Ride MVP: playable side-scrolling cableway scene slice`.
+- Started worker `Dalton` on #87 with scope limited to ride UI/gameplay files and focused tests.
+
+Parallel work currently active:
+
+- `Nash`: #68/#69 Alpine production terrain glyph-layer slice.
+- `Dalton`: #87 playable ride MVP slice for #52.
