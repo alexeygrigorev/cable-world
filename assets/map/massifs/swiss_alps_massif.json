@@ -15,10 +15,10 @@
   ],
   "cropped_size_px": [
     1049,
-    487
+    470
   ],
   "geo_bounds": {
-    "max_latitude": 47.38093,
+    "max_latitude": 47.34429,
     "max_longitude": 10.92376,
     "min_latitude": 46.32122,
     "min_longitude": 7.58455
@@ -51,13 +51,13 @@
   "label": "Swiss Alps",
   "map_bbox_px": [
     484.5,
-    2137.5,
+    2146.0,
     1009.0,
     2381.0
   ],
   "render_bbox_px": [
     969,
-    4275,
+    4292,
     2018,
     4762
   ],

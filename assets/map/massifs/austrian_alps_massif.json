@@ -14,14 +14,14 @@
     }
   ],
   "cropped_size_px": [
-    1265,
-    589
+    1233,
+    570
   ],
   "geo_bounds": {
-    "max_latitude": 48.27807,
-    "max_longitude": 16.09014,
-    "min_latitude": 47.01556,
-    "min_longitude": 12.06335
+    "max_latitude": 48.24206,
+    "max_longitude": 16.03921,
+    "min_latitude": 47.01989,
+    "min_longitude": 12.11429
   },
   "glyphs": [
     {
@@ -57,16 +57,16 @@
   "image": "austrian_alps_massif.png",
   "label": "Austrian Alps",
   "map_bbox_px": [
-    1188.0,
-    1927.5,
-    1820.5,
-    2222.0
+    1196.0,
+    1936.0,
+    1812.5,
+    2221.0
   ],
   "render_bbox_px": [
-    2376,
-    3855,
-    3641,
-    4444
+    2392,
+    3872,
+    3625,
+    4442
   ],
   "required_country_overlap": "",
   "shadow": [

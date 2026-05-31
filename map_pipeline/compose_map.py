@@ -206,6 +206,15 @@ RELIEF_REGIONS = [
         "blur": 24,
         "points": [(7.45, 49.2), (8.25, 48.9), (8.55, 47.75), (7.65, 47.45), (6.95, 48.25)],
         "trees": [(8.0, 49.0, 82), (8.15, 48.45, 76), (7.8, 47.95, 70)],
+        "ridge_bands": [
+            {
+                "id": "black_forest_spine",
+                "style": "forested",
+                "points": [(7.78, 49.00), (8.05, 48.55), (8.05, 48.12), (7.82, 47.72)],
+                "height": 38,
+                "step": 34,
+            },
+        ],
         "mountain_glyphs": [("highland_forest_2", 8.00, 48.18, 150)],
         "mountains": [],
     },
@@ -252,6 +261,15 @@ RELIEF_REGIONS = [
         "extends_to": ["Czechia", "Austria"],
         "points": [(11.8, 49.35), (12.55, 48.8), (13.7, 48.8), (13.85, 49.35), (12.7, 49.85)],
         "trees": [(12.8, 49.35, 72), (13.2, 49.05, 62)],
+        "ridge_bands": [
+            {
+                "id": "bavarian_forest_spine",
+                "style": "forested",
+                "points": [(12.15, 49.38), (12.70, 49.12), (13.40, 49.02)],
+                "height": 36,
+                "step": 34,
+            },
+        ],
         "mountain_glyphs": [("highland_forest_3", 12.95, 49.20, 150)],
         "mountains": [],
     },
@@ -264,6 +282,15 @@ RELIEF_REGIONS = [
         "blur": 20,
         "points": [(10.0, 52.05), (10.85, 52.15), (11.35, 51.65), (10.75, 51.35), (9.9, 51.55)],
         "trees": [(10.55, 51.75, 58)],
+        "ridge_bands": [
+            {
+                "id": "harz_brocken_spine",
+                "style": "forested",
+                "points": [(10.08, 51.88), (10.55, 51.80), (11.05, 51.65)],
+                "height": 34,
+                "step": 30,
+            },
+        ],
         "mountain_glyphs": [("highland_forest_1", 10.62, 51.78, 118)],
         "mountains": [],
     },
@@ -277,6 +304,15 @@ RELIEF_REGIONS = [
         "extends_to": ["Czechia"],
         "points": [(12.3, 50.95), (13.15, 50.45), (14.65, 50.45), (14.9, 50.85), (13.55, 51.15)],
         "trees": [(13.75, 50.85, 62)],
+        "ridge_bands": [
+            {
+                "id": "erzgebirge_border_spine",
+                "style": "border",
+                "points": [(12.55, 50.82), (13.40, 50.66), (14.45, 50.68)],
+                "height": 36,
+                "step": 32,
+            },
+        ],
         "mountain_glyphs": [("border_highland_1", 13.10, 50.66, 145), ("border_highland_2", 14.05, 50.75, 125)],
         "mountains": [],
     },
@@ -290,6 +326,15 @@ RELIEF_REGIONS = [
         "extends_to": ["Czechia"],
         "points": [(13.65, 51.05), (14.05, 50.82), (14.45, 50.78), (14.75, 50.98), (14.35, 51.18), (13.85, 51.22)],
         "trees": [(14.18, 50.96, 42)],
+        "ridge_bands": [
+            {
+                "id": "elbe_sandstone_rim",
+                "style": "sandstone",
+                "points": [(13.78, 51.04), (14.20, 50.92), (14.58, 50.96)],
+                "height": 28,
+                "step": 28,
+            },
+        ],
         "mountain_glyphs": [("border_highland_2", 14.18, 50.95, 108)],
         "mountains": [],
     },
@@ -303,6 +348,15 @@ RELIEF_REGIONS = [
         "extends_to": ["Belgium", "Luxembourg"],
         "points": [(5.9, 50.8), (7.7, 50.55), (7.75, 49.65), (6.25, 49.45), (5.55, 50.1)],
         "trees": [(7.05, 49.75, 64), (7.35, 50.45, 48)],
+        "ridge_bands": [
+            {
+                "id": "eifel_hunsrueck_low_spine",
+                "style": "low",
+                "points": [(5.95, 50.55), (6.70, 50.25), (7.40, 49.90)],
+                "height": 30,
+                "step": 34,
+            },
+        ],
         "mountains": [],
     },
     {
@@ -1187,13 +1241,44 @@ def _draw_alpine_ridge_band(canvas, proj, ridge_band):
     ridge_layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(ridge_layer)
     height = int(ridge_band.get("height", 72) * RENDER_SCALE)
+    style = ridge_band.get("style", "alpine")
+    if style == "forested":
+        fill = (45, 87, 51, 66)
+        core = (55, 78, 48, 104)
+        highlight = (137, 132, 76, 72)
+        shadow = (32, 63, 43, 62)
+        mark_color = (47, 45, 29, 76)
+    elif style == "border":
+        fill = (54, 83, 54, 72)
+        core = (68, 74, 51, 112)
+        highlight = (151, 135, 83, 78)
+        shadow = (36, 61, 45, 70)
+        mark_color = (52, 45, 32, 86)
+    elif style == "sandstone":
+        fill = (83, 93, 62, 58)
+        core = (96, 88, 58, 100)
+        highlight = (171, 139, 82, 80)
+        shadow = (53, 61, 43, 58)
+        mark_color = (73, 51, 36, 78)
+    elif style == "low":
+        fill = (58, 91, 52, 48)
+        core = (80, 91, 55, 82)
+        highlight = (145, 132, 83, 58)
+        shadow = (41, 69, 44, 48)
+        mark_color = (56, 49, 34, 58)
+    else:
+        fill = (56, 86, 55, 42)
+        core = (74, 75, 49, 92)
+        highlight = (134, 124, 74, 66)
+        shadow = (39, 67, 48, 42)
+        mark_color = (54, 48, 33, 76)
     lower_points = [(x, y + int(height * 0.58)) for x, y in reversed(points)]
     upper_points = [(x, y - int(height * 0.32)) for x, y in points]
     band_polygon = upper_points + lower_points
-    draw.polygon(band_polygon, fill=(56, 86, 55, 76))
-    draw.line(points, fill=(74, 75, 49, 122), width=max(2, int(height * 0.34)), joint="curve")
-    draw.line([(x, y - int(height * 0.12)) for x, y in points], fill=(134, 124, 74, 92), width=max(2, int(height * 0.12)), joint="curve")
-    draw.line([(x, y + int(height * 0.40)) for x, y in points], fill=(39, 67, 48, 74), width=max(2, int(height * 0.20)), joint="curve")
+    draw.polygon(band_polygon, fill=fill)
+    draw.line(points, fill=core, width=max(2, int(height * 0.34)), joint="curve")
+    draw.line([(x, y - int(height * 0.12)) for x, y in points], fill=highlight, width=max(2, int(height * 0.12)), joint="curve")
+    draw.line([(x, y + int(height * 0.40)) for x, y in points], fill=shadow, width=max(2, int(height * 0.20)), joint="curve")
 
     step = max(18 * RENDER_SCALE, int(ridge_band.get("step", 44) * RENDER_SCALE))
     for start, end in zip(points, points[1:]):
@@ -1211,7 +1296,7 @@ def _draw_alpine_ridge_band(canvas, proj, ridge_band):
             left = (int(cx - dx / segment_length * mark * 0.95), int(cy - dy / segment_length * mark * 0.95))
             peak = (int(cx - normal_x * mark * 1.35), int(cy - normal_y * mark * 1.35))
             right = (int(cx + dx / segment_length * mark * 0.95), int(cy + dy / segment_length * mark * 0.95))
-            draw.line([left, peak, right], fill=(54, 48, 33, 90), width=max(1, RENDER_SCALE), joint="curve")
+            draw.line([left, peak, right], fill=mark_color, width=max(1, RENDER_SCALE), joint="curve")
 
     ridge_layer = ridge_layer.filter(ImageFilter.GaussianBlur(0.30 * RENDER_SCALE))
     canvas.alpha_composite(ridge_layer)
@@ -1231,17 +1316,17 @@ def _render_alpine_massif_segment_layer(size, proj, segment):
     if len(shadow_points) >= 3:
         shadow_layer = Image.new("RGBA", size, (0, 0, 0, 0))
         shadow_draw = ImageDraw.Draw(shadow_layer)
-        shadow_draw.polygon(shadow_points, fill=(47, 75, 45, 84))
-        shadow_draw.line(shadow_points + [shadow_points[0]], fill=(108, 113, 68, 80), width=5 * RENDER_SCALE, joint="curve")
-        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(9 * RENDER_SCALE))
+        shadow_draw.polygon(shadow_points, fill=(47, 75, 45, 52))
+        shadow_draw.line(shadow_points + [shadow_points[0]], fill=(108, 113, 68, 46), width=4 * RENDER_SCALE, joint="curve")
+        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(6 * RENDER_SCALE))
         massif_layer.alpha_composite(shadow_layer)
 
     arc_points = [_project_point(proj, lon, lat) for lon, lat in segment.get("arc", [])]
     if len(arc_points) >= 2:
         line_layer = Image.new("RGBA", size, (0, 0, 0, 0))
         line_draw = ImageDraw.Draw(line_layer)
-        line_draw.line(arc_points, fill=(43, 59, 40, 120), width=10 * RENDER_SCALE, joint="curve")
-        line_draw.line([(x, y - 5 * RENDER_SCALE) for x, y in arc_points], fill=(180, 168, 112, 92), width=3 * RENDER_SCALE, joint="curve")
+        line_draw.line(arc_points, fill=(43, 59, 40, 82), width=8 * RENDER_SCALE, joint="curve")
+        line_draw.line([(x, y - 5 * RENDER_SCALE) for x, y in arc_points], fill=(180, 168, 112, 62), width=3 * RENDER_SCALE, joint="curve")
         line_layer = line_layer.filter(ImageFilter.GaussianBlur(1.2 * RENDER_SCALE))
         massif_layer.alpha_composite(line_layer)
 
@@ -1334,6 +1419,7 @@ def _relief_region_source_metadata(region, image_name, render_bbox, cropped_size
             "ridge_bands": [
                 {
                     "id": ridge_band["id"],
+                    "style": ridge_band.get("style", "alpine"),
                     "points": [{"longitude": lon, "latitude": lat} for lon, lat in ridge_band.get("points", [])],
                     "height": ridge_band.get("height", 72),
                     "step": ridge_band.get("step", 44),

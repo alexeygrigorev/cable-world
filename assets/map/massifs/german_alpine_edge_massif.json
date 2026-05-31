@@ -18,14 +18,14 @@
     }
   ],
   "cropped_size_px": [
-    1185,
-    409
+    1153,
+    376
   ],
   "geo_bounds": {
-    "max_latitude": 48.13599,
-    "max_longitude": 13.48944,
-    "min_latitude": 47.26014,
-    "min_longitude": 9.71731
+    "max_latitude": 48.102,
+    "max_longitude": 13.43851,
+    "min_latitude": 47.29683,
+    "min_longitude": 9.76825
   },
   "glyphs": [
     {
@@ -61,16 +61,16 @@
   "image": "german_alpine_edge_massif.png",
   "label": "German Alpine Edge",
   "map_bbox_px": [
-    819.5,
-    1961.0,
-    1412.0,
-    2165.5
+    827.5,
+    1969.0,
+    1404.0,
+    2157.0
   ],
   "render_bbox_px": [
-    1639,
-    3922,
-    2824,
-    4331
+    1655,
+    3938,
+    2808,
+    4314
   ],
   "required_country_overlap": "Germany",
   "shadow": [

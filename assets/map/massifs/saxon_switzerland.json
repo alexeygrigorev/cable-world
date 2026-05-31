@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    210,
+    262,
     154
   ],
   "extends_to": [
@@ -8,9 +8,9 @@
   ],
   "geo_bounds": {
     "max_latitude": 51.1531,
-    "max_longitude": 14.50489,
+    "max_longitude": 14.59402,
     "min_latitude": 50.84472,
-    "min_longitude": 13.83641
+    "min_longitude": 13.76002
   },
   "glyphs": [
     {
@@ -26,9 +26,9 @@
   "kind": "sandstone_highland",
   "label": "Saxon Switzerland / Elbe Sandstone",
   "map_bbox_px": [
-    1466.5,
+    1454.5,
     1228.5,
-    1571.5,
+    1585.5,
     1305.5
   ],
   "massif_segments": [],
@@ -59,12 +59,33 @@
     }
   ],
   "render_bbox_px": [
-    2933,
+    2909,
     2457,
-    3143,
+    3171,
     2611
   ],
-  "ridge_bands": [],
+  "ridge_bands": [
+    {
+      "height": 28,
+      "id": "elbe_sandstone_rim",
+      "points": [
+        {
+          "latitude": 51.04,
+          "longitude": 13.78
+        },
+        {
+          "latitude": 50.92,
+          "longitude": 14.2
+        },
+        {
+          "latitude": 50.96,
+          "longitude": 14.58
+        }
+      ],
+      "step": 28,
+      "style": "sandstone"
+    }
+  ],
   "source_type": "relief_region",
   "trees": [
     {

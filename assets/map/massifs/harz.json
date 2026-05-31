@@ -1,14 +1,14 @@
 {
   "cropped_size_px": [
-    243,
-    209
+    318,
+    224
   ],
   "extends_to": [],
   "geo_bounds": {
     "max_latitude": 52.00921,
-    "max_longitude": 10.98106,
-    "min_latitude": 51.598,
-    "min_longitude": 10.20753
+    "max_longitude": 11.07655,
+    "min_latitude": 51.56834,
+    "min_longitude": 10.06429
   },
   "glyphs": [
     {
@@ -24,10 +24,10 @@
   "kind": "isolated_mountain_range",
   "label": "Harz",
   "map_bbox_px": [
-    896.5,
+    874.0,
     1012.0,
-    1018.0,
-    1116.5
+    1033.0,
+    1124.0
   ],
   "massif_segments": [],
   "region_polygon": [
@@ -53,12 +53,33 @@
     }
   ],
   "render_bbox_px": [
-    1793,
+    1748,
     2024,
-    2036,
-    2233
+    2066,
+    2248
   ],
-  "ridge_bands": [],
+  "ridge_bands": [
+    {
+      "height": 34,
+      "id": "harz_brocken_spine",
+      "points": [
+        {
+          "latitude": 51.88,
+          "longitude": 10.08
+        },
+        {
+          "latitude": 51.8,
+          "longitude": 10.55
+        },
+        {
+          "latitude": 51.65,
+          "longitude": 11.05
+        }
+      ],
+      "step": 30,
+      "style": "forested"
+    }
+  ],
   "source_type": "relief_region",
   "trees": [
     {

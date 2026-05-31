@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    303,
+    538,
     555
   ],
   "extends_to": [
@@ -11,7 +11,7 @@
     "max_latitude": 50.6817,
     "max_longitude": 7.64185,
     "min_latitude": 49.54937,
-    "min_longitude": 6.67733
+    "min_longitude": 5.92927
   },
   "glyphs": [],
   "id": "eifel_hunsrueck",
@@ -19,7 +19,7 @@
   "kind": "low_highland",
   "label": "Eifel Hunsrueck",
   "map_bbox_px": [
-    342.0,
+    224.5,
     1346.0,
     493.5,
     1623.5
@@ -48,12 +48,33 @@
     }
   ],
   "render_bbox_px": [
-    684,
+    449,
     2692,
     987,
     3247
   ],
-  "ridge_bands": [],
+  "ridge_bands": [
+    {
+      "height": 30,
+      "id": "eifel_hunsrueck_low_spine",
+      "points": [
+        {
+          "latitude": 50.55,
+          "longitude": 5.95
+        },
+        {
+          "latitude": 50.25,
+          "longitude": 6.7
+        },
+        {
+          "latitude": 49.9,
+          "longitude": 7.4
+        }
+      ],
+      "step": 34,
+      "style": "low"
+    }
+  ],
   "source_type": "relief_region",
   "trees": [
     {

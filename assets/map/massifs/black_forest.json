@@ -1,13 +1,13 @@
 {
   "cropped_size_px": [
     383,
-    768
+    846
   ],
   "extends_to": [],
   "geo_bounds": {
     "max_latitude": 49.40465,
     "max_longitude": 8.6,
-    "min_latitude": 47.7887,
+    "min_latitude": 47.62168,
     "min_longitude": 7.38082
   },
   "glyphs": [
@@ -27,7 +27,7 @@
     452.5,
     1658.5,
     644.0,
-    2042.5
+    2081.5
   ],
   "massif_segments": [],
   "region_polygon": [
@@ -56,9 +56,34 @@
     905,
     3317,
     1288,
-    4085
+    4163
   ],
-  "ridge_bands": [],
+  "ridge_bands": [
+    {
+      "height": 38,
+      "id": "black_forest_spine",
+      "points": [
+        {
+          "latitude": 49.0,
+          "longitude": 7.78
+        },
+        {
+          "latitude": 48.55,
+          "longitude": 8.05
+        },
+        {
+          "latitude": 48.12,
+          "longitude": 8.05
+        },
+        {
+          "latitude": 47.72,
+          "longitude": 7.82
+        }
+      ],
+      "step": 34,
+      "style": "forested"
+    }
+  ],
   "source_type": "relief_region",
   "trees": [
     {

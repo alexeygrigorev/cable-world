@@ -15,10 +15,10 @@
   ],
   "cropped_size_px": [
     903,
-    463
+    447
   ],
   "geo_bounds": {
-    "max_latitude": 47.39601,
+    "max_latitude": 47.36153,
     "max_longitude": 8.70186,
     "min_latitude": 46.3893,
     "min_longitude": 5.82741
@@ -51,13 +51,13 @@
   "label": "Western Alps",
   "map_bbox_px": [
     208.5,
-    2134.0,
+    2142.0,
     660.0,
     2365.5
   ],
   "render_bbox_px": [
     417,
-    4268,
+    4284,
     1320,
     4731
   ],

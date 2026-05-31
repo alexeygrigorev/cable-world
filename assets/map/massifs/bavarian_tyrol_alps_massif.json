@@ -15,12 +15,12 @@
   ],
   "cropped_size_px": [
     1177,
-    609
+    589
   ],
   "geo_bounds": {
-    "max_latitude": 47.88054,
+    "max_latitude": 47.84425,
     "max_longitude": 13.29526,
-    "min_latitude": 46.5646,
+    "min_latitude": 46.57116,
     "min_longitude": 9.5486
   },
   "glyphs": [
@@ -58,15 +58,15 @@
   "label": "Bavarian and Tyrol Alps",
   "map_bbox_px": [
     793.0,
-    2021.0,
+    2029.5,
     1381.5,
-    2325.5
+    2324.0
   ],
   "render_bbox_px": [
     1586,
-    4042,
+    4059,
     2763,
-    4651
+    4648
   ],
   "required_country_overlap": "",
   "shadow": [

@@ -3,13 +3,13 @@
     {
       "cropped_size_px": [
         383,
-        768
+        846
       ],
       "extends_to": [],
       "geo_bounds": {
         "max_latitude": 49.40465,
         "max_longitude": 8.6,
-        "min_latitude": 47.7887,
+        "min_latitude": 47.62168,
         "min_longitude": 7.38082
       },
       "glyphs": [
@@ -29,7 +29,7 @@
         452.5,
         1658.5,
         644.0,
-        2042.5
+        2081.5
       ],
       "massif_segments": [],
       "region_polygon": [
@@ -58,9 +58,34 @@
         905,
         3317,
         1288,
-        4085
+        4163
       ],
-      "ridge_bands": [],
+      "ridge_bands": [
+        {
+          "height": 38,
+          "id": "black_forest_spine",
+          "points": [
+            {
+              "latitude": 49.0,
+              "longitude": 7.78
+            },
+            {
+              "latitude": 48.55,
+              "longitude": 8.05
+            },
+            {
+              "latitude": 48.12,
+              "longitude": 8.05
+            },
+            {
+              "latitude": 47.72,
+              "longitude": 7.82
+            }
+          ],
+          "step": 34,
+          "style": "forested"
+        }
+      ],
       "source_type": "relief_region",
       "trees": [
         {
@@ -97,10 +122,10 @@
       ],
       "cropped_size_px": [
         903,
-        463
+        447
       ],
       "geo_bounds": {
-        "max_latitude": 47.39601,
+        "max_latitude": 47.36153,
         "max_longitude": 8.70186,
         "min_latitude": 46.3893,
         "min_longitude": 5.82741
@@ -133,13 +158,13 @@
       "label": "Western Alps",
       "map_bbox_px": [
         208.5,
-        2134.0,
+        2142.0,
         660.0,
         2365.5
       ],
       "render_bbox_px": [
         417,
-        4268,
+        4284,
         1320,
         4731
       ],
@@ -189,10 +214,10 @@
       ],
       "cropped_size_px": [
         1049,
-        487
+        470
       ],
       "geo_bounds": {
-        "max_latitude": 47.38093,
+        "max_latitude": 47.34429,
         "max_longitude": 10.92376,
         "min_latitude": 46.32122,
         "min_longitude": 7.58455
@@ -225,13 +250,13 @@
       "label": "Swiss Alps",
       "map_bbox_px": [
         484.5,
-        2137.5,
+        2146.0,
         1009.0,
         2381.0
       ],
       "render_bbox_px": [
         969,
-        4275,
+        4292,
         2018,
         4762
       ],
@@ -281,12 +306,12 @@
       ],
       "cropped_size_px": [
         1177,
-        609
+        589
       ],
       "geo_bounds": {
-        "max_latitude": 47.88054,
+        "max_latitude": 47.84425,
         "max_longitude": 13.29526,
-        "min_latitude": 46.5646,
+        "min_latitude": 46.57116,
         "min_longitude": 9.5486
       },
       "glyphs": [
@@ -324,15 +349,15 @@
       "label": "Bavarian and Tyrol Alps",
       "map_bbox_px": [
         793.0,
-        2021.0,
+        2029.5,
         1381.5,
-        2325.5
+        2324.0
       ],
       "render_bbox_px": [
         1586,
-        4042,
+        4059,
         2763,
-        4651
+        4648
       ],
       "required_country_overlap": "",
       "shadow": [
@@ -383,14 +408,14 @@
         }
       ],
       "cropped_size_px": [
-        1185,
-        409
+        1153,
+        376
       ],
       "geo_bounds": {
-        "max_latitude": 48.13599,
-        "max_longitude": 13.48944,
-        "min_latitude": 47.26014,
-        "min_longitude": 9.71731
+        "max_latitude": 48.102,
+        "max_longitude": 13.43851,
+        "min_latitude": 47.29683,
+        "min_longitude": 9.76825
       },
       "glyphs": [
         {
@@ -426,16 +451,16 @@
       "image": "german_alpine_edge_massif.png",
       "label": "German Alpine Edge",
       "map_bbox_px": [
-        819.5,
-        1961.0,
-        1412.0,
-        2165.5
+        827.5,
+        1969.0,
+        1404.0,
+        2157.0
       ],
       "render_bbox_px": [
-        1639,
-        3922,
-        2824,
-        4331
+        1655,
+        3938,
+        2808,
+        4314
       ],
       "required_country_overlap": "Germany",
       "shadow": [
@@ -486,14 +511,14 @@
         }
       ],
       "cropped_size_px": [
-        1265,
-        589
+        1233,
+        570
       ],
       "geo_bounds": {
-        "max_latitude": 48.27807,
-        "max_longitude": 16.09014,
-        "min_latitude": 47.01556,
-        "min_longitude": 12.06335
+        "max_latitude": 48.24206,
+        "max_longitude": 16.03921,
+        "min_latitude": 47.01989,
+        "min_longitude": 12.11429
       },
       "glyphs": [
         {
@@ -529,16 +554,16 @@
       "image": "austrian_alps_massif.png",
       "label": "Austrian Alps",
       "map_bbox_px": [
-        1188.0,
-        1927.5,
-        1820.5,
-        2222.0
+        1196.0,
+        1936.0,
+        1812.5,
+        2221.0
       ],
       "render_bbox_px": [
-        2376,
-        3855,
-        3641,
-        4444
+        2392,
+        3872,
+        3625,
+        4442
       ],
       "required_country_overlap": "",
       "shadow": [
@@ -571,7 +596,7 @@
     },
     {
       "cropped_size_px": [
-        3224,
+        3208,
         1123
       ],
       "extends_to": [
@@ -583,7 +608,7 @@
       ],
       "geo_bounds": {
         "max_latitude": 48.44297,
-        "max_longitude": 16.09014,
+        "max_longitude": 16.03921,
         "min_latitude": 46.01714,
         "min_longitude": 5.82741
       },
@@ -595,7 +620,7 @@
       "map_bbox_px": [
         208.5,
         1888.5,
-        1820.5,
+        1812.5,
         2450.0
       ],
       "massif_segments": [
@@ -662,7 +687,7 @@
       "render_bbox_px": [
         417,
         3777,
-        3641,
+        3625,
         4900
       ],
       "ridge_bands": [
@@ -703,7 +728,8 @@
               "longitude": 15.8
             }
           ],
-          "step": 42
+          "step": 42,
+          "style": "alpine"
         },
         {
           "height": 50,
@@ -730,7 +756,8 @@
               "longitude": 13.75
             }
           ],
-          "step": 48
+          "step": 48,
+          "style": "alpine"
         }
       ],
       "source_type": "relief_region",
@@ -764,7 +791,7 @@
     },
     {
       "cropped_size_px": [
-        375,
+        455,
         416
       ],
       "extends_to": [
@@ -775,7 +802,7 @@
         "max_latitude": 49.73893,
         "max_longitude": 13.5722,
         "min_latitude": 48.87593,
-        "min_longitude": 12.37849
+        "min_longitude": 12.12384
       },
       "glyphs": [
         {
@@ -791,7 +818,7 @@
       "kind": "forested_highland",
       "label": "Bavarian Forest",
       "map_bbox_px": [
-        1237.5,
+        1197.5,
         1577.5,
         1425.0,
         1785.5
@@ -820,12 +847,33 @@
         }
       ],
       "render_bbox_px": [
-        2475,
+        2395,
         3155,
         2850,
         3571
       ],
-      "ridge_bands": [],
+      "ridge_bands": [
+        {
+          "height": 36,
+          "id": "bavarian_forest_spine",
+          "points": [
+            {
+              "latitude": 49.38,
+              "longitude": 12.15
+            },
+            {
+              "latitude": 49.12,
+              "longitude": 12.7
+            },
+            {
+              "latitude": 49.02,
+              "longitude": 13.4
+            }
+          ],
+          "step": 34,
+          "style": "forested"
+        }
+      ],
       "source_type": "relief_region",
       "trees": [
         {
@@ -842,15 +890,15 @@
     },
     {
       "cropped_size_px": [
-        243,
-        209
+        318,
+        224
       ],
       "extends_to": [],
       "geo_bounds": {
         "max_latitude": 52.00921,
-        "max_longitude": 10.98106,
-        "min_latitude": 51.598,
-        "min_longitude": 10.20753
+        "max_longitude": 11.07655,
+        "min_latitude": 51.56834,
+        "min_longitude": 10.06429
       },
       "glyphs": [
         {
@@ -866,10 +914,10 @@
       "kind": "isolated_mountain_range",
       "label": "Harz",
       "map_bbox_px": [
-        896.5,
+        874.0,
         1012.0,
-        1018.0,
-        1116.5
+        1033.0,
+        1124.0
       ],
       "massif_segments": [],
       "region_polygon": [
@@ -895,12 +943,33 @@
         }
       ],
       "render_bbox_px": [
-        1793,
+        1748,
         2024,
-        2036,
-        2233
+        2066,
+        2248
       ],
-      "ridge_bands": [],
+      "ridge_bands": [
+        {
+          "height": 34,
+          "id": "harz_brocken_spine",
+          "points": [
+            {
+              "latitude": 51.88,
+              "longitude": 10.08
+            },
+            {
+              "latitude": 51.8,
+              "longitude": 10.55
+            },
+            {
+              "latitude": 51.65,
+              "longitude": 11.05
+            }
+          ],
+          "step": 30,
+          "style": "forested"
+        }
+      ],
       "source_type": "relief_region",
       "trees": [
         {
@@ -912,17 +981,17 @@
     },
     {
       "cropped_size_px": [
-        555,
-        272
+        605,
+        273
       ],
       "extends_to": [
         "Czechia"
       ],
       "geo_bounds": {
         "max_latitude": 51.12116,
-        "max_longitude": 14.42531,
-        "min_latitude": 50.57472,
-        "min_longitude": 12.65862
+        "max_longitude": 14.46033,
+        "min_latitude": 50.5727,
+        "min_longitude": 12.53447
       },
       "glyphs": [
         {
@@ -945,10 +1014,10 @@
       "kind": "border_mountain_range",
       "label": "Erzgebirge",
       "map_bbox_px": [
-        1281.5,
+        1262.0,
         1236.5,
-        1559.0,
-        1372.5
+        1564.5,
+        1373.0
       ],
       "massif_segments": [],
       "region_polygon": [
@@ -974,12 +1043,33 @@
         }
       ],
       "render_bbox_px": [
-        2563,
+        2524,
         2473,
-        3118,
-        2745
+        3129,
+        2746
       ],
-      "ridge_bands": [],
+      "ridge_bands": [
+        {
+          "height": 36,
+          "id": "erzgebirge_border_spine",
+          "points": [
+            {
+              "latitude": 50.82,
+              "longitude": 12.55
+            },
+            {
+              "latitude": 50.66,
+              "longitude": 13.4
+            },
+            {
+              "latitude": 50.68,
+              "longitude": 14.45
+            }
+          ],
+          "step": 32,
+          "style": "border"
+        }
+      ],
       "source_type": "relief_region",
       "trees": [
         {
@@ -991,7 +1081,7 @@
     },
     {
       "cropped_size_px": [
-        210,
+        262,
         154
       ],
       "extends_to": [
@@ -999,9 +1089,9 @@
       ],
       "geo_bounds": {
         "max_latitude": 51.1531,
-        "max_longitude": 14.50489,
+        "max_longitude": 14.59402,
         "min_latitude": 50.84472,
-        "min_longitude": 13.83641
+        "min_longitude": 13.76002
       },
       "glyphs": [
         {
@@ -1017,9 +1107,9 @@
       "kind": "sandstone_highland",
       "label": "Saxon Switzerland / Elbe Sandstone",
       "map_bbox_px": [
-        1466.5,
+        1454.5,
         1228.5,
-        1571.5,
+        1585.5,
         1305.5
       ],
       "massif_segments": [],
@@ -1050,12 +1140,33 @@
         }
       ],
       "render_bbox_px": [
-        2933,
+        2909,
         2457,
-        3143,
+        3171,
         2611
       ],
-      "ridge_bands": [],
+      "ridge_bands": [
+        {
+          "height": 28,
+          "id": "elbe_sandstone_rim",
+          "points": [
+            {
+              "latitude": 51.04,
+              "longitude": 13.78
+            },
+            {
+              "latitude": 50.92,
+              "longitude": 14.2
+            },
+            {
+              "latitude": 50.96,
+              "longitude": 14.58
+            }
+          ],
+          "step": 28,
+          "style": "sandstone"
+        }
+      ],
       "source_type": "relief_region",
       "trees": [
         {
@@ -1067,7 +1178,7 @@
     },
     {
       "cropped_size_px": [
-        303,
+        538,
         555
       ],
       "extends_to": [
@@ -1078,7 +1189,7 @@
         "max_latitude": 50.6817,
         "max_longitude": 7.64185,
         "min_latitude": 49.54937,
-        "min_longitude": 6.67733
+        "min_longitude": 5.92927
       },
       "glyphs": [],
       "id": "eifel_hunsrueck",
@@ -1086,7 +1197,7 @@
       "kind": "low_highland",
       "label": "Eifel Hunsrueck",
       "map_bbox_px": [
-        342.0,
+        224.5,
         1346.0,
         493.5,
         1623.5
@@ -1115,12 +1226,33 @@
         }
       ],
       "render_bbox_px": [
-        684,
+        449,
         2692,
         987,
         3247
       ],
-      "ridge_bands": [],
+      "ridge_bands": [
+        {
+          "height": 30,
+          "id": "eifel_hunsrueck_low_spine",
+          "points": [
+            {
+              "latitude": 50.55,
+              "longitude": 5.95
+            },
+            {
+              "latitude": 50.25,
+              "longitude": 6.7
+            },
+            {
+              "latitude": 49.9,
+              "longitude": 7.4
+            }
+          ],
+          "step": 34,
+          "style": "low"
+        }
+      ],
       "source_type": "relief_region",
       "trees": [
         {

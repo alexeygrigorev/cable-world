@@ -43,6 +43,7 @@
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
 - [x] #70 Первый pass: исправить placement Rostock city landmark. Иконка получила data-driven `icon_offset`, поэтому больше не висит в открытом море и визуально сидит ближе к суше/портовой зоне; подпись остаётся рядом.
 - [x] #70 Второй pass: усилить Rostock `icon_offset` до `Vector2(0.0, 52.0)`, потому что меньший offset всё ещё воспринимался как "висит на море" на runtime screenshot.
+- [x] #70 Третий pass: стартовый camera focus для Germany сдвинут на `Vector2(10.70, 52.00)`, чтобы Rostock/Hamburg не резались на desktop initial screenshot без viewport-clamp, который заставляет города визуально "бежать" за экраном.
 - [x] Исправить pan sensitivity: drag пальцем и мышью теперь использует viewport-local `event.relative` и `PAN_DRAG_SCALE := 1.0`, чтобы движение было 1:1 в координатах карты, без `screen_relative` acceleration.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
 - [ ] Довести city landmark layer: сделать иконки достаточно крупными, не перекрывать labels/markers, использовать правильные немецкие названия с умляутами.
@@ -61,6 +62,8 @@
 - [x] #69 Расширить source-layer pipeline за пределы Альп: `black_forest`, `bavarian_forest`, `harz`, `erzgebirge`, `saxon_switzerland`, `eifel_hunsrueck` и полный `alps` region теперь тоже сохраняются как отдельные проверяемые relief source layers; `northern_lowlands` намеренно не экспортируется как mountain layer.
 - [x] #69 Убрать дублирующий generic mountain-glyph ряд из полного `alps` relief layer: Альпы теперь рисуются через ridge bands + named massif source layers, без второй повторной полосы случайных `alps_range_*` поверх того же места.
 - [ ] #69 Follow-up: заменить текущий Alpine art на более узнаваемые отдельные massif glyphs/segments. Текущая правка убирает дубль, но еще не делает Альпы качеством `8/10`.
+- [x] #69 Первый characteristic relief pass для малых массивов: Black Forest, Bavarian Forest, Harz, Erzgebirge, Saxon Switzerland и Eifel/Hunsrück получили отдельные короткие ridge-spines с layer metadata вместо одиночной наклейки-глифа.
+- [x] Снизить видимость технических Alpine shadow bands: широкие полупрозрачные полосы вокруг Alpine ridge/massif layers стали слабее, чтобы не читаться как артефакты.
 - [ ] #67 Follow-up: проверить mobile руками и убрать/укрупнить оставшиеся дома/лесные glyphs, если пользователь всё ещё воспринимает их как мелкий шум.
 - [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
@@ -88,6 +91,6 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`; Web build отдает gzip и `Cache-Control: no-store`.
-- Последний map commit на момент обновления backlog: pending duplicate-Alps cleanup.
+- Последний map commit на момент обновления backlog: pending characteristic relief + initial focus pass.
 - Non-render checks now cover координаты, geography bounds, source-layer metadata, PNG dimensions/non-blank state, export payload contract and runtime draw contracts. Screenshots/manual review still required for contrast, clutter, visual hierarchy and "does this feel like a real atlas map".
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.8/10`, но нельзя оценивать ее как `8/10`: Alpine art, relief/lake recognizability, remaining detail density and marker composition still need work.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.9/10`, но нельзя оценивать ее как `8/10`: Alpine art still too generic, relief/lake recognizability and marker composition still need work.

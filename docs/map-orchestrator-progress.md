@@ -935,3 +935,31 @@ Non-render verification notes:
 - We still need screenshots/manual review for final quality signals: contrast, clutter, whether the relief reads naturally, whether marker hierarchy is clear, and whether the map feels close to the reference style.
 
 Self-audit: still about `6.8/10`, not `8/10`. The screenshot is cleaner because Alps are no longer double-drawn, but the Alpine art itself is still too generic and needs a better per-massif visual pass.
+
+## Iteration 2026-05-31 20:18
+
+Implemented:
+
+- Added characteristic ridge-spines to the named non-Alpine relief regions:
+  - `black_forest_spine`
+  - `bavarian_forest_spine`
+  - `harz_brocken_spine`
+  - `erzgebirge_border_spine`
+  - `elbe_sandstone_rim`
+  - `eifel_hunsrueck_low_spine`
+- Added ridge `style` metadata and per-style palettes so forested, border, sandstone and low highlands are not rendered with exactly the same Alpine colors.
+- Reduced opacity/blur of the broad Alpine shadow bands and arc strokes. This keeps massif structure visible but reduces the "technical stripe" artifact visible in the previous full-map review.
+- Shifted `GERMANY_INITIAL_FOCUS_COORDINATES` from `Vector2(10.70, 51.45)` to `Vector2(10.70, 52.00)` so Rostock/Hamburg are visible on the desktop initial screenshot without reintroducing viewport-clamped city landmarks.
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated final map and all source relief layers.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 tests OK.
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
+- Godot Web export rebuilt; known nested-worktree and adb warnings only.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6365405`, `Cache-Control: no-store`.
+- Playwright screenshots regenerated:
+  - `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+  - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+
+Self-audit: about `6.9/10`, still not `8/10`. This improves relief structure and fixes the clipped desktop Rostock first view, but the Alpine art is still too generic and the map still needs a stronger, more hand-authored atlas feel before it clears the `8/10` gate.
