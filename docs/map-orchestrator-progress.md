@@ -1404,3 +1404,34 @@ Verification on `main`:
 Note:
 
 - The list body itself still needs the separate #90 restyle.
+
+## Iteration 2026-06-01 02:22
+
+Integrated reviewed #90 list atlas-style restyle:
+
+- Worker: `Avicenna`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-90-list-atlas-style`.
+- Worker branch: `issue-90-list-atlas-style`.
+- Worker commit: `9ca8828 Restyle object list with atlas rows`.
+- Integrated commit on `main`: `dda7d4c Restyle object list with atlas rows`.
+- Decision: `ACCEPT` for #90 scope; #90 closed.
+
+What landed:
+
+- Restyled object list rows into atlas/parchment UI in `scripts/object_list_panel.gd`.
+- Rows now show compact name, separate transport type, location/visit/operational metadata, icon and visible `>` open affordance.
+- Selected rows use atlas accent colors and selected text colors.
+- Empty/filter state label gets parchment-style color/font/background treatment.
+- Updated static and Godot runtime list contracts.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_app_shell_contract tests.test_object_list_contract`: PASS, 17 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 259 tests, 9 skipped.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Risk note:
+
+- Worker did not produce a visual screenshot review for #90. Runtime/static contracts pass and scope is contained, but a later UI review should capture mobile list screenshots after #88 + #90 together.
