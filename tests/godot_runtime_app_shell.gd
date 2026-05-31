@@ -20,6 +20,10 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 	_expect(not screen.app_title_label.visible, "Map-first chrome must hide the app title.", failures)
 	_expect(screen.map_list_toggle_button != null, "Map screen must create a compact map/list toggle button.", failures)
 	_expect(screen.list_map_return_button != null, "List mode must create a matching return-to-map button.", failures)
+	var selected_before := -1
+	var map_selected_before := -1
+	var pan_before := Vector2.ZERO
+	var zoom_before := 1.0
 	if screen.map_list_toggle_button != null:
 		_expect(screen.map_list_toggle_button.visible, "Map/list toggle must be visible on the map.", failures)
 		_expect(screen.map_list_toggle_button.icon != null, "Map/list toggle must use a pictogram icon at runtime.", failures)
@@ -32,6 +36,13 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 			var toggle_rect: Rect2 = screen.map_list_toggle_button.get_global_rect().grow(8.0)
 			var zoom_rect: Rect2 = screen.map_panel.zoom_controls.get_global_rect().grow(8.0)
 			_expect(not toggle_rect.intersects(zoom_rect, true), "Map/list toggle must not visually merge with zoom controls.", failures)
+		screen._select_object(0, false)
+		screen.map_panel.pan_offset = Vector2(37.0, -24.0)
+		screen.map_panel.zoom = 1.5
+		selected_before = screen.selected_index
+		map_selected_before = screen.map_panel.selected_index
+		pan_before = screen.map_panel.pan_offset
+		zoom_before = screen.map_panel.zoom
 		screen.map_list_toggle_button.emit_signal("pressed")
 
 	_expect(not screen.map_section.visible, "Map section must hide after pressing the map/list toggle.", failures)
@@ -50,6 +61,10 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 		_expect(not screen.list_section.visible, "List section must hide after returning to the map.", failures)
 		_expect(screen.map_list_toggle_button.visible, "Map/list toggle must reappear after returning to the map.", failures)
 		_expect(screen.current_section_label.text == "Раздел: Карта", "Current section label must track the return to map.", failures)
+		_expect_vector_close(screen.map_panel.pan_offset, pan_before, "Map/list return must preserve the previous map pan offset.", failures)
+		_expect_float_close(screen.map_panel.zoom, zoom_before, "Map/list return must preserve the previous map zoom.", failures)
+		_expect(screen.selected_index == selected_before, "Map/list return must preserve the selected object in the app shell.", failures)
+		_expect(screen.map_panel.selected_index == map_selected_before, "Map/list return must preserve the selected map marker.", failures)
 
 	_free_screen(screen)
 	OS.unset_environment(TEST_DATABASE_ENV)
@@ -141,3 +156,13 @@ func _expect_int_array(actual: Array[int], expected: Array[int], message: String
 		if actual[index] != expected[index]:
 			failures.append("%s Expected %s, got %s." % [message, str(expected), str(actual)])
 			return
+
+
+func _expect_float_close(actual: float, expected: float, message: String, failures: Array[String], tolerance: float = 0.001) -> void:
+	if abs(actual - expected) > tolerance:
+		failures.append("%s Expected %.3f, got %.3f." % [message, expected, actual])
+
+
+func _expect_vector_close(actual: Vector2, expected: Vector2, message: String, failures: Array[String], tolerance: float = 0.001) -> void:
+	if actual.distance_to(expected) > tolerance:
+		failures.append("%s Expected %s, got %s." % [message, str(expected), str(actual)])

@@ -149,6 +149,8 @@ class AppShellContractTest(unittest.TestCase):
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
 
         for expected in [
+            "var active_section_name := \"\"",
+            "var map_return_state: Dictionary = {}",
             'map_list_toggle_button.name = "MapListToggle"',
             'map_list_toggle_button.text = ""',
             'map_list_toggle_button.icon = _make_map_list_icon("list")',
@@ -173,6 +175,10 @@ class AppShellContractTest(unittest.TestCase):
             'list_map_return_button.pressed.connect(func() -> void: _show_section("map"))',
             "list_section.move_child(list_map_return_button, 0)",
             "list_map_return_button.visible = not is_map",
+            "if active_section_name == \"map\" and section_name != \"map\":",
+            "_capture_map_return_state()",
+            "active_section_name = section_name",
+            "func _restore_map_return_state_after_layout() -> void:",
             'map_button.icon = _make_map_list_icon("map")',
             'list_button.icon = _make_map_list_icon("list")',
             "func _apply_atlas_toggle_button_style(button: Button, icon_only: bool) -> void:",

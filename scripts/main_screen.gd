@@ -83,6 +83,8 @@ var achievements_script: Resource = null
 var orientation_option_is_refreshing: bool = false
 var map_list_toggle_button: Button = null
 var list_map_return_button: Button = null
+var active_section_name := ""
+var map_return_state: Dictionary = {}
 
 func _ready() -> void:
 	collection_stats_script = load(COLLECTION_STATS_SCRIPT_PATH) if ResourceLoader.exists(COLLECTION_STATS_SCRIPT_PATH) else null
@@ -612,6 +614,9 @@ func _select_object(index: int, open_card: bool) -> void:
 		_show_section("card")
 
 func _show_section(section_name: String) -> void:
+	if active_section_name == "map" and section_name != "map":
+		_capture_map_return_state()
+
 	for key in sections:
 		var section: Control = sections[key]
 		section.visible = key == section_name
@@ -620,12 +625,32 @@ func _show_section(section_name: String) -> void:
 		var button: Button = navigation_buttons[key]
 		button.button_pressed = key == section_name
 
+	active_section_name = section_name
 	var title: String = section_titles.get(section_name, section_name)
 	current_section_label.text = "Раздел: %s" % title
 	_apply_map_focus_chrome(section_name == "map")
 	_sync_content_width()
 	_sync_content_width_after_layout()
 	_scroll_navigation_to_current(section_name)
+	if section_name == "map":
+		_restore_map_return_state()
+		call_deferred("_restore_map_return_state_after_layout")
+
+func _capture_map_return_state() -> void:
+	if map_panel == null:
+		return
+	map_return_state = map_panel.get_navigation_state()
+
+func _restore_map_return_state() -> void:
+	if map_panel == null or map_return_state.is_empty():
+		return
+	map_panel.restore_navigation_state(map_return_state)
+
+func _restore_map_return_state_after_layout() -> void:
+	if not is_inside_tree():
+		return
+	await get_tree().process_frame
+	_restore_map_return_state()
 
 func _create_map_list_toggle() -> void:
 	map_list_toggle_button = Button.new()

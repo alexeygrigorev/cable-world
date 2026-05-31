@@ -16,6 +16,8 @@ class MapPanelContractTest(unittest.TestCase):
             "signal object_selected(index: int)",
             "func set_objects(next_objects: Array[Dictionary]) -> void:",
             "func select_object(index: int) -> void:",
+            "func get_navigation_state() -> Dictionary:",
+            "func restore_navigation_state(state: Dictionary) -> void:",
             "Button.new()",
             "marker.pressed.connect(_on_marker_pressed.bind(index))",
             "object_selected.emit(index)",

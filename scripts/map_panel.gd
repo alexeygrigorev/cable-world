@@ -531,6 +531,27 @@ func select_object(index: int) -> void:
 	if is_node_ready():
 		_refresh_marker_styles()
 
+func get_navigation_state() -> Dictionary:
+	return {
+		"pan_offset": pan_offset,
+		"zoom": zoom,
+		"selected_index": selected_index,
+		"map_filter": map_filter,
+		"map_scope": map_scope,
+	}
+
+func restore_navigation_state(state: Dictionary) -> void:
+	if state.is_empty():
+		return
+	pan_offset = Vector2(state.get("pan_offset", pan_offset))
+	zoom = clamp(float(state.get("zoom", zoom)), MIN_ZOOM, MAX_ZOOM)
+	selected_index = int(state.get("selected_index", selected_index))
+	map_filter = str(state.get("map_filter", map_filter))
+	map_scope = str(state.get("map_scope", map_scope))
+	if is_node_ready():
+		_refresh_filter_buttons()
+		_apply_map_transform()
+
 func set_map_filter(next_filter: String) -> void:
 	if next_filter == MAP_FILTER_VISITED:
 		map_filter = MAP_FILTER_VISITED
