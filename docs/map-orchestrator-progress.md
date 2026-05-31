@@ -1262,3 +1262,22 @@ Checks:
 Parallel work started:
 
 - New #68/#69 worker `Nash` is active on an Alpine production terrain glyph-layer slice. Scope is limited to Alps/German Alpine edge terrain layers, not list UI, releases, #65, or city coordinates.
+
+## Iteration 2026-06-01 00:56
+
+Closed #59 after verifying current `main` already satisfies the themed branding requirements:
+
+- `project.godot` points `config/icon` to `res://assets/branding/android_icon_192.png`.
+- `project.godot` points `boot_splash/image` to `res://assets/branding/splash_loading.png` with fullscreen unfiltered splash settings.
+- `export_presets.cfg` points Android launcher/adaptive/monochrome icon slots to the themed branding PNGs.
+- `assets/branding/README.md` documents generation direction, source concept paths and the PNG compression decision.
+- Visual spot-check: splash and launcher icon are themed around cableway/funicular European atlas style and no longer use generic Godot branding.
+
+Checks:
+
+- `python3 -m unittest tests.test_android_export_contract tests.test_export_payload_contract tests.test_project_contract tests.test_release_mvp_checklist`: 19 OK.
+- `godot --headless --path . --import --quit`: exit 0.
+
+Remaining branding note:
+
+- If the cableway construction in the splash needs another art pass later, open a narrower visual asset issue. #59's configured themed splash/icon requirement is complete.
