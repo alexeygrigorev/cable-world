@@ -1518,3 +1518,13 @@ Parallel work:
 
 - `Hume` is still active on #67 map clutter/readability pass.
 - Started `Epicurus` on #63 Europe pipeline non-render planning/data contract. Scope is limited to docs/tests/non-render metadata for region/layer roadmap; it must not touch map render assets, terrain glyph art, UI, ride scene or release files.
+
+## Iteration 2026-06-01 03:15
+
+Triage for #52 ride parent after #87:
+
+- #87 delivered the playable MVP slice: `RideGameView`, speed controls, passenger boarding/exiting, score label and runtime coverage are integrated.
+- #52 remains open because the parent still requires direct map/object -> ride flow, return context, and more production-ready ride visuals/assets.
+- Created #91: `Ride UX: open playable ride directly from selected map/object flow`.
+- Created #92: `Ride art polish: replace drawn placeholder side-view with reusable ride sprites`.
+- Added a #52 comment documenting why the parent remains open and which children cover the remaining scope.
