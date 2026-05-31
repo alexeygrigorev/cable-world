@@ -1435,3 +1435,38 @@ Verification on `main`:
 Risk note:
 
 - Worker did not produce a visual screenshot review for #90. Runtime/static contracts pass and scope is contained, but a later UI review should capture mobile list screenshots after #88 + #90 together.
+
+## Iteration 2026-06-01 02:38
+
+Integrated reviewed #70 Rostock placement guard:
+
+- Worker: `Banach`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-70-rostock-placement-main`.
+- Worker branch: `issue-70-rostock-placement-main`.
+- Worker commit: `fe2725f Guard Rostock city landmark placement`.
+- Integrated commit on `main`: `65110d4 Guard Rostock city landmark placement`.
+- Decision: `ACCEPT` for #70 scoped regression; #70 closed.
+
+What landed:
+
+- Added `tests/test_map_panel_contract.py::test_primary_city_landmark_coordinates_stay_geographic`.
+- The test guards Hamburg, Berlin, Rostock and Dresden real coordinates/icons.
+- The test specifically guards Rostock `icon_offset Vector2(0.0, 52.0)` so the landmark stays visually on land near the Baltic instead of floating over water.
+
+Screenshot evidence reviewed:
+
+- Review bundle: `/home/alexey/git/cable-world/worktrees/issue-70-rostock-placement-main/tmp/map-review/issue-70-20260531T231637Z`.
+- `mobile-390x844-initial.png`: Rostock visible on land near the Baltic coast.
+- `desktop-1280x800-initial.png`: Rostock visible on land near the Baltic coast.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_map_geography_audit`: PASS, 23 tests, 9 skipped.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 260 tests, 9 skipped.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Important limitation:
+
+- This closes only the Rostock placement regression. The full map is still not accepted as 10/10; #62/#64/#67/#68/#69 and related terrain/art issues remain open.
