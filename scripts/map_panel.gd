@@ -98,7 +98,7 @@ class OfflineMapLayer:
 		var label_size := 18 if is_capital else 15
 		var icon_rect := _draw_city_icon(label_data, position)
 		if icon_rect.size != Vector2.ZERO:
-			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 14.0 * zoom
+			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 8.0 * zoom
 			_draw_centered_label_text(font, str(label_data["name"]), icon_rect.get_center().x, label_baseline_y, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
 		else:
 			_draw_centered_label_text(font, str(label_data["name"]), position.x, position.y + 12.0 * zoom, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))

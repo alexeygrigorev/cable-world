@@ -117,3 +117,19 @@ Implemented:
 - Removed large non-runtime source PNGs from `res://assets/branding/` and deleted the local `tmp/city-landmark-source/` folder so Web exports do not ship unused source sheets.
 
 Self-audit: the city layer reads cleaner and splash physics is improved. Pan needs direct user feel-testing on the device; if still too fast, the next adjustment is a smaller single constant rather than structural changes.
+
+## Iteration 2026-05-31 12:38
+
+Implemented:
+
+- Moved city labels closer to their pictograms: the baseline gap changed from `14.0 * zoom` to `8.0 * zoom`.
+- Replaced the splash/loading image again after user feedback that the previous version still failed cableway physics.
+- Rechecked the selected splash candidate against a physics checklist before accepting it into `assets/branding/splash_loading.png`:
+  - two towers visible inside the frame;
+  - cables run between the towers;
+  - cabin hangs below the cables;
+  - cabin remains vertical;
+  - cables do not pass through the cabin body/windows;
+  - no funicular rails or ground track are mixed into the aerial cable car.
+
+Self-audit: this is a stronger splash candidate, but still stylized art rather than an engineering diagram. Do not score the whole project as `10/10` from this change alone.
