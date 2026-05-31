@@ -1083,3 +1083,27 @@ Checks:
   - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
 
 Self-audit: Harz is clearly more visible on desktop and small house clutter is reduced, but this is still not `8/10`. On mobile, Harz can still be visually busy because the transport cluster overlaps the region; Alps/elevation accuracy remains the bigger blocker.
+
+## Iteration 2026-05-31 22:05
+
+Implemented for #72:
+
+- Reduced default object clutter in `map_pipeline.compose_map`:
+  - `DEFAULT_ATLAS_DETAIL_KINDS` now renders only `bridge`, `port` and `ship`;
+  - `MIN_ATLAS_DETAIL_WIDTH` increased from `78` to `86`;
+  - `tower` and `lighthouse` remain available as explicit data, but no longer render on the default underlay.
+- Made forest masses larger and less dusty:
+  - `FOREST_MASS_VISUAL_SCALE = 1.55`;
+  - `FOREST_MASS_MIN_WIDTH = 138`;
+  - added `FOREST_CLUSTER_MIN_SOURCE_WIDTH = 86` and wired it into `audit_geography_layers()`;
+  - removed the smallest repeated forest clusters from Lueneburg, Mecklenburg and Franconian/Swabian placements;
+  - raised remaining small forest cluster widths above the new guardrail.
+- Regenerated `assets/map/germany_styled.png` from the reproducible compositor.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_map_geography_audit`: 14 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract`: 14 tests OK.
+- `uv run python -m map_pipeline.compose_map`: regenerated `assets/map/germany_styled.png`, `1932x3072`, `3,159,626` bytes.
+
+Self-audit: this is a bounded clutter reduction, not a full art pass. The full PNG now reads with fewer tiny object glyphs and larger forest masses, but some land texture dots and dotted route marks can still look busy in the raw asset. Visual risk is still medium until a runtime mobile/desktop screenshot review confirms the default zoom composition with transport markers on top.

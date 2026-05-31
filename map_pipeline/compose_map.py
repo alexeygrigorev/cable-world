@@ -39,8 +39,9 @@ NAMED_WATER_HIGHLIGHT = (139, 184, 181, 54)
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 FONT_CACHE = {}
-FOREST_MASS_VISUAL_SCALE = 1.32
-FOREST_MASS_MIN_WIDTH = 112
+FOREST_MASS_VISUAL_SCALE = 1.55
+FOREST_MASS_MIN_WIDTH = 138
+FOREST_CLUSTER_MIN_SOURCE_WIDTH = 86
 LAND_DETAIL_VISUAL_SCALE = 0.74
 LAND_DETAIL_ALPHA_SCALE = 0.48
 LAND_DETAIL_TINT_STRENGTH = 0.28
@@ -479,18 +480,16 @@ ATLAS_FOREST_MASSES = [
         "id": "lueneburg_heath",
         "label": "Lueneburg Heath",
         "clusters": [
-            ("atlas_forest_pine_dense", 10.02, 53.03, 118),
-            ("atlas_forest_pine_round", 10.46, 52.88, 98),
-            ("atlas_forest_pine_small", 9.58, 52.72, 78),
+            ("atlas_forest_pine_dense", 10.02, 53.03, 128),
+            ("atlas_forest_pine_round", 10.46, 52.88, 104),
         ],
     },
     {
         "id": "mecklenburg_lake_forests",
         "label": "Mecklenburg Lake District forests",
         "clusters": [
-            ("atlas_forest_mixed_large", 12.30, 53.52, 110),
-            ("atlas_forest_broadleaf_round", 12.80, 53.22, 88),
-            ("atlas_forest_mixed_small", 13.18, 53.70, 76),
+            ("atlas_forest_mixed_large", 12.30, 53.52, 120),
+            ("atlas_forest_broadleaf_round", 12.80, 53.22, 96),
         ],
     },
     {
@@ -498,15 +497,15 @@ ATLAS_FOREST_MASSES = [
         "label": "Spreewald and Lausitz",
         "clusters": [
             ("atlas_forest_mixed_wide", 13.95, 51.86, 92),
-            ("atlas_forest_deciduous_dense", 14.38, 51.52, 82),
+            ("atlas_forest_deciduous_dense", 14.38, 51.52, 90),
         ],
     },
     {
         "id": "teutoburg_weser",
         "label": "Teutoburg and Weser uplands",
         "clusters": [
-            ("atlas_forest_mixed_tall", 8.65, 52.08, 96),
-            ("atlas_forest_pine_small", 9.36, 51.72, 78),
+            ("atlas_forest_mixed_tall", 8.65, 52.08, 104),
+            ("atlas_forest_pine_small", 9.36, 51.72, 90),
         ],
     },
     {
@@ -514,7 +513,7 @@ ATLAS_FOREST_MASSES = [
         "label": "Sauerland and Rothaar",
         "clusters": [
             ("atlas_forest_rocky_mixed", 8.05, 51.18, 118),
-            ("atlas_forest_mixed_large", 8.52, 50.96, 82),
+            ("atlas_forest_mixed_large", 8.52, 50.96, 90),
         ],
     },
     {
@@ -547,15 +546,14 @@ ATLAS_FOREST_MASSES = [
         "clusters": [
             ("atlas_forest_pine_dense", 10.55, 49.45, 92),
             ("atlas_forest_deciduous_dense", 9.58, 48.62, 94),
-            ("atlas_forest_mixed_tall", 11.42, 49.02, 78),
         ],
     },
     {
         "id": "upper_bavaria_foothills",
         "label": "Upper Bavaria foothill forests",
         "clusters": [
-            ("atlas_forest_rocky_mixed", 11.34, 48.02, 86),
-            ("atlas_forest_rocky_pine", 12.15, 48.10, 84),
+            ("atlas_forest_rocky_mixed", 11.34, 48.02, 96),
+            ("atlas_forest_rocky_pine", 12.15, 48.10, 92),
         ],
     },
 ]
@@ -584,8 +582,8 @@ ATLAS_DETAIL_KIND_SCALE = {
     "watermill": 1.55,
     "windmill": 1.55,
 }
-MIN_ATLAS_DETAIL_WIDTH = 78
-DEFAULT_ATLAS_DETAIL_KINDS = {"bridge", "lighthouse", "port", "ship", "tower"}
+MIN_ATLAS_DETAIL_WIDTH = 86
+DEFAULT_ATLAS_DETAIL_KINDS = {"bridge", "port", "ship"}
 
 
 def audit_geography_layers():
@@ -663,8 +661,8 @@ def audit_geography_layers():
             _audit_point(errors, bounds_poly, lon, lat, f"forest:{forest_mass['id']}:{glyph_name}")
             if not str(glyph_name).startswith("atlas_forest_"):
                 errors.append(f"forest mass {forest_mass['id']} uses non-forest glyph {glyph_name}")
-            if width < 70:
-                errors.append(f"forest mass {forest_mass['id']} cluster {glyph_name} is too small to read")
+            if width < FOREST_CLUSTER_MIN_SOURCE_WIDTH:
+                errors.append(f"forest mass {forest_mass['id']} cluster {glyph_name} is too small for the default map")
     for glyph_name, lon, lat, width in ATLAS_LAND_DETAIL_PATCHES:
         _audit_point(errors, bounds_poly, lon, lat, f"land detail:{glyph_name}")
         if not str(glyph_name).startswith("atlas_land_"):
