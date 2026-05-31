@@ -22,6 +22,11 @@ class MapGeographyAuditTest(unittest.TestCase):
 
         self.assertEqual([], audit_alpine_relief_contract())
 
+    def test_terrain_massif_layers_pass_named_layer_contract(self) -> None:
+        from map_pipeline.compose_map import audit_terrain_massif_layer_contract
+
+        self.assertEqual([], audit_terrain_massif_layer_contract())
+
     def test_alpine_rendered_segments_are_not_decorative_only_anchors(self) -> None:
         from map_pipeline.compose_map import ALPINE_MASSIF_SEGMENTS, ALPINE_RELIEF_EXTENTS_PATH
         import json
@@ -42,6 +47,29 @@ class MapGeographyAuditTest(unittest.TestCase):
                 self.assertIn("named_massif", extent["geometry_source"])
                 self.assertIn("pending_dem", extent["geometry_source"])
                 self.assertTrue(extent["coverage_regions"])
+
+    def test_exported_relief_regions_have_source_extent_contract(self) -> None:
+        from map_pipeline.compose_map import RELIEF_REGIONS, TERRAIN_MASSIF_LAYERS_PATH
+        import json
+
+        with open(TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
+            contract = json.load(file)
+
+        source_layers = {layer["id"]: layer for layer in contract["source_layers"]}
+        exported_regions = {
+            region["id"]: region
+            for region in RELIEF_REGIONS
+            if region["id"] != "northern_lowlands" and any(
+                region.get(key) for key in ("trees", "ridge_bands", "massif_segments", "mountain_glyphs", "mountains")
+            )
+        }
+        self.assertEqual(set(exported_regions), set(source_layers))
+        for layer_id, layer in source_layers.items():
+            with self.subTest(layer=layer_id):
+                self.assertTrue(layer["source_extent_id"])
+                self.assertNotRegex(layer["placement_policy"], r"(random|decorative|full_map)")
+                self.assertTrue(layer["source_confidence"])
+                self.assertTrue(layer["replacement_status"])
 
 
 if __name__ == "__main__":

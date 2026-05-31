@@ -30,6 +30,7 @@
     2081.5
   ],
   "massif_segments": [],
+  "placement_policy": "named_region_polygon_and_ridge_spine",
   "region_polygon": [
     {
       "latitude": 49.2,
@@ -58,6 +59,7 @@
     1288,
     4163
   ],
+  "replacement_status": "needs_custom_forest_highland_asset",
   "ridge_bands": [
     {
       "height": 38,
@@ -84,6 +86,8 @@
       "style": "forested"
     }
   ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "black_forest_spine_extent",
   "source_type": "relief_region",
   "trees": [
     {

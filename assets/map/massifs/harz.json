@@ -37,6 +37,7 @@
     1182.0
   ],
   "massif_segments": [],
+  "placement_policy": "named_region_polygon_and_brocken_spine",
   "region_polygon": [
     {
       "latitude": 52.14,
@@ -69,6 +70,7 @@
     2147,
     2364
   ],
+  "replacement_status": "readability_placeholder_needs_custom_harz_asset",
   "ridge_bands": [
     {
       "height": 52,
@@ -115,6 +117,8 @@
       "style": "forested"
     }
   ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "harz_brocken_extent",
   "source_type": "relief_region",
   "trees": [
     {

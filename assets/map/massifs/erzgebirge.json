@@ -39,6 +39,7 @@
     1373.0
   ],
   "massif_segments": [],
+  "placement_policy": "named_border_region_polygon_and_spine",
   "region_polygon": [
     {
       "latitude": 50.95,
@@ -67,6 +68,7 @@
     3129,
     2746
   ],
+  "replacement_status": "needs_custom_erzgebirge_asset",
   "ridge_bands": [
     {
       "height": 36,
@@ -89,6 +91,8 @@
       "style": "border"
     }
   ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "erzgebirge_border_extent",
   "source_type": "relief_region",
   "trees": [
     {

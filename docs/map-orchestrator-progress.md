@@ -1149,3 +1149,30 @@ Checks:
 - `uv run python -m unittest tests.test_europe_expansion_plan_contract`: 7 tests OK.
 
 Self-audit: visual Alps are not improved in this pass. This is intentionally metadata and automated guardrails only, so the current Alpine art remains pre-DEM and below final geography quality until a later render pass consumes real elevation-derived products.
+
+## Iteration 2026-05-31 23:10
+
+Implemented for #69:
+
+- Added `map_pipeline/data/terrain_massif_layers.json` as the named terrain layer contract for exported relief source layers:
+  - Alps composite layer, Harz, Black Forest, Bavarian Forest, Erzgebirge, Saxon Switzerland / Elbe Sandstone and Eifel-Hunsrueck now have explicit `source_extent_id`, placement policy, allowed placeholder glyphs, required ridge bands and replacement status.
+  - The contract records the allowed reference inventory workflow and rejects monolithic generated-map production.
+- Added `docs/terrain-glyph-layer-inventory.md` as the human-readable extraction plan for turning reference/donor map motifs into reusable glyph/layer assets.
+- Added `audit_terrain_massif_layer_contract()`:
+  - rejects exported relief regions without a source extent contract;
+  - rejects forbidden random/decorative/full-map placement policies;
+  - rejects legacy generic `mountains` lists on named source layers;
+  - checks allowed placeholder glyphs and required ridge bands;
+  - checks generated source-layer manifest metadata against the contract.
+- Extended relief source layer sidecar/manifest metadata with `source_extent_id`, `placement_policy`, `source_confidence` and `replacement_status`.
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated source layer sidecars/manifest with the new metadata fields; output `assets/map/germany_styled.png`, `1932x3072`, `3,222,996` bytes.
+- `uv run python -m unittest tests.test_map_geography_audit`: 6 OK.
+- `uv run python -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 OK.
+- `uv run python -m unittest tests.test_europe_expansion_plan_contract`: 7 OK.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract`: 19 OK.
+- `python3 -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 25 tests OK, 6 skipped under plain Python where geography dependencies are unavailable.
+
+Self-audit: this improves the architecture and review gate, not visual quality. The map is still not `10/10`; Alps remain pre-DEM/generic and the named layers still need custom art replacement.

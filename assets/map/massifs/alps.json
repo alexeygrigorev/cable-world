@@ -34,6 +34,7 @@
     "german_alpine_edge_massif",
     "austrian_alps_massif"
   ],
+  "placement_policy": "dem_or_named_massif_segments",
   "region_polygon": [
     {
       "latitude": 46.45,
@@ -94,6 +95,7 @@
     3625,
     4900
   ],
+  "replacement_status": "needs_elevation_derived_art",
   "ridge_bands": [
     {
       "height": 82,
@@ -164,6 +166,8 @@
       "style": "alpine"
     }
   ],
+  "source_confidence": "pre_dem_guardrailed",
+  "source_extent_id": "alps_composite_extent",
   "source_type": "relief_region",
   "trees": [
     {

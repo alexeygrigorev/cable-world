@@ -1,0 +1,166 @@
+{
+  "schema": "cable-world.terrain-massif-layers.v1",
+  "review_status": "first_pass_named_layer_contract",
+  "notes": [
+    "This contract is the reusable terrain glyph/layer inventory for issue #69.",
+    "Generated full-map images may be used only as reference inventory; production terrain must be named source layers with real-coordinate extents.",
+    "Important massif layers must not be placed through hash-random mountain stamps or generic decorative anchors."
+  ],
+  "reference_inventory_plan": {
+    "reference_images": [
+      {
+        "id": "quality_target",
+        "path": "/home/alexey/tmp/file_000000000d5c71f4b60ecae32dd4240b.png",
+        "allowed_use": "visual direction and glyph inventory only"
+      },
+      {
+        "id": "generated_donor_underlay",
+        "path": "tmp/map-underlay-source/germany_atlas_underlay_2026-05-31_v2.png",
+        "allowed_use": "identify reusable terrain motifs only; do not ship as a full map"
+      }
+    ],
+    "extraction_steps": [
+      "Inventory visible terrain motifs by named geography: Alps, Harz, Black Forest, Bavarian Forest, Erzgebirge, Saxon Switzerland / Elbe Sandstone and Eifel-Hunsrueck.",
+      "For each motif, redraw or generate transparent reusable glyph/layer assets, preserving separate source PNG and JSON sidecar metadata.",
+      "Place each layer by region polygon, ridge band, source_extent_id and explicit lon/lat anchors.",
+      "Reject baked cities, random villages and monolithic full-map terrain as production assets."
+    ],
+    "required_metadata": [
+      "source_extent_id",
+      "source_type",
+      "geo_bounds",
+      "region_polygon or arc/shadow",
+      "placement_policy",
+      "source_confidence",
+      "replacement_status"
+    ]
+  },
+  "placement_policy": {
+    "important_terrain": "named_extent_or_dem_derived_layer",
+    "forbidden": [
+      "hash_random_mountain_stamp",
+      "decorative_anchor_only",
+      "full_map_generated_bitmap"
+    ],
+    "allowed_placeholder_status": "repo_native_placeholder_until_replaced_by_named_asset"
+  },
+  "source_layers": [
+    {
+      "id": "alps",
+      "label": "Alps composite relief layer",
+      "source_extent_id": "alps_composite_extent",
+      "region_id": "alps",
+      "source_type": "cross_border_mountain_region",
+      "placement_policy": "dem_or_named_massif_segments",
+      "source_confidence": "pre_dem_guardrailed",
+      "required_child_layers": [
+        "western_alps_massif",
+        "swiss_alps_massif",
+        "bavarian_tyrol_alps_massif",
+        "german_alpine_edge_massif",
+        "austrian_alps_massif"
+      ],
+      "allowed_glyph_prefixes": [
+        "alps_"
+      ],
+      "replacement_status": "needs_elevation_derived_art"
+    },
+    {
+      "id": "harz",
+      "label": "Harz",
+      "source_extent_id": "harz_brocken_extent",
+      "region_id": "harz",
+      "source_type": "isolated_mountain_range",
+      "placement_policy": "named_region_polygon_and_brocken_spine",
+      "source_confidence": "named_region_first_pass",
+      "required_ridge_bands": [
+        "harz_brocken_spine",
+        "harz_south_spur"
+      ],
+      "allowed_glyphs": [
+        "highland_forest_1",
+        "highland_forest_2"
+      ],
+      "replacement_status": "readability_placeholder_needs_custom_harz_asset"
+    },
+    {
+      "id": "black_forest",
+      "label": "Black Forest",
+      "source_extent_id": "black_forest_spine_extent",
+      "region_id": "black_forest",
+      "source_type": "forested_highland",
+      "placement_policy": "named_region_polygon_and_ridge_spine",
+      "source_confidence": "named_region_first_pass",
+      "required_ridge_bands": [
+        "black_forest_spine"
+      ],
+      "allowed_glyphs": [
+        "highland_forest_2"
+      ],
+      "replacement_status": "needs_custom_forest_highland_asset"
+    },
+    {
+      "id": "bavarian_forest",
+      "label": "Bavarian Forest",
+      "source_extent_id": "bavarian_forest_spine_extent",
+      "region_id": "bavarian_forest",
+      "source_type": "forested_highland",
+      "placement_policy": "named_region_polygon_and_ridge_spine",
+      "source_confidence": "named_region_first_pass",
+      "required_ridge_bands": [
+        "bavarian_forest_spine"
+      ],
+      "allowed_glyphs": [
+        "highland_forest_3"
+      ],
+      "replacement_status": "needs_custom_forest_highland_asset"
+    },
+    {
+      "id": "erzgebirge",
+      "label": "Erzgebirge",
+      "source_extent_id": "erzgebirge_border_extent",
+      "region_id": "erzgebirge",
+      "source_type": "border_mountain_range",
+      "placement_policy": "named_border_region_polygon_and_spine",
+      "source_confidence": "named_region_first_pass",
+      "required_ridge_bands": [
+        "erzgebirge_border_spine"
+      ],
+      "allowed_glyphs": [
+        "border_highland_1",
+        "border_highland_2"
+      ],
+      "replacement_status": "needs_custom_erzgebirge_asset"
+    },
+    {
+      "id": "saxon_switzerland",
+      "label": "Saxon Switzerland / Elbe Sandstone",
+      "source_extent_id": "elbe_sandstone_extent",
+      "region_id": "saxon_switzerland",
+      "source_type": "sandstone_highland",
+      "placement_policy": "named_sandstone_region_polygon_and_rim",
+      "source_confidence": "named_region_first_pass",
+      "required_ridge_bands": [
+        "elbe_sandstone_rim"
+      ],
+      "allowed_glyphs": [
+        "border_highland_2"
+      ],
+      "replacement_status": "needs_custom_sandstone_asset"
+    },
+    {
+      "id": "eifel_hunsrueck",
+      "label": "Eifel Hunsrueck",
+      "source_extent_id": "eifel_hunsrueck_low_extent",
+      "region_id": "eifel_hunsrueck",
+      "source_type": "low_highland",
+      "placement_policy": "named_region_polygon_and_low_spine",
+      "source_confidence": "named_region_first_pass",
+      "required_ridge_bands": [
+        "eifel_hunsrueck_low_spine"
+      ],
+      "allowed_glyphs": [],
+      "replacement_status": "needs_custom_low_highland_asset"
+    }
+  ]
+}

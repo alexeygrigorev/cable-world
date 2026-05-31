@@ -32,6 +32,7 @@
         2081.5
       ],
       "massif_segments": [],
+      "placement_policy": "named_region_polygon_and_ridge_spine",
       "region_polygon": [
         {
           "latitude": 49.2,
@@ -60,6 +61,7 @@
         1288,
         4163
       ],
+      "replacement_status": "needs_custom_forest_highland_asset",
       "ridge_bands": [
         {
           "height": 38,
@@ -86,6 +88,8 @@
           "style": "forested"
         }
       ],
+      "source_confidence": "named_region_first_pass",
+      "source_extent_id": "black_forest_spine_extent",
       "source_type": "relief_region",
       "trees": [
         {
@@ -635,6 +639,7 @@
         "german_alpine_edge_massif",
         "austrian_alps_massif"
       ],
+      "placement_policy": "dem_or_named_massif_segments",
       "region_polygon": [
         {
           "latitude": 46.45,
@@ -695,6 +700,7 @@
         3625,
         4900
       ],
+      "replacement_status": "needs_elevation_derived_art",
       "ridge_bands": [
         {
           "height": 82,
@@ -765,6 +771,8 @@
           "style": "alpine"
         }
       ],
+      "source_confidence": "pre_dem_guardrailed",
+      "source_extent_id": "alps_composite_extent",
       "source_type": "relief_region",
       "trees": [
         {
@@ -829,6 +837,7 @@
         1785.5
       ],
       "massif_segments": [],
+      "placement_policy": "named_region_polygon_and_ridge_spine",
       "region_polygon": [
         {
           "latitude": 49.35,
@@ -857,6 +866,7 @@
         2850,
         3571
       ],
+      "replacement_status": "needs_custom_forest_highland_asset",
       "ridge_bands": [
         {
           "height": 36,
@@ -879,6 +889,8 @@
           "style": "forested"
         }
       ],
+      "source_confidence": "named_region_first_pass",
+      "source_extent_id": "bavarian_forest_spine_extent",
       "source_type": "relief_region",
       "trees": [
         {
@@ -932,6 +944,7 @@
         1182.0
       ],
       "massif_segments": [],
+      "placement_policy": "named_region_polygon_and_brocken_spine",
       "region_polygon": [
         {
           "latitude": 52.14,
@@ -964,6 +977,7 @@
         2147,
         2364
       ],
+      "replacement_status": "readability_placeholder_needs_custom_harz_asset",
       "ridge_bands": [
         {
           "height": 52,
@@ -1010,6 +1024,8 @@
           "style": "forested"
         }
       ],
+      "source_confidence": "named_region_first_pass",
+      "source_extent_id": "harz_brocken_extent",
       "source_type": "relief_region",
       "trees": [
         {
@@ -1065,6 +1081,7 @@
         1373.0
       ],
       "massif_segments": [],
+      "placement_policy": "named_border_region_polygon_and_spine",
       "region_polygon": [
         {
           "latitude": 50.95,
@@ -1093,6 +1110,7 @@
         3129,
         2746
       ],
+      "replacement_status": "needs_custom_erzgebirge_asset",
       "ridge_bands": [
         {
           "height": 36,
@@ -1115,6 +1133,8 @@
           "style": "border"
         }
       ],
+      "source_confidence": "named_region_first_pass",
+      "source_extent_id": "erzgebirge_border_extent",
       "source_type": "relief_region",
       "trees": [
         {
@@ -1158,6 +1178,7 @@
         1305.5
       ],
       "massif_segments": [],
+      "placement_policy": "named_sandstone_region_polygon_and_rim",
       "region_polygon": [
         {
           "latitude": 51.05,
@@ -1190,6 +1211,7 @@
         3171,
         2611
       ],
+      "replacement_status": "needs_custom_sandstone_asset",
       "ridge_bands": [
         {
           "height": 28,
@@ -1212,6 +1234,8 @@
           "style": "sandstone"
         }
       ],
+      "source_confidence": "named_region_first_pass",
+      "source_extent_id": "elbe_sandstone_extent",
       "source_type": "relief_region",
       "trees": [
         {
@@ -1248,6 +1272,7 @@
         1623.5
       ],
       "massif_segments": [],
+      "placement_policy": "named_region_polygon_and_low_spine",
       "region_polygon": [
         {
           "latitude": 50.8,
@@ -1276,6 +1301,7 @@
         987,
         3247
       ],
+      "replacement_status": "needs_custom_low_highland_asset",
       "ridge_bands": [
         {
           "height": 30,
@@ -1298,6 +1324,8 @@
           "style": "low"
         }
       ],
+      "source_confidence": "named_region_first_pass",
+      "source_extent_id": "eifel_hunsrueck_low_extent",
       "source_type": "relief_region",
       "trees": [
         {

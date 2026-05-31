@@ -17,6 +17,7 @@ GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 MASSIF_DIR = os.path.join(MAP_DIR, "massifs")
 MASSIF_MANIFEST_PATH = os.path.join(MASSIF_DIR, "manifest.json")
 ALPINE_RELIEF_EXTENTS_PATH = os.path.join(PIPELINE_DATA_DIR, "alpine_relief_extents.json")
+TERRAIN_MASSIF_LAYERS_PATH = os.path.join(PIPELINE_DATA_DIR, "terrain_massif_layers.json")
 
 GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
 # Match the Mercator aspect of GERMANY_BOUNDS and keep enough physical pixels
@@ -680,6 +681,7 @@ def audit_geography_layers():
         if width < 150:
             errors.append(f"land detail {glyph_name} is too small to read as terrain")
 
+    errors.extend(audit_terrain_massif_layer_contract())
     errors.extend(audit_runtime_landmark_placement(country_geometries=country_geometries))
     return errors
 
@@ -882,6 +884,89 @@ def audit_massif_source_manifest():
             height = float(geo_bounds["max_latitude"]) - float(geo_bounds["min_latitude"])
             if width <= 0.10 or height <= 0.10:
                 errors.append(f"massif source layer {layer_id} geo bounds are too small")
+    return errors
+
+
+def audit_terrain_massif_layer_contract():
+    errors = []
+    if not os.path.exists(TERRAIN_MASSIF_LAYERS_PATH):
+        return [f"terrain massif layer contract is missing: {TERRAIN_MASSIF_LAYERS_PATH}"]
+    with open(TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
+        contract = json.load(file)
+
+    if contract.get("schema") != "cable-world.terrain-massif-layers.v1":
+        errors.append("terrain massif layer contract has an unknown schema")
+
+    forbidden_policy = set(contract.get("placement_policy", {}).get("forbidden", []))
+    required_forbidden = {"hash_random_mountain_stamp", "decorative_anchor_only", "full_map_generated_bitmap"}
+    missing_forbidden = sorted(required_forbidden - forbidden_policy)
+    for policy in missing_forbidden:
+        errors.append(f"terrain massif placement policy must forbid {policy}")
+
+    exported_regions = {
+        region["id"]: region
+        for region in RELIEF_REGIONS
+        if _should_export_relief_region_source_layer(region)
+    }
+    source_layers = {layer.get("id"): layer for layer in contract.get("source_layers", [])}
+    missing_layers = sorted(set(exported_regions) - set(source_layers))
+    extra_layers = sorted(set(source_layers) - set(exported_regions))
+    for layer_id in missing_layers:
+        errors.append(f"terrain source layer contract is missing exported relief region {layer_id}")
+    for layer_id in extra_layers:
+        errors.append(f"terrain source layer contract has unknown relief region {layer_id}")
+
+    alpine_segment_ids = {segment["id"] for segment in ALPINE_MASSIF_SEGMENTS}
+    for layer_id, layer in source_layers.items():
+        region = exported_regions.get(layer_id)
+        if region is None:
+            continue
+        if layer.get("region_id") != layer_id:
+            errors.append(f"terrain source layer {layer_id} must point at its matching region_id")
+        if not layer.get("source_extent_id"):
+            errors.append(f"terrain source layer {layer_id} must declare source_extent_id")
+        if layer.get("placement_policy") in forbidden_policy:
+            errors.append(f"terrain source layer {layer_id} uses forbidden placement policy")
+        if not layer.get("source_confidence"):
+            errors.append(f"terrain source layer {layer_id} must declare source_confidence")
+        if not layer.get("replacement_status"):
+            errors.append(f"terrain source layer {layer_id} must declare replacement_status")
+
+        if region.get("mountains"):
+            errors.append(f"terrain source layer {layer_id} must not use legacy generic mountains list")
+
+        required_ridge_bands = set(layer.get("required_ridge_bands", []))
+        actual_ridge_bands = {ridge_band["id"] for ridge_band in region.get("ridge_bands", [])}
+        for ridge_band_id in sorted(required_ridge_bands - actual_ridge_bands):
+            errors.append(f"terrain source layer {layer_id} is missing ridge band {ridge_band_id}")
+
+        actual_glyphs = [glyph_name for glyph_name, _lon, _lat, _width in region.get("mountain_glyphs", [])]
+        allowed_glyphs = set(layer.get("allowed_glyphs", []))
+        allowed_prefixes = tuple(layer.get("allowed_glyph_prefixes", []))
+        if allowed_glyphs or allowed_prefixes:
+            for glyph_name in actual_glyphs:
+                if glyph_name not in allowed_glyphs and not glyph_name.startswith(allowed_prefixes):
+                    errors.append(f"terrain source layer {layer_id} uses glyph outside contract: {glyph_name}")
+        elif actual_glyphs:
+            errors.append(f"terrain source layer {layer_id} defines glyph anchors but contract allows none")
+
+        for child_id in layer.get("required_child_layers", []):
+            if child_id not in alpine_segment_ids:
+                errors.append(f"terrain source layer {layer_id} requires unknown child massif {child_id}")
+
+    if os.path.exists(MASSIF_MANIFEST_PATH):
+        with open(MASSIF_MANIFEST_PATH, "r", encoding="utf-8") as file:
+            manifest = json.load(file)
+        manifest_layers = {layer.get("id"): layer for layer in manifest.get("layers", [])}
+        for layer_id, contract_layer in source_layers.items():
+            manifest_layer = manifest_layers.get(layer_id)
+            if not manifest_layer:
+                errors.append(f"terrain source layer {layer_id} is missing from massif manifest")
+                continue
+            if manifest_layer.get("source_extent_id") != contract_layer.get("source_extent_id"):
+                errors.append(f"terrain source layer {layer_id} manifest source_extent_id does not match contract")
+            if manifest_layer.get("replacement_status") != contract_layer.get("replacement_status"):
+                errors.append(f"terrain source layer {layer_id} manifest replacement_status does not match contract")
     return errors
 
 
@@ -1795,11 +1880,16 @@ def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj
 
 
 def _relief_region_source_metadata(region, image_name, render_bbox, cropped_size, proj):
+    contract_layer = _terrain_massif_contract_layers().get(region["id"], {})
     metadata = _source_layer_base_metadata(region, image_name, render_bbox, cropped_size, proj)
     metadata.update(
         {
+            "source_extent_id": contract_layer.get("source_extent_id", region["id"]),
             "source_type": "relief_region",
             "kind": region.get("kind", ""),
+            "placement_policy": contract_layer.get("placement_policy", "named_region_layer"),
+            "source_confidence": contract_layer.get("source_confidence", "uncontracted"),
+            "replacement_status": contract_layer.get("replacement_status", "needs_custom_asset"),
             "region_polygon": [{"longitude": lon, "latitude": lat} for lon, lat in region.get("points", [])],
             "trees": [
                 {"longitude": lon, "latitude": lat, "radius": radius}
@@ -1830,6 +1920,14 @@ def _relief_region_source_metadata(region, image_name, render_bbox, cropped_size
         }
     )
     return metadata
+
+
+def _terrain_massif_contract_layers():
+    if not os.path.exists(TERRAIN_MASSIF_LAYERS_PATH):
+        return {}
+    with open(TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
+        contract = json.load(file)
+    return {layer.get("id"): layer for layer in contract.get("source_layers", [])}
 
 
 def _source_layer_base_metadata(source, image_name, render_bbox, cropped_size, proj):

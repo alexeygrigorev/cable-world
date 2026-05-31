@@ -32,6 +32,7 @@
     1305.5
   ],
   "massif_segments": [],
+  "placement_policy": "named_sandstone_region_polygon_and_rim",
   "region_polygon": [
     {
       "latitude": 51.05,
@@ -64,6 +65,7 @@
     3171,
     2611
   ],
+  "replacement_status": "needs_custom_sandstone_asset",
   "ridge_bands": [
     {
       "height": 28,
@@ -86,6 +88,8 @@
       "style": "sandstone"
     }
   ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "elbe_sandstone_extent",
   "source_type": "relief_region",
   "trees": [
     {

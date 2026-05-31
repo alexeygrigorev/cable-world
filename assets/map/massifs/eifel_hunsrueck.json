@@ -25,6 +25,7 @@
     1623.5
   ],
   "massif_segments": [],
+  "placement_policy": "named_region_polygon_and_low_spine",
   "region_polygon": [
     {
       "latitude": 50.8,
@@ -53,6 +54,7 @@
     987,
     3247
   ],
+  "replacement_status": "needs_custom_low_highland_asset",
   "ridge_bands": [
     {
       "height": 30,
@@ -75,6 +77,8 @@
       "style": "low"
     }
   ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "eifel_hunsrueck_low_extent",
   "source_type": "relief_region",
   "trees": [
     {
