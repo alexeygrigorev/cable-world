@@ -261,8 +261,10 @@ class AppShellContractTest(unittest.TestCase):
             'const ATLAS_TEXT_COLOR := Color("#27321f")',
             'const ATLAS_SELECTED_COLOR := Color("#31544d")',
             'const ATLAS_SELECTED_TEXT_COLOR := Color("#f7e4b0")',
+            'const ATLAS_TYPE_TEXT_COLOR := Color("#6e5431")',
             "const LIST_ICON_SIZE := Vector2i(36, 36)",
             "func _apply_atlas_list_style() -> void:",
+            "func _apply_empty_state_style() -> void:",
             "_apply_atlas_list_style()",
             "extends ScrollContainer",
             "horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED",
@@ -270,11 +272,15 @@ class AppShellContractTest(unittest.TestCase):
             "var row := Button.new()",
             "var icon := TextureRect.new()",
             "var name_label := Label.new()",
+            "var type_label := Label.new()",
             "var meta_label := Label.new()",
+            "var open_hint := Label.new()",
             "name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS",
+            "type_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS",
             "meta_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS",
             "icon.texture = _object_icon_texture(object_data)",
             "row.add_theme_stylebox_override(\"normal\", _row_style(visible_index, false))",
+            "row.toggled.connect(func(toggled_on: bool) -> void: _sync_row_visual_state",
         ]:
             self.assertIn(expected, script_text)
 

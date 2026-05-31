@@ -69,16 +69,22 @@ func test_object_list_rows_use_compact_control_layout() -> Array[String]:
 		if row.get_child_count() == 1:
 			var row_content := row.get_child(0)
 			_expect(row_content is HBoxContainer, "Object list row content must be horizontal icon/text layout.", failures)
-			_expect(row_content.get_child_count() == 2, "Object list row content must contain icon and text stack.", failures)
-			if row_content.get_child_count() == 2:
+			_expect(row_content.get_child_count() == 3, "Object list row content must contain icon, text stack, and open affordance.", failures)
+			if row_content.get_child_count() == 3:
 				_expect(row_content.get_child(0) is TextureRect, "Object list row must render a pictogram texture.", failures)
 				var text_box := row_content.get_child(1)
 				_expect(text_box is VBoxContainer, "Object list text must be split into separate labels.", failures)
-				_expect(text_box.get_child_count() == 2, "Object list text stack must contain name and metadata labels.", failures)
-				if text_box.get_child_count() == 2:
+				_expect(row_content.get_child(2) is Label, "Object list row must expose a clear open affordance.", failures)
+				if row_content.get_child(2) is Label:
+					var open_hint := row_content.get_child(2) as Label
+					_expect(open_hint.text == ">", "Object list open affordance must be visible without relying on debug text.", failures)
+				_expect(text_box.get_child_count() == 3, "Object list text stack must contain name, type, and metadata labels.", failures)
+				if text_box.get_child_count() == 3:
 					var name_label := text_box.get_child(0) as Label
-					var meta_label := text_box.get_child(1) as Label
+					var type_label := text_box.get_child(1) as Label
+					var meta_label := text_box.get_child(2) as Label
 					_expect(name_label != null and not name_label.text.contains("\n"), "Object name must not rely on newline layout inside a single item.", failures)
+					_expect(type_label != null and type_label.text.contains("канатная"), "Object row must show the transport type separately from status metadata.", failures)
 					_expect(meta_label != null and meta_label.text.begins_with("Берлин · "), "Object metadata must start on its own readable city/status line.", failures)
 					_expect(meta_label != null and meta_label.text.contains("работает сезонно"), "Object metadata must keep key operational status.", failures)
 	panel.free()

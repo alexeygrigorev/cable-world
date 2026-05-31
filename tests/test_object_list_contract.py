@@ -49,6 +49,7 @@ class ObjectListContractTest(unittest.TestCase):
             "func _location_text(object_data: Dictionary) -> String:",
             "func _visit_status_text(object_data: Dictionary) -> String:",
             "func _operational_status_text(object_data: Dictionary) -> String:",
+            "func _row_type_text(object_data: Dictionary) -> String:",
             "func _object_icon_texture(object_data: Dictionary) -> Texture2D:",
             "func _draw_transport_pictogram(image: Image, family: String) -> void:",
             "SQLiteStorageAdapter.status_is_visited",
@@ -60,10 +61,15 @@ class ObjectListContractTest(unittest.TestCase):
             "изменить запрос, страну, тип или статус",
             "func _add_row(object_data: Dictionary, object_index: int, visible_index: int) -> void:",
             "name_label.text = _compact_name",
+            "type_label.text = _row_type_text(object_data)",
             "meta_label.text = _row_meta_text(object_data)",
+            'open_hint.text = ">"',
             "const ROW_NAME_MAX_CHARS := 30",
+            "const ROW_TYPE_MAX_CHARS := 32",
             "const ROW_META_MAX_CHARS := 42",
             "func _trim_for_row(text: String, max_chars: int) -> String:",
+            "func _sync_row_visual_state(name_label: Label, type_label: Label, meta_label: Label, open_hint: Label, selected: bool) -> void:",
+            "func _empty_state_style() -> StyleBoxFlat:",
             "row.pressed.connect(func() -> void: _on_row_pressed(object_index))",
         ]:
             self.assertIn(expected, script_text)

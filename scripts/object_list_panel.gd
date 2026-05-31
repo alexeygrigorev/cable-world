@@ -12,8 +12,10 @@ const ATLAS_BORDER_COLOR := Color("#3b2a18")
 const ATLAS_TEXT_COLOR := Color("#27321f")
 const ATLAS_SELECTED_COLOR := Color("#31544d")
 const ATLAS_SELECTED_TEXT_COLOR := Color("#f7e4b0")
+const ATLAS_SELECTED_META_TEXT_COLOR := Color("#dfc986")
 const ATLAS_SHADOW_COLOR := Color(0.12, 0.08, 0.03, 0.42)
 const ATLAS_META_TEXT_COLOR := Color("#52604a")
+const ATLAS_TYPE_TEXT_COLOR := Color("#6e5431")
 const ATLAS_ICON_INK_COLOR := Color("#2b392f")
 const ATLAS_ICON_CABLE_COLOR := Color("#6e5431")
 const ATLAS_ICON_VISITED_COLOR := Color("#5f8a54")
@@ -23,6 +25,7 @@ const ATLAS_LIST_RADIUS := 6
 const ATLAS_LIST_BORDER_WIDTH := 2
 const LIST_ICON_SIZE := Vector2i(36, 36)
 const ROW_NAME_MAX_CHARS := 30
+const ROW_TYPE_MAX_CHARS := 32
 const ROW_META_MAX_CHARS := 42
 
 var objects: Array[Dictionary] = []
@@ -58,6 +61,7 @@ func _draw() -> void:
 
 func set_empty_state_label(label: Label) -> void:
 	empty_state_label = label
+	_apply_empty_state_style()
 	_update_empty_state()
 
 func set_objects(next_objects: Array[Dictionary]) -> void:
@@ -110,6 +114,13 @@ func refresh() -> void:
 func _apply_atlas_list_style() -> void:
 	add_theme_stylebox_override("panel", _panel_style())
 
+func _apply_empty_state_style() -> void:
+	if empty_state_label == null:
+		return
+	empty_state_label.add_theme_color_override("font_color", ATLAS_META_TEXT_COLOR)
+	empty_state_label.add_theme_font_size_override("font_size", 14)
+	empty_state_label.add_theme_stylebox_override("normal", _empty_state_style())
+
 func _create_rows_container() -> void:
 	rows_container = VBoxContainer.new()
 	rows_container.name = "Rows"
@@ -132,13 +143,12 @@ func _add_row(object_data: Dictionary, object_index: int, visible_index: int) ->
 	row.focus_mode = Control.FOCUS_NONE
 	row.text = ""
 	row.tooltip_text = "Открыть объект: %s" % object_data.get("name", "Без названия")
-	row.custom_minimum_size = Vector2(0, 56)
+	row.custom_minimum_size = Vector2(0, 70)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_stylebox_override("normal", _row_style(visible_index, false))
 	row.add_theme_stylebox_override("hover", _row_style(visible_index, false, true))
 	row.add_theme_stylebox_override("pressed", _row_style(visible_index, true))
 	row.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	row.pressed.connect(func() -> void: _on_row_pressed(object_index))
 	rows_container.add_child(row)
 	row_buttons.append(row)
 
@@ -149,7 +159,7 @@ func _add_row(object_data: Dictionary, object_index: int, visible_index: int) ->
 	row_content.offset_top = 6
 	row_content.offset_right = -8
 	row_content.offset_bottom = -6
-	row_content.add_theme_constant_override("separation", 8)
+	row_content.add_theme_constant_override("separation", 10)
 	row.add_child(row_content)
 
 	var icon := TextureRect.new()
@@ -173,6 +183,15 @@ func _add_row(object_data: Dictionary, object_index: int, visible_index: int) ->
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	text_box.add_child(name_label)
 
+	var type_label := Label.new()
+	type_label.text = _row_type_text(object_data)
+	type_label.clip_text = true
+	type_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	type_label.add_theme_font_size_override("font_size", 12)
+	type_label.add_theme_color_override("font_color", ATLAS_TYPE_TEXT_COLOR)
+	type_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_box.add_child(type_label)
+
 	var meta_label := Label.new()
 	meta_label.text = _row_meta_text(object_data)
 	meta_label.clip_text = true
@@ -181,6 +200,19 @@ func _add_row(object_data: Dictionary, object_index: int, visible_index: int) ->
 	meta_label.add_theme_color_override("font_color", ATLAS_META_TEXT_COLOR)
 	meta_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	text_box.add_child(meta_label)
+
+	var open_hint := Label.new()
+	open_hint.text = ">"
+	open_hint.tooltip_text = "Открыть карточку объекта"
+	open_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	open_hint.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	open_hint.custom_minimum_size = Vector2(18, 0)
+	open_hint.add_theme_font_size_override("font_size", 20)
+	open_hint.add_theme_color_override("font_color", ATLAS_TYPE_TEXT_COLOR)
+	row_content.add_child(open_hint)
+
+	row.toggled.connect(func(toggled_on: bool) -> void: _sync_row_visual_state(name_label, type_label, meta_label, open_hint, toggled_on))
+	row.pressed.connect(func() -> void: _on_row_pressed(object_index))
 
 func _panel_style() -> StyleBoxFlat:
 	var panel_style := StyleBoxFlat.new()
@@ -198,7 +230,7 @@ func _panel_style() -> StyleBoxFlat:
 
 func _row_style(visible_index: int, selected: bool, hovered: bool = false) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.90, 0.78, 0.48, 0.98) if selected else (ATLAS_PARCHMENT_ALT_COLOR if visible_index % 2 == 0 else ATLAS_PARCHMENT_COLOR)
+	style.bg_color = ATLAS_SELECTED_COLOR if selected else (ATLAS_PARCHMENT_ALT_COLOR if visible_index % 2 == 0 else ATLAS_PARCHMENT_COLOR)
 	if hovered and not selected:
 		style.bg_color = Color(0.94, 0.86, 0.61, 0.96)
 	style.border_color = Color(0.23, 0.16, 0.09, 0.18) if not selected else ATLAS_BORDER_COLOR
@@ -209,6 +241,24 @@ func _row_style(visible_index: int, selected: bool, hovered: bool = false) -> St
 	style.set_border_width_all(1 if selected else 0)
 	style.set_corner_radius_all(4)
 	return style
+
+func _empty_state_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.99, 0.94, 0.78, 0.72)
+	style.border_color = Color(0.23, 0.16, 0.09, 0.22)
+	style.content_margin_left = 10.0
+	style.content_margin_top = 10.0
+	style.content_margin_right = 10.0
+	style.content_margin_bottom = 10.0
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	return style
+
+func _sync_row_visual_state(name_label: Label, type_label: Label, meta_label: Label, open_hint: Label, selected: bool) -> void:
+	name_label.add_theme_color_override("font_color", ATLAS_SELECTED_TEXT_COLOR if selected else ATLAS_TEXT_COLOR)
+	type_label.add_theme_color_override("font_color", ATLAS_SELECTED_META_TEXT_COLOR if selected else ATLAS_TYPE_TEXT_COLOR)
+	meta_label.add_theme_color_override("font_color", ATLAS_SELECTED_META_TEXT_COLOR if selected else ATLAS_META_TEXT_COLOR)
+	open_hint.add_theme_color_override("font_color", ATLAS_SELECTED_TEXT_COLOR if selected else ATLAS_TYPE_TEXT_COLOR)
 
 func select_object(index: int) -> void:
 	if index < 0 or index >= objects.size():
@@ -270,6 +320,14 @@ func _location_text(object_data: Dictionary) -> String:
 func _compact_name(name: String) -> String:
 	var compact := name.replace("Канатная дорога ", "").replace("подвесная железная дорога", "подвесная дорога")
 	return _trim_for_row(compact, ROW_NAME_MAX_CHARS)
+
+func _row_type_text(object_data: Dictionary) -> String:
+	var type_title := str(object_data.get("transport_type_title", "")).strip_edges()
+	if type_title.is_empty():
+		type_title = str(object_data.get("kind", "")).strip_edges()
+	if type_title.is_empty():
+		type_title = "тип не указан"
+	return _trim_for_row(type_title, ROW_TYPE_MAX_CHARS)
 
 func _row_meta_text(object_data: Dictionary) -> String:
 	var parts := PackedStringArray([
