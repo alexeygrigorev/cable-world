@@ -367,6 +367,14 @@ class MapPanelContractTest(unittest.TestCase):
             '"glyph": "detail_castle"',
             '"id": "harz_tower"',
             '"glyph": "detail_tower"',
+            "ATLAS_ROUTE_SEGMENTS = [",
+            '"id": "north_to_harz_trail"',
+            '"id": "harz_to_berlin_trail"',
+            '"id": "rhine_to_south_trail"',
+            "def _draw_atlas_routes(canvas, proj, germany_mask):",
+            "def _smooth_polyline(points, subdivisions=10):",
+            "def _draw_atlas_dotted_route(draw, points, step):",
+            "_draw_atlas_routes(canvas, proj, germany_mask)",
             "def _draw_atlas_details(canvas, proj):",
             "for detail in ATLAS_DETAILS:",
             "target_width = max(MIN_ATLAS_DETAIL_WIDTH, detail[\"width\"] * kind_scale)",
@@ -415,6 +423,8 @@ class MapPanelContractTest(unittest.TestCase):
         main_text = pipeline_text.split("def main():", 1)[1]
         self.assertNotIn("_draw_routes(canvas, proj, germany_mask)", main_text)
         self.assertNotIn("_draw_waterways(canvas, proj, germany_mask)", main_text)
+        atlas_route_body = pipeline_text.split("def _draw_atlas_dotted_route", 1)[1].split("def _draw_routes", 1)[0]
+        self.assertNotIn("draw.line", atlas_route_body)
         self.assertNotIn('"name": "Mueritz"', pipeline_text)
         self.assertNotIn('"name": "Ruegen"', pipeline_text)
         self.assertTrue(

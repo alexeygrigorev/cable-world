@@ -345,6 +345,34 @@ ATLAS_DETAILS = [
     {"id": "lausitz_windmill", "kind": "windmill", "glyph": "detail_windmill", "lon": 14.33, "lat": 51.72, "width": 32, "region": "lausitz"},
 ]
 
+ATLAS_ROUTE_SEGMENTS = [
+    {
+        "id": "north_to_harz_trail",
+        "points": [(9.90, 53.48), (9.65, 52.82), (10.18, 52.25), (10.62, 51.80)],
+        "step": 18,
+    },
+    {
+        "id": "harz_to_berlin_trail",
+        "points": [(10.62, 51.80), (11.42, 51.92), (12.42, 52.18), (13.40, 52.52)],
+        "step": 20,
+    },
+    {
+        "id": "elbe_dresden_trail",
+        "points": [(10.62, 51.80), (11.72, 51.55), (12.72, 51.34), (13.74, 51.05)],
+        "step": 20,
+    },
+    {
+        "id": "rhine_to_south_trail",
+        "points": [(6.96, 50.94), (7.82, 50.22), (8.58, 49.56), (9.18, 48.78)],
+        "step": 19,
+    },
+    {
+        "id": "southern_alps_trail",
+        "points": [(9.18, 48.78), (10.18, 48.34), (10.92, 48.12), (11.58, 48.14)],
+        "step": 18,
+    },
+]
+
 ATLAS_DETAIL_KIND_SCALE = {
     "bridge": 1.15,
     "castle": 1.25,
@@ -1077,6 +1105,67 @@ def _bezier(p0, p1, p2, p3, steps=80):
     return points
 
 
+def _draw_atlas_routes(canvas, proj, germany_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    for route in ATLAS_ROUTE_SEGMENTS:
+        points = [_project_point(proj, lon, lat) for lon, lat in route["points"]]
+        trail = _smooth_polyline(points, subdivisions=12)
+        _draw_atlas_dotted_route(draw, trail, route.get("step", 20))
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
+    layer.putalpha(alpha)
+    canvas.alpha_composite(layer)
+
+
+def _smooth_polyline(points, subdivisions=10):
+    if len(points) < 2:
+        return points
+    smooth_points = []
+    for index in range(len(points) - 1):
+        p0 = points[max(0, index - 1)]
+        p1 = points[index]
+        p2 = points[index + 1]
+        p3 = points[min(len(points) - 1, index + 2)]
+        for step in range(subdivisions):
+            t = step / subdivisions
+            t2 = t * t
+            t3 = t2 * t
+            x = 0.5 * (
+                (2 * p1[0])
+                + (-p0[0] + p2[0]) * t
+                + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2
+                + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3
+            )
+            y = 0.5 * (
+                (2 * p1[1])
+                + (-p0[1] + p2[1]) * t
+                + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2
+                + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3
+            )
+            smooth_points.append((int(x), int(y)))
+    smooth_points.append(points[-1])
+    return smooth_points
+
+
+def _draw_atlas_dotted_route(draw, points, step):
+    if len(points) < 2:
+        return
+    distance_since_dot = 0.0
+    dot_index = 0
+    last_point = points[0]
+    for point in points[1:]:
+        segment_length = math.dist(last_point, point)
+        distance_since_dot += segment_length
+        if distance_since_dot >= step * RENDER_SCALE:
+            rr = (2 if dot_index % 3 else 3) * RENDER_SCALE
+            draw.ellipse((point[0] - rr, point[1] - rr, point[0] + rr, point[1] + rr), fill=(64, 46, 25, 118))
+            inner = max(1, rr - RENDER_SCALE)
+            draw.ellipse((point[0] - inner, point[1] - inner, point[0] + inner, point[1] + inner), fill=(224, 195, 121, 168))
+            distance_since_dot = 0.0
+            dot_index += 1
+        last_point = point
+
+
 def _draw_routes(canvas, proj, germany_mask):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
@@ -1133,6 +1222,7 @@ def main():
     _draw_neighbor_ground_texture(canvas, proj, neighbor_mask)
     _draw_ground_texture(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
+    _draw_atlas_routes(canvas, proj, germany_mask)
     _draw_atlas_details(canvas, proj)
     _draw_neighbor_country_labels(canvas, proj, neighbor_mask)
     _draw_map_labels(canvas, proj, germany_mask)

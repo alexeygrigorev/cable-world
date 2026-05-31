@@ -50,6 +50,7 @@
 - [x] Убрать jitter у runtime объектов при pan/zoom: транспортные маркеры, city landmarks и размеры иконок snap-аются к целым пикселям по тому же принципу, что и подписи.
 - [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 54`, чтобы не превращаться в шум.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
+- [x] Вернуть journey-map структуру без технических полос: добавлен controlled `ATLAS_ROUTE_SEGMENTS` layer с короткими dotted atlas trails, без continuous `draw.line` и без blue procedural waterways.
 - [x] Снизить clutter на default zoom: второстепенные подписи городов появляются после zoom `1.20`, а названия под иконками стали ближе к пиктограммам.
 - [x] Сделать стартовый zoom адаптивным: portrait остается крупным, landscape/desktop не получает дополнительный `1.10` zoom и меньше режет ориентиры у краев.
 - [x] Перевести map labels в atlas-style: vendored `LiberationSerif-BoldItalic.ttf`, runtime city labels и baked terrain labels используют один serif italic стиль; terrain labels больше не дублируются runtime-слоем.
@@ -69,5 +70,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending touch zoom / 200% / anti-jitter / atlas detail sizing iteration.
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`, местами ближе к `6.5/10` по южному виду из-за более узнаваемых Альп и более цельных atlas labels. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.
+- Последний map commit на момент обновления backlog: pending controlled atlas route dots.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`, местами ближе к `6.5/10` по южному виду из-за более узнаваемых Альп, atlas labels и quiet dotted trails. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.

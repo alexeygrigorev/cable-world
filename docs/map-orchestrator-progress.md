@@ -589,3 +589,36 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. This removes one hierarchy blocker, but it will only count toward `7/10+` if screenshot review confirms clickable objects are visibly primary without making the map cluttered.
+
+## Iteration 2026-05-31 18:31
+
+Implemented:
+
+- Reintroduced atlas journey structure without returning to the previous technical stripe problem.
+- Added explicit `ATLAS_ROUTE_SEGMENTS` with named coordinate trails:
+  - `north_to_harz_trail`
+  - `harz_to_berlin_trail`
+  - `elbe_dresden_trail`
+  - `rhine_to_south_trail`
+  - `southern_alps_trail`
+- Added `_draw_atlas_routes()` and `_draw_atlas_dotted_route()` as a separate renderer that uses only small dots, no continuous route line.
+- Kept old `_draw_routes()` unused for now as historical code, but the main renderer calls only `_draw_atlas_routes()`.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about `2.07 MB` after atlas route dots.
+- Full-map review shows subtle dotted trails instead of long blue/technical strips.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows the route dots as quiet atlas texture on the initial portrait view; they do not dominate Hamburg/Rostock/Berlin/München.
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png` confirms the same route layer stays behind transport objects at `170%`.
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png` shows dotted coordinate trails crossing Germany without returning to continuous technical route lines.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6024002`, `Cache-Control: no-store`.
+- Contract tests require `ATLAS_ROUTE_SEGMENTS`, `_draw_atlas_routes()`, `_draw_atlas_dotted_route()`, and explicitly forbid `draw.line` inside the new atlas dotted route renderer.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing nested worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. This restores some "journey map" structure needed for the reference direction and removes the old technical-line failure mode, but it does not solve the bigger art/geography blockers: stronger terrain glyphs, accurate Europe-scale relief, more readable non-random detail density, and final object hierarchy.
