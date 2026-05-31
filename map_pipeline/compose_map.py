@@ -373,6 +373,92 @@ ATLAS_ROUTE_SEGMENTS = [
     },
 ]
 
+ATLAS_FOREST_MASSES = [
+    {
+        "id": "lueneburg_heath",
+        "label": "Lueneburg Heath",
+        "clusters": [
+            ("forest_cluster_1", 10.02, 53.03, 118),
+            ("forest_cluster_4", 10.46, 52.88, 98),
+            ("forest_cluster_2", 9.58, 52.72, 78),
+        ],
+    },
+    {
+        "id": "mecklenburg_lake_forests",
+        "label": "Mecklenburg Lake District forests",
+        "clusters": [
+            ("forest_cluster_2", 12.30, 53.52, 110),
+            ("forest_cluster_6", 12.80, 53.22, 88),
+            ("forest_cluster_3", 13.18, 53.70, 76),
+        ],
+    },
+    {
+        "id": "spreewald_lausitz",
+        "label": "Spreewald and Lausitz",
+        "clusters": [
+            ("forest_cluster_5", 13.95, 51.86, 92),
+            ("forest_cluster_2", 14.38, 51.52, 82),
+        ],
+    },
+    {
+        "id": "teutoburg_weser",
+        "label": "Teutoburg and Weser uplands",
+        "clusters": [
+            ("forest_cluster_3", 8.65, 52.08, 96),
+            ("forest_cluster_1", 9.36, 51.72, 78),
+        ],
+    },
+    {
+        "id": "sauerland_rothaar",
+        "label": "Sauerland and Rothaar",
+        "clusters": [
+            ("forest_cluster_4", 8.05, 51.18, 118),
+            ("forest_cluster_2", 8.52, 50.96, 82),
+        ],
+    },
+    {
+        "id": "eifel_ardennes_edge",
+        "label": "Eifel and Ardennes edge",
+        "clusters": [
+            ("forest_cluster_6", 6.52, 50.28, 118),
+            ("forest_cluster_1", 7.05, 50.10, 86),
+        ],
+    },
+    {
+        "id": "spessart_odenwald",
+        "label": "Spessart and Odenwald",
+        "clusters": [
+            ("forest_cluster_5", 9.35, 50.03, 104),
+            ("forest_cluster_3", 8.82, 49.66, 92),
+        ],
+    },
+    {
+        "id": "thuringian_forest",
+        "label": "Thuringian Forest",
+        "clusters": [
+            ("forest_cluster_2", 10.82, 50.74, 118),
+            ("forest_cluster_4", 11.36, 50.58, 88),
+        ],
+    },
+    {
+        "id": "franconian_swabian_uplands",
+        "label": "Franconian and Swabian uplands",
+        "clusters": [
+            ("forest_cluster_1", 10.55, 49.45, 92),
+            ("forest_cluster_5", 9.58, 48.62, 94),
+            ("forest_cluster_3", 11.42, 49.02, 78),
+        ],
+    },
+    {
+        "id": "upper_bavaria_foothills",
+        "label": "Upper Bavaria foothill forests",
+        "clusters": [
+            ("forest_cluster_2", 11.34, 48.02, 86),
+            ("forest_cluster_6", 12.15, 48.10, 84),
+        ],
+    },
+]
+
 ATLAS_DETAIL_KIND_SCALE = {
     "bridge": 1.15,
     "castle": 1.25,
@@ -386,7 +472,7 @@ ATLAS_DETAIL_KIND_SCALE = {
     "watermill": 1.55,
     "windmill": 1.55,
 }
-MIN_ATLAS_DETAIL_WIDTH = 54
+MIN_ATLAS_DETAIL_WIDTH = 66
 
 
 def _scale_size(size):
@@ -653,6 +739,16 @@ def _draw_atlas_details(canvas, proj):
             detail["lat"],
             target_width,
         )
+    canvas.alpha_composite(layer)
+
+
+def _draw_atlas_forest_masses(canvas, proj, land_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    for mass in ATLAS_FOREST_MASSES:
+        for glyph_name, lon, lat, width in mass["clusters"]:
+            _draw_glyph_center(layer, proj, glyph_name, lon, lat, width)
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), land_mask)
+    layer.putalpha(alpha)
     canvas.alpha_composite(layer)
 
 
@@ -1222,6 +1318,7 @@ def main():
     _draw_neighbor_ground_texture(canvas, proj, neighbor_mask)
     _draw_ground_texture(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
+    _draw_atlas_forest_masses(canvas, proj, land_mask)
     _draw_atlas_routes(canvas, proj, germany_mask)
     _draw_atlas_details(canvas, proj)
     _draw_neighbor_country_labels(canvas, proj, neighbor_mask)

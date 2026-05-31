@@ -48,7 +48,8 @@
 - [x] Усилить visual hierarchy интерактивных объектов: transport markers теперь крупнее city landmarks на default/mobile и имеют больший cap (`60..96`) против более сдержанных city landmarks (`42..76`).
 - [x] Добавить outline-only runtime sprites для транспортных и city landmark иконок: объекты должны читаться поверх детальной карты без кругов, плашек и фоновых подложек.
 - [x] Убрать jitter у runtime объектов при pan/zoom: транспортные маркеры, city landmarks и размеры иконок snap-аются к целым пикселям по тому же принципу, что и подписи.
-- [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 54`, чтобы не превращаться в шум.
+- [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 66`, чтобы не превращаться в шум.
+- [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
 - [x] Вернуть journey-map структуру без технических полос: добавлен controlled `ATLAS_ROUTE_SEGMENTS` layer с короткими dotted atlas trails, без continuous `draw.line` и без blue procedural waterways.
 - [x] Снизить clutter на default zoom: второстепенные подписи городов появляются после zoom `1.20`, а названия под иконками стали ближе к пиктограммам.
@@ -70,5 +71,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending controlled atlas route dots.
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`, местами ближе к `6.5/10` по южному виду из-за более узнаваемых Альп, atlas labels и quiet dotted trails. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.
+- Последний map commit на момент обновления backlog: pending explicit forest/detail density pass.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.5/10` по плотности и читаемости, но нельзя оценивать ее как `8/10`: некоторые forest+village clusters тяжеловаты, нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.

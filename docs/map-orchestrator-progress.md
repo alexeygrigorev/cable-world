@@ -622,3 +622,29 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. This restores some "journey map" structure needed for the reference direction and removes the old technical-line failure mode, but it does not solve the bigger art/geography blockers: stronger terrain glyphs, accurate Europe-scale relief, more readable non-random detail density, and final object hierarchy.
+
+## Iteration 2026-05-31 18:55
+
+Implemented:
+
+- Added explicit `ATLAS_FOREST_MASSES` as a named glyph layer for real/plausible German forest regions instead of relying only on sparse procedural ground texture.
+- Covered Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser uplands, Sauerland/Rothaar, Eifel/Ardennes edge, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands and Upper Bavaria foothills.
+- Raised `MIN_ATLAS_DETAIL_WIDTH` from `54` to `66`, so small houses/chapels/ruins/watermills are less likely to read as dust.
+- Added contract coverage for the new forest mass layer and the higher atlas detail minimum.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about `2.35 MB` after the forest/detail density pass.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows more visible forests and villages while city landmarks and labels remain readable.
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png` shows transport markers still sit above the new forest/village texture at `170%`.
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png` shows the map is less empty across central/northern Germany without reintroducing technical route stripes.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6260903`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing nested worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`; the server had to be restarted after the export returned an empty response.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: about `6.5/10`, not `8/10`. This fixes part of the "boring/empty" failure mode, but some forest+village clusters are now visually heavy and still need a stronger art-directed glyph pass. The larger blockers remain relief accuracy, Europe-scale continuity and final marker/list polish.
