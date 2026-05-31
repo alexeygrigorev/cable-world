@@ -12,6 +12,7 @@ class OfflineMapLayer:
 	var map_scope := "germany"
 	var _germany_texture: Texture2D = null
 	var _city_icon_textures: Dictionary = {}
+	const LANDMARK_EDGE_MARGIN := 96.0
 	const SECONDARY_CITY_LABEL_ZOOM := 1.20
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
@@ -115,6 +116,8 @@ class OfflineMapLayer:
 
 	func _draw_city_label(font: Font, label_data: Dictionary) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
+		if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):
+			return
 		var is_capital := str(label_data.get("kind", "")) == "capital"
 		var is_town := str(label_data.get("kind", "")) == "town"
 		if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:
@@ -150,8 +153,16 @@ class OfflineMapLayer:
 
 	func _draw_terrain_label(font: Font, label_data: Dictionary) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
+		if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):
+			return
 		var text_pos := position + Vector2(7.0, -5.0) * zoom
 		_draw_label_text(font, str(label_data["name"]), text_pos, 14, Color("#efe2bd"), Color(0.12, 0.08, 0.04, 0.78))
+
+	func _screen_point_near_viewport(position: Vector2, margin: float) -> bool:
+		return position.x >= -margin \
+			and position.x <= size.x + margin \
+			and position.y >= -margin \
+			and position.y <= size.y + margin
 
 	func _draw_label_text(font: Font, text: String, position: Vector2, font_size: int, text_color: Color, shadow_color: Color) -> void:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
@@ -168,6 +179,7 @@ class OfflineMapLayer:
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
 		var position := Vector2(center_x - text_size.x * 0.5, baseline_y)
 		position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))
+		position.y = clamp(position.y, float(scaled_size) + 4.0, max(float(scaled_size) + 4.0, size.y - 6.0))
 		_draw_label_text(font, text, position, font_size, text_color, shadow_color)
 
 	func _geo_to_screen(coordinates: Vector2) -> Vector2:
@@ -262,6 +274,7 @@ const MIN_ZOOM := 1.0
 const MAX_ZOOM := 4.0
 const ZOOM_STEP := 1.25
 const DEFAULT_ZOOM := 1.10
+const DEFAULT_LANDSCAPE_ZOOM := 1.0
 const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
 const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
@@ -802,10 +815,15 @@ func _zoom_at(pivot: Vector2, factor: float) -> void:
 
 func _reset_map_view() -> void:
 	_update_map_reference_data()
-	zoom = DEFAULT_ZOOM
+	zoom = _default_zoom()
 	pan_offset = _default_pan_offset()
 	map_view_initialized = true
 	_apply_map_transform()
+
+func _default_zoom() -> float:
+	if map_layer != null and map_layer.size.x > map_layer.size.y:
+		return DEFAULT_LANDSCAPE_ZOOM
+	return DEFAULT_ZOOM
 
 func _apply_map_transform() -> void:
 	if map_layer != null:

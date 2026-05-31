@@ -101,9 +101,13 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
         self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 4.0 * zoom", script_text)
+        self.assertIn("const LANDMARK_EDGE_MARGIN := 96.0", script_text)
         self.assertIn("const SECONDARY_CITY_LABEL_ZOOM := 1.20", script_text)
+        self.assertIn("func _screen_point_near_viewport(position: Vector2, margin: float) -> bool:", script_text)
+        self.assertIn("if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):", script_text)
         self.assertIn("if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:", script_text)
         self.assertIn("position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))", script_text)
+        self.assertIn("position.y = clamp(position.y, float(scaled_size) + 4.0", script_text)
         self.assertIn("_update_map_reference_data()", script_text)
         self.assertIn('toolbar.name = "ПанельИнструментов"', script_text)
         self.assertIn("toolbar.visible = false", script_text)
@@ -147,12 +151,17 @@ class MapPanelContractTest(unittest.TestCase):
             "func _zoom_at(pivot: Vector2, factor: float) -> void:",
             "clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM)",
             "func _reset_map_view() -> void:",
+            "func _default_zoom() -> float:",
+            "zoom = _default_zoom()",
+            "if map_layer != null and map_layer.size.x > map_layer.size.y:",
+            "return DEFAULT_LANDSCAPE_ZOOM",
             "func _clamp_pan_offset() -> void:",
             "func _default_pan_offset() -> Vector2:",
             "func _initial_focus_map_point(layer: OfflineMapLayer) -> Vector2:",
             "const MIN_ZOOM := 1.0",
             "const MAX_ZOOM := 4.0",
             "const DEFAULT_ZOOM := 1.10",
+            "const DEFAULT_LANDSCAPE_ZOOM := 1.0",
             "const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)",
             "const PAN_LIMIT_PADDING := 72.0",
             "const DRAG_TAP_SUPPRESS_DISTANCE := 10.0",

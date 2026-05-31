@@ -194,3 +194,22 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
 
 Rubric estimate after outline readability iteration 2026-05-31: still about 7/10, not 8/10. Readability is better and the "circles around objects" issue is reduced, but desktop composition still crops some labels/icons at the edges and terrain accuracy still needs real relief/lake extent calibration before a confident 8/10.
+
+Adaptive default view iteration result:
+
+- Portrait/mobile keeps `DEFAULT_ZOOM := 1.10`, preserving the stronger map-first feel the user asked for.
+- Landscape/desktop now uses `DEFAULT_LANDSCAPE_ZOOM := 1.0`, so the initial view shows more context and reduces edge clipping around Köln, Hamburg, Berlin, Dresden and Stuttgart.
+- City and terrain labels are skipped when their anchor is far outside the viewport, and centered labels now clamp vertically as well as horizontally.
+- Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns gzip and no-store headers.
+- Browser verification regenerated screenshots via `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright node scripts/verify-web-map.mjs`.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
+
+Rubric estimate after adaptive default view iteration 2026-05-31: still 7/10. Desktop composition is less cramped, but the map is still below 8/10 until relief/lake accuracy is audited against real extents and the dense object clusters become native atlas group markers instead of obvious stacked UI icons.
