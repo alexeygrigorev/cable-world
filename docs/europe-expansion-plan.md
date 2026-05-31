@@ -4,6 +4,22 @@
 
 Статус: planning/data contract для #75, дочерняя работа к #63.
 
+## Europe-Wide #63 Contract
+
+Общий region/layer contract для #63 теперь зафиксирован в `map_pipeline/data/europe_expansion_regions.json`. Он не является render manifest и не меняет визуальную карту; это проверяемый список регионов, стран, detail tiers, source strategy и cross-border relief правил для следующих implementers.
+
+Контракт покрывает обязательный scope #63:
+
+- high-detail блоки: France, Spain, Italy, Switzerland, Austria;
+- Germany neighbors: Denmark, Netherlands, Belgium, Luxembourg, France, Switzerland, Austria, Czechia, Poland;
+- Nordics + отдельная Finland;
+- Baltics: Estonia, Latvia, Lithuania;
+- Russia, Belarus и Ukraine до Ukrainian Carpathians / Crimean Mountains;
+- Turkey как medium-detail bridge region;
+- lower-detail remaining countries как admin/coastline/water/broad-relief context.
+
+Cross-border relief rule является обязательным data contract: Alps cannot stop at Germany; Po Valley, Vienna Basin и Swiss Plateau должны быть lowland exclusions; mountain placement должен идти от DEM-derived ridges, elevation bands или documented named massif geometry, а не от decorative anchors. Child issues #74/#76/#77 остаются открытыми и не закрываются этим контрактом.
+
 ## Цель блока #75
 
 DACH + Northern Italy expansion должен подготовить основу для расширения карты Европы на юг от Германии без визуального render pass. Эта задача не должна "дорисовывать красивые Альпы" случайными anchors. Результат должен быть проверяемым контрактом данных, по которому следующий implementer сможет добавить новые bounds, relief layers, city landmarks и transport-object candidates.
@@ -115,4 +131,3 @@ Reviewer must receive:
 - A checklist mapping every required city to a planned city landmark entry.
 - Source notes for the selected elevation dataset before relief art is implemented.
 - For the later render pass only: screenshots showing the Alps continuous through Switzerland, Austria and northern Italy, with Po Valley/Vienna Basin lowland exclusions visible.
-

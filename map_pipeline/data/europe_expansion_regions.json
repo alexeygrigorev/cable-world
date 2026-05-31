@@ -1,0 +1,311 @@
+{
+  "schema": "cable-world.europe-expansion-regions.v1",
+  "issue": "#63",
+  "review_status": "planning_contract",
+  "scope": "non_render_region_layer_metadata",
+  "notes": [
+    "This file makes the Europe expansion roadmap testable before any render pass.",
+    "It is not a render manifest and must not be consumed as final map art placement.",
+    "Child issues #74, #76 and #77 remain open implementation/research work and are not closed by this contract."
+  ],
+  "child_issue_links": [
+    {
+      "issue": "#74",
+      "status": "open",
+      "relationship": "child_work_not_closed"
+    },
+    {
+      "issue": "#76",
+      "status": "open",
+      "relationship": "child_work_not_closed"
+    },
+    {
+      "issue": "#77",
+      "status": "open",
+      "relationship": "child_work_not_closed"
+    }
+  ],
+  "source_strategy": {
+    "admin_boundaries": {
+      "primary_dataset": "Natural Earth Admin 0/1",
+      "fallback_dataset": "OpenStreetMap boundary relations",
+      "required_metadata": ["source_url", "license_note", "download_date", "processing_command"]
+    },
+    "relief": {
+      "primary_dataset": "Copernicus DEM GLO-30",
+      "fallback_datasets": ["EU-DEM", "NASA SRTM 1 Arc-Second Global"],
+      "context_only_datasets": ["Natural Earth terrain"],
+      "required_products_before_render": [
+        "expanded_bounds_elevation_clip",
+        "normalized_hillshade_mask",
+        "elevation_band_polygons",
+        "named_massif_sector_polygons",
+        "lowland_exclusion_polygons"
+      ],
+      "placement_policy": "real_relief_source_or_named_massif_geometry",
+      "forbidden_placement": ["random_decorative_mountains", "border_stopped_relief", "full_map_bitmap_patch"]
+    },
+    "cities_and_transport": {
+      "seed_datasets": ["OpenStreetMap", "Wikidata"],
+      "production_policy": "reviewed_candidates_only",
+      "required_metadata": ["source_url", "license_note", "download_date", "review_status"]
+    }
+  },
+  "global_rules": [
+    {
+      "id": "cross_border_relief_continuity",
+      "rule": "Relief layers must continue across political borders when the real terrain continues.",
+      "examples": ["Alps cannot stop at Germany", "Carpathians continue across Slovakia, Poland, Ukraine and Romania"]
+    },
+    {
+      "id": "lowland_exclusions",
+      "rule": "Known lowlands must be explicit exclusion or low-intensity context polygons before mountain glyphs are placed.",
+      "required_exclusions": ["Po Valley", "Vienna Basin", "Swiss Plateau", "North European Plain"]
+    },
+    {
+      "id": "source_backed_mountains",
+      "rule": "Mountain and highland anchors must come from DEM-derived ridges, elevation bands, or documented named massif geometry, not decorative placement."
+    },
+    {
+      "id": "detail_tiers",
+      "rule": "High-detail regions need region/layer/city/source metadata first; low-detail remaining countries need admin, coastline, water and broad terrain coverage without pretending final relief accuracy."
+    }
+  ],
+  "required_country_groups": [
+    {
+      "id": "france",
+      "countries": ["France"],
+      "minimum_detail_tier": "high"
+    },
+    {
+      "id": "spain",
+      "countries": ["Spain"],
+      "minimum_detail_tier": "high"
+    },
+    {
+      "id": "italy",
+      "countries": ["Italy"],
+      "minimum_detail_tier": "high"
+    },
+    {
+      "id": "switzerland",
+      "countries": ["Switzerland"],
+      "minimum_detail_tier": "high"
+    },
+    {
+      "id": "austria",
+      "countries": ["Austria"],
+      "minimum_detail_tier": "high"
+    },
+    {
+      "id": "germany_neighbors",
+      "countries": ["Denmark", "Netherlands", "Belgium", "Luxembourg", "France", "Switzerland", "Austria", "Czechia", "Poland"],
+      "minimum_detail_tier": "medium"
+    },
+    {
+      "id": "nordics",
+      "countries": ["Norway", "Sweden", "Denmark", "Iceland"],
+      "minimum_detail_tier": "medium"
+    },
+    {
+      "id": "finland",
+      "countries": ["Finland"],
+      "minimum_detail_tier": "medium"
+    },
+    {
+      "id": "baltics",
+      "countries": ["Estonia", "Latvia", "Lithuania"],
+      "minimum_detail_tier": "medium"
+    },
+    {
+      "id": "east_to_ukrainian_mountains",
+      "countries": ["Russia", "Belarus", "Ukraine"],
+      "minimum_detail_tier": "medium"
+    },
+    {
+      "id": "turkey",
+      "countries": ["Turkey"],
+      "minimum_detail_tier": "medium"
+    },
+    {
+      "id": "remaining_europe_low_detail",
+      "countries": [
+        "Albania",
+        "Andorra",
+        "Bosnia and Herzegovina",
+        "Bulgaria",
+        "Croatia",
+        "Cyprus",
+        "Greece",
+        "Hungary",
+        "Ireland",
+        "Kosovo",
+        "Liechtenstein",
+        "Malta",
+        "Moldova",
+        "Monaco",
+        "Montenegro",
+        "North Macedonia",
+        "Portugal",
+        "Romania",
+        "San Marino",
+        "Serbia",
+        "Slovakia",
+        "Slovenia",
+        "United Kingdom",
+        "Vatican City"
+      ],
+      "minimum_detail_tier": "low"
+    }
+  ],
+  "regions": [
+    {
+      "id": "western_europe_france_benelux",
+      "label": "France and Benelux west expansion",
+      "detail_tier": "high",
+      "countries": ["France", "Belgium", "Netherlands", "Luxembourg", "Monaco"],
+      "bounds": [-5.2, 41.2, 9.9, 51.8],
+      "required_layers": ["admin_boundaries", "coastline_water", "alps_western_continuation", "pyrenees", "massif_central", "vosges_jura", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "iberia",
+      "label": "Spain and Iberian context",
+      "detail_tier": "high",
+      "countries": ["Spain", "Portugal", "Andorra"],
+      "bounds": [-9.6, 35.8, 4.4, 43.9],
+      "required_layers": ["admin_boundaries", "coastline_water", "pyrenees", "cantabrian_system", "sierra_nevada", "central_system", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "italy_alps_apennines",
+      "label": "Italy with Alps, Po Valley and Apennines",
+      "detail_tier": "high",
+      "countries": ["Italy", "San Marino", "Vatican City", "Malta"],
+      "bounds": [6.5, 36.0, 18.8, 47.2],
+      "required_layers": ["admin_boundaries", "coastline_water", "alps_southern_continuation", "apennines", "po_valley_exclusion", "sicily_sardinia", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "dach_alpine_core",
+      "label": "Switzerland, Austria and German Alpine continuity",
+      "detail_tier": "high",
+      "countries": ["Germany", "Switzerland", "Austria", "Liechtenstein"],
+      "bounds": [5.8, 45.4, 17.4, 55.2],
+      "required_layers": ["admin_boundaries", "coastline_water", "alps_cross_border", "jura", "swiss_plateau_exclusion", "vienna_basin_exclusion", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned",
+      "linked_contracts": ["map_pipeline/data/alpine_relief_extents.json"]
+    },
+    {
+      "id": "germany_neighbors_central_europe",
+      "label": "Germany neighbors and Central Europe connectors",
+      "detail_tier": "medium",
+      "countries": ["Denmark", "Poland", "Czechia", "Slovakia", "Hungary", "Slovenia", "Croatia"],
+      "bounds": [7.6, 45.4, 24.6, 55.9],
+      "required_layers": ["admin_boundaries", "coastline_water", "carpathian_western_continuation", "bohemian_massif", "dinaric_edge", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "nordics_finland",
+      "label": "Nordics plus Finland",
+      "detail_tier": "medium",
+      "countries": ["Norway", "Sweden", "Denmark", "Iceland", "Finland"],
+      "bounds": [-25.2, 54.5, 32.5, 71.4],
+      "required_layers": ["admin_boundaries", "coastline_water", "scandinavian_mountains", "fennoscandian_lakes", "fjords", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "baltics_eastern_plain",
+      "label": "Baltics and eastern lowland connector",
+      "detail_tier": "medium",
+      "countries": ["Estonia", "Latvia", "Lithuania", "Belarus"],
+      "bounds": [20.8, 51.2, 32.9, 59.8],
+      "required_layers": ["admin_boundaries", "coastline_water", "baltic_lowlands", "north_european_plain_exclusion", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "east_to_ukrainian_mountains",
+      "label": "Russia, Belarus and Ukraine to Ukrainian mountains",
+      "detail_tier": "medium",
+      "countries": ["Russia", "Belarus", "Ukraine", "Moldova"],
+      "bounds": [22.0, 44.0, 45.5, 60.8],
+      "required_layers": ["admin_boundaries", "coastline_water", "east_european_plain", "ukrainian_carpathians", "crimean_mountains", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "balkans_turkey",
+      "label": "Balkans and Turkey bridge",
+      "detail_tier": "medium",
+      "countries": ["Albania", "Bosnia and Herzegovina", "Bulgaria", "Greece", "Kosovo", "Montenegro", "North Macedonia", "Romania", "Serbia", "Turkey", "Cyprus"],
+      "bounds": [18.0, 35.0, 44.9, 46.6],
+      "required_layers": ["admin_boundaries", "coastline_water", "dinaric_alps", "balkan_mountains", "carpathian_southern_continuation", "anatolian_relief", "city_landmarks", "transport_candidates"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    },
+    {
+      "id": "remaining_europe_low_detail_context",
+      "label": "Lower-detail remaining Europe context",
+      "detail_tier": "low",
+      "countries": ["Ireland", "United Kingdom"],
+      "bounds": [-10.8, 49.7, 2.2, 60.9],
+      "required_layers": ["admin_boundaries", "coastline_water", "broad_relief_context", "major_city_landmarks"],
+      "source_strategy_refs": ["admin_boundaries", "relief", "cities_and_transport"],
+      "review_status": "planned"
+    }
+  ],
+  "relief_layer_contracts": [
+    {
+      "id": "alps_cross_border",
+      "region_ids": ["western_europe_france_benelux", "italy_alps_apennines", "dach_alpine_core"],
+      "required_countries": ["France", "Italy", "Switzerland", "Austria", "Germany", "Slovenia"],
+      "source_rule": "DEM-derived ridge and elevation bands required before final art.",
+      "continuity_rule": "Alps cannot stop at Germany; German Alpine edge must be part of the same cross-border layer.",
+      "lowland_exclusions": ["Po Valley", "Vienna Basin", "Swiss Plateau"]
+    },
+    {
+      "id": "pyrenees",
+      "region_ids": ["western_europe_france_benelux", "iberia"],
+      "required_countries": ["France", "Spain", "Andorra"],
+      "source_rule": "DEM-derived ridge and named massif geometry required before final art.",
+      "continuity_rule": "Pyrenees must bridge France, Spain and Andorra rather than appear as isolated national stickers.",
+      "lowland_exclusions": ["Ebro Basin", "Aquitaine Basin"]
+    },
+    {
+      "id": "carpathians",
+      "region_ids": ["germany_neighbors_central_europe", "east_to_ukrainian_mountains", "balkans_turkey"],
+      "required_countries": ["Slovakia", "Poland", "Ukraine", "Romania", "Serbia"],
+      "source_rule": "DEM-derived ridge and named massif geometry required before final art.",
+      "continuity_rule": "Carpathians must continue through Ukraine to the Ukrainian mountains scope.",
+      "lowland_exclusions": ["Pannonian Basin", "East European Plain"]
+    },
+    {
+      "id": "scandinavian_mountains",
+      "region_ids": ["nordics_finland"],
+      "required_countries": ["Norway", "Sweden"],
+      "source_rule": "DEM-derived ridge and fjord/coastline context required before final art.",
+      "continuity_rule": "Mountain relief follows the Norway/Sweden border region and must not be copied into Finland lowlands.",
+      "lowland_exclusions": ["Finnish Lakeland low-relief context"]
+    },
+    {
+      "id": "anatolian_relief",
+      "region_ids": ["balkans_turkey"],
+      "required_countries": ["Turkey"],
+      "source_rule": "DEM-derived broad relief and named ranges required before final art.",
+      "continuity_rule": "Turkey is a medium-detail bridge region with source-backed relief, not a decorative edge fill.",
+      "lowland_exclusions": ["Thrace lowlands", "coastal plains where DEM mask is low"]
+    }
+  ],
+  "acceptance_contract": {
+    "allowed_file_kinds": ["docs", "tests", "map_pipeline/data"],
+    "forbidden_outputs": ["map images/assets", "rendered underlay changes", "terrain glyph art", "runtime list/toggle UI", "ride scene", "release files"],
+    "required_tests": ["tests/test_europe_expansion_regions_contract.py", "python3 -m unittest discover -s tests", "git diff --check"]
+  }
+}

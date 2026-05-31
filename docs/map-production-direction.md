@@ -68,6 +68,10 @@ This is why continuing to polish a single generated Germany image is not real pr
 
 ## Europe Expansion Data Contract
 
+The Europe-wide planning contract for #63 lives in `map_pipeline/data/europe_expansion_regions.json`. It is non-render metadata: region records, required country groups, detail tiers, source strategy, cross-border relief rules and acceptance boundaries. It must stay separate from map images, glyph art and runtime UI changes.
+
+The #63 contract explicitly covers France, Spain, Italy, Switzerland, Austria, Germany neighbors, Nordics, Finland, Baltics, Russia/Belarus/Ukraine to Ukrainian mountains, Turkey and lower-detail remaining countries. Cross-border relief must be source-backed: the Alps cannot stop at Germany, Po Valley/Vienna Basin/Swiss Plateau are lowland exclusions, and mountain anchors must come from DEM-derived ridges, elevation bands or documented named massif geometry.
+
 The first Europe expansion block is #75 DACH + Northern Italy. Its planning/data contract lives in `docs/europe-expansion-plan.md`.
 
 For Alpine expansion, relief must be derived from real elevation data before new art is drawn. Use Copernicus DEM GLO-30 or EU-DEM where possible, NASA SRTM 1 arc-second as fallback, and Natural Earth terrain only as broad low-detail context. Alpine ridge anchors and massif sectors must come from elevation masks, named massif geometry or documented real-world centroids, never from random decorative placement.
