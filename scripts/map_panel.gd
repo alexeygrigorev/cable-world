@@ -116,7 +116,7 @@ class OfflineMapLayer:
 			_germany_texture = load("res://assets/map/germany_styled.png")
 		if _germany_texture == null:
 			return
-		var tex_rect := Rect2(_map_point(Vector2.ZERO), map_base_size() * zoom)
+		var tex_rect := Rect2(_pixel_snap(_map_point(Vector2.ZERO)), _pixel_snap(map_base_size() * zoom))
 		draw_texture_rect(_germany_texture, tex_rect, false)
 		draw_rect(tex_rect, Color(0.93, 0.82, 0.55, 0.10), true)
 
@@ -142,10 +142,11 @@ class OfflineMapLayer:
 		var icon_rect := _city_icon_rect(label_data, position)
 		var label_rect := Rect2()
 		if icon_rect.size != Vector2.ZERO:
-			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 1.5 * zoom
-			label_rect = _centered_label_rect(font, str(label_data["name"]), icon_rect.get_center().x, label_baseline_y, label_size)
+			var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y + 1.5 * zoom)
+			label_rect = _centered_label_rect(font, str(label_data["name"]), icon_rect.get_center().x, icon_label_baseline_y, label_size)
 		else:
-			label_rect = _centered_label_rect(font, str(label_data["name"]), position.x, position.y + 12.0 * zoom, label_size)
+			var point_label_baseline_y: float = round(position.y + 12.0 * zoom)
+			label_rect = _centered_label_rect(font, str(label_data["name"]), position.x, point_label_baseline_y, label_size)
 		var occupied_rect := label_rect if icon_rect.size == Vector2.ZERO else icon_rect.merge(label_rect)
 		if is_town and _rect_overlaps_any(occupied_rect, occupied_rects):
 			return
@@ -161,9 +162,9 @@ class OfflineMapLayer:
 		var texture: Texture2D = _city_icon_texture(icon_id)
 		if texture == null:
 			return Rect2()
-		var icon_size: float = clamp(54.0 * _landmark_visual_scale(), 46.0, 88.0)
+		var icon_size: float = round(clamp(54.0 * _landmark_visual_scale(), 46.0, 88.0))
 		var icon_rect := Rect2(
-			position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom),
+			_pixel_snap(position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom)),
 			Vector2(icon_size, icon_size)
 		)
 		return icon_rect
@@ -183,7 +184,7 @@ class OfflineMapLayer:
 		var position := _geo_to_screen(label_data["coordinates"])
 		if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):
 			return
-		var text_pos := position + Vector2(7.0, -5.0) * zoom
+		var text_pos := _pixel_snap(position + Vector2(7.0, -5.0) * zoom)
 		var label_rect := _left_label_rect(font, str(label_data["name"]), text_pos, 14)
 		if _rect_overlaps_any(label_rect, occupied_rects):
 			return
@@ -238,6 +239,7 @@ class OfflineMapLayer:
 
 	func _draw_label_text(font: Font, text: String, position: Vector2, font_size: int, text_color: Color, shadow_color: Color) -> void:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
+		position = _pixel_snap(position)
 		var shadow_offset := Vector2(1.7, 1.7)
 		draw_string(font, position + Vector2(-1.3, 0.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
 		draw_string(font, position + Vector2(1.3, 0.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
@@ -254,13 +256,13 @@ class OfflineMapLayer:
 	func _centered_label_rect(font: Font, text: String, center_x: float, baseline_y: float, font_size: int) -> Rect2:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
-		var position := Vector2(center_x - text_size.x * 0.5, baseline_y)
+		var position := _pixel_snap(Vector2(center_x - text_size.x * 0.5, baseline_y))
 		return Rect2(position - Vector2(0.0, float(scaled_size)), text_size + Vector2(0.0, float(scaled_size)))
 
 	func _left_label_rect(font: Font, text: String, baseline_position: Vector2, font_size: int) -> Rect2:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
-		return Rect2(baseline_position - Vector2(0.0, float(scaled_size)), text_size + Vector2(0.0, float(scaled_size)))
+		return Rect2(_pixel_snap(baseline_position - Vector2(0.0, float(scaled_size))), text_size + Vector2(0.0, float(scaled_size)))
 
 	func _draw_centered_label_text(font: Font, text: String, center_x: float, baseline_y: float, font_size: int, text_color: Color, shadow_color: Color) -> void:
 		var label_rect := _centered_label_rect(font, text, center_x, baseline_y, font_size)
@@ -269,6 +271,9 @@ class OfflineMapLayer:
 
 	func _geo_to_screen(coordinates: Vector2) -> Vector2:
 		return _map_point(_project_coordinates(coordinates, geo_bounds, map_base_size()))
+
+	func _pixel_snap(point: Vector2) -> Vector2:
+		return Vector2(round(point.x), round(point.y))
 
 	static func _map_base_size_for_viewport(viewport_size: Vector2, bounds: Dictionary) -> Vector2:
 		if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or bounds.is_empty():
@@ -359,8 +364,8 @@ const TRANSPORT_TYPE_ICON := {
 	"unique_engineering_object": "icon_station",
 }
 const MIN_ZOOM := 0.5
-const MAX_ZOOM := 1.5
-const ZOOM_STEP := 1.25
+const MAX_ZOOM := 2.0
+const ZOOM_STEP := 0.25
 const DEFAULT_ZOOM := 1.10
 const DEFAULT_LANDSCAPE_ZOOM := 1.0
 const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
@@ -487,7 +492,7 @@ func _ready() -> void:
 	zoom_controls.offset_bottom = 60.0
 	map_layer.add_child(zoom_controls)
 	_add_zoom_percent_label(zoom_controls)
-	_add_zoom_button(zoom_controls, "-", 1.0 / ZOOM_STEP)
+	_add_zoom_button(zoom_controls, "-", -ZOOM_STEP)
 	_add_zoom_button(zoom_controls, "+", ZOOM_STEP)
 	_add_fit_button(zoom_controls)
 
@@ -806,9 +811,9 @@ func _add_filter_button(parent: Container, title: String, filter_id: String) -> 
 	parent.add_child(button)
 	filter_buttons[filter_id] = button
 
-func _add_zoom_button(parent: Container, title: String, factor: float) -> void:
-	var tooltip := "Приблизить карту" if factor > 1.0 else "Отдалить карту"
-	_add_map_control_button(parent, title, tooltip, MAP_CONTROL_SIZE, func() -> void: _zoom_at(map_layer.size * 0.5, factor))
+func _add_zoom_button(parent: Container, title: String, delta: float) -> void:
+	var tooltip := "Приблизить карту" if delta > 0.0 else "Отдалить карту"
+	_add_map_control_button(parent, title, tooltip, MAP_CONTROL_SIZE, func() -> void: _zoom_by_delta(map_layer.size * 0.5, delta))
 
 func _add_zoom_percent_label(parent: Container) -> void:
 	zoom_percent_label = Label.new()
@@ -874,15 +879,14 @@ func _on_map_layer_gui_input(event: InputEvent) -> void:
 	elif event is InputEventScreenDrag:
 		_handle_screen_drag(event)
 	elif event is InputEventMagnifyGesture:
-		_zoom_at(event.position, event.factor)
 		accept_event()
 
 func _handle_mouse_button(event: InputEventMouseButton) -> void:
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
-		_zoom_at(event.position, ZOOM_STEP)
+		_zoom_by_delta(event.position, ZOOM_STEP)
 		accept_event()
 	elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
-		_zoom_at(event.position, 1.0 / ZOOM_STEP)
+		_zoom_by_delta(event.position, -ZOOM_STEP)
 		accept_event()
 	elif event.button_index == MOUSE_BUTTON_LEFT:
 		dragging = event.pressed
@@ -912,10 +916,9 @@ func _handle_screen_touch(event: InputEventScreenTouch) -> void:
 
 func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 	if last_touch_positions.size() >= 2:
-		var previous_distance := _touch_distance_with(event.index, event.position - event.relative)
-		var current_distance := _touch_distance_with(event.index, event.position)
-		if previous_distance > 0.0 and current_distance > 0.0:
-			_zoom_at(event.position, current_distance / previous_distance)
+		last_touch_positions[event.index] = event.position
+		accept_event()
+		return
 	else:
 		_pan_by(_pan_delta_from_screen_drag(event))
 		drag_distance += event.relative.length()
@@ -924,13 +927,6 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 		_apply_map_transform()
 	last_touch_positions[event.index] = event.position
 	accept_event()
-
-func _touch_distance_with(index: int, position: Vector2) -> float:
-	for touch_index in last_touch_positions:
-		if int(touch_index) != index:
-			var other_position: Vector2 = last_touch_positions[touch_index]
-			return position.distance_to(other_position)
-	return 0.0
 
 func _pan_by(screen_delta: Vector2) -> void:
 	pan_offset += screen_delta * PAN_DRAG_SCALE
@@ -941,9 +937,9 @@ func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:
 func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:
 	return event.relative
 
-func _zoom_at(pivot: Vector2, factor: float) -> void:
+func _zoom_by_delta(pivot: Vector2, delta: float) -> void:
 	var previous_zoom := zoom
-	zoom = clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM)
+	zoom = clamp(zoom + delta, MIN_ZOOM, MAX_ZOOM)
 	if is_equal_approx(previous_zoom, zoom):
 		_update_zoom_percent_label()
 		return
@@ -1004,12 +1000,15 @@ func _clamp_pan_offset() -> void:
 		pan_offset.y = clamp(pan_offset.y, viewport_size.y - scaled_size.y - PAN_LIMIT_PADDING, PAN_LIMIT_PADDING)
 
 func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZE) -> Vector2:
-	return pan_offset + point * zoom - marker_size * 0.5
+	return _pixel_snap(pan_offset + point * zoom - marker_size * 0.5)
 
 func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:
 	var max_size: float = CLUSTER_MARKER_ZOOM_SIZE_MAX if is_cluster_marker else MARKER_ZOOM_SIZE_MAX
-	var size_value: float = clamp(ICON_MARKER_SIZE.x * _map_visual_scale(), MARKER_ZOOM_SIZE_MIN, max_size)
+	var size_value: float = round(clamp(ICON_MARKER_SIZE.x * _map_visual_scale(), MARKER_ZOOM_SIZE_MIN, max_size))
 	return Vector2(size_value, size_value)
+
+func _pixel_snap(point: Vector2) -> Vector2:
+	return Vector2(round(point.x), round(point.y))
 
 func _map_visual_scale() -> float:
 	var viewport_width := ICON_VIEWPORT_REFERENCE_WIDTH
@@ -1312,7 +1311,7 @@ func _focus_cluster(marker: Button) -> void:
 	var center := Vector2(marker.get_meta("cluster_center", Vector2.ZERO))
 	if center == Vector2.ZERO:
 		return
-	var target_zoom: float = min(MAX_ZOOM, max(OBJECT_CLUSTER_ZOOM_THRESHOLD + 0.25, zoom * ZOOM_STEP))
+	var target_zoom: float = min(MAX_ZOOM, max(OBJECT_CLUSTER_ZOOM_THRESHOLD + ZOOM_STEP, zoom + ZOOM_STEP))
 	zoom = target_zoom
 	pan_offset = map_layer.size * 0.5 - center * zoom
 	_apply_map_transform()

@@ -536,3 +536,32 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10` overall. The labels now move toward the requested Middle-earth/atlas direction, but the map still needs stronger terrain art, geography audit and better cross-border density before it can be honestly called `8/10`.
+
+## Iteration 2026-05-31 18:05
+
+Implemented:
+
+- Disabled finger pinch/magnify zoom. Touch gestures no longer change zoom; one-finger pan remains active, and `+/-` plus mouse wheel remain the controlled zoom inputs.
+- Raised runtime zoom cap from `150%` to `200%`.
+- Changed zoom controls from multiplicative scaling to fixed `25` percentage-point steps: `100 -> 125 -> 150`, and `100 -> 75 -> 50`.
+- Applied pixel snapping to runtime map objects using the same principle as labels: transport markers, city landmark pictograms, landmark labels and marker sizes now round to whole pixels after pan/zoom calculations.
+- Increased tiny atlas detail glyphs through `MIN_ATLAS_DETAIL_WIDTH = 54`, so small houses/chapels/windmills/ruins/watermills read as objects instead of specks.
+- Removed the most distracting stripe layers from the current generated map: route overlay and overly straight procedural waterways are no longer rendered, and procedural field hatch/field patch strokes were replaced with quieter tufts/hill marks.
+- Added first cross-border context pass for neighboring country texture and atlas labels: `Dänemark`, `Niederlande`, `Belgien`, `Luxemburg`, `Frankreich`, `Schweiz`, `Österreich`, `Tschechien`, `Polen`.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about `2.06 MB` after detail sizing and stripe removal.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6015668`, `Cache-Control: no-store`.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` and `/tmp/cable-world-web-map/desktop-1280x800-initial.png` show the straight route/waterway stripes removed from the current underlay.
+- Contract tests now explicitly forbid `_zoom_at(event.position, event.factor)`, pinch-distance zoom, and `1.0 / ZOOM_STEP`.
+- Contract tests require `MAX_ZOOM := 2.0`, `ZOOM_STEP := 0.25`, `_zoom_by_delta`, marker pixel snapping, and `MIN_ATLAS_DETAIL_WIDTH = 54`; they also forbid rendering routes/waterways from `main()`.
+
+Checks so far:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing nested worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. This iteration fixes control feel and visual noise, but the map is not yet `8/10`: terrain art, Europe continuity, relief accuracy and better object hierarchy still need a stronger art/geography pass.

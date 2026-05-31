@@ -103,7 +103,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("var font := _map_label_font()", script_text)
         self.assertIn("func _map_label_font() -> Font:", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
-        self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 1.5 * zoom", script_text)
+        self.assertIn("var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y + 1.5 * zoom)", script_text)
         self.assertIn("const LANDMARK_EDGE_MARGIN := 96.0", script_text)
         self.assertIn("const SECONDARY_CITY_LABEL_ZOOM := 1.20", script_text)
         self.assertIn("func _screen_point_near_viewport(position: Vector2, margin: float) -> bool:", script_text)
@@ -156,8 +156,9 @@ class MapPanelContractTest(unittest.TestCase):
             "func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:",
             "event.relative",
             "pan_offset = _default_pan_offset()",
-            "func _zoom_at(pivot: Vector2, factor: float) -> void:",
-            "clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM)",
+            "const ZOOM_STEP := 0.25",
+            "func _zoom_by_delta(pivot: Vector2, delta: float) -> void:",
+            "clamp(zoom + delta, MIN_ZOOM, MAX_ZOOM)",
             "func _reset_map_view() -> void:",
             "func _default_zoom() -> float:",
             "zoom = _default_zoom()",
@@ -167,7 +168,7 @@ class MapPanelContractTest(unittest.TestCase):
             "func _default_pan_offset() -> Vector2:",
             "func _initial_focus_map_point(layer: OfflineMapLayer) -> Vector2:",
             "const MIN_ZOOM := 0.5",
-            "const MAX_ZOOM := 1.5",
+            "const MAX_ZOOM := 2.0",
             "const DEFAULT_ZOOM := 1.10",
             "const DEFAULT_LANDSCAPE_ZOOM := 1.0",
             "const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)",
@@ -209,6 +210,8 @@ class MapPanelContractTest(unittest.TestCase):
             "func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:",
             "func _apply_marker_visual_size(marker: Button, marker_size: Vector2) -> void:",
             "marker.size = marker_size",
+            "func _pixel_snap(point: Vector2) -> Vector2:",
+            "return Vector2(round(point.x), round(point.y))",
             "func _marker_icon_texture(icon_id: String) -> Texture2D:",
             '"res://assets/sprites/outlined/%s.png"',
             "func _focus_cluster(marker: Button) -> void:",
@@ -219,9 +222,18 @@ class MapPanelContractTest(unittest.TestCase):
             "func _map_visual_scale() -> float:",
             "viewport_width = map_layer.size.x",
             "clamp(sqrt(viewport_width / ICON_VIEWPORT_REFERENCE_WIDTH), ICON_VIEWPORT_SCALE_MIN, ICON_VIEWPORT_SCALE_MAX)",
-            "clamp(ICON_MARKER_SIZE.x * _map_visual_scale(), MARKER_ZOOM_SIZE_MIN, max_size)",
+            "round(clamp(ICON_MARKER_SIZE.x * _map_visual_scale(), MARKER_ZOOM_SIZE_MIN, max_size))",
+            "return _pixel_snap(pan_offset + point * zoom - marker_size * 0.5)",
         ]:
             self.assertIn(expected, script_text)
+
+        for forbidden in [
+            "_zoom_at(event.position, event.factor)",
+            "current_distance / previous_distance",
+            "func _touch_distance_with",
+            "1.0 / ZOOM_STEP",
+        ]:
+            self.assertNotIn(forbidden, script_text)
 
     def test_map_panel_filters_markers_by_visit_status(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
@@ -262,6 +274,8 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("clamp(position.x", centered_label_body)
         self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_draw_body)
         self.assertIn("_centered_label_rect", city_label_body)
+        self.assertIn("var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y + 1.5 * zoom)", city_label_body)
+        self.assertIn("_pixel_snap(position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom))", city_icon_rect_body)
         self.assertIn("_rect_overlaps_any", city_label_body)
         self.assertIn("occupied_rects.append(occupied_rect)", city_label_body)
         self.assertNotIn("draw_circle(position", city_label_body)
@@ -335,11 +349,13 @@ class MapPanelContractTest(unittest.TestCase):
             "GLYPH_DIR = os.path.join(MAP_DIR, \"glyphs\")",
             "FONT_DIR = os.path.join(os.path.dirname(__file__), \"..\", \"assets\", \"fonts\")",
             "ImageFont.truetype(font_path, key * RENDER_SCALE)",
+            "ImageChops.subtract(land_mask, germany_mask)",
             "BAKED_TOWN_DETAILS_ENABLED = False",
             "BAKED_TOWN_DETAILS = []",
             "if BAKED_TOWN_DETAILS_ENABLED:",
             "for lon, lat, size in BAKED_TOWN_DETAILS:",
             "ATLAS_DETAILS = [",
+            "MIN_ATLAS_DETAIL_WIDTH = 54",
             '"id": "hamburg_port"',
             '"glyph": "detail_port"',
             '"id": "rostock_ferry"',
@@ -352,6 +368,7 @@ class MapPanelContractTest(unittest.TestCase):
             '"glyph": "detail_tower"',
             "def _draw_atlas_details(canvas, proj):",
             "for detail in ATLAS_DETAILS:",
+            "target_width = max(MIN_ATLAS_DETAIL_WIDTH, detail[\"width\"] * kind_scale)",
             "_draw_atlas_details(canvas, proj)",
             "def _load_glyph(name):",
             "def _draw_glyph_center(canvas, proj, glyph_name, lon, lat, target_width):",
@@ -370,13 +387,20 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_forested_highland(draw, x, y, s):",
             "def _draw_border_highland(draw, x, y, s):",
             "def _draw_dotted_route(draw, pts):",
-            "_draw_dotted_route(draw, pts)",
             "def _draw_field_patch(draw, proj, lon, lat, width, height):",
             "def _draw_marsh_patch(draw, proj, lon, lat, size):",
             "def _draw_castle_marker(draw, proj, lon, lat, size):",
             "MAP_LABELS = [",
             '"name": "Müritz"',
             '"name": "Rügen"',
+            "NEIGHBOR_COUNTRY_LABELS = [",
+            '"name": "Dänemark"',
+            '"name": "Niederlande"',
+            '"name": "Österreich"',
+            "def _draw_neighbor_ground_texture(canvas, proj, neighbor_mask):",
+            "def _draw_neighbor_country_labels(canvas, proj, neighbor_mask):",
+            "_draw_neighbor_ground_texture(canvas, proj, neighbor_mask)",
+            "_draw_neighbor_country_labels(canvas, proj, neighbor_mask)",
             "LiberationSerif-BoldItalic.ttf",
             "def _map_label_font(size):",
             "def _pixel_finish(canvas: Image.Image) -> Image.Image:",
@@ -387,6 +411,9 @@ class MapPanelContractTest(unittest.TestCase):
 
         self.assertNotIn("MAP_SIZE[0] // 2", pipeline_text)
         self.assertNotIn("Image.Resampling.NEAREST", pipeline_text)
+        main_text = pipeline_text.split("def main():", 1)[1]
+        self.assertNotIn("_draw_routes(canvas, proj, germany_mask)", main_text)
+        self.assertNotIn("_draw_waterways(canvas, proj, germany_mask)", main_text)
         self.assertNotIn('"name": "Mueritz"', pipeline_text)
         self.assertNotIn('"name": "Ruegen"', pipeline_text)
         self.assertTrue(

@@ -3,7 +3,7 @@ import os
 import sys
 
 import geopandas as gpd
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 from shapely.geometry import Point, box
 
 from map_pipeline.projection import MapProjection
@@ -15,7 +15,7 @@ GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 
 GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
 # Match the Mercator aspect of GERMANY_BOUNDS and keep enough physical pixels
-# that the runtime 150% zoom does not upscale the map texture above source size.
+# that the runtime 200% zoom still has enough source detail for inspection.
 MAP_SIZE = (1932, 3072)
 RENDER_SCALE = 2
 
@@ -358,6 +358,7 @@ ATLAS_DETAIL_KIND_SCALE = {
     "watermill": 1.55,
     "windmill": 1.55,
 }
+MIN_ATLAS_DETAIL_WIDTH = 54
 
 
 def _scale_size(size):
@@ -601,17 +602,6 @@ def _draw_terrain(canvas, proj, land_mask):
     if BAKED_TOWN_DETAILS_ENABLED:
         for lon, lat, size in BAKED_TOWN_DETAILS:
             _draw_town(draw, proj, lon, lat, size)
-    for lon, lat, width, height in [
-        (7.6, 52.2, 58, 34), (8.7, 51.2, 72, 38), (9.4, 50.7, 62, 32),
-        (11.9, 51.6, 70, 36), (12.8, 52.6, 58, 30), (8.6, 49.6, 66, 34),
-        (10.8, 48.6, 56, 30), (13.2, 51.35, 54, 30),
-        (6.9, 52.7, 58, 28), (9.9, 52.9, 60, 28), (11.2, 52.7, 52, 26),
-        (12.2, 50.1, 48, 24), (7.4, 48.3, 44, 24), (10.0, 49.6, 50, 24),
-        (7.9, 53.0, 54, 24), (8.9, 52.4, 52, 24), (11.6, 53.2, 52, 24),
-        (12.9, 52.9, 48, 22), (13.8, 51.7, 48, 22), (8.4, 50.7, 50, 22),
-        (9.2, 48.9, 48, 22), (11.8, 49.5, 48, 22), (12.7, 48.1, 44, 22),
-    ]:
-        _draw_field_patch(draw, proj, lon, lat, width, height)
     for lon, lat, size in [
         (8.7, 53.4, 38), (11.6, 53.8, 34), (13.0, 54.0, 30),
         (12.3, 53.3, 34), (9.8, 54.1, 28), (14.1, 52.0, 30),
@@ -626,13 +616,14 @@ def _draw_atlas_details(canvas, proj):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     for detail in ATLAS_DETAILS:
         kind_scale = ATLAS_DETAIL_KIND_SCALE.get(detail["kind"], 1.0)
+        target_width = max(MIN_ATLAS_DETAIL_WIDTH, detail["width"] * kind_scale)
         _draw_glyph_center(
             layer,
             proj,
             detail["glyph"],
             detail["lon"],
             detail["lat"],
-            detail["width"] * kind_scale,
+            target_width,
         )
     canvas.alpha_composite(layer)
 
@@ -668,16 +659,13 @@ def _draw_ground_texture(canvas, proj, germany_mask, germany_geom):
                 if kind in (0, 1, 2):
                     color = (76, 112, 62, 80) if point_lat < 52.0 else (91, 111, 66, 64)
                     _draw_tuft(draw, x, y, 8 + seed % 9, color)
-                elif kind in (3, 4):
-                    _draw_field_hatch(draw, x, y, 24 + seed % 12, (150, 143, 78, 54))
-                elif kind == 5 and point_lat < 51.8:
+                elif kind in (3, 4, 5) and point_lat < 51.8:
                     _draw_hill_mark(draw, x, y, 16 + seed % 12, (113, 100, 73, 70))
                 elif kind == 6:
                     rr = (2 + seed % 3) * scale
                     draw.ellipse((x - rr, y - rr, x + rr, y + rr), fill=(70, 103, 77, 58))
                 else:
-                    length = (9 + seed % 10) * scale
-                    draw.line((x - length // 2, y, x + length // 2, y + scale), fill=(101, 118, 68, 42), width=max(1, scale))
+                    _draw_tuft(draw, x, y, 6 + seed % 7, (87, 110, 68, 48))
             lat += 0.34
             lat_index += 1
         lon += 0.38
@@ -969,6 +957,18 @@ MAP_LABELS = [
     {"name": "Rügen", "lon": 13.3800, "lat": 54.4500, "size": 20, "kind": "island"},
 ]
 
+NEIGHBOR_COUNTRY_LABELS = [
+    {"name": "Dänemark", "lon": 9.80, "lat": 55.18, "size": 20},
+    {"name": "Niederlande", "lon": 5.55, "lat": 52.10, "size": 18},
+    {"name": "Belgien", "lon": 5.55, "lat": 50.62, "size": 18},
+    {"name": "Luxemburg", "lon": 6.18, "lat": 49.78, "size": 16},
+    {"name": "Frankreich", "lon": 6.35, "lat": 47.55, "size": 19},
+    {"name": "Schweiz", "lon": 8.35, "lat": 46.58, "size": 18},
+    {"name": "Österreich", "lon": 14.10, "lat": 47.80, "size": 18},
+    {"name": "Tschechien", "lon": 14.50, "lat": 49.35, "size": 18},
+    {"name": "Polen", "lon": 16.10, "lat": 52.40, "size": 18},
+]
+
 
 def _map_label_font(size):
     key = int(size)
@@ -1000,6 +1000,68 @@ def _draw_map_labels(canvas, proj, germany_mask):
             stroke_fill=(47, 34, 20, 205),
         )
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
+    layer.putalpha(alpha)
+    canvas.alpha_composite(layer)
+
+
+def _neighbor_land_mask(land_mask, germany_mask):
+    return ImageChops.subtract(land_mask, germany_mask)
+
+
+def _draw_neighbor_ground_texture(canvas, proj, neighbor_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+
+    lon = 4.85
+    lon_index = 0
+    while lon <= 16.45:
+        lat = 43.55
+        lat_index = 0
+        while lat <= 55.45:
+            seed = _stable_hash("neighbor", lon_index, lat_index)
+            if seed % 3 != 0:
+                lat += 0.48
+                lat_index += 1
+                continue
+            jitter_lon = ((seed & 255) / 255.0 - 0.5) * 0.26
+            jitter_lat = (((seed >> 8) & 255) / 255.0 - 0.5) * 0.22
+            x, y = _project_point(proj, lon + jitter_lon, lat + jitter_lat)
+            kind = seed % 7
+            if kind in (0, 1):
+                _draw_tuft(draw, x, y, 5 + seed % 8, (62, 95, 57, 36))
+            elif kind in (2, 3, 4):
+                _draw_hill_mark(draw, x, y, 12 + seed % 8, (103, 95, 66, 34))
+            else:
+                _draw_tuft(draw, x, y, 4 + seed % 6, (72, 96, 60, 30))
+            lat += 0.48
+            lat_index += 1
+        lon += 0.54
+        lon_index += 1
+
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), neighbor_mask)
+    layer.putalpha(alpha)
+    canvas.alpha_composite(layer)
+
+
+def _draw_neighbor_country_labels(canvas, proj, neighbor_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    for label in NEIGHBOR_COUNTRY_LABELS:
+        x, y = _project_point(proj, label["lon"], label["lat"])
+        font = _map_label_font(label["size"])
+        name = label["name"]
+        bbox = draw.textbbox((0, 0), name, font=font, stroke_width=2 * RENDER_SCALE)
+        text_width = bbox[2] - bbox[0]
+        text_pos = (x - text_width // 2, y - 8 * RENDER_SCALE)
+        draw.text(
+            text_pos,
+            name,
+            font=font,
+            fill=(220, 204, 143, 118),
+            stroke_width=2 * RENDER_SCALE,
+            stroke_fill=(53, 41, 27, 122),
+        )
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), neighbor_mask)
     layer.putalpha(alpha)
     canvas.alpha_composite(layer)
 
@@ -1064,14 +1126,15 @@ def main():
     _draw_ocean_texture(canvas)
     print("Step 1: Draw countries and Germany mask")
     germany, germany_mask, land_mask = _draw_country_layer(canvas, proj)
+    neighbor_mask = _neighbor_land_mask(land_mask, germany_mask)
 
-    print("Step 2: Add terrain, texture, lakes, and routes")
+    print("Step 2: Add terrain, texture, lakes, and atlas details")
     _draw_terrain(canvas, proj, land_mask)
+    _draw_neighbor_ground_texture(canvas, proj, neighbor_mask)
     _draw_ground_texture(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
-    _draw_waterways(canvas, proj, germany_mask)
     _draw_atlas_details(canvas, proj)
-    _draw_routes(canvas, proj, germany_mask)
+    _draw_neighbor_country_labels(canvas, proj, neighbor_mask)
     _draw_map_labels(canvas, proj, germany_mask)
     _draw_country_border_overlay(canvas, proj, germany)
 

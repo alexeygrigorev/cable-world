@@ -16,7 +16,9 @@
 - [x] Первый production cut: `map_pipeline.compose_map` больше не рисует baked town/city pictograms в underlay; runtime city landmarks остаются единственным городским слоем.
 - [x] Добавить первый atlas detail layer: reproducible glyphs для ships/ports/bridges/castles/tower + explicit `ATLAS_DETAILS` placement по координатам.
 - [x] Расширить runtime map bounds южнее Германии: можно панорамировать вниз к München/Alps и видеть соседние страны как контурную основу без ручных overlay-глифов.
-- [x] Ограничить zoom диапазоном `50%..150%`, чтобы пользователь мог оценить читаемый максимум и карта не уходила в пиксельную кашу на `400%`.
+- [x] Ограничить zoom диапазоном `50%..200%`, чтобы пользователь мог оценить читаемый максимум, а карта не уходила в прежний `400%` pixel mush.
+- [x] Отключить finger pinch/magnify zoom: touch gestures больше не меняют масштаб; масштаб меняется только кнопками `+/-` и mouse wheel.
+- [x] Сделать шаг zoom controls предсказуемым: `+/-` и wheel меняют масштаб на `25` процентных пунктов, а не множителем.
 - [x] Добавить второй atlas detail pass из монолитной карты-донора: деревни, часовни, руины, мельницы, маяки, водяные мельницы и более плотные маршруты как отдельные glyph placements.
 - [x] Исправить аспект и физическое разрешение runtime map texture после расширения bounds: `germany_styled.png` теперь `1932x3072`, близко к Mercator aspect `0.629`, чтобы не растягивать карту и не апскейлить подложку выше источника на `150%`.
 - [x] Убрать artificial half-size/nearest upscale finish из renderer: карта больше не создаёт крупные пиксельные блоки до runtime zoom; финал остается `1932x3072` через `LANCZOS` + full-resolution palette pass.
@@ -44,6 +46,9 @@
 - [x] #60 Убрать залитые фоновые плашки под транспортными пиктограммами: оставить естественный outline/glow, чтобы объекты читались лучше городов и выглядели частью карты.
 - [x] #61 Масштабировать транспортные и городские иконки вместе с zoom и resize viewport, но с максимальным порогом размера, чтобы пиксель-арт не раздувался.
 - [x] Добавить outline-only runtime sprites для транспортных и city landmark иконок: объекты должны читаться поверх детальной карты без кругов, плашек и фоновых подложек.
+- [x] Убрать jitter у runtime объектов при pan/zoom: транспортные маркеры, city landmarks и размеры иконок snap-аются к целым пикселям по тому же принципу, что и подписи.
+- [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 54`, чтобы не превращаться в шум.
+- [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
 - [x] Снизить clutter на default zoom: второстепенные подписи городов появляются после zoom `1.20`, а названия под иконками стали ближе к пиктограммам.
 - [x] Сделать стартовый zoom адаптивным: portrait остается крупным, landscape/desktop не получает дополнительный `1.10` zoom и меньше режет ориентиры у краев.
 - [x] Перевести map labels в atlas-style: vendored `LiberationSerif-BoldItalic.ttf`, runtime city labels и baked terrain labels используют один serif italic стиль; terrain labels больше не дублируются runtime-слоем.
@@ -54,7 +59,7 @@
 - [ ] #64 Провести terrain accuracy audit текущей Германии: убрать ложные большие горы у Hamburg/севера и проверить, что все видимые горы соответствуют реальности.
 - [ ] #63 Спроектировать Europe map pipeline для следующих стран и регионов: France, Spain, Italy, Switzerland, Austria, Germany neighbors, Scandinavia, Finland, Baltics, Russia, Belarus, Ukraine до украинских гор, Turkey; рельефные слои должны продолжаться через границы.
 - [ ] #63 Позже разбить большую Europe pipeline issue на маленькие блоки по странам/регионам/слоям, но пока держать общий список в одной issue, чтобы ничего не потерять.
-- [ ] Перегенерировать/переразмерить glyph source assets под рабочий максимум `150%`, чтобы atlas details и terrain glyphs были четкими на максимальном приближении без лишней пиксельности.
+- [ ] Перегенерировать/переразмерить glyph source assets под рабочий максимум `200%`, чтобы atlas details и terrain glyphs были четкими на максимальном приближении без лишней пиксельности.
 - [ ] Оформить list mode отдельной задачей: список при переключении с карты должен соответствовать стилю карты, а не выглядеть как чужой UI.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.
 - [ ] #65 Разобрать Godot headless shutdown warnings/RID leaks: сейчас `godot --headless --path . --quit-after 1` выходит с кодом 0, но печатает CanvasItem/ObjectDB/DummyTexture/ShapedText/Font leak warnings.
@@ -63,5 +68,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending composed Alpine massif iteration.
+- Последний map commit на момент обновления backlog: pending touch zoom / 200% / anti-jitter / atlas detail sizing iteration.
 - Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`, местами ближе к `6.5/10` по южному виду из-за более узнаваемых Альп и более цельных atlas labels. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.
