@@ -13,15 +13,15 @@ jobs:
       GODOT_VERSION: "4.6.3-stable"
     steps:
       - name: Получить код
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Настроить Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Настроить Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
 
       - name: Проверить Terraform bootstrap
         run: |
@@ -36,13 +36,13 @@ jobs:
           terraform -chdir=infra/aws-web validate
 
       - name: Настроить Java для Android
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: "temurin"
           java-version: "17"
 
       - name: Настроить Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Установить Android SDK packages
         run: |

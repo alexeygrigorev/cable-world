@@ -86,7 +86,7 @@ class InfraReproducibilityContractTest(unittest.TestCase):
         release = (ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
 
         for expected in [
-            "hashicorp/setup-terraform@v3",
+            "hashicorp/setup-terraform@v4",
             "terraform -chdir=infra/aws-bootstrap fmt -check",
             "terraform -chdir=infra/aws-bootstrap init -backend=false",
             "terraform -chdir=infra/aws-bootstrap validate",
@@ -110,6 +110,40 @@ class InfraReproducibilityContractTest(unittest.TestCase):
         ]:
             with self.subTest(expected=expected):
                 self.assertIn(expected, release)
+
+    def test_ci_actions_use_node24_compatible_major_versions(self) -> None:
+        workflow_text = "\n".join(
+            [
+                (ROOT / ".github" / "workflows" / "checks.yml").read_text(encoding="utf-8"),
+                (ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8"),
+            ]
+        )
+
+        for expected in [
+            "actions/checkout@v6",
+            "actions/setup-python@v6",
+            "hashicorp/setup-terraform@v4",
+            "actions/setup-java@v5",
+            "android-actions/setup-android@v4",
+            "actions/upload-artifact@v7",
+            "softprops/action-gh-release@v3",
+            "aws-actions/configure-aws-credentials@v6",
+        ]:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, workflow_text)
+
+        for deprecated in [
+            "actions/checkout@v4",
+            "actions/setup-python@v5",
+            "hashicorp/setup-terraform@v3",
+            "actions/setup-java@v4",
+            "android-actions/setup-android@v3",
+            "actions/upload-artifact@v4",
+            "softprops/action-gh-release@v2",
+            "aws-actions/configure-aws-credentials@v4",
+        ]:
+            with self.subTest(deprecated=deprecated):
+                self.assertNotIn(deprecated, workflow_text)
 
 
 if __name__ == "__main__":
