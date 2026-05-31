@@ -1483,3 +1483,33 @@ Parallel work started:
 
 - `Bernoulli`: #89 navigation UX for map-first flow and list return state. Scope is limited to map/list navigation behavior and tests, not visual restyle or map assets.
 - `Hume`: #67 map clutter/readability pass. Scope is limited to tiny houses, tiny trees, micro details and route/artifact clutter. Because this changes map visuals, it must produce a reviewer bundle and follow `docs/map-reviewer-gate.md`.
+
+## Iteration 2026-06-01 03:05
+
+Integrated reviewed #89 map-first navigation return state:
+
+- Worker: `Bernoulli`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-89-map-first-return-state`.
+- Worker branch: `issue-89-map-first-return-state`.
+- Worker commit: `85f4079 Preserve map state across list return`.
+- Integrated commit on `main`: `f5a9003 Preserve map state across list return`.
+- Decision: `ACCEPT` for #89 scope; #89 closed.
+
+What landed:
+
+- `MainScreen` captures map navigation state before leaving the fullscreen map.
+- Returning map <- list restores pan, zoom and selected object/marker state.
+- `MapPanel` now exposes `get_navigation_state()` and `restore_navigation_state()` with normal zoom clamping and existing transform application.
+- Runtime coverage checks map -> list -> map preserves pan, zoom and selection.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_app_shell_contract tests.test_map_panel_contract`: PASS, 25 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 260 tests, 9 skipped.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Risk note:
+
+- Extreme pan values are still normalized through existing `MapPanel._apply_map_transform()` bounds, which matches current map behavior.
