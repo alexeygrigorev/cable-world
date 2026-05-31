@@ -135,9 +135,9 @@ class MapPanelContractTest(unittest.TestCase):
         for expected in [
             "var pan_offset := Vector2.ZERO",
             "var zoom := 1.0",
-            "const MARKER_ZOOM_SIZE_MIN := 48.0",
-            "const MARKER_ZOOM_SIZE_MAX := 78.0",
-            "const CLUSTER_MARKER_ZOOM_SIZE_MAX := 70.0",
+            "const MARKER_ZOOM_SIZE_MIN := 60.0",
+            "const MARKER_ZOOM_SIZE_MAX := 96.0",
+            "const CLUSTER_MARKER_ZOOM_SIZE_MAX := 88.0",
             "const ICON_VIEWPORT_REFERENCE_WIDTH := 390.0",
             "const ICON_VIEWPORT_SCALE_MIN := 0.92",
             "const ICON_VIEWPORT_SCALE_MAX := 1.30",
@@ -270,6 +270,7 @@ class MapPanelContractTest(unittest.TestCase):
 
         self.assertIn("if texture == null:", city_icon_rect_body)
         self.assertIn("return Rect2()", city_icon_rect_body)
+        self.assertIn("clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0)", city_icon_rect_body)
         self.assertNotIn("_clamp_landmark_rect", city_icon_rect_body)
         self.assertNotIn("clamp(position.x", centered_label_body)
         self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_draw_body)
@@ -282,7 +283,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("draw_circle", city_icon_rect_body)
         self.assertNotIn("draw_rect", city_icon_rect_body)
         self.assertIn("func _landmark_visual_scale() -> float:", script_text)
-        self.assertIn("clamp(54.0 * _landmark_visual_scale(), 46.0, 88.0)", script_text)
+        self.assertIn("clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0)", script_text)
         self.assertIn("var reserved_label_rects: Array[Rect2] = []", script_text)
         self.assertIn("var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()", script_text)
         self.assertIn("func _left_label_rect(", script_text)

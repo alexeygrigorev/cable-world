@@ -565,3 +565,27 @@ Checks so far:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. This iteration fixes control feel and visual noise, but the map is not yet `8/10`: terrain art, Europe continuity, relief accuracy and better object hierarchy still need a stronger art/geography pass.
+
+## Iteration 2026-05-31 18:18
+
+Implemented:
+
+- Rebalanced runtime object hierarchy so interactive transport markers read above city landmarks.
+- Raised transport marker visual range from `48..78` to `60..96`; cluster marker cap from `70` to `88`.
+- Reduced city landmark pictogram range from `46..88` to `42..76`, keeping cities useful as orientation but less dominant than clickable objects.
+
+Evidence to verify after export:
+
+- Contract tests require the new marker constants and city landmark clamp.
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png` shows transport markers at `170%` reading clearly above the city landmark layer.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` and `/tmp/cable-world-web-map/desktop-1280x800-initial.png` regenerated after the marker hierarchy pass.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6015655`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing nested worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. This removes one hierarchy blocker, but it will only count toward `7/10+` if screenshot review confirms clickable objects are visibly primary without making the map cluttered.

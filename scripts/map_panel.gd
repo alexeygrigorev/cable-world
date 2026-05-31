@@ -162,7 +162,7 @@ class OfflineMapLayer:
 		var texture: Texture2D = _city_icon_texture(icon_id)
 		if texture == null:
 			return Rect2()
-		var icon_size: float = round(clamp(54.0 * _landmark_visual_scale(), 46.0, 88.0))
+		var icon_size: float = round(clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0))
 		var icon_rect := Rect2(
 			_pixel_snap(position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom)),
 			Vector2(icon_size, icon_size)
@@ -319,9 +319,9 @@ class OfflineMapLayer:
 
 const MARKER_SIZE := Vector2(44.0, 44.0)
 const ICON_MARKER_SIZE := Vector2(52.0, 52.0)
-const MARKER_ZOOM_SIZE_MIN := 48.0
-const MARKER_ZOOM_SIZE_MAX := 78.0
-const CLUSTER_MARKER_ZOOM_SIZE_MAX := 70.0
+const MARKER_ZOOM_SIZE_MIN := 60.0
+const MARKER_ZOOM_SIZE_MAX := 96.0
+const CLUSTER_MARKER_ZOOM_SIZE_MAX := 88.0
 const ICON_VIEWPORT_REFERENCE_WIDTH := 390.0
 const ICON_VIEWPORT_SCALE_MIN := 0.92
 const ICON_VIEWPORT_SCALE_MAX := 1.30
