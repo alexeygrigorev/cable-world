@@ -279,3 +279,20 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
 
 Rubric estimate remains around 6/10. The interaction layer is cleaner, but the 8/10 blockers are still the generated geography audit, stronger object/background hierarchy across all regions, and payload size.
+
+Pan/label/splash iteration:
+
+- City landmark icons and labels are no longer clamped to the viewport edge. They stay tied to their projected map coordinates while panning.
+- City landmark rendering was split into an overlay above transport markers, so city names remain legible when markers are nearby.
+- Zoom controls now show the current zoom percentage.
+- `assets/branding/splash_loading.png` was compressed from 3.3 MB to about 125 KB. JPEG was tested but rejected by Godot for boot splash, so the boot image remains PNG.
+- Added backlog item: remove baked city-like pictograms from the generated underlay to avoid duplicate cities under runtime landmarks.
+
+Rubric estimate remains around 6/10. These are usability and payload fixes; the underlay itself still needs art/geography cleanup.
+
+Production direction correction:
+
+- Current whole-map generated underlay is not acceptable as a final production architecture.
+- The map must move to a clean base + glyph-layer composition, documented in `docs/map-production-direction.md`.
+- A whole generated map can be used only as reference/mood or to identify needed glyphs.
+- Quality cannot improve past the current ~6/10 while baked cities, baked random details, and runtime overlays fight each other in one bitmap.

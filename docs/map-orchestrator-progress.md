@@ -212,3 +212,35 @@ Checks:
 - `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
 
 Self-audit: still around `6/10`. Visual hierarchy is better, but the project still needs a geography audit of the generated underlay, stronger art direction consistency, and payload optimization before claiming `8/10`.
+
+## Iteration 2026-05-31 15:40
+
+Implemented:
+
+- Compressed `assets/branding/splash_loading.png` from 3.3 MB to about 125 KB.
+- Kept the file as PNG because Godot rejected JPEG for `boot_splash/image`; the engine supports PNG there.
+- Added visible zoom percentage in the map zoom controls.
+- Moved city landmark labels/icons to a separate overlay above transport markers.
+- Removed viewport clamping from city landmark icon/label positions so Hamburg/Rostock/Berlin/etc. stay attached to their geographic coordinates during pan.
+
+Backlog captured:
+
+- The generated map underlay currently contains baked city-like pictograms, then runtime city landmarks are drawn over it. This needs a new underlay/pipeline pass so we do not render duplicate cities.
+
+Self-audit: still around `6/10`. This fixes interaction/layering regressions and payload for the splash screen, but the map still needs underlay cleanup and geography audit before it can move toward `8/10`.
+
+## Direction Lock 2026-05-31
+
+User feedback: we are repeating the same mistake by generating or polishing one whole-map image instead of moving toward the agreed layered atlas pipeline.
+
+Action taken:
+
+- Added `docs/map-production-direction.md` as the active production decision.
+- Added a stop rule: no more monolithic generated Germany/Europe bitmaps as the final map approach.
+- Locked next map work to clean base geography + reusable glyph sprites + explicit coordinate placement.
+
+Required next work:
+
+- Decompose the current visual direction into glyph layers: Alps, Harz, Saxon Switzerland / Elbe Sandstone, Erzgebirge, Black Forest, Bavarian Forest, forests, lakes, ships, ports, bridges, and atlas details.
+- Remove baked city/village pictograms from the base map.
+- Keep runtime city landmarks and transport objects as the only city/object overlay.

@@ -4,14 +4,26 @@
 
 Цель остается `10/10`: карта должна быть fullscreen-first, узнаваемой, читаемой за 1-2 секунды, с реальными координатами, нормальным pan/zoom и стилистически цельным atlas UI.
 
+## Direction Lock
+
+- Production direction is documented in `docs/map-production-direction.md`.
+- Stop polishing monolithic generated map bitmaps as if they are the final approach.
+- Generated full-map images are reference material only; production rendering must be clean base + reusable glyph layers + explicit real-coordinate placement.
+
 ## Open Items
 
+- [ ] Перевести текущую карту в glyph-based production pipeline: чистая база без baked городов + отдельные переиспользуемые glyph layers для гор, лесов, озер, кораблей и atlas details.
 - [ ] Перестать считать текущую procedural/GIS underlay улучшаемой до 8/10 мелкими правками: пользовательская оценка 2026-05-31 — около 4/10. Следующий крупный шаг должен заменить или радикально переработать сам визуальный слой карты.
 - [x] Заменить текущую procedural/GIS underlay на цельную generated RPG-atlas подложку для проверки направления. Текущая самооценка после screenshot review: 6/10, не 8/10.
 - [ ] Провести geography audit новой generated подложки: декоративные AI-города/реки/озера не должны конфликтовать с реальными city/object координатами.
+- [ ] Переделать generated подложку так, чтобы в ней не было случайных baked городов/городских пиктограмм, которые потом дублируются runtime city landmark layer сверху.
 - [x] Исправить clipping подписей на краях viewport после новой подложки: Hamburg/Rostock/Berlin/Dresden/Köln не должны резаться или прятаться под zoom controls.
 - [x] Масштабировать runtime icons при resize карты/viewport: транспортные маркеры и city landmarks должны меняться вместе с визуальным масштабом карты, с верхним пределом для пиксель-арта.
 - [x] Отдать интерактивным объектам приоритет над второстепенными подписями: terrain/town labels не должны налезать на кластеры и транспортные иконки.
+- [x] Исправить city landmarks, которые визуально "бегут" за viewport при pan: city icons/labels должны оставаться привязанными к географической точке, без clamp к экрану.
+- [x] Добавить видимый zoom percent на карту, чтобы пользователь мог назвать порог максимального приближения.
+- [x] Поднять city labels/icons в отдельный overlay над transport markers, чтобы названия городов не пропадали под канатками/кластерами.
+- [x] Сжать `assets/branding/splash_loading.png`: Godot boot splash поддерживает только PNG, поэтому asset оставлен PNG, но уменьшен с 3.3 MB до ~125 KB.
 - [ ] Оптимизировать map asset после визуального approval: новая `assets/map/germany_styled.png` весит около 5.1 MB, а `index.pck` около 15 MB gzip.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
 - [ ] Исправить pan sensitivity: drag пальцем и мышью должен ощущаться примерно 1:1, без ускорения, где 1 см движения пальца сдвигает карту на несколько сантиметров.
@@ -37,5 +49,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending generated RPG-atlas underlay iteration.
+- Последний map commit на момент обновления backlog: `ed125de` plus pending map/splash iteration.
 - Текущая карта технически рабочая и визуально лучше procedural baseline. Честная оценка после screenshots: около `6/10`. Нельзя оценивать ее как `8/10`: нужна проверка географии новой generated подложки, дальнейшее улучшение overall art direction и оптимизация payload.

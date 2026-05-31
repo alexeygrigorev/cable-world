@@ -11,11 +11,14 @@ class OfflineMapLayer:
 	var geo_bounds: Dictionary = {}
 	var map_scope := "germany"
 	var reserved_label_rects: Array[Rect2] = []
+	var draw_map_background := true
+	var draw_city_labels := true
+	var draw_terrain_labels := true
 	var _germany_texture: Texture2D = null
 	var _city_icon_textures: Dictionary = {}
 	const LANDMARK_EDGE_MARGIN := 96.0
 	const LANDMARK_VIEWPORT_MARGIN := 6.0
-	const OVERLAY_CONTROL_SAFE_WIDTH := 176.0
+	const OVERLAY_CONTROL_SAFE_WIDTH := 242.0
 	const OVERLAY_CONTROL_SAFE_HEIGHT := 78.0
 	const SECONDARY_CITY_LABEL_ZOOM := 1.20
 	const LANDMARK_VIEWPORT_REFERENCE_WIDTH := 390.0
@@ -57,11 +60,14 @@ class OfflineMapLayer:
 	]
 
 	func _draw() -> void:
-		var rect := Rect2(Vector2.ZERO, size)
-		draw_rect(rect, Color("#c8dce8"))
-		_draw_land_mass()
-		if _germany_texture == null:
-			_draw_graticule()
+		if draw_map_background:
+			var rect := Rect2(Vector2.ZERO, size)
+			draw_rect(rect, Color("#c8dce8"))
+			_draw_land_mass()
+			if _germany_texture == null:
+				_draw_graticule()
+		if draw_city_labels or draw_terrain_labels:
+			_draw_landmark_labels()
 
 	func _map_point(point: Vector2) -> Vector2:
 		return pan_offset + point * zoom
@@ -112,15 +118,16 @@ class OfflineMapLayer:
 		var tex_rect := Rect2(_map_point(Vector2.ZERO), map_base_size() * zoom)
 		draw_texture_rect(_germany_texture, tex_rect, false)
 		draw_rect(tex_rect, Color(0.93, 0.82, 0.55, 0.10), true)
-		_draw_landmark_labels()
 
 	func _draw_landmark_labels() -> void:
 		var font := get_theme_default_font()
 		var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()
-		for label_data in CITY_LABELS:
-			_draw_city_label(font, label_data, occupied_rects)
-		for label_data in TERRAIN_LABELS:
-			_draw_terrain_label(font, label_data, occupied_rects)
+		if draw_city_labels:
+			for label_data in CITY_LABELS:
+				_draw_city_label(font, label_data, occupied_rects)
+		if draw_terrain_labels:
+			for label_data in TERRAIN_LABELS:
+				_draw_terrain_label(font, label_data, occupied_rects)
 
 	func _draw_city_label(font: Font, label_data: Dictionary, occupied_rects: Array[Rect2]) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
@@ -158,7 +165,6 @@ class OfflineMapLayer:
 			position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom),
 			Vector2(icon_size, icon_size)
 		)
-		icon_rect = _clamp_landmark_rect(icon_rect)
 		return icon_rect
 
 	func _draw_city_icon(label_data: Dictionary, icon_rect: Rect2) -> void:
@@ -243,10 +249,7 @@ class OfflineMapLayer:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
 		var position := Vector2(center_x - text_size.x * 0.5, baseline_y)
-		position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))
-		position.y = clamp(position.y, float(scaled_size) + 4.0, max(float(scaled_size) + 4.0, size.y - 6.0))
-		var label_rect := Rect2(position - Vector2(0.0, float(scaled_size)), text_size + Vector2(0.0, float(scaled_size)))
-		return _clamp_landmark_rect(label_rect)
+		return Rect2(position - Vector2(0.0, float(scaled_size)), text_size + Vector2(0.0, float(scaled_size)))
 
 	func _left_label_rect(font: Font, text: String, baseline_position: Vector2, font_size: int) -> Rect2:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
@@ -368,10 +371,12 @@ var zoom := 1.0
 var map_filter := MAP_FILTER_ALL
 var map_scope := MAP_SCOPE_GERMANY
 var map_layer: Control
+var map_label_layer: Control
 var map_content: Control
 var empty_state_label: Label
 var summary_label: Label
 var zoom_controls: HBoxContainer
+var zoom_percent_label: Label
 var filter_controls: HBoxContainer
 var filter_buttons: Dictionary = {}
 var dragging := false
@@ -412,6 +417,8 @@ func _ready() -> void:
 
 	map_layer = OfflineMapLayer.new()
 	map_layer.name = "ТочкиОбъектов"
+	map_layer.set("draw_city_labels", false)
+	map_layer.set("draw_terrain_labels", true)
 	map_layer.custom_minimum_size = Vector2(0.0, MAP_VIEW_HEIGHT)
 	map_layer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	map_layer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -426,6 +433,15 @@ func _ready() -> void:
 	map_content.name = "ПодвижнаяКарта"
 	map_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	map_layer.add_child(map_content)
+
+	map_label_layer = OfflineMapLayer.new()
+	map_label_layer.name = "ПодписиГородов"
+	map_label_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	map_label_layer.set("draw_map_background", false)
+	map_label_layer.set("draw_city_labels", true)
+	map_label_layer.set("draw_terrain_labels", false)
+	map_label_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	map_layer.add_child(map_label_layer)
 
 	empty_state_label = Label.new()
 	empty_state_label.text = "Нет точек с координатами"
@@ -459,11 +475,12 @@ func _ready() -> void:
 	zoom_controls.name = "МасштабКарты"
 	zoom_controls.add_theme_constant_override("separation", 6)
 	zoom_controls.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	zoom_controls.offset_left = -164.0
+	zoom_controls.offset_left = -228.0
 	zoom_controls.offset_top = 12.0
 	zoom_controls.offset_right = -12.0
 	zoom_controls.offset_bottom = 60.0
 	map_layer.add_child(zoom_controls)
+	_add_zoom_percent_label(zoom_controls)
 	_add_zoom_button(zoom_controls, "-", 1.0 / ZOOM_STEP)
 	_add_zoom_button(zoom_controls, "+", ZOOM_STEP)
 	_add_fit_button(zoom_controls)
@@ -551,6 +568,8 @@ func _on_map_layer_resized() -> void:
 	map_layer.queue_redraw()
 	if map_content != null:
 		map_content.size = map_layer.size
+	if map_label_layer != null:
+		map_label_layer.size = map_layer.size
 	if empty_state_label != null:
 		empty_state_label.size = map_layer.size
 	_update_map_reference_data()
@@ -636,6 +655,8 @@ func _update_reserved_label_rects(rects: Array[Rect2]) -> void:
 	var layer := map_layer as OfflineMapLayer
 	layer.reserved_label_rects = rects
 	layer.queue_redraw()
+	if map_label_layer != null:
+		map_label_layer.queue_redraw()
 
 func _marker_clusters(bounds: Dictionary) -> Dictionary:
 	var result := {}
@@ -783,6 +804,25 @@ func _add_zoom_button(parent: Container, title: String, factor: float) -> void:
 	var tooltip := "Приблизить карту" if factor > 1.0 else "Отдалить карту"
 	_add_map_control_button(parent, title, tooltip, MAP_CONTROL_SIZE, func() -> void: _zoom_at(map_layer.size * 0.5, factor))
 
+func _add_zoom_percent_label(parent: Container) -> void:
+	zoom_percent_label = Label.new()
+	zoom_percent_label.text = "100%"
+	zoom_percent_label.tooltip_text = "Текущий масштаб карты"
+	zoom_percent_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	zoom_percent_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	zoom_percent_label.custom_minimum_size = Vector2(62.0, 48.0)
+	zoom_percent_label.add_theme_font_size_override("font_size", 15)
+	zoom_percent_label.add_theme_color_override("font_color", Color("#27321f"))
+	var label_style := StyleBoxFlat.new()
+	label_style.bg_color = Color(0.96, 0.90, 0.72, 0.94)
+	label_style.border_color = Color("#3b2a18")
+	label_style.shadow_color = Color(0.12, 0.08, 0.03, 0.42)
+	label_style.shadow_size = 5
+	label_style.set_border_width_all(2)
+	label_style.set_corner_radius_all(6)
+	zoom_percent_label.add_theme_stylebox_override("normal", label_style)
+	parent.add_child(zoom_percent_label)
+
 func _add_fit_button(parent: Container) -> void:
 	_add_map_control_button(parent, "⤢", "Вписать все точки на экран", FIT_CONTROL_SIZE, _reset_map_view)
 
@@ -899,6 +939,7 @@ func _zoom_at(pivot: Vector2, factor: float) -> void:
 	var previous_zoom := zoom
 	zoom = clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM)
 	if is_equal_approx(previous_zoom, zoom):
+		_update_zoom_percent_label()
 		return
 
 	var scale_factor := zoom / previous_zoom
@@ -920,10 +961,21 @@ func _default_zoom() -> float:
 func _apply_map_transform() -> void:
 	if map_layer != null:
 		_clamp_pan_offset()
-		map_layer.set("pan_offset", pan_offset)
-		map_layer.set("zoom", zoom)
-		map_layer.queue_redraw()
+		_sync_offline_layer_transform(map_layer)
+	if map_label_layer != null:
+		_sync_offline_layer_transform(map_label_layer)
+	_update_zoom_percent_label()
 	_position_markers()
+
+func _sync_offline_layer_transform(layer_control: Control) -> void:
+	layer_control.set("pan_offset", pan_offset)
+	layer_control.set("zoom", zoom)
+	layer_control.queue_redraw()
+
+func _update_zoom_percent_label() -> void:
+	if zoom_percent_label == null:
+		return
+	zoom_percent_label.text = "%d%%" % int(round(zoom * 100.0))
 
 func _clamp_pan_offset() -> void:
 	if map_layer == null:
@@ -1213,6 +1265,11 @@ func _update_map_reference_data() -> void:
 	layer.geo_bounds = _active_coordinate_bounds()
 	layer.map_scope = map_scope
 	layer.queue_redraw()
+	if map_label_layer != null:
+		var label_layer := map_label_layer as OfflineMapLayer
+		label_layer.geo_bounds = _active_coordinate_bounds()
+		label_layer.map_scope = map_scope
+		label_layer.queue_redraw()
 
 func _has_coordinates(object_data: Dictionary) -> bool:
 	if object_data.has("coordinates") and object_data.get("coordinates") is Vector2:

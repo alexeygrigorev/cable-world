@@ -106,8 +106,8 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("func _screen_point_near_viewport(position: Vector2, margin: float) -> bool:", script_text)
         self.assertIn("if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):", script_text)
         self.assertIn("if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:", script_text)
-        self.assertIn("position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))", script_text)
-        self.assertIn("position.y = clamp(position.y, float(scaled_size) + 4.0", script_text)
+        self.assertIn("var map_label_layer: Control", script_text)
+        self.assertIn('map_label_layer.name = "ПодписиГородов"', script_text)
         self.assertIn("_update_map_reference_data()", script_text)
         self.assertIn('toolbar.name = "ПанельИнструментов"', script_text)
         self.assertIn("toolbar.visible = false", script_text)
@@ -177,9 +177,14 @@ class MapPanelContractTest(unittest.TestCase):
             '"-"',
             '"⤢"',
             "const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)",
+            "var zoom_percent_label: Label",
+            "func _add_zoom_percent_label(parent: Container) -> void:",
+            '"Текущий масштаб карты"',
+            'zoom_percent_label.text = "%d%%" % int(round(zoom * 100.0))',
             'filter_controls.name = "ФильтрКарты"',
             "button.custom_minimum_size = Vector2(52.0, 48.0)",
             "button.custom_minimum_size = minimum_size",
+            "_add_zoom_percent_label(zoom_controls)",
             "_add_fit_button(zoom_controls)",
             '_add_filter_button(filter_controls, "✓", MAP_FILTER_VISITED)',
             '_add_filter_button(filter_controls, "○", MAP_FILTER_NOT_VISITED)',
@@ -244,10 +249,12 @@ class MapPanelContractTest(unittest.TestCase):
         city_icon_rect_body = script_text.split("func _city_icon_rect", 1)[1].split("func _draw_city_icon", 1)[0]
         city_icon_draw_body = script_text.split("func _draw_city_icon", 1)[1].split("func _city_icon_texture", 1)[0]
         city_label_body = script_text.split("func _draw_city_label", 1)[1].split("func _draw_city_icon", 1)[0]
+        centered_label_body = script_text.split("func _centered_label_rect", 1)[1].split("func _left_label_rect", 1)[0]
 
         self.assertIn("if texture == null:", city_icon_rect_body)
         self.assertIn("return Rect2()", city_icon_rect_body)
-        self.assertIn("icon_rect = _clamp_landmark_rect(icon_rect)", city_icon_rect_body)
+        self.assertNotIn("_clamp_landmark_rect", city_icon_rect_body)
+        self.assertNotIn("clamp(position.x", centered_label_body)
         self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_draw_body)
         self.assertIn("_centered_label_rect", city_label_body)
         self.assertIn("_rect_overlaps_any", city_label_body)
@@ -263,6 +270,12 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("func _update_reserved_label_rects(rects: Array[Rect2]) -> void:", script_text)
         self.assertIn("reserved_rects.append(Rect2(marker.position, marker.size).grow(6.0))", script_text)
         self.assertIn("layer.reserved_label_rects = rects", script_text)
+        self.assertIn("var map_label_layer: Control", script_text)
+        self.assertIn('map_label_layer.name = "ПодписиГородов"', script_text)
+        self.assertIn('map_layer.set("draw_city_labels", false)', script_text)
+        self.assertIn('map_label_layer.set("draw_map_background", false)', script_text)
+        self.assertIn('map_label_layer.set("draw_city_labels", true)', script_text)
+        self.assertIn("func _sync_offline_layer_transform(layer_control: Control) -> void:", script_text)
         self.assertLess(
             city_icon_rect_body.index("if texture == null:"),
             city_icon_rect_body.index("return icon_rect"),

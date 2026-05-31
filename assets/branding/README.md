@@ -2,7 +2,7 @@
 
 Generated with the built-in image generation tool for the Мир Троссов / cable-world app.
 
-- `splash_loading.png`: portrait Godot boot splash, derived from the source concept.
+- `splash_loading.png`: compressed portrait Godot boot splash, derived from the source concept. Godot boot splash supports PNG only, so this stays PNG instead of JPEG.
 - `android_icon_192.png`: legacy Android launcher icon.
 - `adaptive_icon_background.png`: Android adaptive icon background.
 - `adaptive_icon_foreground.png`: Android adaptive icon foreground.
