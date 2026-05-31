@@ -1011,3 +1011,31 @@ Checks:
   - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
 
 Self-audit: about `7.1/10`, still not `8/10`. Forest masses now look much more like real atlas glyphs and less like tiny dots. The weak part is land patches: they add life, but a few read as separate yellow blobs rather than fully integrated terrain. Alps also still need a better per-massif art pass before the map can honestly clear `8/10`.
+
+## Iteration 2026-05-31 21:22
+
+Implemented:
+
+- Softened the new `ATLAS_LAND_DETAIL_PATCHES` layer so it reads as terrain texture instead of pasted yellow blobs.
+- Added explicit compositor controls:
+  - `LAND_DETAIL_VISUAL_SCALE = 0.74`
+  - `LAND_DETAIL_ALPHA_SCALE = 0.48`
+  - `LAND_DETAIL_TINT_STRENGTH = 0.28`
+- Added `_blend_land_detail_layer()`:
+  - feather alpha with `GaussianBlur`;
+  - reduce opacity;
+  - tint land details toward the base land color before compositing.
+- Reduced raw land patch widths in `ATLAS_LAND_DETAIL_PATCHES`.
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated `assets/map/germany_styled.png`.
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 tests OK.
+- Godot import/export completed; known nested-worktree and adb warnings only.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 5728004`, `Cache-Control: no-store`.
+- Playwright screenshots regenerated:
+  - `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+  - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+
+Self-audit: about `7.15/10`, still not `8/10`. This removes the most obvious land-patch sticker effect from the previous pass. The next large visual blocker is still Alpine/per-massif art: the mountain wall is useful, but not yet recognizable or controlled enough for a `10/10` atlas map.

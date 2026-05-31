@@ -41,6 +41,9 @@ GLYPH_CACHE = {}
 FONT_CACHE = {}
 FOREST_MASS_VISUAL_SCALE = 1.32
 FOREST_MASS_MIN_WIDTH = 112
+LAND_DETAIL_VISUAL_SCALE = 0.74
+LAND_DETAIL_ALPHA_SCALE = 0.48
+LAND_DETAIL_TINT_STRENGTH = 0.28
 EXPORT_MASSIF_SOURCE_LAYERS = True
 MASSIF_SOURCE_MANIFEST = []
 
@@ -551,14 +554,14 @@ ATLAS_FOREST_MASSES = [
 ]
 
 ATLAS_LAND_DETAIL_PATCHES = [
-    ("atlas_land_grass_patch", 8.95, 53.38, 210),
-    ("atlas_land_tuft_patch", 11.20, 53.28, 178),
-    ("atlas_land_flower_meadow", 7.70, 52.54, 184),
-    ("atlas_land_rocky_meadow", 12.25, 52.22, 168),
-    ("atlas_land_grass_patch", 9.95, 51.34, 190),
-    ("atlas_land_tuft_patch", 13.72, 50.62, 180),
-    ("atlas_land_flower_meadow", 8.72, 49.16, 188),
-    ("atlas_land_rocky_meadow", 10.52, 48.74, 174),
+    ("atlas_land_grass_patch", 8.95, 53.38, 176),
+    ("atlas_land_tuft_patch", 11.20, 53.28, 154),
+    ("atlas_land_flower_meadow", 7.70, 52.54, 156),
+    ("atlas_land_rocky_meadow", 12.25, 52.22, 150),
+    ("atlas_land_grass_patch", 9.95, 51.34, 164),
+    ("atlas_land_tuft_patch", 13.72, 50.62, 154),
+    ("atlas_land_flower_meadow", 8.72, 49.16, 158),
+    ("atlas_land_rocky_meadow", 10.52, 48.74, 152),
 ]
 
 ATLAS_DETAIL_KIND_SCALE = {
@@ -1174,10 +1177,25 @@ def _draw_atlas_forest_masses(canvas, proj, land_mask):
 def _draw_atlas_land_detail_patches(canvas, proj, germany_mask):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     for glyph_name, lon, lat, width in ATLAS_LAND_DETAIL_PATCHES:
-        _draw_glyph_center(layer, proj, glyph_name, lon, lat, width)
+        _draw_glyph_center(layer, proj, glyph_name, lon, lat, width * LAND_DETAIL_VISUAL_SCALE)
+    layer = _blend_land_detail_layer(layer)
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
     layer.putalpha(alpha)
     canvas.alpha_composite(layer)
+
+
+def _blend_land_detail_layer(layer):
+    alpha = layer.getchannel("A")
+    alpha = alpha.filter(ImageFilter.GaussianBlur(0.9 * RENDER_SCALE))
+    alpha = alpha.point(lambda value: int(value * LAND_DETAIL_ALPHA_SCALE))
+    tinted_rgb = Image.blend(
+        layer.convert("RGB"),
+        Image.new("RGB", layer.size, (151, 154, 86)),
+        LAND_DETAIL_TINT_STRENGTH,
+    )
+    blended = tinted_rgb.convert("RGBA")
+    blended.putalpha(alpha)
+    return blended
 
 
 def _stable_hash(*values) -> int:
