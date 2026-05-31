@@ -11,6 +11,7 @@
 ```bash
 python3 -m unittest discover -s tests
 godot --headless --path . --import --quit
+godot --headless --path . --script tests/godot_runtime_runner.gd
 godot --headless --path . --quit-after 1
 ```
 
@@ -21,6 +22,14 @@ python3 -m unittest tests.test_godot_storage_contract
 ```
 
 Когда появится GdUnit4 или другой Godot-native runner, runtime/UI задачи должны добавлять его команду в issue acceptance и release gate рядом с командами выше.
+Минимальный встроенный runner уже доступен без внешнего addon:
+
+```bash
+godot --headless --path . --script tests/godot_runtime_runner.gd
+```
+
+Он выполняет GDScript smoke/runtime checks из `tests/godot_runtime_smoke.gd` и возвращает non-zero при failure. Новые маленькие runtime checks можно добавлять отдельными `test_*` методами или подключать новым script path в runner.
+Для локальной проверки другого набора scripts runner принимает comma-separated override через `MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS`.
 
 ## Что проверяет Python
 
@@ -62,6 +71,7 @@ Godot-native зона ответственности:
 
 ```bash
 godot --headless --path . --import --quit
+godot --headless --path . --script tests/godot_runtime_runner.gd
 godot --headless --path . --quit-after 1
 ```
 

@@ -44,13 +44,14 @@
 ```bash
 python3 -m unittest discover -s tests
 godot --headless --path . --import --quit
+godot --headless --path . --script tests/godot_runtime_runner.gd
 git diff --check
 set -o pipefail
 godot --headless --path . --quit-after 1 > tmp/final-headless.log 2>&1
 rg -n 'ERROR:|Parse Error|Failed to compile|Failed to load script|SCRIPT ERROR' tmp/final-headless.log && exit 2 || true
 ```
 
-Граница тестов: Python gate покрывает map pipeline, data/schema/export и static contract checks; Godot runtime gate покрывает import, GDScript compile/load и минимальный scene startup. Для GDScript runtime, UI, input gestures и scene behavior новые issues должны по умолчанию требовать Godot-native tests; Python static assertions не считаются заменой runtime acceptance. Подробная граница: [Testing Strategy](testing-strategy.md).
+Граница тестов: Python gate покрывает map pipeline, data/schema/export и static contract checks; Godot runtime gate покрывает import, GDScript compile/load, минимальный scene startup и `godot --headless --path . --script tests/godot_runtime_runner.gd` для базовых GDScript runtime assertions. Для GDScript runtime, UI, input gestures и scene behavior новые issues должны по умолчанию требовать Godot-native tests; Python static assertions не считаются заменой runtime acceptance. Подробная граница: [Testing Strategy](testing-strategy.md).
 
 Для UI-инкрементов reviewer-субагент дополнительно делает:
 

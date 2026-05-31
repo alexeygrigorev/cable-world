@@ -64,5 +64,8 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           scripts/install-godot.sh
 
-      - name: Запустить проверки
+      - name: Запустить Python tests
         run: python3 -m unittest discover -s tests
+
+      - name: Запустить Godot runtime tests
+        run: godot --headless --path . --script tests/godot_runtime_runner.gd

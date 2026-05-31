@@ -48,6 +48,7 @@
 ```bash
 python3 -m unittest discover -s tests
 godot --headless --path . --import --quit
+godot --headless --path . --script tests/godot_runtime_runner.gd
 godot --headless --path . --quit-after 1
 ```
 
