@@ -473,6 +473,7 @@ ATLAS_DETAIL_KIND_SCALE = {
     "windmill": 1.55,
 }
 MIN_ATLAS_DETAIL_WIDTH = 78
+DEFAULT_ATLAS_DETAIL_KINDS = {"bridge", "castle", "lighthouse", "port", "ship", "tower"}
 
 
 def audit_geography_layers():
@@ -604,6 +605,67 @@ def _draw_country_layer(canvas, proj):
     for _, row in countries.iterrows():
         _draw_geometry(land_mask_draw, row.geometry, proj, 255)
     return germany, mask, land_mask
+
+
+def _draw_base_land_texture(canvas, land_mask, germany_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    width, height = canvas.size
+
+    for y in range(0, height, 18 * RENDER_SCALE):
+        for x in range(0, width, 18 * RENDER_SCALE):
+            seed = _stable_hash("land_texture", x // RENDER_SCALE, y // RENDER_SCALE)
+            alpha = 14 + seed % 18
+            if seed % 5 == 0:
+                color = (219, 203, 132, alpha)
+            elif seed % 5 in (1, 2):
+                color = (78, 112, 62, alpha)
+            else:
+                color = (91, 84, 50, alpha)
+            rr = (1 + seed % 3) * RENDER_SCALE
+            jitter_x = ((seed >> 8) % 11 - 5) * RENDER_SCALE
+            jitter_y = ((seed >> 16) % 11 - 5) * RENDER_SCALE
+            draw.ellipse((x + jitter_x - rr, y + jitter_y - rr, x + jitter_x + rr, y + jitter_y + rr), fill=color)
+
+    for y in range(0, height, 72 * RENDER_SCALE):
+        x_offset = ((y // (72 * RENDER_SCALE)) % 2) * 36 * RENDER_SCALE
+        for x in range(x_offset, width, 112 * RENDER_SCALE):
+            draw.arc(
+                (x, y, x + 30 * RENDER_SCALE, y + 11 * RENDER_SCALE),
+                195,
+                340,
+                fill=(73, 91, 52, 34),
+                width=max(1, RENDER_SCALE),
+            )
+
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), land_mask)
+    layer.putalpha(alpha)
+    canvas.alpha_composite(layer)
+
+
+def _draw_base_water_texture(canvas, water_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    width, height = canvas.size
+
+    for y in range(0, height, 28 * RENDER_SCALE):
+        x_offset = ((y // (28 * RENDER_SCALE)) % 2) * 24 * RENDER_SCALE
+        for x in range(x_offset, width, 58 * RENDER_SCALE):
+            seed = _stable_hash("water_texture", x // RENDER_SCALE, y // RENDER_SCALE)
+            arc_width = (18 + seed % 16) * RENDER_SCALE
+            arc_height = (7 + seed % 5) * RENDER_SCALE
+            alpha = 34 + seed % 34
+            draw.arc(
+                (x, y, x + arc_width, y + arc_height),
+                195,
+                345,
+                fill=(107, 158, 160, alpha),
+                width=max(1, RENDER_SCALE),
+            )
+
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), water_mask)
+    layer.putalpha(alpha)
+    canvas.alpha_composite(layer)
 
 
 def _draw_country_border_overlay(canvas, proj, germany_geom):
@@ -775,20 +837,6 @@ def _draw_terrain(canvas, proj, land_mask):
             _draw_glyph_center(decor, proj, glyph_name, lon, lat, width)
         for lon, lat, size in region.get("mountains", []):
             _draw_mountains(decor, draw, proj, lon, lat, size, region.get("glyph", "alpine"))
-    for lon, lat, size in [
-        (9.8, 50.4, 38), (11.0, 49.0, 38), (6.3, 51.4, 28),
-        (8.8, 50.0, 28), (9.6, 52.0, 24), (12.3, 52.4, 24),
-        (13.7, 52.0, 23), (14.1, 53.0, 20), (10.1, 53.2, 44),
-        (13.9, 52.2, 42), (11.1, 50.8, 46), (9.2, 51.0, 40),
-        (7.6, 50.2, 36), (10.4, 48.0, 40), (12.2, 49.2, 38),
-        (7.6, 53.2, 34), (8.4, 52.2, 34), (9.2, 52.8, 30),
-        (10.9, 53.4, 32), (12.1, 53.9, 30), (13.0, 53.6, 32),
-        (13.8, 51.3, 30), (12.8, 51.1, 28), (11.7, 51.2, 30),
-        (10.2, 50.6, 34), (8.6, 50.7, 30), (7.1, 49.5, 32),
-        (8.2, 48.8, 32), (9.7, 48.6, 34), (11.7, 48.6, 32),
-        (12.8, 48.3, 34), (13.4, 49.5, 36), (14.4, 50.4, 30),
-    ]:
-        _draw_tree_cluster(decor, proj, lon, lat, size)
     if BAKED_TOWN_DETAILS_ENABLED:
         for lon, lat, size in BAKED_TOWN_DETAILS:
             _draw_town(draw, proj, lon, lat, size)
@@ -805,6 +853,8 @@ def _draw_terrain(canvas, proj, land_mask):
 def _draw_atlas_details(canvas, proj):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     for detail in ATLAS_DETAILS:
+        if detail["kind"] not in DEFAULT_ATLAS_DETAIL_KINDS:
+            continue
         kind_scale = ATLAS_DETAIL_KIND_SCALE.get(detail["kind"], 1.0)
         target_width = max(MIN_ATLAS_DETAIL_WIDTH, detail["width"] * kind_scale)
         _draw_glyph_center(
@@ -1388,6 +1438,9 @@ def main():
     print("Step 1: Draw countries and Germany mask")
     germany, germany_mask, land_mask = _draw_country_layer(canvas, proj)
     neighbor_mask = _neighbor_land_mask(land_mask, germany_mask)
+    water_mask = ImageChops.invert(land_mask)
+    _draw_base_water_texture(canvas, water_mask)
+    _draw_base_land_texture(canvas, land_mask, germany_mask)
 
     print("Step 2: Add terrain, texture, lakes, and atlas details")
     _draw_terrain(canvas, proj, land_mask)

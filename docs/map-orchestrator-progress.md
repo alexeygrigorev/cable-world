@@ -738,3 +738,31 @@ Created GitHub issues from the latest user feedback so the work follows issues i
 - `#70` Map city coordinates: fix Rostock landmark placement on land.
 
 Current priority order: fix visible clutter from tiny houses/trees, add base land/water texture, then recalibrate Rostock/Alps/massif sprite layers under the existing geography-audit process.
+
+## Iteration 2026-05-31 21:12
+
+Implemented:
+
+- Added reproducible masked base textures in `map_pipeline.compose_map`:
+  - `_draw_base_land_texture()` adds subtle grain and atlas-style land arcs through `land_mask`;
+  - `_draw_base_water_texture()` adds subtle wave texture through `water_mask`.
+- Reduced tiny decorative clutter from issue `#67`:
+  - `DEFAULT_ATLAS_DETAIL_KINDS` now renders only larger landmark categories by default: bridges, castles, lighthouses, ports, ships and towers;
+  - tiny village/chapel/ruins/watermill/windmill glyphs remain available as assets/data but are skipped by the default underlay;
+  - removed the extra scattered small tree-cluster pass from `_draw_terrain()`, leaving named forest masses and larger relief/forest glyphs.
+- Rebuilt `assets/map/germany_styled.png` from the reproducible pipeline.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows fewer tiny houses/trees and a less flat land/water base.
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png` shows the texture pass without the earlier straight river-line artifact.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6360740`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 19 tests OK, 1 skipped under plain Python.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 tests OK.
+- `godot --headless --path . --import --quit`: import completed. Existing nested worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`; Playwright screenshots regenerated.
+
+Self-audit: about `6.7/10`, still not `8/10`. This is a real readability improvement, but open issues remain: Rostock is visually too far into the water, German Alps need recalibration, and separate massif sprite layers are still required for the target direction.

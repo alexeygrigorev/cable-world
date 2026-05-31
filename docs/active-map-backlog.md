@@ -13,7 +13,7 @@
 ## Open Items
 
 - [ ] Перевести текущую карту в glyph-based production pipeline: чистая база без baked городов + отдельные переиспользуемые glyph layers для гор, лесов, озер, кораблей и atlas details.
-- [ ] #66 Добавить базовую reproducible текстуру земли и воды: land/water не должны выглядеть плоскими заливками, но текстура не должна конкурировать с маркерами и подписями.
+- [x] #66 Добавить базовую reproducible текстуру земли и воды: land/water больше не являются плоскими заливками; текстура маскируется отдельно по land/water и не должна конкурировать с маркерами и подписями.
 - [x] Первый production cut: `map_pipeline.compose_map` больше не рисует baked town/city pictograms в underlay; runtime city landmarks остаются единственным городским слоем.
 - [x] Добавить первый atlas detail layer: reproducible glyphs для ships/ports/bridges/castles/tower + explicit `ATLAS_DETAILS` placement по координатам.
 - [x] Расширить runtime map bounds южнее Германии: можно панорамировать вниз к München/Alps и видеть соседние страны как контурную основу без ручных overlay-глифов.
@@ -52,7 +52,8 @@
 - [x] Добавить outline-only runtime sprites для транспортных и city landmark иконок: объекты должны читаться поверх детальной карты без кругов, плашек и фоновых подложек.
 - [x] Убрать jitter у runtime объектов при pan/zoom: транспортные маркеры, city landmarks и размеры иконок snap-аются к целым пикселям по тому же принципу, что и подписи.
 - [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 78`, чтобы не превращаться в шум.
-- [ ] #67 Убрать или увеличить именно мелкие домики и мелкие деревья: если объект не читается на mobile default zoom, он не должен оставаться на карте как pixel dust.
+- [x] #67 Первый pass: убрать именно мелкие домики и мелкие деревья из default render. Поселковые detail kinds (`village`, `chapel`, `ruins`, `watermill`, `windmill`) больше не рендерятся по умолчанию, россыпь мелких одиночных tree clusters убрана; оставшиеся дома/леса должны быть крупными landmark-глифами.
+- [ ] #67 Follow-up: проверить mobile руками и убрать/укрупнить оставшиеся дома/лесные glyphs, если пользователь всё ещё воспринимает их как мелкий шум.
 - [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
 - [x] Вернуть journey-map структуру без технических полос: добавлен controlled `ATLAS_ROUTE_SEGMENTS` layer с короткими dotted atlas trails, без continuous `draw.line` и без blue procedural waterways.
@@ -79,5 +80,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending named water/detail readability pass.
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.5/10` по плотности и читаемости, но нельзя оценивать ее как `8/10`: некоторые water blobs и forest+village clusters тяжеловаты, marker composition в городах всё еще плотная, нужна более сильная художественная плотность, visual audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.
+- Последний map commit на момент обновления backlog: pending base texture + small clutter pass.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.7/10` по плотности и читаемости, но нельзя оценивать ее как `8/10`: water blobs, Rostock placement, German Alps visibility, separate massif sprites and marker composition still need work.
