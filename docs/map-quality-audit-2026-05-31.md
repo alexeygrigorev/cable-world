@@ -161,3 +161,17 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-map-v9.png`
 
 Rubric estimate after sprite glyph terrain iteration 2026-05-31: stronger 7/10 candidate, not 8/10 yet. Alps and forests finally read as map glyphs, but the exact scale/extent of every range still needs geographic tuning before it satisfies the 10/10 terrain accuracy criterion.
+
+Explicit relief placement iteration result:
+
+- Mountain sprite selection moved from hash-based choice inside `_draw_mountains()` to explicit `mountain_glyphs` in `RELIEF_REGIONS`.
+- Alps now use a controlled sequence of `alps_range_*` and `alps_peak_*` placements along the southern Alpine band, so start/end/scale can be tuned directly.
+- Harz, Black Forest, Bavarian Forest and Erzgebirge now each declare their own sprite, anchor and width instead of inheriting a generic random-looking range.
+- Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns gzip and no-store headers.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-map-v11.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-map-v11.png`
+
+Rubric estimate after explicit relief placement iteration 2026-05-31: still around 7/10. It is materially closer to 8/10 because major relief is now controllable by real layer definitions, but final quality still needs calibrated extents against a real relief source and a pass on label/marker crowding.

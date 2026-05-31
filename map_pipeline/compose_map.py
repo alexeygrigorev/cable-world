@@ -38,7 +38,8 @@ RELIEF_REGIONS = [
         "blur": 24,
         "points": [(7.45, 49.2), (8.25, 48.9), (8.55, 47.75), (7.65, 47.45), (6.95, 48.25)],
         "trees": [(8.0, 49.0, 82), (8.15, 48.45, 76), (7.8, 47.95, 70)],
-        "mountains": [(8.05, 48.15, 34)],
+        "mountain_glyphs": [("highland_forest_2", 8.00, 48.18, 150)],
+        "mountains": [],
     },
     {
         "id": "alps",
@@ -50,7 +51,13 @@ RELIEF_REGIONS = [
         "extends_to": ["France", "Switzerland", "Italy", "Austria", "Slovenia"],
         "points": [(9.45, 47.85), (10.5, 47.1), (12.1, 46.95), (13.35, 47.25), (13.9, 48.0), (11.5, 48.35)],
         "trees": [(10.0, 48.2, 44), (11.0, 48.05, 50), (12.35, 48.0, 46)],
-        "mountains": [(10.45, 47.62, 74), (11.05, 47.45, 98), (11.75, 47.50, 88), (12.55, 47.58, 70)],
+        "mountain_glyphs": [
+            ("alps_range_1", 10.05, 47.45, 210),
+            ("alps_range_3", 11.20, 47.33, 265),
+            ("alps_range_2", 12.38, 47.43, 220),
+            ("alps_peak_2", 13.15, 47.62, 120),
+        ],
+        "mountains": [],
     },
     {
         "id": "bavarian_forest",
@@ -62,7 +69,8 @@ RELIEF_REGIONS = [
         "extends_to": ["Czechia", "Austria"],
         "points": [(11.8, 49.35), (12.55, 48.8), (13.7, 48.8), (13.85, 49.35), (12.7, 49.85)],
         "trees": [(12.8, 49.35, 72), (13.2, 49.05, 62)],
-        "mountains": [(12.9, 49.2, 34)],
+        "mountain_glyphs": [("highland_forest_3", 12.95, 49.20, 150)],
+        "mountains": [],
     },
     {
         "id": "harz",
@@ -73,7 +81,8 @@ RELIEF_REGIONS = [
         "blur": 20,
         "points": [(10.0, 52.05), (10.85, 52.15), (11.35, 51.65), (10.75, 51.35), (9.9, 51.55)],
         "trees": [(10.55, 51.75, 58)],
-        "mountains": [(10.62, 51.78, 32)],
+        "mountain_glyphs": [("highland_forest_1", 10.62, 51.78, 118)],
+        "mountains": [],
     },
     {
         "id": "erzgebirge",
@@ -85,7 +94,8 @@ RELIEF_REGIONS = [
         "extends_to": ["Czechia"],
         "points": [(12.3, 50.95), (13.15, 50.45), (14.65, 50.45), (14.9, 50.85), (13.55, 51.15)],
         "trees": [(13.75, 50.85, 62)],
-        "mountains": [(13.25, 50.62, 36), (14.05, 50.7, 30)],
+        "mountain_glyphs": [("border_highland_1", 13.10, 50.66, 145), ("border_highland_2", 14.05, 50.75, 125)],
+        "mountains": [],
     },
     {
         "id": "eifel_hunsrueck",
@@ -279,6 +289,8 @@ def _draw_terrain(canvas, proj, land_mask):
     for region in RELIEF_REGIONS:
         for lon, lat, size in region.get("trees", []):
             _draw_tree_cluster(decor, proj, lon, lat, size)
+        for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):
+            _draw_glyph_center(decor, proj, glyph_name, lon, lat, width)
         for lon, lat, size in region.get("mountains", []):
             _draw_mountains(decor, draw, proj, lon, lat, size, region.get("glyph", "alpine"))
     for lon, lat, size in [
