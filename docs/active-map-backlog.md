@@ -98,6 +98,7 @@
 - [ ] #64 Провести terrain accuracy audit текущей Германии по скриншотам/карте высот: automated guardrails есть, но нужно визуально проверить, что нет ложных больших гор у Hamburg/севера и что все видимые горы выглядят соразмерно реальности.
 - [ ] #63 Спроектировать Europe map pipeline для следующих стран и регионов: France, Spain, Italy, Switzerland, Austria, Germany neighbors, Scandinavia, Finland, Baltics, Russia, Belarus, Ukraine до украинских гор, Turkey; рельефные слои должны продолжаться через границы.
 - [ ] #63 Позже разбить большую Europe pipeline issue на маленькие блоки по странам/регионам/слоям, но пока держать общий список в одной issue, чтобы ничего не потерять.
+- [x] #75 DACH + Northern Italy planning/data contract: `docs/europe-expansion-plan.md` разбивает работу на Switzerland, Austria, Northern Italy, Alpine relief source/elevation validation, city landmark coverage и cableway/funicular candidate data. Следующий pass должен добавлять только source-backed metadata/data, а render pass должен начинаться от реальных elevation sources, не от декоративных anchors.
 - [ ] Перегенерировать/переразмерить glyph source assets под рабочий максимум `200%`, чтобы atlas details и terrain glyphs были четкими на максимальном приближении без лишней пиксельности.
 - [ ] Оформить list mode отдельной задачей: список при переключении с карты должен соответствовать стилю карты, а не выглядеть как чужой UI.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.

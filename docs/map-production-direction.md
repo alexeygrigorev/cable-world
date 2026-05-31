@@ -66,6 +66,14 @@ This is why continuing to polish a single generated Germany image is not real pr
    - no duplicate baked/runtime cities;
    - map remains expandable to France, Spain, Italy, Switzerland, Austria, neighbors, Scandinavia, Baltics, Russia/Belarus/Ukraine, and Turkey.
 
+## Europe Expansion Data Contract
+
+The first Europe expansion block is #75 DACH + Northern Italy. Its planning/data contract lives in `docs/europe-expansion-plan.md`.
+
+For Alpine expansion, relief must be derived from real elevation data before new art is drawn. Use Copernicus DEM GLO-30 or EU-DEM where possible, NASA SRTM 1 arc-second as fallback, and Natural Earth terrain only as broad low-detail context. Alpine ridge anchors and massif sectors must come from elevation masks, named massif geometry or documented real-world centroids, never from random decorative placement.
+
+The #75 block is split into Switzerland, Austria, Northern Italy, Alpine relief source/elevation validation, city landmark coverage, and cableway/funicular object candidate data. Required city coverage starts with Zürich, Bern, Geneva, Vienna, Innsbruck, Salzburg, Milan, Turin, Venice, Verona and Bolzano.
+
 ## Stop Rules
 
 Do not spend more time polishing `assets/map/germany_styled.png` as a monolithic final map.
