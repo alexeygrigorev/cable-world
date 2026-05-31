@@ -99,6 +99,8 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"München"', script_text)
         self.assertIn('"Dresden"', script_text)
         self.assertIn("city_landmarks/city_%s.png", script_text)
+        self.assertIn("func _draw_centered_label_text(", script_text)
+        self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y", script_text)
         self.assertIn("_update_map_reference_data()", script_text)
         self.assertIn('toolbar.name = "ПанельИнструментов"', script_text)
         self.assertIn("toolbar.visible = false", script_text)
@@ -129,7 +131,12 @@ class MapPanelContractTest(unittest.TestCase):
             "InputEventMagnifyGesture",
             "MOUSE_BUTTON_WHEEL_UP",
             "MOUSE_BUTTON_WHEEL_DOWN",
-            "pan_offset += event.relative",
+            "const PAN_DRAG_SCALE := 0.22",
+            "func _pan_by(screen_delta: Vector2) -> void:",
+            "pan_offset += screen_delta * PAN_DRAG_SCALE",
+            "func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:",
+            "func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:",
+            "event.screen_relative",
             "pan_offset = _default_pan_offset()",
             "func _zoom_at(pivot: Vector2, factor: float) -> void:",
             "clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM)",
@@ -199,6 +206,21 @@ class MapPanelContractTest(unittest.TestCase):
             "Показать непосещенные",
         ]:
             self.assertIn(expected, script_text)
+
+    def test_city_landmark_icons_are_drawn_after_successful_load(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+        city_icon_body = script_text.split("func _draw_city_icon", 1)[1].split("func _city_icon_texture", 1)[0]
+        city_label_body = script_text.split("func _draw_city_label", 1)[1].split("func _draw_city_icon", 1)[0]
+
+        self.assertIn("if texture == null:", city_icon_body)
+        self.assertIn("return", city_icon_body)
+        self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_body)
+        self.assertIn("_draw_centered_label_text", city_label_body)
+        self.assertNotIn("draw_circle(position", city_label_body)
+        self.assertLess(
+            city_icon_body.index("if texture == null:"),
+            city_icon_body.index("draw_texture_rect(texture, icon_rect, false)"),
+        )
 
     def test_map_panel_initially_focuses_germany_when_present(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")

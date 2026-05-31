@@ -95,29 +95,30 @@ class OfflineMapLayer:
 	func _draw_city_label(font: Font, label_data: Dictionary) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
 		var is_capital := str(label_data.get("kind", "")) == "capital"
-		var dot_radius := (4.4 if is_capital else 3.6) * zoom
 		var label_size := 18 if is_capital else 15
-		_draw_city_icon(label_data, position)
-		draw_circle(position, dot_radius + 2.0, Color(0.95, 0.80, 0.40, 0.84))
-		draw_circle(position, dot_radius, Color("#2a1f16"))
-		var text_pos := position + Vector2(15.0, -5.0) * zoom
-		_draw_label_text(font, str(label_data["name"]), text_pos, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
+		var icon_rect := _draw_city_icon(label_data, position)
+		if icon_rect.size != Vector2.ZERO:
+			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 14.0 * zoom
+			_draw_centered_label_text(font, str(label_data["name"]), icon_rect.get_center().x, label_baseline_y, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
+		else:
+			_draw_centered_label_text(font, str(label_data["name"]), position.x, position.y + 12.0 * zoom, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
 
-	func _draw_city_icon(label_data: Dictionary, position: Vector2) -> void:
+	func _draw_city_icon(label_data: Dictionary, position: Vector2) -> Rect2:
 		var icon_id := str(label_data.get("icon", ""))
 		if icon_id.is_empty():
-			return
+			return Rect2()
 		var texture: Texture2D = _city_icon_texture(icon_id)
 		if texture == null:
-			return
-			var icon_size: float = clamp(54.0 * sqrt(max(zoom, 0.75)), 46.0, 78.0)
-			var icon_rect := Rect2(
-				position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom),
-				Vector2(icon_size, icon_size)
-			)
-			draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.28), icon_size * 0.54, Color(0.09, 0.05, 0.02, 0.30))
-			draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.18), icon_size * 0.47, Color(0.95, 0.83, 0.55, 0.18))
-			draw_texture_rect(texture, icon_rect, false)
+			return Rect2()
+		var icon_size: float = clamp(54.0 * sqrt(max(zoom, 0.75)), 46.0, 78.0)
+		var icon_rect := Rect2(
+			position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom),
+			Vector2(icon_size, icon_size)
+		)
+		draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.28), icon_size * 0.54, Color(0.09, 0.05, 0.02, 0.30))
+		draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.18), icon_size * 0.47, Color(0.95, 0.83, 0.55, 0.18))
+		draw_texture_rect(texture, icon_rect, false)
+		return icon_rect
 
 	func _city_icon_texture(icon_id: String) -> Texture2D:
 		if not _city_icon_textures.has(icon_id):
@@ -139,6 +140,12 @@ class OfflineMapLayer:
 		draw_string(font, position + Vector2(0.0, 1.3), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
 		draw_string(font, position + shadow_offset, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
 		draw_string(font, position, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, text_color)
+
+	func _draw_centered_label_text(font: Font, text: String, center_x: float, baseline_y: float, font_size: int, text_color: Color, shadow_color: Color) -> void:
+		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
+		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
+		var position := Vector2(center_x - text_size.x * 0.5, baseline_y)
+		_draw_label_text(font, text, position, font_size, text_color, shadow_color)
 
 	func _geo_to_screen(coordinates: Vector2) -> Vector2:
 		return _map_point(_project_coordinates(coordinates, geo_bounds, map_base_size()))
@@ -231,6 +238,7 @@ const DEFAULT_ZOOM := 1.10
 const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
 const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
+const PAN_DRAG_SCALE := 0.22
 const DRAG_TAP_SUPPRESS_DISTANCE := 10.0
 
 var objects: Array[Dictionary] = []
@@ -700,8 +708,8 @@ func _handle_mouse_button(event: InputEventMouseButton) -> void:
 
 func _handle_mouse_motion(event: InputEventMouseMotion) -> void:
 	if dragging or bool(event.button_mask & MOUSE_BUTTON_MASK_LEFT):
-		pan_offset += event.relative
-		drag_distance += event.relative.length()
+		_pan_by(_pan_delta_from_mouse_motion(event))
+		drag_distance += event.screen_relative.length()
 		if drag_distance >= DRAG_TAP_SUPPRESS_DISTANCE:
 			suppress_next_marker_press = true
 		_apply_map_transform()
@@ -726,8 +734,8 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 		if previous_distance > 0.0 and current_distance > 0.0:
 			_zoom_at(event.position, current_distance / previous_distance)
 	else:
-		pan_offset += event.relative
-		drag_distance += event.relative.length()
+		_pan_by(_pan_delta_from_screen_drag(event))
+		drag_distance += event.screen_relative.length()
 		if drag_distance >= DRAG_TAP_SUPPRESS_DISTANCE:
 			suppress_next_marker_press = true
 		_apply_map_transform()
@@ -740,6 +748,15 @@ func _touch_distance_with(index: int, position: Vector2) -> float:
 			var other_position: Vector2 = last_touch_positions[touch_index]
 			return position.distance_to(other_position)
 	return 0.0
+
+func _pan_by(screen_delta: Vector2) -> void:
+	pan_offset += screen_delta * PAN_DRAG_SCALE
+
+func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:
+	return event.screen_relative
+
+func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:
+	return event.screen_relative
 
 func _zoom_at(pivot: Vector2, factor: float) -> void:
 	var previous_zoom := zoom
@@ -1079,13 +1096,13 @@ func _focus_cluster(marker: Button) -> void:
 func _on_marker_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenDrag:
 		suppress_next_marker_press = true
-		pan_offset += event.relative
-		drag_distance += event.relative.length()
+		_pan_by(_pan_delta_from_screen_drag(event))
+		drag_distance += event.screen_relative.length()
 		_apply_map_transform()
 		accept_event()
 	elif event is InputEventMouseMotion and bool(event.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		suppress_next_marker_press = true
-		pan_offset += event.relative
-		drag_distance += event.relative.length()
+		_pan_by(_pan_delta_from_mouse_motion(event))
+		drag_distance += event.screen_relative.length()
 		_apply_map_transform()
 		accept_event()

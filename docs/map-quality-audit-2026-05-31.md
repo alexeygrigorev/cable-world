@@ -105,3 +105,15 @@ City landmark iteration result:
 - Germany landmarks now appear directly on the map, including Dresden.
 - Labels now use umlauts for German city names where needed.
 - This improves geographic recognition, but icon size/placement and cluster styling still need more art direction before a confident 8/10.
+
+Fix iteration result:
+
+- City landmark textures now actually draw after successful load; the previous implementation returned before the draw block.
+- Mouse, touch, and marker drag now share the same pan helper and use a calmer drag scale.
+- Remaining blocker: the generated artistic Germany underlay is not a calibrated real map, so real coordinates can still look visually misaligned against coastlines/city placement until the underlay is regenerated or georeferenced.
+
+Label/pan/splash iteration result:
+
+- City labels now sit centered under city pictograms and city dots were removed to reduce visual noise.
+- Pan speed was reduced again; device feel-test is still required because this is perception-sensitive.
+- The splash image was regenerated with a more plausible cableway structure, but it should still be treated as stylized art rather than engineering documentation.

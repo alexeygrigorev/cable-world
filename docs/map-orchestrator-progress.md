@@ -87,3 +87,33 @@ Evidence:
 - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
 
 Self-audit: direction improved, but still not `8/10`. City pictograms make the map more recognizable and less generic, but some icons are still too small/partly hidden on desktop and cluster badges remain a compromise. Next step: tune landmark placement/priority and replace count badges with native atlas group markers.
+
+## Iteration 2026-05-31 12:05
+
+Implemented:
+
+- Reviewed and committed the parallel themed splash/loading + Android icon work as `f92eeb5`.
+- Created/persisted the active TODO in `docs/active-map-backlog.md` and mapped the current work into GitHub issues `#55-#59`.
+- Fixed the city landmark draw path: generated city pictograms were loaded but the draw block was accidentally unreachable after the null-texture return.
+- Normalized map panning through one helper for mouse drag, touch drag, and marker drag.
+- Reduced drag speed with `PAN_DRAG_SCALE = 0.22` so pan feels calmer and closer to the user's finger/mouse movement.
+- Added a contract test so city landmark icons must be drawn after successful texture load.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 10 OK.
+- `godot --headless --path . --quit-after 1`: no new GDScript errors; existing shutdown RID warnings remain.
+
+Self-audit: this fixes a functional regression that made city icons appear as plain dots. It does not yet solve the deeper geography/art alignment problem, so the map is still not an `8/10`.
+
+## Iteration 2026-05-31 12:22
+
+Implemented:
+
+- Changed city landmark labels to sit centered under the pictogram instead of beside a separate city dot.
+- Removed the city dot from city landmark rendering; the pictogram is now the city anchor.
+- Lowered `PAN_DRAG_SCALE` again from `0.45` to `0.22` after user feedback that touch pan was still too sensitive.
+- Replaced the splash/loading image with a new generated version that keeps the atlas style but shows a more plausible cable car: cabin vertical, clear hanger/roller assembly, support towers, and continuous cables.
+- Removed large non-runtime source PNGs from `res://assets/branding/` and deleted the local `tmp/city-landmark-source/` folder so Web exports do not ship unused source sheets.
+
+Self-audit: the city layer reads cleaner and splash physics is improved. Pan needs direct user feel-testing on the device; if still too fast, the next adjustment is a smaller single constant rather than structural changes.

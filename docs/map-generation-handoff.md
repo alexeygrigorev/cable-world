@@ -311,7 +311,7 @@ Latest visual-pass notes:
   ```text
   tmp/iter-map00000002.png
   ```
-  Current rubric estimate after final browser verification: 10/10 for the current project scope. It is no longer stretched, has large visible mountains/forests/routes, matches the reference direction, uses integrated pixel-atlas transport landmarks, and browser screenshots prove marker click plus drag.
+  Historical note from an earlier self-check: this was previously over-scored as `10/10`. User review on 2026-05-31 rejected that assessment; the honest current target state is still below `8/10` until city landmarks are visible, coordinates feel aligned, pan is calmer, and the visual hierarchy reads instantly.
 
 Browser verification:
 
