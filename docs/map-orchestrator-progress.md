@@ -1107,3 +1107,21 @@ Checks:
 - `uv run python -m map_pipeline.compose_map`: regenerated `assets/map/germany_styled.png`, `1932x3072`, `3,159,626` bytes.
 
 Self-audit: this is a bounded clutter reduction, not a full art pass. The full PNG now reads with fewer tiny object glyphs and larger forest masses, but some land texture dots and dotted route marks can still look busy in the raw asset. Visual risk is still medium until a runtime mobile/desktop screenshot review confirms the default zoom composition with transport markers on top.
+
+## Iteration 2026-05-31 22:35
+
+Implemented for #58:
+
+- Kept map mode fullscreen-first and did not change map pipeline or runtime map assets.
+- Reworked `ObjectListPanel` styling so list mode uses the same atlas parchment/control palette as the map zoom/list controls:
+  - parchment panel and alternating row backgrounds;
+  - dark atlas border and shadow;
+  - selected rows use the map toggle green with warm parchment text.
+- Added contract coverage for the existing map-to-list toggle target and the list atlas palette.
+
+Checks:
+
+- `python3 -m unittest tests.test_app_shell_contract tests.test_map_panel_contract tests.test_collection_contract`: 27 OK.
+- `godot --headless --path . --import --quit`: OK; known local adb daemon warning only.
+
+Visual risk: list mode was not screenshot-reviewed in this implementation pass yet; final acceptance still needs a live mobile/desktop screenshot check if reviewer treats this as map UX.

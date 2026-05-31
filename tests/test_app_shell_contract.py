@@ -145,6 +145,21 @@ class AppShellContractTest(unittest.TestCase):
         self.assertIn("selected_object_label.text", script_text)
         self.assertIn('selected_object_label.text = "Выбрано: %s, %s"', script_text)
 
+    def test_map_list_toggle_opens_secondary_list_without_breaking_map_first_chrome(self) -> None:
+        script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            'map_list_toggle_button.name = "MapListToggle"',
+            'map_list_toggle_button.tooltip_text = "Открыть список объектов"',
+            'map_list_toggle_button.pressed.connect(func() -> void: _show_section("list"))',
+            "map_list_toggle_button.visible = is_map",
+            "var margin := 0 if is_map else 12",
+            "navigation_area.visible = not is_map",
+            "app_title_label.visible = not is_map",
+            "content_panel.add_theme_stylebox_override(\"panel\", panel_style)",
+        ]:
+            self.assertIn(expected, script_text)
+
     def test_current_section_indicator_and_navigation_scroll_contract(self) -> None:
         script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
@@ -209,6 +224,27 @@ class AppShellContractTest(unittest.TestCase):
 
         self.assertIn("func select_visual_object(index: int) -> void:", script_text)
         self.assertIn("object_selected.emit(index)", script_text)
+
+    def test_list_panel_uses_atlas_parchment_style(self) -> None:
+        script_text = (ROOT / "scripts" / "object_list_panel.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "const ATLAS_PARCHMENT_COLOR := Color(0.96, 0.90, 0.72, 0.94)",
+            'const ATLAS_BORDER_COLOR := Color("#3b2a18")',
+            'const ATLAS_TEXT_COLOR := Color("#27321f")',
+            'const ATLAS_SELECTED_COLOR := Color("#31544d")',
+            'const ATLAS_SELECTED_TEXT_COLOR := Color("#f7e4b0")',
+            "func _apply_atlas_list_style() -> void:",
+            "_apply_atlas_list_style()",
+            'add_theme_stylebox_override("panel", panel_style)',
+            'add_theme_stylebox_override("selected", selected_style)',
+            'add_theme_stylebox_override("selected_focus", selected_style)',
+            'add_theme_color_override("font_color", ATLAS_TEXT_COLOR)',
+            'add_theme_color_override("font_selected_color", ATLAS_SELECTED_TEXT_COLOR)',
+            "set_item_custom_bg_color(visible_index, ATLAS_PARCHMENT_ALT_COLOR if visible_index % 2 == 0 else ATLAS_PARCHMENT_COLOR)",
+            'set_item_tooltip(visible_index, "Открыть объект: %s" % object_data.get("name", "Без названия"))',
+        ]:
+            self.assertIn(expected, script_text)
 
 
 if __name__ == "__main__":

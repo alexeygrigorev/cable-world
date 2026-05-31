@@ -6,6 +6,15 @@ signal object_selected(index: int)
 const FILTER_ALL := "all"
 const FILTER_VISITED := "visited"
 const FILTER_NOT_VISITED := "not_visited"
+const ATLAS_PARCHMENT_COLOR := Color(0.96, 0.90, 0.72, 0.94)
+const ATLAS_PARCHMENT_ALT_COLOR := Color(0.99, 0.94, 0.78, 0.82)
+const ATLAS_BORDER_COLOR := Color("#3b2a18")
+const ATLAS_TEXT_COLOR := Color("#27321f")
+const ATLAS_SELECTED_COLOR := Color("#31544d")
+const ATLAS_SELECTED_TEXT_COLOR := Color("#f7e4b0")
+const ATLAS_SHADOW_COLOR := Color(0.12, 0.08, 0.03, 0.42)
+const ATLAS_LIST_RADIUS := 6
+const ATLAS_LIST_BORDER_WIDTH := 2
 
 var objects: Array[Dictionary] = []
 var type_filter: String = FILTER_ALL
@@ -27,6 +36,7 @@ const TAP_SELECTION_DELAY_SEC := 0.12
 func _ready() -> void:
 	item_selected.connect(_on_item_selected)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	_apply_atlas_list_style()
 	_update_empty_state()
 
 func set_empty_state_label(label: Label) -> void:
@@ -83,7 +93,43 @@ func refresh() -> void:
 			_operational_status_text(object_data)
 		]
 		add_item(label)
+		var visible_index := get_item_count() - 1
+		set_item_custom_bg_color(visible_index, ATLAS_PARCHMENT_ALT_COLOR if visible_index % 2 == 0 else ATLAS_PARCHMENT_COLOR)
+		set_item_tooltip(visible_index, "Открыть объект: %s" % object_data.get("name", "Без названия"))
 	_update_empty_state()
+
+func _apply_atlas_list_style() -> void:
+	fixed_icon_size = Vector2i(1, 1)
+	add_theme_color_override("font_color", ATLAS_TEXT_COLOR)
+	add_theme_color_override("font_selected_color", ATLAS_SELECTED_TEXT_COLOR)
+	add_theme_color_override("guide_color", Color(0.23, 0.16, 0.09, 0.20))
+	add_theme_font_size_override("font_size", 18)
+
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = ATLAS_PARCHMENT_COLOR
+	panel_style.border_color = ATLAS_BORDER_COLOR
+	panel_style.shadow_color = ATLAS_SHADOW_COLOR
+	panel_style.shadow_size = 5
+	panel_style.content_margin_left = 8.0
+	panel_style.content_margin_top = 8.0
+	panel_style.content_margin_right = 8.0
+	panel_style.content_margin_bottom = 8.0
+	panel_style.set_border_width_all(ATLAS_LIST_BORDER_WIDTH)
+	panel_style.set_corner_radius_all(ATLAS_LIST_RADIUS)
+	add_theme_stylebox_override("panel", panel_style)
+
+	var selected_style := StyleBoxFlat.new()
+	selected_style.bg_color = ATLAS_SELECTED_COLOR
+	selected_style.border_color = ATLAS_BORDER_COLOR
+	selected_style.set_border_width_all(ATLAS_LIST_BORDER_WIDTH)
+	selected_style.set_corner_radius_all(ATLAS_LIST_RADIUS)
+	add_theme_stylebox_override("selected", selected_style)
+	add_theme_stylebox_override("selected_focus", selected_style)
+
+	var cursor_style := selected_style.duplicate()
+	cursor_style.bg_color = Color(0.18, 0.31, 0.28, 0.18)
+	add_theme_stylebox_override("cursor", cursor_style)
+	add_theme_stylebox_override("cursor_unfocused", cursor_style)
 
 func select_object(index: int) -> void:
 	if index < 0 or index >= objects.size():
