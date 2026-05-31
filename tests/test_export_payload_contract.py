@@ -22,6 +22,7 @@ class ExportPayloadContractTest(unittest.TestCase):
         required_excludes = [
             "assets/map/glyphs/map_glyph_sheet.png",
             "assets/map/glyphs/map_glyph_sheet.png.import",
+            "assets/map/massifs/**",
             "assets/sprites/icon_*.png",
             "assets/sprites/icon_*.png.import",
             "assets/sprites/city_landmarks/city_*.png",

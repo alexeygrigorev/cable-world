@@ -809,3 +809,37 @@ Checks:
 - Web export rebuilt, gzip files regenerated, server restarted on `http://127.0.0.1:9000/`, and Playwright screenshots regenerated.
 
 Self-audit: about `6.8/10`, still not `8/10`. This fixes two concrete geography/readability defects, but `#69` is still the important architectural/art task: each mountain massif needs its own reusable glyph/sprite layer, with stronger terrain accuracy and less ad hoc composition.
+
+## Iteration 2026-05-31 19:37
+
+Implemented:
+
+- Added a non-render geography audit before screenshot review:
+  - `german_alpine_edge_massif` now declares `required_country_overlap: "Germany"` and the audit verifies that it really intersects the Germany geometry.
+  - `CITY_LANDMARK_PLACEMENT_AUDITS` verifies Rostock's runtime icon placement by sampling the projected top/center/bottom icon points against the Germany polygon.
+- Started `#69` with a first architecture pass:
+  - each Alpine massif segment is rendered through `_render_alpine_massif_segment_layer()`;
+  - source layers are cropped and written to `assets/map/massifs/*.png`;
+  - the final underlay composites those same per-massif layers.
+- Added `assets/map/massifs/.gdignore` and `assets/map/massifs/**` export excludes so source layers do not inflate Web/Android payloads.
+
+Evidence:
+
+- Generated source layers:
+  - `western_alps_massif.png`
+  - `swiss_alps_massif.png`
+  - `bavarian_tyrol_alps_massif.png`
+  - `german_alpine_edge_massif.png`
+  - `austrian_alps_massif.png`
+- `assets/map/germany_styled.png` regenerated from the per-massif composition path.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6439692`, `Cache-Control: no-store`.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` regenerated from the current Web build.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 19 tests OK, 1 skipped under plain Python.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 tests OK.
+- `uv run python -m map_pipeline.compose_map`: regenerated map and source massif layers.
+- Web export rebuilt, gzip files regenerated, server restarted on `http://127.0.0.1:9000/`, and Playwright screenshots regenerated.
+
+Self-audit: still about `6.8/10`. This improves process and architecture, not enough visual quality by itself. The next quality step is to replace the current repeated Alpine glyphs with better per-massif art/placement and continue lake/forest/city density checks.

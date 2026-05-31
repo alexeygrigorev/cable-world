@@ -12,6 +12,7 @@ MAP_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "map")
 FONT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "fonts")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "natural_earth")
 GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
+MASSIF_DIR = os.path.join(MAP_DIR, "massifs")
 
 GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
 # Match the Mercator aspect of GERMANY_BOUNDS and keep enough physical pixels
@@ -36,6 +37,18 @@ NAMED_WATER_HIGHLIGHT = (139, 184, 181, 76)
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 FONT_CACHE = {}
+EXPORT_MASSIF_SOURCE_LAYERS = True
+
+RUNTIME_LANDMARK_AUDIT_VIEWPORT = (390, 844)
+CITY_LANDMARK_PLACEMENT_AUDITS = [
+    {
+        "name": "Rostock",
+        "coordinates": (12.0991, 54.0924),
+        "icon_offset": (0.0, 52.0),
+        "icon_size": 48.0,
+        "required_land_samples": ("top", "center", "bottom"),
+    },
+]
 
 # Runtime city landmarks are the only city/object layer. Keep the generated
 # underlay free of baked villages or city-like pictograms so it can scale to
@@ -156,6 +169,7 @@ ALPINE_MASSIF_SEGMENTS = [
     {
         "id": "german_alpine_edge_massif",
         "label": "German Alpine Edge",
+        "required_country_overlap": "Germany",
         "arc": [(10.15, 47.55), (11.10, 47.55), (12.25, 47.62), (13.05, 47.70)],
         "shadow": [(9.85, 47.48), (10.95, 47.36), (12.45, 47.46), (13.35, 47.70), (13.20, 48.04), (11.45, 47.98), (10.00, 47.86)],
         "glyphs": [
@@ -492,6 +506,11 @@ def audit_geography_layers():
     errors = []
     bounds_poly = box(*GERMANY_BOUNDS)
     relief_polygons = {region["id"]: Polygon(region["points"]) for region in RELIEF_REGIONS}
+    admin_dataset = "ne_50m_admin_0_countries"
+    if not os.path.isdir(os.path.join(DATA_DIR, admin_dataset)):
+        admin_dataset = "ne_110m_admin_0_countries"
+    countries = _clip_to_bounds(_load_shapefile(admin_dataset), GERMANY_BOUNDS)
+    country_geometries = {row["ADMIN"]: row.geometry for _, row in countries.iterrows()}
 
     for region in RELIEF_REGIONS:
         region_id = region["id"]
@@ -526,6 +545,21 @@ def audit_geography_layers():
                 _audit_point(errors, bounds_poly, lon, lat, f"{region_id}:{segment['id']}:{glyph_name}")
                 if not region_polygon.buffer(0.25).covers(Point(lon, lat)):
                     errors.append(f"massif glyph {glyph_name} is outside relief region {region_id}")
+            required_country = segment.get("required_country_overlap")
+            if required_country:
+                country_geom = country_geometries.get(required_country)
+                if country_geom is None:
+                    errors.append(f"massif {segment['id']} requires unknown country {required_country}")
+                else:
+                    massif_points = []
+                    for point_group in ("arc", "shadow"):
+                        massif_points.extend(segment.get(point_group, []))
+                    massif_points.extend(
+                        (lon, lat)
+                        for _glyph_name, lon, lat, _width, _y_offset in segment.get("glyphs", [])
+                    )
+                    if not any(country_geom.covers(Point(lon, lat)) for lon, lat in massif_points):
+                        errors.append(f"massif {segment['id']} must overlap {required_country}")
 
     for water_body in NAMED_WATER_BODIES:
         if len(water_body["points"]) < 4:
@@ -546,7 +580,54 @@ def audit_geography_layers():
             if width < 70:
                 errors.append(f"forest mass {forest_mass['id']} cluster {glyph_name} is too small to read")
 
+    errors.extend(audit_runtime_landmark_placement(country_geometries=country_geometries))
     return errors
+
+
+def audit_runtime_landmark_placement(country_geometries=None):
+    errors = []
+    if country_geometries is None:
+        admin_dataset = "ne_50m_admin_0_countries"
+        if not os.path.isdir(os.path.join(DATA_DIR, admin_dataset)):
+            admin_dataset = "ne_110m_admin_0_countries"
+        countries = _clip_to_bounds(_load_shapefile(admin_dataset), GERMANY_BOUNDS)
+        country_geometries = {row["ADMIN"]: row.geometry for _, row in countries.iterrows()}
+
+    germany = country_geometries.get("Germany")
+    if germany is None:
+        return ["runtime landmark audit requires Germany geometry"]
+
+    base_size = _runtime_map_base_size_for_viewport(RUNTIME_LANDMARK_AUDIT_VIEWPORT)
+    proj = MapProjection(GERMANY_BOUNDS, base_size)
+    for landmark in CITY_LANDMARK_PLACEMENT_AUDITS:
+        lon, lat = landmark["coordinates"]
+        icon_offset_x, icon_offset_y = landmark["icon_offset"]
+        icon_size = float(landmark["icon_size"])
+        x, y = proj.project(lon, lat)
+        sample_points = {
+            "coordinate": (x, y),
+            "top": (x + icon_offset_x, y - icon_size - 9.0 + icon_offset_y),
+            "center": (x + icon_offset_x, y - icon_size * 0.5 - 9.0 + icon_offset_y),
+            "bottom": (x + icon_offset_x, y - 9.0 + icon_offset_y),
+        }
+        for sample_name in landmark.get("required_land_samples", ()):
+            sample_x, sample_y = sample_points[sample_name]
+            sample_lon, sample_lat = proj.inverse(sample_x, sample_y)
+            if not germany.covers(Point(sample_lon, sample_lat)):
+                errors.append(
+                    f"runtime landmark {landmark['name']} {sample_name} sample "
+                    f"falls outside Germany at ({sample_lon:.4f}, {sample_lat:.4f})"
+                )
+    return errors
+
+
+def _runtime_map_base_size_for_viewport(viewport_size):
+    viewport_width, viewport_height = viewport_size
+    aspect = MAP_SIZE[0] / MAP_SIZE[1]
+    viewport_aspect = viewport_width / viewport_height
+    if viewport_aspect > aspect:
+        return (viewport_width, viewport_width / aspect)
+    return (viewport_height * aspect, viewport_height)
 
 
 def _audit_point(errors, bounds_poly, lon, lat, label):
@@ -1077,27 +1158,46 @@ def _draw_alpine_ridge_band(canvas, proj, ridge_band):
 
 
 def _draw_alpine_massif_segment(canvas, proj, segment):
+    massif_layer = _render_alpine_massif_segment_layer(canvas.size, proj, segment)
+    if EXPORT_MASSIF_SOURCE_LAYERS:
+        _save_massif_source_layer(massif_layer, segment)
+    canvas.alpha_composite(massif_layer)
+
+
+def _render_alpine_massif_segment_layer(size, proj, segment):
+    massif_layer = Image.new("RGBA", size, (0, 0, 0, 0))
+
     shadow_points = [_project_point(proj, lon, lat) for lon, lat in segment.get("shadow", [])]
     if len(shadow_points) >= 3:
-        shadow_layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+        shadow_layer = Image.new("RGBA", size, (0, 0, 0, 0))
         shadow_draw = ImageDraw.Draw(shadow_layer)
         shadow_draw.polygon(shadow_points, fill=(47, 75, 45, 84))
         shadow_draw.line(shadow_points + [shadow_points[0]], fill=(108, 113, 68, 80), width=5 * RENDER_SCALE, joint="curve")
         shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(9 * RENDER_SCALE))
-        canvas.alpha_composite(shadow_layer)
+        massif_layer.alpha_composite(shadow_layer)
 
     arc_points = [_project_point(proj, lon, lat) for lon, lat in segment.get("arc", [])]
     if len(arc_points) >= 2:
-        line_layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+        line_layer = Image.new("RGBA", size, (0, 0, 0, 0))
         line_draw = ImageDraw.Draw(line_layer)
         line_draw.line(arc_points, fill=(43, 59, 40, 120), width=10 * RENDER_SCALE, joint="curve")
         line_draw.line([(x, y - 5 * RENDER_SCALE) for x, y in arc_points], fill=(180, 168, 112, 92), width=3 * RENDER_SCALE, joint="curve")
         line_layer = line_layer.filter(ImageFilter.GaussianBlur(1.2 * RENDER_SCALE))
-        canvas.alpha_composite(line_layer)
+        massif_layer.alpha_composite(line_layer)
 
     for glyph_name, lon, lat, width, y_offset in segment.get("glyphs", []):
         x, y = _project_point(proj, lon, lat)
-        _draw_glyph_at(canvas, glyph_name, x, y + int(float(y_offset) * width * RENDER_SCALE), width)
+        _draw_glyph_at(massif_layer, glyph_name, x, y + int(float(y_offset) * width * RENDER_SCALE), width)
+    return massif_layer
+
+
+def _save_massif_source_layer(layer, segment):
+    bbox = layer.getbbox()
+    if bbox is None:
+        return
+    os.makedirs(MASSIF_DIR, exist_ok=True)
+    cropped = layer.crop(bbox)
+    cropped.save(os.path.join(MASSIF_DIR, f"{segment['id']}.png"), optimize=True)
 
 
 def _forest_sprite(radius):
