@@ -239,16 +239,7 @@ RELIEF_REGIONS = [
             },
         ],
         "massif_segments": ALPINE_MASSIF_SEGMENTS,
-        "mountain_glyphs": [
-            ("alps_range_3", 7.20, 46.72, 215),
-            ("alps_range_1", 8.65, 46.60, 230),
-            ("alps_range_3", 10.05, 46.72, 245),
-            ("alps_range_2", 11.45, 46.88, 235),
-            ("alps_range_1", 12.85, 47.08, 225),
-            ("alps_range_3", 14.30, 47.28, 215),
-            ("alps_peak_2", 10.95, 47.48, 130),
-            ("alps_peak_1", 13.15, 47.62, 125),
-        ],
+        "mountain_glyphs": [],
         "mountains": [],
     },
     {

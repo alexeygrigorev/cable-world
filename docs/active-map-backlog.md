@@ -59,6 +59,8 @@
 - [x] Добавить non-render audit до screenshots: `audit_geography_layers()` проверяет, что немецкий Alpine-edge massif пересекает Germany geometry, а runtime landmark audit проверяет top/center/bottom samples Ростока по реальному полигону Германии.
 - [x] #69 Добавить metadata для massif source layers: общий `assets/map/massifs/manifest.json` и per-layer JSON sidecars фиксируют image file, crop bbox, geo bounds, arc/shadow/glyph anchors и overlap requirements; `audit_massif_source_manifest()` сверяет manifest с PNG без визуального рендера.
 - [x] #69 Расширить source-layer pipeline за пределы Альп: `black_forest`, `bavarian_forest`, `harz`, `erzgebirge`, `saxon_switzerland`, `eifel_hunsrueck` и полный `alps` region теперь тоже сохраняются как отдельные проверяемые relief source layers; `northern_lowlands` намеренно не экспортируется как mountain layer.
+- [x] #69 Убрать дублирующий generic mountain-glyph ряд из полного `alps` relief layer: Альпы теперь рисуются через ridge bands + named massif source layers, без второй повторной полосы случайных `alps_range_*` поверх того же места.
+- [ ] #69 Follow-up: заменить текущий Alpine art на более узнаваемые отдельные massif glyphs/segments. Текущая правка убирает дубль, но еще не делает Альпы качеством `8/10`.
 - [ ] #67 Follow-up: проверить mobile руками и убрать/укрупнить оставшиеся дома/лесные glyphs, если пользователь всё ещё воспринимает их как мелкий шум.
 - [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
@@ -85,6 +87,7 @@
 
 ## Current Known State
 
-- Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending base texture + small clutter pass.
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.7/10` по плотности и читаемости, но нельзя оценивать ее как `8/10`: water blobs, Rostock placement, German Alps visibility, separate massif sprites and marker composition still need work.
+- Карта на `http://127.0.0.1:9000/` пересобрана из `main`; Web build отдает gzip и `Cache-Control: no-store`.
+- Последний map commit на момент обновления backlog: pending duplicate-Alps cleanup.
+- Non-render checks now cover координаты, geography bounds, source-layer metadata, PNG dimensions/non-blank state, export payload contract and runtime draw contracts. Screenshots/manual review still required for contrast, clutter, visual hierarchy and "does this feel like a real atlas map".
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.8/10`, но нельзя оценивать ее как `8/10`: Alpine art, relief/lake recognizability, remaining detail density and marker composition still need work.

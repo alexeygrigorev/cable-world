@@ -909,3 +909,29 @@ Checks:
 - Web server restarted on `http://127.0.0.1:9000/`; Playwright screenshots regenerated.
 
 Self-audit: still about `6.8/10`. The pipeline is now much closer to the requested component-based direction, but visual quality is unchanged. The next user-visible improvement should be replacing weak region glyph art/placement, especially making Alps and Harz look less like repeated generic sprites.
+
+## Iteration 2026-05-31 20:05
+
+Implemented:
+
+- Removed the duplicate generic `alps_range_*` mountain-glyph row from the full `alps` relief region.
+- The Alpine layer now renders through ridge bands plus named massif source layers instead of drawing a second repeated strip of generic mountains over the same area.
+- Regenerated `assets/map/germany_styled.png`, `assets/map/massifs/alps.png`, `assets/map/massifs/alps.json` and `assets/map/massifs/manifest.json`.
+- Updated the contract test so the full `alps` region is expected to have `mountain_glyphs: []`.
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated final map and source layers.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 tests OK.
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6360156`, `Cache-Control: no-store`.
+- Playwright screenshots regenerated:
+  - `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+  - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+
+Non-render verification notes:
+
+- We can audit coordinates, region bounds, layer metadata, PNG sizes/non-blank state, expected draw calls and payload headers without screenshots.
+- We still need screenshots/manual review for final quality signals: contrast, clutter, whether the relief reads naturally, whether marker hierarchy is clear, and whether the map feels close to the reference style.
+
+Self-audit: still about `6.8/10`, not `8/10`. The screenshot is cleaner because Alps are no longer double-drawn, but the Alpine art itself is still too generic and needs a better per-massif visual pass.
