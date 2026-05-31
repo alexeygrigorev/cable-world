@@ -261,6 +261,8 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_alpine_mountains(draw, x, y, s):",
             "def _draw_forested_highland(draw, x, y, s):",
             "def _draw_border_highland(draw, x, y, s):",
+            "def _draw_dotted_route(draw, pts):",
+            "_draw_dotted_route(draw, pts)",
         ]:
             self.assertIn(expected, pipeline_text)
 

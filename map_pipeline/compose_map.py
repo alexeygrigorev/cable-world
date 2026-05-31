@@ -478,14 +478,20 @@ def _draw_routes(canvas, proj, germany_mask):
     for route in routes:
         p0, p1, p2, p3 = [_project_point(proj, lon, lat) for lon, lat in route]
         pts = _bezier(p0, p1, p2, p3)
-        draw.line(pts, fill=(255, 239, 166, 214), width=9 * RENDER_SCALE, joint="curve")
-        draw.line(pts, fill=ROUTE_DARK, width=2 * RENDER_SCALE, joint="curve")
-        for p in pts[::16]:
-            rr = 2 * RENDER_SCALE
-            draw.ellipse((p[0] - rr, p[1] - rr, p[0] + rr, p[1] + rr), fill="#f2df98")
+        _draw_dotted_route(draw, pts)
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
     layer.putalpha(alpha)
     canvas.alpha_composite(layer)
+
+
+def _draw_dotted_route(draw, pts):
+    draw.line(pts, fill=(79, 62, 37, 82), width=3 * RENDER_SCALE, joint="curve")
+    draw.line(pts, fill=(238, 214, 141, 92), width=max(1, RENDER_SCALE), joint="curve")
+    for index, p in enumerate(pts[::10]):
+        rr = (3 if index % 2 == 0 else 2) * RENDER_SCALE
+        draw.ellipse((p[0] - rr, p[1] - rr, p[0] + rr, p[1] + rr), fill=(75, 56, 32, 150))
+        inner = max(1, rr - RENDER_SCALE)
+        draw.ellipse((p[0] - inner, p[1] - inner, p[0] + inner, p[1] + inner), fill=(244, 224, 153, 226))
 
 
 def main():

@@ -133,3 +133,16 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-map-v4.png`
 
 Rubric estimate after relief/marker iteration 2026-05-31 13:36: stronger 7/10 candidate. The map is more accurate and readable, but still not 8/10 because the procedural underlay is visually flatter than the reference and desktop/landscape composition needs another art-direction pass.
+
+Dotted route iteration result:
+
+- Procedural route strokes were changed from thick bright continuous lines to thin dotted atlas trails.
+- The intent is to keep routes as orientation hints without making the map look like a road diagram or competing with transport icons.
+- Fresh Web build remains on `http://127.0.0.1:9000/`; `index.pck` returns gzip and no-store headers.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-map-v5.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-map-v5.png`
+
+Rubric estimate after dotted route iteration 2026-05-31 13:43: still 7/10 candidate, but closer to 8/10 on marker readability. Remaining risk: trails may now be too subtle and need a small contrast increase after user review.
