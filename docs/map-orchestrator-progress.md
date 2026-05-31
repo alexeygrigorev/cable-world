@@ -1235,3 +1235,30 @@ Strict review status:
 Parallel work still running:
 
 - #69 worker is still active on the real production glyph-layer terrain pass. This is the main blocker for moving from prototype quality toward the requested reusable-glyph reference-map direction.
+
+## Iteration 2026-06-01 00:45
+
+Integrated for #65:
+
+- `1cb7698` documented and isolated Godot headless diagnostics.
+- Fixed project-owned headless noise:
+  - `MapPanel._on_map_layer_resized()` now defers size writes to anchored child controls, removing the anchor warning from `godot --headless --path . --quit-after 1`;
+  - app-shell runtime tests use `MIR_TROSSOV_DATABASE_PATH` so stale `user://` SQLite files cannot create `database is locked` noise;
+  - `MainScreen._exit_tree()` resets `storage_runtime_enabled` after closing storage;
+  - `tests/godot_runtime_runner.gd` now fails loaded-but-non-instantiable GDScript resources via `can_instantiate()`, so parse/load errors cannot turn into a false zero-check pass.
+- Documented remaining Godot 4.6.3 headless teardown diagnostics in `docs/testing-strategy.md`:
+  - live `Main.tscn` headless runs can still print `CanvasItem`, `DummyTexture`, `ShapedTextDataAdvanced` and `FontAdvanced` leak diagnostics while exiting `0`;
+  - smoke-only runtime runner is clean after import.
+- Closed #65.
+
+Checks:
+
+- `python3 -m unittest tests.test_godot_runtime_runner_contract tests.test_storage_contract tests.test_testing_strategy_contract tests.test_map_panel_contract tests.test_app_shell_contract`: 48 OK.
+- `python3 -m unittest discover -s tests`: 259 OK, 9 skipped in the issue worktree.
+- `godot --headless --path . --import --quit`: exit 0.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: exit 0, 9 checks, remaining documented headless teardown diagnostics only.
+- `MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS=res://tests/godot_runtime_smoke.gd godot --headless --path . --script tests/godot_runtime_runner.gd`: clean output.
+
+Parallel work started:
+
+- New #68/#69 worker `Nash` is active on an Alpine production terrain glyph-layer slice. Scope is limited to Alps/German Alpine edge terrain layers, not list UI, releases, #65, or city coordinates.
