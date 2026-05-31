@@ -190,3 +190,25 @@ Checks:
 - `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
 
 Self-audit: still around `6/10`. This fixes the user-reported resize behavior and reduces edge clipping, but the map still needs geography/aesthetic work before it can honestly be `8/10`.
+
+## Iteration 2026-05-31 15:33
+
+Implemented:
+
+- MapPanel now collects visible object-marker rectangles and sends them to the underlay as reserved label zones.
+- Secondary town and terrain labels skip drawing when they overlap those reserved zones.
+- This removes obvious conflicts like terrain/town labels crossing the Harz transport cluster while keeping the fullscreen map clean.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 12 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Self-audit: still around `6/10`. Visual hierarchy is better, but the project still needs a geography audit of the generated underlay, stronger art direction consistency, and payload optimization before claiming `8/10`.

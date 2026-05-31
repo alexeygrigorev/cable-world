@@ -10,6 +10,7 @@ class OfflineMapLayer:
 	var zoom := 1.0
 	var geo_bounds: Dictionary = {}
 	var map_scope := "germany"
+	var reserved_label_rects: Array[Rect2] = []
 	var _germany_texture: Texture2D = null
 	var _city_icon_textures: Dictionary = {}
 	const LANDMARK_EDGE_MARGIN := 96.0
@@ -115,11 +116,11 @@ class OfflineMapLayer:
 
 	func _draw_landmark_labels() -> void:
 		var font := get_theme_default_font()
-		var occupied_rects: Array[Rect2] = []
+		var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()
 		for label_data in CITY_LABELS:
 			_draw_city_label(font, label_data, occupied_rects)
 		for label_data in TERRAIN_LABELS:
-			_draw_terrain_label(font, label_data)
+			_draw_terrain_label(font, label_data, occupied_rects)
 
 	func _draw_city_label(font: Font, label_data: Dictionary, occupied_rects: Array[Rect2]) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
@@ -171,12 +172,16 @@ class OfflineMapLayer:
 			_city_icon_textures[icon_id] = load(path) if ResourceLoader.exists(path) else null
 		return _city_icon_textures.get(icon_id, null)
 
-	func _draw_terrain_label(font: Font, label_data: Dictionary) -> void:
+	func _draw_terrain_label(font: Font, label_data: Dictionary, occupied_rects: Array[Rect2]) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
 		if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):
 			return
 		var text_pos := position + Vector2(7.0, -5.0) * zoom
+		var label_rect := _left_label_rect(font, str(label_data["name"]), text_pos, 14)
+		if _rect_overlaps_any(label_rect, occupied_rects):
+			return
 		_draw_label_text(font, str(label_data["name"]), text_pos, 14, Color("#efe2bd"), Color(0.12, 0.08, 0.04, 0.78))
+		occupied_rects.append(label_rect)
 
 	func _screen_point_near_viewport(position: Vector2, margin: float) -> bool:
 		return position.x >= -margin \
@@ -242,6 +247,11 @@ class OfflineMapLayer:
 		position.y = clamp(position.y, float(scaled_size) + 4.0, max(float(scaled_size) + 4.0, size.y - 6.0))
 		var label_rect := Rect2(position - Vector2(0.0, float(scaled_size)), text_size + Vector2(0.0, float(scaled_size)))
 		return _clamp_landmark_rect(label_rect)
+
+	func _left_label_rect(font: Font, text: String, baseline_position: Vector2, font_size: int) -> Rect2:
+		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
+		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
+		return Rect2(baseline_position - Vector2(0.0, float(scaled_size)), text_size + Vector2(0.0, float(scaled_size)))
 
 	func _draw_centered_label_text(font: Font, text: String, center_x: float, baseline_y: float, font_size: int, text_color: Color, shadow_color: Color) -> void:
 		var label_rect := _centered_label_rect(font, text, center_x, baseline_y, font_size)
@@ -560,6 +570,7 @@ func _position_markers() -> void:
 
 	var clusters := _marker_clusters(bounds)
 	var base_positions: Array[Vector2] = []
+	var reserved_rects: Array[Rect2] = []
 
 	for marker_number in marker_buttons.size():
 		var marker := marker_buttons[marker_number]
@@ -605,6 +616,8 @@ func _position_markers() -> void:
 
 		if not _coordinates_inside_bounds(coordinates, bounds):
 			marker.position = _map_point_to_screen(base_position, marker_size)
+			if marker.visible:
+				reserved_rects.append(Rect2(marker.position, marker.size).grow(6.0))
 			continue
 		var local_position := _local_cluster_marker_position(base_position, base_positions)
 		var clamped_position := Vector2(
@@ -613,6 +626,16 @@ func _position_markers() -> void:
 		)
 		marker.position = _map_point_to_screen(clamped_position, marker_size)
 		base_positions.append(base_position)
+		if marker.visible:
+			reserved_rects.append(Rect2(marker.position, marker.size).grow(6.0))
+	_update_reserved_label_rects(reserved_rects)
+
+func _update_reserved_label_rects(rects: Array[Rect2]) -> void:
+	if map_layer == null:
+		return
+	var layer := map_layer as OfflineMapLayer
+	layer.reserved_label_rects = rects
+	layer.queue_redraw()
 
 func _marker_clusters(bounds: Dictionary) -> Dictionary:
 	var result := {}

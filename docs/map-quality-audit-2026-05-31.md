@@ -261,3 +261,21 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
 
 Rubric estimate remains around 6/10. This fixes an interaction/responsive rendering problem, but it does not solve the remaining 8/10 blockers: generated geography audit, visual hierarchy over dense terrain, and payload size.
+
+Marker-priority label iteration:
+
+- Object marker rectangles are now passed into the underlay as reserved label zones.
+- Secondary town and terrain labels skip drawing when they would overlap visible object markers or clusters.
+- This keeps interactive transport icons visually dominant without adding circular marker backgrounds or moving real coordinates.
+- Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns gzip/no-store.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
+
+Rubric estimate remains around 6/10. The interaction layer is cleaner, but the 8/10 blockers are still the generated geography audit, stronger object/background hierarchy across all regions, and payload size.

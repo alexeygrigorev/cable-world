@@ -257,6 +257,12 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("draw_rect", city_icon_rect_body)
         self.assertIn("func _landmark_visual_scale() -> float:", script_text)
         self.assertIn("clamp(54.0 * _landmark_visual_scale(), 46.0, 88.0)", script_text)
+        self.assertIn("var reserved_label_rects: Array[Rect2] = []", script_text)
+        self.assertIn("var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()", script_text)
+        self.assertIn("func _left_label_rect(", script_text)
+        self.assertIn("func _update_reserved_label_rects(rects: Array[Rect2]) -> void:", script_text)
+        self.assertIn("reserved_rects.append(Rect2(marker.position, marker.size).grow(6.0))", script_text)
+        self.assertIn("layer.reserved_label_rects = rects", script_text)
         self.assertLess(
             city_icon_rect_body.index("if texture == null:"),
             city_icon_rect_body.index("return icon_rect"),
