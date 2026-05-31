@@ -7,6 +7,10 @@
 ## Open Items
 
 - [ ] Перестать считать текущую procedural/GIS underlay улучшаемой до 8/10 мелкими правками: пользовательская оценка 2026-05-31 — около 4/10. Следующий крупный шаг должен заменить или радикально переработать сам визуальный слой карты.
+- [x] Заменить текущую procedural/GIS underlay на цельную generated RPG-atlas подложку для проверки направления. Текущая самооценка после screenshot review: 6/10, не 8/10.
+- [ ] Провести geography audit новой generated подложки: декоративные AI-города/реки/озера не должны конфликтовать с реальными city/object координатами.
+- [ ] Исправить clipping подписей на краях viewport после новой подложки: Hamburg/Rostock/Berlin/Dresden/Köln не должны резаться или прятаться под zoom controls.
+- [ ] Оптимизировать map asset после визуального approval: новая `assets/map/germany_styled.png` весит около 5.1 MB, а `index.pck` около 15 MB gzip.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
 - [ ] Исправить pan sensitivity: drag пальцем и мышью должен ощущаться примерно 1:1, без ускорения, где 1 см движения пальца сдвигает карту на несколько сантиметров.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
@@ -31,5 +35,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending rubric correction after user rated current map 4/10.
-- Текущая карта технически рабочая, но визуально проваливает target. Нельзя больше оценивать ее как 7/10 только из-за координат, gzip, explicit relief placements или marker readability. Blocker для `6/10+` теперь новый art-directed underlay, который с первого взгляда похож на приключенческую atlas/RPG карту.
+- Последний map commit на момент обновления backlog: pending generated RPG-atlas underlay iteration.
+- Текущая карта технически рабочая и визуально лучше procedural baseline. Честная оценка после screenshots: около `6/10`. Нельзя оценивать ее как `8/10`: нужна проверка географии новой generated подложки, исправление edge clipping, улучшение иерархии interactive icons поверх детального фона и оптимизация payload.

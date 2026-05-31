@@ -220,3 +220,25 @@ Rubric correction note:
 - Previous assistant estimates around 7/10 were too generous because they over-weighted technical progress: aspect ratio, gzip, clickability, explicit relief data and marker outlines.
 - Updated `docs/map-quality-rubric.md` now caps the score at 4/10 when the map reads as a procedural/GIS canvas with sprites layered on top.
 - New target before claiming 6/10+: the underlay itself must feel like a cohesive 16-bit/RPG atlas screenshot, not a technically correct base map with decorative elements.
+
+Generated atlas underlay iteration:
+
+- Replaced the procedural/GIS-like runtime underlay with a new generated 16-bit/RPG atlas underlay adapted through `map_pipeline.adapt_generated_underlay`.
+- Generated source:
+  `/home/alexey/.codex/generated_images/019e7af1-437a-70f1-9164-d2f7b34a9c81/ig_0f7b9b4e8b981acb016a1c31509270819181e045e751bc63c8.png`
+- Runtime asset:
+  `assets/map/germany_styled.png`, 1568x2048, 5.1 MB.
+- Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns `Content-Encoding: gzip` and `Cache-Control: no-store`.
+- `index.pck` is now about 15 MB gzip. This is acceptable for visual review, but asset size must be optimized before calling the result production-ready.
+- Browser verification regenerated screenshots via `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
+
+Rubric estimate after screenshot review: 6/10. This is no longer capped at 4/10 by the procedural/GIS-underlay rule because the base image now reads as an adventure atlas. It is still not 8/10: geography is not sufficiently audited, generated decorative towns/rivers may conflict with real coordinates, some labels are clipped near viewport edges, dense terrain competes with interactive icons, and the Web payload grew.

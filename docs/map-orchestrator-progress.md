@@ -144,3 +144,27 @@ Implemented:
 - Added contract coverage for the initial focus coordinate and cluster station icon treatment.
 
 Self-audit: this should make the first mobile frame more recognizable and reduce the UI-button feeling of clusters. It still needs fresh screenshot review before claiming any score increase.
+
+## Iteration 2026-05-31 15:10
+
+Implemented:
+
+- Corrected the quality criteria after user rated the previous map around `4/10`: procedural/GIS-looking underlays now cap the score at `4/10`, regardless of technical improvements.
+- Generated a new full-map RPG-atlas underlay and adapted it into `assets/map/germany_styled.png`.
+- Rebuilt Web on `http://127.0.0.1:9000/` and verified `index.pck` gzip/no-store headers.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 12 OK.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Self-audit: current map is approximately `6/10`. The underlay now reads as an adventure atlas instead of a procedural/GIS canvas, but it is not `8/10`: generated decorative geography still needs an audit, edge labels need clipping fixes, dense terrain competes with markers in places, and the Web payload increased to about 15 MB gzip.

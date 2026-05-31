@@ -239,6 +239,33 @@ uv run python -m map_pipeline.adapt_generated_underlay \
 godot --headless --path . --import --quit
 ```
 
+Current visual-review underlay workflow uses a generated RPG-atlas source because the procedural/GIS underlay was capped at 4/10 by user review and the rubric:
+
+```bash
+uv run python -m map_pipeline.adapt_generated_underlay \
+  --source /home/alexey/.codex/generated_images/019e7af1-437a-70f1-9164-d2f7b34a9c81/ig_0f7b9b4e8b981acb016a1c31509270819181e045e751bc63c8.png \
+  --out assets/map/germany_styled.png \
+  --colors 192
+godot --headless --path . --import --quit
+PORT=9000 scripts/serve-web.sh
+```
+
+Current generated underlay prompt:
+
+```text
+Use case: stylized-concept. Create a full-screen game map underlay asset for a Godot mobile/web app. Portrait 3:4 composition, no UI chrome.
+
+Reference style direction: classic 16-bit RPG / pixel journey atlas like a cozy European adventure map, comparable in density and readability to a hand-painted pixel atlas with mountains, forests, water, small towns, and dotted routes. Warm natural palette, crisp silhouettes, slight parchment/painted-pixel texture, strong dark coast and country outlines. It should feel like a finished game map, not GIS, not a procedural canvas.
+
+Subject: Germany and its immediate neighbors as an adventure atlas underlay for cableways and funiculars. Germany must be geographically recognizable and centered, full country visible from North Sea and Baltic Sea down to the Alps, with neighboring land/sea margin. Preserve real-feeling geography: North Sea/Baltic coast, Rügen island, Hamburg/Rostock north, Berlin east, Rhine west, Dresden southeast, Munich/Alps south, Harz central, Black Forest southwest, Bavarian Forest southeast, Müritz and other major lakes. Alps should be a strong coherent southern mountain wall extending beyond Germany; Harz, Black Forest, Bavarian Forest should be smaller distinct ranges; north German plain should stay mostly flat with forests, lakes, towns, coast, and fields, not giant mountains.
+
+Art direction: dense but readable 16-bit RPG pixel atlas, cozy European colors, deep blue seas/lakes, varied green and ochre land, painterly pixel shading, forests as clustered tree masses, mountains as illustrated ranges, lakes and rivers with clear dark outlines, subtle roads/dotted travel routes integrated into terrain, small town silhouettes as background details only. Leave enough quiet terrain around major city/object areas for later clickable icons, but avoid empty boring areas. The map itself should look beautiful before icons are added.
+
+Constraints: no text, no letters, no city labels, no flags, no pins, no markers, no app UI, no legend, no watermark. Do not add large random mountains in northern Germany. Do not make it a flat vector map, satellite map, realistic paper map, or stretched skinny Germany. No circular halos for future objects. No decorative border frame.
+```
+
+Important caveat: this source is allowed for visual iteration, not final geography authority. Before scoring 8/10 or higher, audit generated towns, rivers, lakes, islands and mountain ranges against real layers or replace them with controlled overlays.
+
 ## Relief and mountain glyph rules
 
 - Real geography comes from named relief polygons/layers, not from decorative placements.
