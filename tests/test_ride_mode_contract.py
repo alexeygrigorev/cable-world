@@ -14,7 +14,12 @@ class RideModeContractTest(unittest.TestCase):
             "class_name RidePanel",
             "signal card_requested",
             "var direction_option: OptionButton",
+            "var ride_game_view: RideGameView",
             "var route_view: RideRouteView",
+            "var speed_label: Label",
+            "var passenger_label: Label",
+            "var score_label: Label",
+            "var speed_slider: HSlider",
             "var progress_label: Label",
             "var segment_label: Label",
             "var direction_label: Label",
@@ -25,6 +30,10 @@ class RideModeContractTest(unittest.TestCase):
             "direction_option.custom_minimum_size = Vector2(0, 52)",
             "previous_button.custom_minimum_size = Vector2(0, 56)",
             "next_button.custom_minimum_size = Vector2(0, 56)",
+            "ride_game_view.custom_minimum_size = Vector2(0, 260)",
+            "speed_slider.min_value = 0.5",
+            "speed_slider.max_value = 2.0",
+            "speed_slider.step = 0.25",
             "route_view.custom_minimum_size = Vector2(0, 170)",
         ]:
             self.assertIn(expected, script_text)
@@ -40,6 +49,7 @@ class RideModeContractTest(unittest.TestCase):
 
     def test_ride_mode_uses_existing_route_data_contract(self) -> None:
         script_text = (ROOT / "scripts" / "ride_panel.gd").read_text(encoding="utf-8")
+        game_text = (ROOT / "scripts" / "ride_game_view.gd").read_text(encoding="utf-8")
         view_text = (ROOT / "scripts" / "ride_route_view.gd").read_text(encoding="utf-8")
         main_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
 
@@ -55,9 +65,27 @@ class RideModeContractTest(unittest.TestCase):
             'segment.get("note", "")',
             '"%s → %s"',
             '"Шаг %d из %d"',
+            "ride_game_view.setup_route(current_object, direction, segments, selected_segment_index)",
             "route_view.show_route(current_object, direction, segments, selected_segment_index)",
         ]:
             self.assertIn(expected, script_text)
+
+        for expected in [
+            "class_name RideGameView",
+            "signal ride_state_changed(state: Dictionary)",
+            "func setup_route(object_data: Dictionary, direction: Dictionary, segments: Array, segment_index: int) -> void:",
+            '_station_for_segment_end("from_station_id")',
+            '_station_for_segment_end("to_station_id")',
+            'active_segment.get(key, "")',
+            '_array_field(current_object, "stations")',
+            "func advance_ride(delta: float) -> void:",
+            "func set_speed_multiplier(value: float) -> void:",
+            "func state_snapshot() -> Dictionary:",
+            "passengers_onboard",
+            "delivered_passengers",
+            "smoothness_score",
+        ]:
+            self.assertIn(expected, game_text)
 
         for expected in [
             "class_name RideRouteView",
@@ -94,6 +122,7 @@ class RideModeContractTest(unittest.TestCase):
 
     def test_ride_mode_is_data_driven_not_hardcoded_generic_route(self) -> None:
         panel_text = (ROOT / "scripts" / "ride_panel.gd").read_text(encoding="utf-8")
+        game_text = (ROOT / "scripts" / "ride_game_view.gd").read_text(encoding="utf-8")
         view_text = (ROOT / "scripts" / "ride_route_view.gd").read_text(encoding="utf-8")
         seed_text = (ROOT / "scripts" / "storage" / "seeds" / "demo_objects.sql").read_text(encoding="utf-8")
 
@@ -109,7 +138,7 @@ class RideModeContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, seed_text)
 
-        combined_script_text = panel_text + "\n" + view_text
+        combined_script_text = panel_text + "\n" + view_text + "\n" + game_text
         for forbidden in [
             "Киенбергпарк",
             "Волькенхайн",
@@ -132,6 +161,12 @@ class RideModeContractTest(unittest.TestCase):
             "Назад",
             "Дальше",
             "К карточке",
+            "Начать заново",
+            "Скорость",
+            "Пассажиры",
+            "Итог",
+            "плавность",
+            "доставлено",
             "Объект не выбран",
             "Выберите объект с маршрутом, чтобы открыть поездку.",
             "Для этого объекта маршрут поездки пока не добавлен.",

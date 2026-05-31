@@ -10,7 +10,15 @@ var card_button: Button
 var object_label: Label
 var empty_state_label: Label
 var direction_option: OptionButton
+var ride_game_view: RideGameView
 var route_view: RideRouteView
+var speed_label: Label
+var passenger_label: Label
+var score_label: Label
+var slower_button: Button
+var faster_button: Button
+var reset_ride_button: Button
+var speed_slider: HSlider
 var progress_label: Label
 var segment_label: Label
 var direction_label: Label
@@ -54,6 +62,53 @@ func _ready() -> void:
 	direction_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	direction_option.item_selected.connect(_on_direction_selected)
 	rows.add_child(direction_option)
+
+	ride_game_view = RideGameView.new()
+	ride_game_view.custom_minimum_size = Vector2(0, 260)
+	ride_game_view.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	ride_game_view.ride_state_changed.connect(_on_ride_state_changed)
+	rows.add_child(ride_game_view)
+
+	var speed_controls := GridContainer.new()
+	speed_controls.columns = 3
+	speed_controls.add_theme_constant_override("h_separation", 8)
+	speed_controls.add_theme_constant_override("v_separation", 8)
+	rows.add_child(speed_controls)
+
+	slower_button = Button.new()
+	slower_button.text = "−"
+	slower_button.tooltip_text = "Сделать ход тише"
+	slower_button.custom_minimum_size = Vector2(64, 56)
+	slower_button.pressed.connect(func() -> void: _change_speed(-0.25))
+	speed_controls.add_child(slower_button)
+
+	speed_slider = HSlider.new()
+	speed_slider.min_value = 0.5
+	speed_slider.max_value = 2.0
+	speed_slider.step = 0.25
+	speed_slider.value = 1.0
+	speed_slider.custom_minimum_size = Vector2(0, 56)
+	speed_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	speed_slider.value_changed.connect(_on_speed_slider_changed)
+	speed_controls.add_child(speed_slider)
+
+	faster_button = Button.new()
+	faster_button.text = "+"
+	faster_button.tooltip_text = "Ускорить кабинку"
+	faster_button.custom_minimum_size = Vector2(64, 56)
+	faster_button.pressed.connect(func() -> void: _change_speed(0.25))
+	speed_controls.add_child(faster_button)
+
+	reset_ride_button = Button.new()
+	reset_ride_button.text = "Начать заново"
+	reset_ride_button.custom_minimum_size = Vector2(0, 56)
+	reset_ride_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	reset_ride_button.pressed.connect(_on_reset_ride_pressed)
+	rows.add_child(reset_ride_button)
+
+	speed_label = _add_text_label(rows, 18)
+	passenger_label = _add_text_label(rows, 18)
+	score_label = _add_text_label(rows, 18)
 
 	var controls := GridContainer.new()
 	controls.columns = 2
@@ -100,7 +155,9 @@ func show_empty_state() -> void:
 	segment_label.text = "Откуда → куда: маршрут не выбран"
 	direction_label.text = "Направление: маршрут не выбран"
 	note_label.text = "Подробности маршрута появятся после выбора объекта."
+	ride_game_view.clear_route()
 	route_view.clear_route()
+	_set_game_controls_disabled(true)
 	previous_button.disabled = true
 	next_button.disabled = true
 	card_button.disabled = true
@@ -160,7 +217,9 @@ func _update_route_view() -> void:
 		segment_label.text = "Откуда → куда: нет данных маршрута"
 		direction_label.text = "Направление: нет данных маршрута"
 		note_label.text = "Откройте карточку объекта, чтобы посмотреть общую информацию."
+		ride_game_view.clear_route()
 		route_view.clear_route()
+		_set_game_controls_disabled(true)
 		previous_button.disabled = true
 		next_button.disabled = true
 		return
@@ -174,7 +233,9 @@ func _update_route_view() -> void:
 		segment_label.text = _direction_from_to_text(direction)
 		direction_label.text = "Направление: %s" % _value_text(direction.get("direction_label", ""), "подпись пока не указана")
 		note_label.text = _value_text(direction.get("note", ""), "Подробности этого направления пока не добавлены.")
+		ride_game_view.clear_route()
 		route_view.show_route(current_object, direction, segments, selected_segment_index)
+		_set_game_controls_disabled(true)
 		previous_button.disabled = true
 		next_button.disabled = true
 		return
@@ -188,9 +249,48 @@ func _update_route_view() -> void:
 	]
 	direction_label.text = "Направление: %s" % _value_text(segment.get("direction_label", ""), _value_text(direction.get("direction_label", ""), "подпись пока не указана"))
 	note_label.text = _value_text(segment.get("note", ""), "Подробности этого отрезка пока не добавлены.")
+	ride_game_view.setup_route(current_object, direction, segments, selected_segment_index)
 	route_view.show_route(current_object, direction, segments, selected_segment_index)
+	_set_game_controls_disabled(false)
 	previous_button.disabled = selected_segment_index <= 0
 	next_button.disabled = selected_segment_index >= segments.size() - 1
+
+
+func _change_speed(delta: float) -> void:
+	speed_slider.value = clampf(float(speed_slider.value) + delta, float(speed_slider.min_value), float(speed_slider.max_value))
+	ride_game_view.set_speed_multiplier(float(speed_slider.value))
+
+
+func _on_speed_slider_changed(value: float) -> void:
+	ride_game_view.set_speed_multiplier(value)
+
+
+func _on_reset_ride_pressed() -> void:
+	ride_game_view.reset_ride()
+	speed_slider.value = ride_game_view.speed_multiplier
+
+
+func _on_ride_state_changed(state: Dictionary) -> void:
+	var speed := float(state.get("speed_multiplier", 1.0))
+	var delivered := int(state.get("delivered_passengers", 0))
+	var onboard := int(state.get("passengers_onboard", 0))
+	var waiting := int(state.get("passengers_waiting", 0))
+	var smoothness := int(state.get("smoothness_score", 100))
+	var is_finished := bool(state.get("ride_finished", false))
+	speed_label.text = "Скорость: x%.2f" % speed
+	passenger_label.text = "Пассажиры: в кабинке %d, ждут %d, доставлено %d" % [onboard, waiting, delivered]
+	score_label.text = "Итог: плавность %d, доставлено %d" % [smoothness, delivered] if is_finished else "Итог появится на верхней станции."
+
+
+func _set_game_controls_disabled(disabled: bool) -> void:
+	slower_button.disabled = disabled
+	faster_button.disabled = disabled
+	speed_slider.editable = not disabled
+	reset_ride_button.disabled = disabled
+	if disabled:
+		speed_label.text = "Скорость: маршрут не выбран"
+		passenger_label.text = "Пассажиры: маршрут не выбран"
+		score_label.text = "Итог появится после поездки."
 
 
 func _directions() -> Array:
