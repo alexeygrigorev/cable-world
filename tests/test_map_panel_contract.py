@@ -356,6 +356,50 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("Leipzig", no_icon_labels)
         self.assertIn("Nürnberg", no_icon_labels)
 
+    def test_primary_city_landmark_coordinates_stay_geographic(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+        city_labels_block = script_text.split("const CITY_LABELS := [", 1)[1].split("]", 1)[0]
+
+        protected_landmarks = {
+            "Hamburg": {
+                "coordinates": "Vector2(9.9937, 53.5511)",
+                "kind": "city",
+                "icon": "hamburg",
+                "icon_offset": None,
+            },
+            "Berlin": {
+                "coordinates": "Vector2(13.4050, 52.5200)",
+                "kind": "capital",
+                "icon": "berlin",
+                "icon_offset": None,
+            },
+            "Rostock": {
+                "coordinates": "Vector2(12.0991, 54.0924)",
+                "kind": "city",
+                "icon": "rostock",
+                "icon_offset": "Vector2(0.0, 52.0)",
+            },
+            "Dresden": {
+                "coordinates": "Vector2(13.7373, 51.0504)",
+                "kind": "city",
+                "icon": "dresden",
+                "icon_offset": None,
+            },
+        }
+
+        for name, expected in protected_landmarks.items():
+            with self.subTest(city=name):
+                entry_match = re.search(r'\{"name": "%s"[^}]+\}' % re.escape(name), city_labels_block)
+                self.assertIsNotNone(entry_match)
+                entry = entry_match.group(0)
+                self.assertIn(f'"coordinates": {expected["coordinates"]}', entry)
+                self.assertIn(f'"kind": "{expected["kind"]}"', entry)
+                self.assertIn(f'"icon": "{expected["icon"]}"', entry)
+                if expected["icon_offset"] is None:
+                    self.assertNotIn('"icon_offset"', entry)
+                else:
+                    self.assertIn(f'"icon_offset": {expected["icon_offset"]}', entry)
+
     def test_map_pipeline_uses_named_relief_layers(self) -> None:
         pipeline_text = (ROOT / "map_pipeline" / "compose_map.py").read_text(encoding="utf-8")
 
