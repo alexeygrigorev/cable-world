@@ -843,3 +843,34 @@ Checks:
 - Web export rebuilt, gzip files regenerated, server restarted on `http://127.0.0.1:9000/`, and Playwright screenshots regenerated.
 
 Self-audit: still about `6.8/10`. This improves process and architecture, not enough visual quality by itself. The next quality step is to replace the current repeated Alpine glyphs with better per-massif art/placement and continue lake/forest/city density checks.
+
+## Iteration 2026-05-31 19:45
+
+Implemented:
+
+- Added reproducible metadata for massif source layers:
+  - each `assets/map/massifs/*.png` now has a matching JSON sidecar;
+  - `assets/map/massifs/manifest.json` records map bounds, map size, render scale and all massif layers.
+- Metadata includes source image name, render bbox, map bbox, geographic bounds, arc points, shadow polygon, glyph anchors and required country overlap.
+- Added `audit_massif_source_manifest()` so massif source layers can be checked without rendering screenshots:
+  - all expected Alpine massif ids must exist in the manifest;
+  - each source PNG must exist, be RGBA, match the metadata size and be non-blank;
+  - geographic bounds must be non-degenerate.
+
+Evidence:
+
+- Manifest generated at `assets/map/massifs/manifest.json`.
+- Sidecars generated for all current Alpine source layers:
+  - `western_alps_massif.json`
+  - `swiss_alps_massif.json`
+  - `bavarian_tyrol_alps_massif.json`
+  - `german_alpine_edge_massif.json`
+  - `austrian_alps_massif.json`
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated source massif PNGs and metadata.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 tests OK.
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
+
+Self-audit: still about `6.8/10`. This does not improve the screenshot by itself, but it removes a major process weakness: terrain sprites now carry enough placement metadata to audit and replace them deterministically. Next visual pass should use this to improve the Alpine/Harz/forest art rather than editing a monolithic map.

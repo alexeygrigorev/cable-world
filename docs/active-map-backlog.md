@@ -57,6 +57,7 @@
 - [x] #68 Первый pass: добавить отдельный `german_alpine_edge_massif`, чтобы Альпы были видны внутри южной Германии, а не только южнее границы.
 - [x] #69 Первый architecture pass: Alpine massif segments теперь сохраняются как отдельные source PNG layers в `assets/map/massifs/` и исключены из Godot export; итоговая карта собирается из того же per-massif render path.
 - [x] Добавить non-render audit до screenshots: `audit_geography_layers()` проверяет, что немецкий Alpine-edge massif пересекает Germany geometry, а runtime landmark audit проверяет top/center/bottom samples Ростока по реальному полигону Германии.
+- [x] #69 Добавить metadata для massif source layers: общий `assets/map/massifs/manifest.json` и per-layer JSON sidecars фиксируют image file, crop bbox, geo bounds, arc/shadow/glyph anchors и overlap requirements; `audit_massif_source_manifest()` сверяет manifest с PNG без визуального рендера.
 - [ ] #67 Follow-up: проверить mobile руками и убрать/укрупнить оставшиеся дома/лесные glyphs, если пользователь всё ещё воспринимает их как мелкий шум.
 - [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.

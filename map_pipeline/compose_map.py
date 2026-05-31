@@ -1,6 +1,7 @@
 import math
 import os
 import sys
+import json
 
 import geopandas as gpd
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
@@ -13,6 +14,7 @@ FONT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "fonts")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "natural_earth")
 GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 MASSIF_DIR = os.path.join(MAP_DIR, "massifs")
+MASSIF_MANIFEST_PATH = os.path.join(MASSIF_DIR, "manifest.json")
 
 GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
 # Match the Mercator aspect of GERMANY_BOUNDS and keep enough physical pixels
@@ -38,6 +40,7 @@ FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 FONT_CACHE = {}
 EXPORT_MASSIF_SOURCE_LAYERS = True
+MASSIF_SOURCE_MANIFEST = []
 
 RUNTIME_LANDMARK_AUDIT_VIEWPORT = (390, 844)
 CITY_LANDMARK_PLACEMENT_AUDITS = [
@@ -621,6 +624,47 @@ def audit_runtime_landmark_placement(country_geometries=None):
     return errors
 
 
+def audit_massif_source_manifest():
+    errors = []
+    if not os.path.exists(MASSIF_MANIFEST_PATH):
+        return [f"massif source manifest is missing: {MASSIF_MANIFEST_PATH}"]
+    with open(MASSIF_MANIFEST_PATH, "r", encoding="utf-8") as file:
+        manifest = json.load(file)
+
+    expected_ids = {segment["id"] for segment in ALPINE_MASSIF_SEGMENTS}
+    layers = manifest.get("layers", [])
+    actual_ids = {layer.get("id") for layer in layers}
+    missing_ids = sorted(expected_ids - actual_ids)
+    extra_ids = sorted(actual_ids - expected_ids)
+    for segment_id in missing_ids:
+        errors.append(f"massif source layer {segment_id} is missing from manifest")
+    for segment_id in extra_ids:
+        errors.append(f"massif source manifest has unexpected layer {segment_id}")
+
+    for layer in layers:
+        layer_id = layer.get("id", "")
+        image_name = layer.get("image", "")
+        image_path = os.path.join(MASSIF_DIR, image_name)
+        if not image_name or not os.path.exists(image_path):
+            errors.append(f"massif source layer {layer_id} image is missing: {image_name}")
+            continue
+        with Image.open(image_path) as image:
+            if image.mode != "RGBA":
+                errors.append(f"massif source layer {layer_id} must be RGBA")
+            expected_size = tuple(layer.get("cropped_size_px", []))
+            if expected_size != image.size:
+                errors.append(f"massif source layer {layer_id} metadata size does not match PNG")
+            if image.getbbox() is None:
+                errors.append(f"massif source layer {layer_id} is blank")
+        geo_bounds = layer.get("geo_bounds", {})
+        if geo_bounds:
+            width = float(geo_bounds["max_longitude"]) - float(geo_bounds["min_longitude"])
+            height = float(geo_bounds["max_latitude"]) - float(geo_bounds["min_latitude"])
+            if width <= 0.10 or height <= 0.10:
+                errors.append(f"massif source layer {layer_id} geo bounds are too small")
+    return errors
+
+
 def _runtime_map_base_size_for_viewport(viewport_size):
     viewport_width, viewport_height = viewport_size
     aspect = MAP_SIZE[0] / MAP_SIZE[1]
@@ -1160,7 +1204,7 @@ def _draw_alpine_ridge_band(canvas, proj, ridge_band):
 def _draw_alpine_massif_segment(canvas, proj, segment):
     massif_layer = _render_alpine_massif_segment_layer(canvas.size, proj, segment)
     if EXPORT_MASSIF_SOURCE_LAYERS:
-        _save_massif_source_layer(massif_layer, segment)
+        _save_massif_source_layer(massif_layer, segment, proj)
     canvas.alpha_composite(massif_layer)
 
 
@@ -1191,13 +1235,85 @@ def _render_alpine_massif_segment_layer(size, proj, segment):
     return massif_layer
 
 
-def _save_massif_source_layer(layer, segment):
+def _save_massif_source_layer(layer, segment, proj):
     bbox = layer.getbbox()
     if bbox is None:
         return
     os.makedirs(MASSIF_DIR, exist_ok=True)
     cropped = layer.crop(bbox)
-    cropped.save(os.path.join(MASSIF_DIR, f"{segment['id']}.png"), optimize=True)
+    image_name = f"{segment['id']}.png"
+    metadata_name = f"{segment['id']}.json"
+    cropped.save(os.path.join(MASSIF_DIR, image_name), optimize=True)
+
+    metadata = _massif_source_metadata(segment, image_name, bbox, cropped.size, proj)
+    with open(os.path.join(MASSIF_DIR, metadata_name), "w", encoding="utf-8") as file:
+        json.dump(metadata, file, ensure_ascii=False, indent=2, sort_keys=True)
+        file.write("\n")
+    MASSIF_SOURCE_MANIFEST.append(metadata)
+
+
+def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj):
+    left, top, right, bottom = render_bbox
+    map_bbox = [value / RENDER_SCALE for value in render_bbox]
+    west, north = proj.inverse(map_bbox[0], map_bbox[1])
+    east, south = proj.inverse(map_bbox[2], map_bbox[3])
+    return {
+        "id": segment["id"],
+        "label": segment["label"],
+        "image": image_name,
+        "render_bbox_px": [int(value) for value in render_bbox],
+        "map_bbox_px": [round(value, 2) for value in map_bbox],
+        "cropped_size_px": [int(cropped_size[0]), int(cropped_size[1])],
+        "geo_bounds": {
+            "min_longitude": round(min(west, east), 5),
+            "max_longitude": round(max(west, east), 5),
+            "min_latitude": round(min(south, north), 5),
+            "max_latitude": round(max(south, north), 5),
+        },
+        "arc": [{"longitude": lon, "latitude": lat} for lon, lat in segment.get("arc", [])],
+        "shadow": [{"longitude": lon, "latitude": lat} for lon, lat in segment.get("shadow", [])],
+        "glyphs": [
+            {
+                "glyph": glyph_name,
+                "longitude": lon,
+                "latitude": lat,
+                "width": width,
+                "y_offset": y_offset,
+            }
+            for glyph_name, lon, lat, width, y_offset in segment.get("glyphs", [])
+        ],
+        "required_country_overlap": segment.get("required_country_overlap", ""),
+    }
+
+
+def _prepare_massif_source_dir():
+    if not EXPORT_MASSIF_SOURCE_LAYERS:
+        return
+    os.makedirs(MASSIF_DIR, exist_ok=True)
+    MASSIF_SOURCE_MANIFEST.clear()
+    for name in os.listdir(MASSIF_DIR):
+        if name.endswith((".png", ".json")):
+            os.remove(os.path.join(MASSIF_DIR, name))
+
+
+def _write_massif_source_manifest():
+    if not EXPORT_MASSIF_SOURCE_LAYERS:
+        return
+    manifest = {
+        "schema": "cable-world.massif-source-layers.v1",
+        "map_bounds": {
+            "min_longitude": GERMANY_BOUNDS[0],
+            "min_latitude": GERMANY_BOUNDS[1],
+            "max_longitude": GERMANY_BOUNDS[2],
+            "max_latitude": GERMANY_BOUNDS[3],
+        },
+        "map_size_px": [MAP_SIZE[0], MAP_SIZE[1]],
+        "render_scale": RENDER_SCALE,
+        "layers": MASSIF_SOURCE_MANIFEST,
+    }
+    with open(MASSIF_MANIFEST_PATH, "w", encoding="utf-8") as file:
+        json.dump(manifest, file, ensure_ascii=False, indent=2, sort_keys=True)
+        file.write("\n")
 
 
 def _forest_sprite(radius):
@@ -1542,6 +1658,7 @@ def _draw_dotted_route(draw, pts):
 
 def main():
     os.makedirs(MAP_DIR, exist_ok=True)
+    _prepare_massif_source_dir()
     render_size = _scale_size(MAP_SIZE)
     proj = MapProjection(GERMANY_BOUNDS, MAP_SIZE)
 
@@ -1566,6 +1683,7 @@ def main():
     _draw_neighbor_country_labels(canvas, proj, neighbor_mask)
     _draw_map_labels(canvas, proj, germany_mask)
     _draw_country_border_overlay(canvas, proj, germany)
+    _write_massif_source_manifest()
 
     print("Step 3: Finish clean interactive map underlay")
 

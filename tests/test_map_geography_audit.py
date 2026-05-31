@@ -12,6 +12,11 @@ class MapGeographyAuditTest(unittest.TestCase):
 
         self.assertEqual([], audit_geography_layers())
 
+    def test_massif_source_layers_have_valid_manifest(self) -> None:
+        from map_pipeline.compose_map import audit_massif_source_manifest
+
+        self.assertEqual([], audit_massif_source_manifest())
+
 
 if __name__ == "__main__":
     unittest.main()
