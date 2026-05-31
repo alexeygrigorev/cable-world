@@ -1369,3 +1369,38 @@ Parallel work:
 - `Kuhn` is still active on #88 map/list toggle pictogram.
 - Started `Avicenna` on #90 list screen atlas-style restyle. Scope is limited to list view styling and focused tests; it must not change #88 toggle, #89 navigation flow, map terrain/assets, ride scene or release files.
 - Started `Banach` on #70 Rostock landmark placement. Scope is limited to Rostock/city placement calibration plus tests/review evidence; because this touches the map, it must produce screenshot evidence and follow `docs/map-reviewer-gate.md`.
+
+## Iteration 2026-06-01 02:05
+
+Integrated reviewed #88 map/list toggle pictogram:
+
+- Worker: `Kuhn`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-88-map-list-toggle-pictogram`.
+- Worker branch: `issue-88-map-list-toggle-pictogram`.
+- Worker commit: `31e9fdc Refine map list toggle pictograms`.
+- Integrated commit on `main`: `d75e5d8 Refine map list toggle pictograms`.
+- Decision: `ACCEPT` for #88 scope; #88 closed.
+
+What landed:
+
+- Replaced generic map/list pictograms with atlas-style generated bitmap icons in `scripts/main_screen.gd`.
+- Kept fullscreen map minimal: icon-only top-left toggle, zoom controls remain separate.
+- Added a matching atlas/parchment `Карта` return button in list mode.
+- Updated static and Godot runtime contracts for map -> list -> map.
+
+Visual evidence reviewed:
+
+- `tmp/screenshots/issue-88-mobile-map.png`.
+- `tmp/screenshots/issue-88-mobile-list.png`.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_app_shell_contract`: PASS, 11 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 259 tests, 9 skipped.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Note:
+
+- The list body itself still needs the separate #90 restyle.
