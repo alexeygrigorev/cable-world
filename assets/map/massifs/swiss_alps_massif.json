@@ -88,5 +88,6 @@
       "longitude": 7.8
     }
   ],
+  "source_extent_id": "swiss_alps_massif",
   "source_type": "massif_segment"
 }

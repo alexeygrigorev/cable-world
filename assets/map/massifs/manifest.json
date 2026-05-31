@@ -195,6 +195,7 @@
           "longitude": 6.1
         }
       ],
+      "source_extent_id": "western_alps_massif",
       "source_type": "massif_segment"
     },
     {
@@ -287,6 +288,7 @@
           "longitude": 7.8
         }
       ],
+      "source_extent_id": "swiss_alps_massif",
       "source_type": "massif_segment"
     },
     {
@@ -386,6 +388,7 @@
           "longitude": 10.05
         }
       ],
+      "source_extent_id": "bavarian_tyrol_alps_massif",
       "source_type": "massif_segment"
     },
     {
@@ -493,6 +496,7 @@
           "longitude": 10.0
         }
       ],
+      "source_extent_id": "german_alpine_edge_massif",
       "source_type": "massif_segment"
     },
     {
@@ -592,6 +596,7 @@
           "longitude": 12.35
         }
       ],
+      "source_extent_id": "austrian_alps_massif",
       "source_type": "massif_segment"
     },
     {

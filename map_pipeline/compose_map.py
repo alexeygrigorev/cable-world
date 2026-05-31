@@ -47,6 +47,9 @@ FOREST_CLUSTER_MIN_SOURCE_WIDTH = 86
 LAND_DETAIL_VISUAL_SCALE = 0.74
 LAND_DETAIL_ALPHA_SCALE = 0.48
 LAND_DETAIL_TINT_STRENGTH = 0.28
+INTEGRATED_LAND_PATTERN_LON_STEP = 0.24
+INTEGRATED_LAND_PATTERN_LAT_STEP = 0.22
+INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.70
 EXPORT_MASSIF_SOURCE_LAYERS = True
 MASSIF_SOURCE_MANIFEST = []
 
@@ -1381,6 +1384,95 @@ def _draw_ground_texture(canvas, proj, germany_mask, germany_geom):
     canvas.alpha_composite(layer)
 
 
+def _draw_integrated_land_pattern(canvas, proj, germany_mask, germany_geom):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+
+    lon = 4.85
+    lon_index = 0
+    while lon <= 15.35:
+        lat = 46.75
+        lat_index = 0
+        while lat <= 55.35:
+            seed = _stable_hash("integrated_land_pattern", lon_index, lat_index)
+            jitter_lon = ((seed & 255) / 255.0 - 0.5) * 0.16
+            jitter_lat = (((seed >> 8) & 255) / 255.0 - 0.5) * 0.14
+            point_lon = lon + jitter_lon
+            point_lat = lat + jitter_lat
+            if germany_geom.contains(Point(point_lon, point_lat)):
+                x, y = _project_point(proj, point_lon, point_lat)
+                kind = seed % 12
+                size = 7 + ((seed >> 16) % 9)
+                if point_lat > 52.2 and kind in (3, 4, 8):
+                    kind = 1
+                if point_lat < 48.7 and kind in (0, 1, 2):
+                    kind = 6
+                _draw_land_pattern_mark(draw, x, y, size, kind, seed)
+            lat += INTEGRATED_LAND_PATTERN_LAT_STEP
+            lat_index += 1
+        lon += INTEGRATED_LAND_PATTERN_LON_STEP
+        lon_index += 1
+
+    alpha = layer.getchannel("A")
+    alpha = alpha.filter(ImageFilter.GaussianBlur(0.25 * RENDER_SCALE))
+    alpha = alpha.point(lambda value: int(value * INTEGRATED_LAND_PATTERN_ALPHA_SCALE))
+    alpha = Image.composite(alpha, Image.new("L", canvas.size, 0), germany_mask)
+    layer.putalpha(alpha)
+    canvas.alpha_composite(layer)
+
+
+def _draw_land_pattern_mark(draw, x, y, size, kind, seed):
+    s = size * RENDER_SCALE
+    line_width = max(1, RENDER_SCALE)
+    warm_grass = (88, 112, 63, 52)
+    dry_grass = (166, 150, 82, 45)
+    earth = (104, 91, 57, 42)
+    shadow_green = (61, 93, 55, 40)
+
+    if kind in (0, 1, 2):
+        color = warm_grass if kind != 2 else shadow_green
+        for offset in (-1, 0, 1):
+            ox = offset * s // 3
+            draw.arc(
+                (x + ox - s // 2, y - s // 3, x + ox + s // 2, y + s // 2),
+                215,
+                330,
+                fill=color,
+                width=line_width,
+            )
+    elif kind in (3, 4):
+        color = dry_grass if kind == 3 else earth
+        for offset in range(-1, 2):
+            yy = y + offset * s // 4
+            draw.line(
+                (x - s // 2, yy, x + s // 2, yy + s // 5),
+                fill=color,
+                width=line_width,
+            )
+    elif kind in (5, 6, 7):
+        color = earth if kind != 5 else dry_grass
+        draw.arc((x - s, y - s // 2, x + s, y + s // 2), 205, 335, fill=color, width=line_width)
+        if seed % 3 != 0:
+            draw.arc(
+                (x - s // 2, y - s // 4, x + s // 2, y + s // 3),
+                205,
+                335,
+                fill=(76, 103, 61, 34),
+                width=line_width,
+            )
+    elif kind in (8, 9):
+        color = (92, 96, 64, 42)
+        for index in range(3):
+            ox = ((seed >> (index * 4)) % 9 - 4) * RENDER_SCALE
+            oy = ((seed >> (index * 5 + 12)) % 7 - 3) * RENDER_SCALE
+            rr = max(RENDER_SCALE, s // (5 + index))
+            draw.ellipse((x + ox - rr, y + oy - rr, x + ox + rr, y + oy + rr), fill=color)
+    else:
+        color = (72, 105, 60, 42)
+        draw.line((x, y - s // 2, x - s // 2, y + s // 2), fill=color, width=line_width)
+        draw.line((x, y - s // 2, x + s // 2, y + s // 2), fill=color, width=line_width)
+
+
 def _draw_tuft(draw, x, y, size, color):
     s = size * RENDER_SCALE
     draw.line((x, y, x - s // 2, y + s // 2), fill=color, width=max(1, RENDER_SCALE))
@@ -2149,6 +2241,7 @@ def main():
     _draw_terrain(canvas, proj, land_mask)
     _draw_neighbor_ground_texture(canvas, proj, neighbor_mask)
     _draw_ground_texture(canvas, proj, germany_mask, germany)
+    _draw_integrated_land_pattern(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
     _draw_named_water_bodies(canvas, proj, germany_mask)
     _draw_atlas_land_detail_patches(canvas, proj, germany_mask)

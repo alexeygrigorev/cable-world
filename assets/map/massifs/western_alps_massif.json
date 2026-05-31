@@ -88,5 +88,6 @@
       "longitude": 6.1
     }
   ],
+  "source_extent_id": "western_alps_massif",
   "source_type": "massif_segment"
 }

@@ -95,5 +95,6 @@
       "longitude": 10.05
     }
   ],
+  "source_extent_id": "bavarian_tyrol_alps_massif",
   "source_type": "massif_segment"
 }

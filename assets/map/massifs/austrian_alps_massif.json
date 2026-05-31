@@ -95,5 +95,6 @@
       "longitude": 12.35
     }
   ],
+  "source_extent_id": "austrian_alps_massif",
   "source_type": "massif_segment"
 }
