@@ -31,14 +31,16 @@ LAKE = "#2d7285"
 RIVER = "#3b8fa3"
 ROUTE = "#d8c17a"
 ROUTE_DARK = "#6e5832"
-NAMED_WATER_FILL = (47, 98, 111, 150)
-NAMED_WATER_SHALLOW = (71, 126, 129, 82)
-NAMED_WATER_SHORE = (66, 78, 47, 58)
-NAMED_WATER_OUTLINE = (39, 72, 72, 118)
-NAMED_WATER_HIGHLIGHT = (139, 184, 181, 76)
+NAMED_WATER_FILL = (47, 98, 111, 118)
+NAMED_WATER_SHALLOW = (71, 126, 129, 58)
+NAMED_WATER_SHORE = (66, 78, 47, 34)
+NAMED_WATER_OUTLINE = (39, 72, 72, 92)
+NAMED_WATER_HIGHLIGHT = (139, 184, 181, 54)
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 FONT_CACHE = {}
+FOREST_MASS_VISUAL_SCALE = 1.32
+FOREST_MASS_MIN_WIDTH = 112
 EXPORT_MASSIF_SOURCE_LAYERS = True
 MASSIF_SOURCE_MANIFEST = []
 
@@ -127,10 +129,25 @@ NAMED_WATER_BODIES = [
         "points": [(11.69, 47.76), (11.78, 47.75), (11.78, 47.68), (11.70, 47.67), (11.65, 47.72)],
     },
     {
-        "id": "berlin_lakes",
-        "label": "Berlin lakes",
-        "kind": "lake_cluster",
-        "points": [(13.62, 52.50), (13.85, 52.47), (13.90, 52.35), (13.72, 52.28), (13.55, 52.37)],
+        "id": "mueggelsee",
+        "label": "Müggelsee",
+        "kind": "lake",
+        "subtle": True,
+        "points": [(13.61, 52.45), (13.72, 52.46), (13.79, 52.43), (13.78, 52.39), (13.65, 52.38), (13.58, 52.41)],
+    },
+    {
+        "id": "wannsee_havel",
+        "label": "Wannsee / Havel",
+        "kind": "lake_chain",
+        "subtle": True,
+        "points": [(13.13, 52.47), (13.20, 52.44), (13.22, 52.38), (13.16, 52.32), (13.09, 52.35), (13.07, 52.43)],
+    },
+    {
+        "id": "tegeler_see",
+        "label": "Tegeler See",
+        "kind": "lake",
+        "subtle": True,
+        "points": [(13.22, 52.60), (13.30, 52.61), (13.34, 52.58), (13.31, 52.54), (13.22, 52.55), (13.19, 52.58)],
     },
 ]
 
@@ -800,6 +817,31 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
     draw = ImageDraw.Draw(layer)
     width, height = canvas.size
 
+    for y in range(0, height, 96 * RENDER_SCALE):
+        for x in range(0, width, 112 * RENDER_SCALE):
+            seed = _stable_hash("land_patch", x // RENDER_SCALE, y // RENDER_SCALE)
+            patch_w = (74 + seed % 58) * RENDER_SCALE
+            patch_h = (30 + (seed >> 6) % 34) * RENDER_SCALE
+            jitter_x = ((seed >> 12) % 43 - 21) * RENDER_SCALE
+            jitter_y = ((seed >> 18) % 37 - 18) * RENDER_SCALE
+            if seed % 4 == 0:
+                color = (126, 142, 73, 18)
+            elif seed % 4 == 1:
+                color = (186, 171, 96, 14)
+            elif seed % 4 == 2:
+                color = (82, 123, 66, 13)
+            else:
+                color = (105, 93, 55, 10)
+            draw.ellipse(
+                (
+                    x + jitter_x - patch_w // 2,
+                    y + jitter_y - patch_h // 2,
+                    x + jitter_x + patch_w // 2,
+                    y + jitter_y + patch_h // 2,
+                ),
+                fill=color,
+            )
+
     for y in range(0, height, 18 * RENDER_SCALE):
         for x in range(0, width, 18 * RENDER_SCALE):
             seed = _stable_hash("land_texture", x // RENDER_SCALE, y // RENDER_SCALE)
@@ -814,6 +856,22 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
             jitter_x = ((seed >> 8) % 11 - 5) * RENDER_SCALE
             jitter_y = ((seed >> 16) % 11 - 5) * RENDER_SCALE
             draw.ellipse((x + jitter_x - rr, y + jitter_y - rr, x + jitter_x + rr, y + jitter_y + rr), fill=color)
+            if seed % 7 == 0:
+                blade_h = (4 + (seed >> 21) % 5) * RENDER_SCALE
+                blade_x = x + jitter_x + ((seed >> 24) % 9 - 4) * RENDER_SCALE
+                blade_y = y + jitter_y
+                draw.arc(
+                    (
+                        blade_x - 4 * RENDER_SCALE,
+                        blade_y - blade_h,
+                        blade_x + 4 * RENDER_SCALE,
+                        blade_y + blade_h,
+                    ),
+                    215,
+                    330,
+                    fill=(62, 98, 51, 24),
+                    width=max(1, RENDER_SCALE),
+                )
 
     for y in range(0, height, 72 * RENDER_SCALE):
         x_offset = ((y // (72 * RENDER_SCALE)) % 2) * 36 * RENDER_SCALE
@@ -932,10 +990,16 @@ def _draw_named_water_body(draw, proj, water_body):
     pts = _smooth_closed_points([_project_point(proj, lon, lat) for lon, lat in water_body["points"]])
     if len(pts) < 3:
         return
-    draw.line(pts + [pts[0]], fill=NAMED_WATER_SHORE, width=max(2, RENDER_SCALE * 7), joint="curve")
-    draw.polygon(pts, fill=NAMED_WATER_FILL)
-    draw.line(pts + [pts[0]], fill=NAMED_WATER_SHALLOW, width=max(1, RENDER_SCALE * 3), joint="curve")
-    draw.line(pts + [pts[0]], fill=NAMED_WATER_OUTLINE, width=max(1, RENDER_SCALE), joint="curve")
+    alpha_scale = 0.58 if water_body.get("subtle", False) else 1.0
+    shore = _scale_alpha(NAMED_WATER_SHORE, alpha_scale)
+    fill = _scale_alpha(NAMED_WATER_FILL, alpha_scale)
+    shallow = _scale_alpha(NAMED_WATER_SHALLOW, alpha_scale)
+    outline = _scale_alpha(NAMED_WATER_OUTLINE, alpha_scale)
+    highlight = _scale_alpha(NAMED_WATER_HIGHLIGHT, alpha_scale)
+    draw.line(pts + [pts[0]], fill=shore, width=max(2, RENDER_SCALE * 4), joint="curve")
+    draw.polygon(pts, fill=fill)
+    draw.line(pts + [pts[0]], fill=shallow, width=max(1, RENDER_SCALE * 2), joint="curve")
+    draw.line(pts + [pts[0]], fill=outline, width=max(1, RENDER_SCALE), joint="curve")
 
     min_x = min(x for x, _ in pts)
     max_x = max(x for x, _ in pts)
@@ -956,9 +1020,13 @@ def _draw_named_water_body(draw, proj, water_body):
             ),
             190,
             350,
-            fill=NAMED_WATER_HIGHLIGHT,
+            fill=highlight,
             width=max(1, RENDER_SCALE),
         )
+
+
+def _scale_alpha(color, scale):
+    return (color[0], color[1], color[2], int(round(color[3] * scale)))
 
 
 def _smooth_closed_points(points, subdivisions=6):
@@ -1079,7 +1147,8 @@ def _draw_atlas_forest_masses(canvas, proj, land_mask):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     for mass in ATLAS_FOREST_MASSES:
         for glyph_name, lon, lat, width in mass["clusters"]:
-            _draw_glyph_center(layer, proj, glyph_name, lon, lat, width)
+            display_width = max(FOREST_MASS_MIN_WIDTH, int(width * FOREST_MASS_VISUAL_SCALE))
+            _draw_glyph_center(layer, proj, glyph_name, lon, lat, display_width)
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), land_mask)
     layer.putalpha(alpha)
     canvas.alpha_composite(layer)
@@ -1327,6 +1396,7 @@ def _render_alpine_massif_segment_layer(size, proj, segment):
         line_draw = ImageDraw.Draw(line_layer)
         line_draw.line(arc_points, fill=(43, 59, 40, 82), width=8 * RENDER_SCALE, joint="curve")
         line_draw.line([(x, y - 5 * RENDER_SCALE) for x, y in arc_points], fill=(180, 168, 112, 62), width=3 * RENDER_SCALE, joint="curve")
+        _draw_massif_crest_peaks(line_draw, arc_points, segment["id"])
         line_layer = line_layer.filter(ImageFilter.GaussianBlur(1.2 * RENDER_SCALE))
         massif_layer.alpha_composite(line_layer)
 
@@ -1334,6 +1404,53 @@ def _render_alpine_massif_segment_layer(size, proj, segment):
         x, y = _project_point(proj, lon, lat)
         _draw_glyph_at(massif_layer, glyph_name, x, y + int(float(y_offset) * width * RENDER_SCALE), width)
     return massif_layer
+
+
+def _draw_massif_crest_peaks(draw, arc_points, segment_id):
+    for segment_index, (start, end) in enumerate(zip(arc_points, arc_points[1:])):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        segment_length = max(1.0, math.hypot(dx, dy))
+        tangent_x = dx / segment_length
+        tangent_y = dy / segment_length
+        normal_x = -dy / segment_length
+        normal_y = dx / segment_length
+        if normal_y < 0.0:
+            normal_x *= -1.0
+            normal_y *= -1.0
+        step = 30 * RENDER_SCALE
+        count = max(2, int(segment_length / step))
+        for peak_index in range(count):
+            seed = _stable_hash("massif_crest", segment_id, segment_index, peak_index)
+            t = (peak_index + 0.5) / count
+            cx = start[0] + dx * t
+            cy = start[1] + dy * t
+            half_width = (14 + seed % 10) * RENDER_SCALE
+            height = (18 + (seed >> 5) % 14) * RENDER_SCALE
+            base_y_shift = (3 + (seed >> 10) % 6) * RENDER_SCALE
+            left = (
+                int(cx - tangent_x * half_width + normal_x * base_y_shift),
+                int(cy - tangent_y * half_width + normal_y * base_y_shift),
+            )
+            right = (
+                int(cx + tangent_x * half_width + normal_x * base_y_shift),
+                int(cy + tangent_y * half_width + normal_y * base_y_shift),
+            )
+            peak = (
+                int(cx - normal_x * height),
+                int(cy - normal_y * height),
+            )
+            snow_left = (
+                int(cx - tangent_x * half_width * 0.34 - normal_x * height * 0.30),
+                int(cy - tangent_y * half_width * 0.34 - normal_y * height * 0.30),
+            )
+            snow_right = (
+                int(cx + tangent_x * half_width * 0.28 - normal_x * height * 0.26),
+                int(cy + tangent_y * half_width * 0.28 - normal_y * height * 0.26),
+            )
+            draw.polygon([left, peak, right], fill=(86, 79, 54, 118))
+            draw.line([left, peak, right], fill=(42, 37, 26, 126), width=max(1, RENDER_SCALE), joint="curve")
+            draw.polygon([peak, snow_left, snow_right], fill=(224, 213, 165, 142))
 
 
 def _save_massif_source_layer(layer, segment, proj):

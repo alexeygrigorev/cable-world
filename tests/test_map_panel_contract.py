@@ -109,7 +109,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("_draw_city_label(city_font, label_data, occupied_rects)", script_text)
         self.assertIn("_draw_terrain_label(atlas_font, label_data, occupied_rects)", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
-        self.assertIn("var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y + 1.5 * zoom)", script_text)
+        self.assertIn("var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y - CITY_ICON_LABEL_BASELINE_OVERLAP * zoom)", script_text)
         self.assertIn("const LANDMARK_EDGE_MARGIN := 96.0", script_text)
         self.assertIn("const SECONDARY_CITY_LABEL_ZOOM := 1.20", script_text)
         self.assertIn("func _screen_point_near_viewport(position: Vector2, margin: float) -> bool:", script_text)
@@ -156,11 +156,15 @@ class MapPanelContractTest(unittest.TestCase):
             "MOUSE_BUTTON_WHEEL_UP",
             "MOUSE_BUTTON_WHEEL_DOWN",
             "const PAN_DRAG_SCALE := 1.0",
+            "const TOUCH_PAN_DRAG_SCALE := 0.34",
             "func _pan_by(screen_delta: Vector2) -> void:",
             "pan_offset += screen_delta * PAN_DRAG_SCALE",
             "func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:",
             "func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:",
+            "event.position - previous_position",
             "event.relative",
+            "var pan_delta := _pan_delta_from_screen_drag(event)",
+            "last_touch_positions[event.index] = event.position",
             "pan_offset = _default_pan_offset()",
             "const ZOOM_STEP := 0.25",
             "func _zoom_by_delta(pivot: Vector2, delta: float) -> void:",
@@ -245,6 +249,7 @@ class MapPanelContractTest(unittest.TestCase):
             "current_distance / previous_distance",
             "func _touch_distance_with",
             "1.0 / ZOOM_STEP",
+            "event.screen_relative",
         ]:
             self.assertNotIn(forbidden, script_text)
 
@@ -288,7 +293,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("clamp(position.x", centered_label_body)
         self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_draw_body)
         self.assertIn("_centered_label_rect", city_label_body)
-        self.assertIn("var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y + 1.5 * zoom)", city_label_body)
+        self.assertIn("var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y - CITY_ICON_LABEL_BASELINE_OVERLAP * zoom)", city_label_body)
         self.assertIn("_pixel_snap(position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom) + _city_icon_offset(label_data))", city_icon_rect_body)
         self.assertIn("func _city_icon_offset(label_data: Dictionary) -> Vector2:", script_text)
         self.assertIn("+ _city_icon_offset(label_data)", city_icon_rect_body)
@@ -299,6 +304,8 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("draw_rect", city_icon_rect_body)
         self.assertIn("func _landmark_visual_scale() -> float:", script_text)
         self.assertIn("clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0)", script_text)
+        self.assertIn("const CITY_ICON_LABEL_BASELINE_OVERLAP := 5.0", script_text)
+        self.assertIn("icon_rect.position.y + icon_rect.size.y - CITY_ICON_LABEL_BASELINE_OVERLAP * zoom", script_text)
         self.assertIn("var reserved_label_rects: Array[Rect2] = []", script_text)
         self.assertIn("var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()", script_text)
         self.assertIn("func _left_label_rect(", script_text)
@@ -373,6 +380,8 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_alpine_ridge_band(canvas, proj, ridge_band):",
             "def _draw_alpine_massif_segment(canvas, proj, segment):",
             "def _render_alpine_massif_segment_layer(size, proj, segment):",
+            "def _draw_massif_crest_peaks(draw, arc_points, segment_id):",
+            '_stable_hash("massif_crest", segment_id, segment_index, peak_index)',
             "def _save_massif_source_layer(layer, segment, proj):",
             "def _save_relief_region_source_layer(layer, region, proj):",
             "def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj):",
@@ -438,11 +447,14 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_atlas_dotted_route(draw, points, step):",
             "_draw_atlas_routes(canvas, proj, germany_mask)",
             "ATLAS_FOREST_MASSES = [",
+            "FOREST_MASS_VISUAL_SCALE = 1.32",
+            "FOREST_MASS_MIN_WIDTH = 112",
             '"id": "lueneburg_heath"',
             '"id": "mecklenburg_lake_forests"',
             '"id": "spreewald_lausitz"',
             '"id": "thuringian_forest"',
             "def _draw_atlas_forest_masses(canvas, proj, land_mask):",
+            "display_width = max(FOREST_MASS_MIN_WIDTH, int(width * FOREST_MASS_VISUAL_SCALE))",
             "_draw_atlas_forest_masses(canvas, proj, land_mask)",
             "def _draw_atlas_details(canvas, proj):",
             "for detail in ATLAS_DETAILS:",
@@ -450,6 +462,8 @@ class MapPanelContractTest(unittest.TestCase):
             "continue",
             "target_width = max(MIN_ATLAS_DETAIL_WIDTH, detail[\"width\"] * kind_scale)",
             "def _draw_base_land_texture(canvas, land_mask, germany_mask):",
+            "_stable_hash(\"land_patch\"",
+            "_stable_hash(\"land_texture\"",
             "def _draw_base_water_texture(canvas, water_mask):",
             "_draw_base_land_texture(canvas, land_mask, germany_mask)",
             "_draw_base_water_texture(canvas, water_mask)",
@@ -460,12 +474,16 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_glyph_center(canvas, proj, glyph_name, lon, lat, target_width):",
             "\"alps_range_1\"",
             "NAMED_WATER_BODIES = [",
-            "NAMED_WATER_FILL = (47, 98, 111, 150)",
-            "NAMED_WATER_SHORE = (66, 78, 47, 58)",
+            "NAMED_WATER_FILL = (47, 98, 111, 118)",
+            "NAMED_WATER_SHORE = (66, 78, 47, 34)",
             '"id": "mueritz"',
             '"id": "bodensee"',
             '"id": "chiemsee"',
+            '"id": "mueggelsee"',
+            '"id": "wannsee_havel"',
+            '"subtle": True',
             "def _draw_named_water_body(draw, proj, water_body):",
+            "def _scale_alpha(color, scale):",
             "def _smooth_closed_points(points, subdivisions=6):",
             "for water_body in NAMED_WATER_BODIES:",
             "\"forest_cluster_1\"",

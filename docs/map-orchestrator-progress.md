@@ -963,3 +963,24 @@ Checks:
   - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
 
 Self-audit: about `6.9/10`, still not `8/10`. This improves relief structure and fixes the clipped desktop Rostock first view, but the Alpine art is still too generic and the map still needs a stronger, more hand-authored atlas feel before it clears the `8/10` gate.
+
+## Iteration 2026-05-31 21:05
+
+Implemented:
+
+- Re-found the original generated donor underlay that had the stronger visual direction: `tmp/map-underlay-source/germany_atlas_underlay_2026-05-31_v2.png`.
+- Rechecked it against the user reference `/home/alexey/tmp/file_000000000d5c71f4b60ecae32dd4240b.png` and the current `assets/map/germany_styled.png`.
+- Recorded the direction explicitly in `docs/active-map-backlog.md`: the goal is not to keep using a monolithic generated bitmap, but to decompose that donor-map language into separate reusable glyph layers for land, forests, relief, routes, water and atlas details.
+- Added rubric caps for the exact repeated failure mode: weak flat land texture and tiny point-like trees prevent a high score even if the technical pipeline works.
+- First small corrective pass: `FOREST_MASS_VISUAL_SCALE = 1.32`, `FOREST_MASS_MIN_WIDTH = 112`, plus a warmer varied land texture pass with larger patches and small grass marks. This is not the final donor decomposition, but it moves the current render away from the flat procedural ground.
+- Moved city labels closer to pictograms with `CITY_ICON_LABEL_BASELINE_OVERLAP`.
+- Reduced touch pan speed by using touch position delta and `TOUCH_PAN_DRAG_SCALE = 0.34`; mouse pan remains unchanged.
+- Split the overly round Berlin water blob into named smaller water bodies and made subtle named-water bodies less marker-like.
+
+Pending visual debt:
+
+- Trees still need proper donor-derived forest glyphs; scaling the current glyphs is only a stopgap.
+- Land still needs a real reusable texture/glyph set derived from the old donor map style.
+- Alpine massif art still needs separate recognizable Alps segments, not generic mountain decoration.
+
+Self-audit: still about `6.9/10`. This iteration records and slightly corrects the problem, but does not yet reach the requested donor-map decomposition quality.

@@ -25,6 +25,7 @@ class OfflineMapLayer:
 	const LANDMARK_VIEWPORT_REFERENCE_WIDTH := 390.0
 	const LANDMARK_VIEWPORT_SCALE_MIN := 0.92
 	const LANDMARK_VIEWPORT_SCALE_MAX := 1.30
+	const CITY_ICON_LABEL_BASELINE_OVERLAP := 5.0
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
 		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
@@ -143,7 +144,7 @@ class OfflineMapLayer:
 		var icon_rect := _city_icon_rect(label_data, position)
 		var label_rect := Rect2()
 		if icon_rect.size != Vector2.ZERO:
-			var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y + 1.5 * zoom)
+			var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y - CITY_ICON_LABEL_BASELINE_OVERLAP * zoom)
 			label_rect = _centered_label_rect(font, str(label_data["name"]), icon_rect.get_center().x, icon_label_baseline_y, label_size)
 		else:
 			var point_label_baseline_y: float = round(position.y + 12.0 * zoom)
@@ -380,6 +381,7 @@ const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
 const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
 const PAN_DRAG_SCALE := 1.0
+const TOUCH_PAN_DRAG_SCALE := 0.34
 const DRAG_TAP_SUPPRESS_DISTANCE := 10.0
 
 var objects: Array[Dictionary] = []
@@ -933,8 +935,9 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 		accept_event()
 		return
 	else:
-		_pan_by(_pan_delta_from_screen_drag(event))
-		drag_distance += event.relative.length()
+		var pan_delta := _pan_delta_from_screen_drag(event)
+		_pan_by(pan_delta)
+		drag_distance += pan_delta.length()
 		if drag_distance >= DRAG_TAP_SUPPRESS_DISTANCE:
 			suppress_next_marker_press = true
 		_apply_map_transform()
@@ -948,7 +951,8 @@ func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:
 	return event.relative
 
 func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:
-	return event.relative
+	var previous_position: Vector2 = Vector2(last_touch_positions.get(event.index, event.position - event.relative))
+	return (event.position - previous_position) * TOUCH_PAN_DRAG_SCALE
 
 func _zoom_by_delta(pivot: Vector2, delta: float) -> void:
 	var previous_zoom := zoom
@@ -1382,13 +1386,15 @@ func _focus_cluster(marker: Button) -> void:
 func _on_marker_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenDrag:
 		suppress_next_marker_press = true
-		_pan_by(_pan_delta_from_screen_drag(event))
-		drag_distance += event.screen_relative.length()
+		var pan_delta := _pan_delta_from_screen_drag(event)
+		_pan_by(pan_delta)
+		drag_distance += pan_delta.length()
 		_apply_map_transform()
+		last_touch_positions[event.index] = event.position
 		accept_event()
 	elif event is InputEventMouseMotion and bool(event.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		suppress_next_marker_press = true
 		_pan_by(_pan_delta_from_mouse_motion(event))
-		drag_distance += event.screen_relative.length()
+		drag_distance += event.relative.length()
 		_apply_map_transform()
 		accept_event()

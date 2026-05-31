@@ -14,6 +14,8 @@
 
 - [ ] Перевести текущую карту в glyph-based production pipeline: чистая база без baked городов + отдельные переиспользуемые glyph layers для гор, лесов, озер, кораблей и atlas details.
 - [x] #66 Добавить базовую reproducible текстуру земли и воды: land/water больше не являются плоскими заливками; текстура маскируется отдельно по land/water и не должна конкурировать с маркерами и подписями.
+- [ ] #66 Follow-up: water texture direction is acceptable, but land texture is still too flat/boring. Re-open the old reference image `/home/alexey/tmp/file_000000000d5c71f4b60ecae32dd4240b.png` and the generated donor map `tmp/map-underlay-source/germany_atlas_underlay_2026-05-31_v2.png`; extract the land pattern direction into reusable procedural/glyph layers instead of returning to a monolithic bitmap.
+- [ ] Восстановить исходную задачу donor-map decomposition: найти удачную цельную карту-донора, сравнить ее trees/land/relief/details с текущим `assets/map/germany_styled.png`, нарезать/перерисовать крупные trees/forest/detail glyphs из этого visual language и заменить текущие мелкие деревья, которые всё ещё выглядят не как в reference.
 - [x] Первый production cut: `map_pipeline.compose_map` больше не рисует baked town/city pictograms в underlay; runtime city landmarks остаются единственным городским слоем.
 - [x] Добавить первый atlas detail layer: reproducible glyphs для ships/ports/bridges/castles/tower + explicit `ATLAS_DETAILS` placement по координатам.
 - [x] Расширить runtime map bounds южнее Германии: можно панорамировать вниз к München/Alps и видеть соседние страны как контурную основу без ручных overlay-глифов.
@@ -45,6 +47,7 @@
 - [x] #70 Второй pass: усилить Rostock `icon_offset` до `Vector2(0.0, 52.0)`, потому что меньший offset всё ещё воспринимался как "висит на море" на runtime screenshot.
 - [x] #70 Третий pass: стартовый camera focus для Germany сдвинут на `Vector2(10.70, 52.00)`, чтобы Rostock/Hamburg не резались на desktop initial screenshot без viewport-clamp, который заставляет города визуально "бежать" за экраном.
 - [x] Исправить pan sensitivity: drag пальцем и мышью теперь использует viewport-local `event.relative` и `PAN_DRAG_SCALE := 1.0`, чтобы движение было 1:1 в координатах карты, без `screen_relative` acceleration.
+- [x] Touch-pan regression follow-up: после повторного feedback "1 см пальцем -> 3 см карты" touch drag отделен от mouse drag, использует сохраненную предыдущую позицию касания и `TOUCH_PAN_DRAG_SCALE := 0.34`. Нужно проверить руками на телефоне; если всё ещё быстро, менять один этот коэффициент.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
 - [ ] Довести city landmark layer: сделать иконки достаточно крупными, не перекрывать labels/markers, использовать правильные немецкие названия с умляутами.
 - [x] Заменить cluster count badges на более нативные atlas group markers: clusters теперь показываются как stack из реальных транспортных sprites без count text/circles/station badge.
@@ -69,6 +72,7 @@
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
 - [x] Вернуть journey-map структуру без технических полос: добавлен controlled `ATLAS_ROUTE_SEGMENTS` layer с короткими dotted atlas trails, без continuous `draw.line` и без blue procedural waterways.
 - [x] Снизить clutter на default zoom: второстепенные подписи городов появляются после zoom `1.20`, а названия под иконками стали ближе к пиктограммам.
+- [x] City-label proximity follow-up: подписи городов подтянуты ближе к pictogram baseline через `CITY_ICON_LABEL_BASELINE_OVERLAP`; следующий review должен проверить, что текст визуально прикреплен к пиктограмме и не уехал вниз.
 - [x] Сделать стартовый zoom адаптивным: portrait остается крупным, landscape/desktop не получает дополнительный `1.10` zoom и меньше режет ориентиры у краев.
 - [x] Перевести map labels в atlas-style: vendored `LiberationSerif-BoldItalic.ttf`, runtime city labels и baked terrain labels используют один serif italic стиль; terrain labels больше не дублируются runtime-слоем.
 - [x] Вернуть шрифт runtime city labels по user feedback: города снова используют theme/default font; atlas serif оставлен для terrain/map labels.
