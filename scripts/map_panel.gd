@@ -121,14 +121,15 @@ class OfflineMapLayer:
 		draw_rect(tex_rect, Color(0.93, 0.82, 0.55, 0.10), true)
 
 	func _draw_landmark_labels() -> void:
-		var font := _map_label_font()
+		var city_font := _city_label_font()
+		var atlas_font := _map_label_font()
 		var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()
 		if draw_city_labels:
 			for label_data in CITY_LABELS:
-				_draw_city_label(font, label_data, occupied_rects)
+				_draw_city_label(city_font, label_data, occupied_rects)
 		if draw_terrain_labels:
 			for label_data in TERRAIN_LABELS:
-				_draw_terrain_label(font, label_data, occupied_rects)
+				_draw_terrain_label(atlas_font, label_data, occupied_rects)
 
 	func _draw_city_label(font: Font, label_data: Dictionary, occupied_rects: Array[Rect2]) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
@@ -253,6 +254,9 @@ class OfflineMapLayer:
 			_atlas_label_font = load("res://assets/fonts/LiberationSerif-BoldItalic.ttf")
 		return _atlas_label_font if _atlas_label_font != null else get_theme_default_font()
 
+	func _city_label_font() -> Font:
+		return get_theme_default_font()
+
 	func _centered_label_rect(font: Font, text: String, center_x: float, baseline_y: float, font_size: int) -> Rect2:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
@@ -335,6 +339,7 @@ const MARKER_LOCAL_CLUSTER_DISTANCE := 44.0
 const MARKER_LOCAL_CLUSTER_RADIUS := 28.0
 const OBJECT_CLUSTER_ZOOM_THRESHOLD := 1.45
 const OBJECT_CLUSTER_SCREEN_DISTANCE := 118.0
+const CLUSTER_STACK_MAX_ICONS := 3
 const SELECTED_NAME_LIMIT := 42
 const MAP_FILTER_ALL := "all"
 const MAP_FILTER_VISITED := "visited"
@@ -443,6 +448,7 @@ func _ready() -> void:
 	map_content = Control.new()
 	map_content.name = "ПодвижнаяКарта"
 	map_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	map_content.z_index = 10
 	map_layer.add_child(map_content)
 
 	map_label_layer = OfflineMapLayer.new()
@@ -452,6 +458,7 @@ func _ready() -> void:
 	map_label_layer.set("draw_city_labels", true)
 	map_label_layer.set("draw_terrain_labels", false)
 	map_label_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	map_label_layer.z_index = 20
 	map_layer.add_child(map_label_layer)
 
 	empty_state_label = Label.new()
@@ -490,6 +497,7 @@ func _ready() -> void:
 	zoom_controls.offset_top = 12.0
 	zoom_controls.offset_right = -12.0
 	zoom_controls.offset_bottom = 60.0
+	zoom_controls.z_index = 30
 	map_layer.add_child(zoom_controls)
 	_add_zoom_percent_label(zoom_controls)
 	_add_zoom_button(zoom_controls, "-", -ZOOM_STEP)
@@ -667,6 +675,8 @@ func _update_reserved_label_rects(rects: Array[Rect2]) -> void:
 	layer.reserved_label_rects = rects
 	layer.queue_redraw()
 	if map_label_layer != null:
+		var label_layer := map_label_layer as OfflineMapLayer
+		label_layer.reserved_label_rects = rects
 		map_label_layer.queue_redraw()
 
 func _marker_clusters(bounds: Dictionary) -> Dictionary:
@@ -1109,6 +1119,7 @@ func _icon_id_for_object(object_data: Dictionary) -> String:
 	return TRANSPORT_TYPE_ICON.get(transport_type_id, "icon_station")
 
 func _apply_marker_style(marker: Button, is_selected: bool) -> void:
+	_clear_cluster_icon_stack(marker)
 	marker.icon = _icon_for_object(objects[int(marker.get_meta("object_index", -1))]) if int(marker.get_meta("object_index", -1)) >= 0 else null
 	marker.expand_icon = true
 	var normal_style := StyleBoxFlat.new()
@@ -1127,8 +1138,9 @@ func _apply_marker_style(marker: Button, is_selected: bool) -> void:
 	marker.add_theme_stylebox_override("focus", normal_style)
 
 func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:
-	marker.icon = _marker_icon_texture("icon_station")
-	marker.expand_icon = true
+	_clear_cluster_icon_stack(marker)
+	marker.icon = null
+	marker.expand_icon = false
 	marker.text = ""
 	marker.add_theme_font_size_override("font_size", 15)
 	marker.add_theme_color_override("font_color", Color("#f7e4b0"))
@@ -1146,7 +1158,55 @@ func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Arr
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)
+	_apply_cluster_icon_stack(marker, cluster_indices)
 	marker.tooltip_text = "Группа объектов: %s" % _cluster_tooltip(cluster_indices)
+
+func _clear_cluster_icon_stack(marker: Button) -> void:
+	for child in marker.get_children():
+		if child.has_meta("cluster_stack_icon"):
+			marker.remove_child(child)
+			child.queue_free()
+
+func _apply_cluster_icon_stack(marker: Button, cluster_indices: PackedInt32Array) -> void:
+	var icon_ids := _cluster_icon_ids(cluster_indices)
+	var offsets := [
+		Vector2(-0.18, 0.12),
+		Vector2(0.16, -0.02),
+		Vector2(0.00, -0.22),
+	]
+	for stack_index in icon_ids.size():
+		var texture := _marker_icon_texture(icon_ids[stack_index])
+		if texture == null:
+			continue
+		var sprite := Sprite2D.new()
+		sprite.name = "ClusterStackIcon%d" % stack_index
+		sprite.set_meta("cluster_stack_icon", true)
+		sprite.texture = texture
+		sprite.centered = true
+		var target_size := marker.size.x * (0.58 if stack_index == 0 else 0.52)
+		var texture_size := Vector2(texture.get_width(), texture.get_height())
+		var texture_extent: float = max(texture_size.x, texture_size.y)
+		if texture_extent > 0.0:
+			var sprite_scale := target_size / texture_extent
+			sprite.scale = Vector2(sprite_scale, sprite_scale)
+		sprite.position = marker.size * 0.5 + offsets[stack_index] * marker.size.x
+		sprite.z_index = stack_index
+		marker.add_child(sprite)
+
+func _cluster_icon_ids(cluster_indices: PackedInt32Array) -> Array[String]:
+	var icon_ids: Array[String] = []
+	for index in cluster_indices:
+		if int(index) < 0 or int(index) >= objects.size():
+			continue
+		var icon_id := _icon_id_for_object(objects[int(index)])
+		if icon_ids.has(icon_id):
+			continue
+		icon_ids.append(icon_id)
+		if icon_ids.size() >= CLUSTER_STACK_MAX_ICONS:
+			break
+	if icon_ids.is_empty():
+		icon_ids.append("icon_station")
+	return icon_ids
 
 func _cluster_tooltip(cluster_indices: PackedInt32Array) -> String:
 	var names: Array[String] = []

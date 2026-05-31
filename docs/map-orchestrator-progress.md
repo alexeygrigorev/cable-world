@@ -648,3 +648,31 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: about `6.5/10`, not `8/10`. This fixes part of the "boring/empty" failure mode, but some forest+village clusters are now visually heavy and still need a stronger art-directed glyph pass. The larger blockers remain relief accuracy, Europe-scale continuity and final marker/list polish.
+
+## Iteration 2026-05-31 19:32
+
+Implemented:
+
+- Replaced generic cluster marker appearance with an atlas-style icon stack: clustered transport objects now render 2-3 real transport sprites with slight offsets, without count text, circles or a station badge.
+- Added `_cluster_icon_ids()` so the stack uses distinct transport types where possible and falls back to `icon_station` only if needed.
+- Cleared old cluster stack children when markers switch back to single-object style, preventing stale icons.
+- Set explicit layer ordering: map content at `z_index = 10`, city label overlay at `20`, zoom controls at `30`.
+- Passed marker reserved rects to the label overlay as well, so labels can remain above markers while still avoiding overlap where possible.
+- Restored runtime city labels to the theme/default font after user feedback; the atlas serif font remains for terrain/map labels only.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows grouped transport objects as sprite stacks rather than UI count badges.
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png` shows individual transport markers at `170%` and labels still visible around the dense Magdeburg/Harz area.
+- `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png` shows clustered markers no longer look like external UI counters; city labels render above marker content.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` confirms city names are back on the previous sans/default font instead of the serif atlas font.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6262069`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing nested worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`; the server had to be restarted after export again because the old process returned an empty response.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still about `6.5/10`. The cluster layer is less UI-like, but marker composition remains dense in cities with many objects and needs a stronger final interaction/art pass before the map can honestly reach `8/10`.

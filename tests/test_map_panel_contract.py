@@ -100,8 +100,13 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"Dresden"', script_text)
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
         self.assertIn('load("res://assets/fonts/LiberationSerif-BoldItalic.ttf")', script_text)
-        self.assertIn("var font := _map_label_font()", script_text)
+        self.assertIn("var city_font := _city_label_font()", script_text)
+        self.assertIn("var atlas_font := _map_label_font()", script_text)
         self.assertIn("func _map_label_font() -> Font:", script_text)
+        self.assertIn("func _city_label_font() -> Font:", script_text)
+        self.assertIn("return get_theme_default_font()", script_text)
+        self.assertIn("_draw_city_label(city_font, label_data, occupied_rects)", script_text)
+        self.assertIn("_draw_terrain_label(atlas_font, label_data, occupied_rects)", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
         self.assertIn("var icon_label_baseline_y: float = round(icon_rect.position.y + icon_rect.size.y + 1.5 * zoom)", script_text)
         self.assertIn("const LANDMARK_EDGE_MARGIN := 96.0", script_text)
@@ -194,6 +199,9 @@ class MapPanelContractTest(unittest.TestCase):
             "_add_fit_button(zoom_controls)",
             '_add_filter_button(filter_controls, "✓", MAP_FILTER_VISITED)',
             '_add_filter_button(filter_controls, "○", MAP_FILTER_NOT_VISITED)',
+            "map_content.z_index = 10",
+            "map_label_layer.z_index = 20",
+            "zoom_controls.z_index = 30",
             "marker.mouse_filter = Control.MOUSE_FILTER_PASS",
             'zoom_controls.name = "МасштабКарты"',
             "var suppress_next_marker_press := false",
@@ -204,7 +212,11 @@ class MapPanelContractTest(unittest.TestCase):
             "func _marker_clusters(bounds: Dictionary) -> Dictionary:",
             "func _nearest_cluster(cluster_list: Array[Dictionary], position: Vector2) -> Dictionary:",
             "func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:",
-            'marker.icon = _marker_icon_texture("icon_station")',
+            "func _apply_cluster_icon_stack(marker: Button, cluster_indices: PackedInt32Array) -> void:",
+            "func _cluster_icon_ids(cluster_indices: PackedInt32Array) -> Array[String]:",
+            "const CLUSTER_STACK_MAX_ICONS := 3",
+            "sprite.set_meta(\"cluster_stack_icon\", true)",
+            "marker.icon = null",
             'marker.text = ""',
             "func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZE) -> Vector2:",
             "func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:",
@@ -290,6 +302,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("func _update_reserved_label_rects(rects: Array[Rect2]) -> void:", script_text)
         self.assertIn("reserved_rects.append(Rect2(marker.position, marker.size).grow(6.0))", script_text)
         self.assertIn("layer.reserved_label_rects = rects", script_text)
+        self.assertIn("label_layer.reserved_label_rects = rects", script_text)
         self.assertIn("var map_label_layer: Control", script_text)
         self.assertIn('map_label_layer.name = "ПодписиГородов"', script_text)
         self.assertIn('map_layer.set("draw_city_labels", false)', script_text)
