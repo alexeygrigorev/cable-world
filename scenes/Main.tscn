@@ -205,7 +205,7 @@ text = "Карта"
 
 [node name="MapPanel" type="PanelContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 200)
+custom_minimum_size = Vector2(0, 720)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("4_map")
