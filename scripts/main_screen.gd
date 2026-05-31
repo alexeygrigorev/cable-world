@@ -8,6 +8,12 @@ const RidePanelScript := preload("res://scripts/ride_panel.gd")
 const COLLECTION_STATS_SCRIPT_PATH := "res://scripts/collection_stats.gd"
 const ACHIEVEMENTS_SCRIPT_PATH := "res://scripts/achievements.gd"
 const CONTENT_WIDTH_GUARD := 2.0
+const ATLAS_CONTROL_BG := Color(0.96, 0.90, 0.72, 0.94)
+const ATLAS_CONTROL_BORDER := Color("#3b2a18")
+const ATLAS_CONTROL_INK := Color("#27321f")
+const ATLAS_CONTROL_ACCENT := Color("#31544d")
+const ATLAS_CONTROL_SHADOW := Color(0.12, 0.08, 0.03, 0.42)
+const MAP_LIST_ICON_SIZE := Vector2i(32, 32)
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
@@ -130,6 +136,7 @@ func _ready() -> void:
 	type_filter_option.item_selected.connect(_on_filter_changed)
 	visit_filter_option.item_selected.connect(_on_filter_changed)
 	country_filter_option.item_selected.connect(_on_filter_changed)
+	_apply_map_list_button_icons()
 	object_list.set_empty_state_label(list_empty_state_label)
 	object_list.set_objects(objects)
 	object_list.object_selected.connect(_on_object_selected)
@@ -611,12 +618,15 @@ func _show_section(section_name: String) -> void:
 	current_section_label.text = "Раздел: %s" % title
 	_apply_map_focus_chrome(section_name == "map")
 	_sync_content_width()
+	_sync_content_width_after_layout()
 	_scroll_navigation_to_current(section_name)
 
 func _create_map_list_toggle() -> void:
 	map_list_toggle_button = Button.new()
 	map_list_toggle_button.name = "MapListToggle"
-	map_list_toggle_button.text = "☰"
+	map_list_toggle_button.text = ""
+	map_list_toggle_button.icon = _make_map_list_icon("list")
+	map_list_toggle_button.expand_icon = false
 	map_list_toggle_button.tooltip_text = "Открыть список объектов"
 	map_list_toggle_button.custom_minimum_size = Vector2(52.0, 52.0)
 	map_list_toggle_button.size = Vector2(52.0, 52.0)
@@ -626,17 +636,72 @@ func _create_map_list_toggle() -> void:
 	map_list_toggle_button.offset_right = -16.0
 	map_list_toggle_button.offset_top = 16.0
 	map_list_toggle_button.offset_bottom = 68.0
-	map_list_toggle_button.add_theme_font_size_override("font_size", 26)
+	map_list_toggle_button.add_theme_color_override("icon_normal_color", ATLAS_CONTROL_INK)
+	map_list_toggle_button.add_theme_color_override("icon_hover_color", Color("#11170e"))
+	map_list_toggle_button.add_theme_color_override("icon_pressed_color", Color("#11170e"))
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(1.0, 0.98, 0.90, 0.92)
-	style.border_color = Color("#31544d")
+	style.bg_color = ATLAS_CONTROL_BG
+	style.border_color = ATLAS_CONTROL_BORDER
+	style.shadow_color = ATLAS_CONTROL_SHADOW
+	style.shadow_size = 5
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
+	style.set_corner_radius_all(6)
 	map_list_toggle_button.add_theme_stylebox_override("normal", style)
 	map_list_toggle_button.add_theme_stylebox_override("hover", style)
 	map_list_toggle_button.add_theme_stylebox_override("pressed", style)
 	map_list_toggle_button.pressed.connect(func() -> void: _show_section("list"))
 	add_child(map_list_toggle_button)
+
+func _apply_map_list_button_icons() -> void:
+	map_button.icon = _make_map_list_icon("map")
+	map_button.expand_icon = false
+	map_button.tooltip_text = "Открыть карту объектов"
+	list_button.icon = _make_map_list_icon("list")
+	list_button.expand_icon = false
+	list_button.tooltip_text = "Открыть компактный список объектов"
+
+func _make_map_list_icon(kind: String) -> Texture2D:
+	var image := Image.create(MAP_LIST_ICON_SIZE.x, MAP_LIST_ICON_SIZE.y, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0, 0, 0, 0))
+	if kind == "map":
+		_draw_map_icon(image)
+	else:
+		_draw_list_icon(image)
+	return ImageTexture.create_from_image(image)
+
+func _draw_map_icon(image: Image) -> void:
+	_fill_icon_rect(image, Rect2i(4, 6, 7, 20), Color("#d7c06f"))
+	_fill_icon_rect(image, Rect2i(12, 4, 8, 20), Color("#8fb18a"))
+	_fill_icon_rect(image, Rect2i(21, 7, 7, 20), Color("#c7d6da"))
+	_draw_icon_line(image, Vector2i(11, 6), Vector2i(11, 26), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(20, 4), Vector2i(20, 25), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(8, 20), Vector2i(16, 15), ATLAS_CONTROL_ACCENT)
+	_draw_icon_line(image, Vector2i(16, 15), Vector2i(25, 18), ATLAS_CONTROL_ACCENT)
+	_fill_icon_rect(image, Rect2i(15, 13, 4, 4), Color("#7f3f2a"))
+
+func _draw_list_icon(image: Image) -> void:
+	for row in range(3):
+		var y := 6 + row * 9
+		_fill_icon_rect(image, Rect2i(5, y, 5, 5), ATLAS_CONTROL_ACCENT)
+		_fill_icon_rect(image, Rect2i(13, y, 15, 2), ATLAS_CONTROL_INK)
+		_fill_icon_rect(image, Rect2i(13, y + 3, 10, 2), Color("#6e5431"))
+
+func _fill_icon_rect(image: Image, rect: Rect2i, color: Color) -> void:
+	for y in range(rect.position.y, rect.position.y + rect.size.y):
+		for x in range(rect.position.x, rect.position.x + rect.size.x):
+			if x >= 0 and x < image.get_width() and y >= 0 and y < image.get_height():
+				image.set_pixel(x, y, color)
+
+func _draw_icon_line(image: Image, from_point: Vector2i, to_point: Vector2i, color: Color) -> void:
+	var delta := to_point - from_point
+	var steps: int = maxi(abs(delta.x), abs(delta.y))
+	if steps <= 0:
+		image.set_pixel(from_point.x, from_point.y, color)
+		return
+	for step in range(steps + 1):
+		var t := float(step) / float(steps)
+		var point := Vector2i(roundi(lerpf(from_point.x, to_point.x, t)), roundi(lerpf(from_point.y, to_point.y, t)))
+		_fill_icon_rect(image, Rect2i(point.x, point.y, 2, 2), color)
 
 func _apply_map_focus_chrome(is_map: bool) -> void:
 	app_title_label.visible = not is_map
@@ -666,12 +731,40 @@ func _sync_content_width() -> void:
 	if content_viewport == null or content_scroll == null or sections_container == null:
 		return
 	var content_width: float = max(0.0, content_viewport.size.x - CONTENT_WIDTH_GUARD)
-	content_scroll.scroll_horizontal = 0
-	content_scroll.set_deferred("scroll_horizontal", 0)
+	_reset_content_horizontal_scroll()
 	sections_container.custom_minimum_size.x = content_width
 	for key in sections:
 		var section: Control = sections[key]
 		section.custom_minimum_size.x = content_width
+
+func _sync_content_width_after_layout() -> void:
+	call_deferred("_sync_content_width")
+	call_deferred("_reset_content_horizontal_scroll")
+	if not is_inside_tree():
+		return
+	await get_tree().process_frame
+	_sync_content_width()
+	_reset_content_horizontal_scroll()
+	await get_tree().process_frame
+	_reset_content_horizontal_scroll()
+
+func _reset_content_horizontal_scroll() -> void:
+	if content_scroll == null:
+		return
+	if content_viewport != null:
+		content_viewport.position.x = 0.0
+		content_viewport.set_deferred("position", Vector2(0.0, content_viewport.position.y))
+	content_scroll.position.x = 0.0
+	content_scroll.set_deferred("position", Vector2(0.0, content_scroll.position.y))
+	content_scroll.scroll_horizontal = 0
+	content_scroll.set_deferred("scroll_horizontal", 0)
+	if sections_container != null:
+		sections_container.position.x = 0.0
+		sections_container.set_deferred("position", Vector2(0.0, sections_container.position.y))
+	for key in sections:
+		var section: Control = sections[key]
+		section.position.x = 0.0
+		section.set_deferred("position", Vector2(0.0, section.position.y))
 
 func _scroll_navigation_to_current(section_name: String) -> void:
 	if navigation_scroll == null or not navigation_buttons.has(section_name):

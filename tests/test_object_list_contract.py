@@ -20,10 +20,9 @@ class ObjectListContractTest(unittest.TestCase):
             self.assertIn("unique_name_in_owner = true", scene_text)
 
         for visible_text in [
-            "Поиск по названию, региону или стране",
+            "Атлас объектов",
+            "Название, город или страна",
             "Все страны",
-            "Тип",
-            "Статус",
             "Все виды транспорта",
             "Все объекты",
             "Еще не посещали",
@@ -47,16 +46,25 @@ class ObjectListContractTest(unittest.TestCase):
             "func _matches_filters(object_data: Dictionary) -> bool:",
             "func _matches_search(object_data: Dictionary) -> bool:",
             "func _is_object_visited(object_data: Dictionary) -> bool:",
+            "func _location_text(object_data: Dictionary) -> String:",
             "func _visit_status_text(object_data: Dictionary) -> String:",
             "func _operational_status_text(object_data: Dictionary) -> String:",
+            "func _object_icon_texture(object_data: Dictionary) -> Texture2D:",
+            "func _draw_transport_pictogram(image: Image, family: String) -> void:",
             "SQLiteStorageAdapter.status_is_visited",
             "SQLiteStorageAdapter.status_title",
             "SQLiteStorageAdapter.operational_status_title",
-            "работа:",
-            "object_selected.emit(visible_object_indices[index])",
+            'object_data.get("city", "")',
+            "object_selected.emit(object_index)",
             "Пока нет объектов.",
             "изменить запрос, страну, тип или статус",
-            'var label := "%s\\n%s · %s · %s"',
+            "func _add_row(object_data: Dictionary, object_index: int, visible_index: int) -> void:",
+            "name_label.text = _compact_name",
+            "meta_label.text = _row_meta_text(object_data)",
+            "const ROW_NAME_MAX_CHARS := 30",
+            "const ROW_META_MAX_CHARS := 42",
+            "func _trim_for_row(text: String, max_chars: int) -> String:",
+            "row.pressed.connect(func() -> void: _on_row_pressed(object_index))",
         ]:
             self.assertIn(expected, script_text)
 
@@ -64,13 +72,14 @@ class ObjectListContractTest(unittest.TestCase):
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
         script_text = (ROOT / "scripts" / "object_list_panel.gd").read_text(encoding="utf-8")
 
-        object_list_block = scene_text.split('name="ObjectList" type="ItemList"', 1)[1].split("[node ", 1)[0]
+        object_list_block = scene_text.split('name="ObjectList" type="ScrollContainer"', 1)[1].split("[node ", 1)[0]
         content_scroll_block = scene_text.split('name="ContentScroll" type="ScrollContainer"', 1)[1].split("[node ", 1)[0]
 
         for expected in [
             "size_flags_horizontal = 3",
             "size_flags_vertical = 3",
             "custom_minimum_size = Vector2(0, 300)",
+            "horizontal_scroll_mode = 0",
         ]:
             self.assertIn(expected, object_list_block)
 
@@ -114,7 +123,11 @@ class ObjectListContractTest(unittest.TestCase):
             "theme_override_constants/margin_right = 12",
         ]:
             self.assertIn(expected, list_safe_area_block)
-        self.assertIn("theme_override_constants/separation = 8", list_content_block)
+        self.assertIn("theme_override_constants/separation = 6", list_content_block)
+        filters_block = scene_text.split('name="ФильтрыСписка" type="GridContainer"', 1)[1].split("[node ", 1)[0]
+        title_block = scene_text.split('name="СписокЗаголовок" type="Label"', 1)[1].split("[node ", 1)[0]
+        self.assertIn("columns = 1", filters_block)
+        self.assertIn("theme_override_colors/font_color", title_block)
         self.assertIn(object_list_viewport_path, scene_text)
         self.assertIn(object_list_path, scene_text)
 
@@ -126,6 +139,14 @@ class ObjectListContractTest(unittest.TestCase):
             "section.custom_minimum_size.x = content_width",
             "content_scroll.scroll_horizontal = 0",
             'content_scroll.set_deferred("scroll_horizontal", 0)',
+            "_sync_content_width_after_layout()",
+            'call_deferred("_sync_content_width")',
+            'call_deferred("_reset_content_horizontal_scroll")',
+            "await get_tree().process_frame",
+            "content_viewport.position.x = 0.0",
+            "content_scroll.position.x = 0.0",
+            "sections_container.position.x = 0.0",
+            "section.position.x = 0.0",
         ]:
             self.assertIn(expected, script_text)
 
