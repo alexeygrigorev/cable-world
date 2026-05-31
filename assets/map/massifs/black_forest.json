@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    383,
+    387,
     846
   ],
   "extends_to": [],
@@ -8,7 +8,7 @@
     "max_latitude": 49.40465,
     "max_longitude": 8.6,
     "min_latitude": 47.62168,
-    "min_longitude": 7.38082
+    "min_longitude": 7.36809
   },
   "glyphs": [
     {
@@ -24,7 +24,7 @@
   "kind": "forested_highland",
   "label": "Black Forest",
   "map_bbox_px": [
-    452.5,
+    450.5,
     1658.5,
     644.0,
     2081.5
@@ -54,7 +54,7 @@
     }
   ],
   "render_bbox_px": [
-    905,
+    901,
     3317,
     1288,
     4163

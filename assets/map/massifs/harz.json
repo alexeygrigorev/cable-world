@@ -1,11 +1,11 @@
 {
   "cropped_size_px": [
     443,
-    462
+    465
   ],
   "extends_to": [],
   "geo_bounds": {
-    "max_latitude": 52.24752,
+    "max_latitude": 52.25336,
     "max_longitude": 11.33439,
     "min_latitude": 51.33834,
     "min_longitude": 9.92422
@@ -32,7 +32,7 @@
   "label": "Harz",
   "map_bbox_px": [
     852.0,
-    951.0,
+    949.5,
     1073.5,
     1182.0
   ],
@@ -66,7 +66,7 @@
   ],
   "render_bbox_px": [
     1704,
-    1902,
+    1899,
     2147,
     2364
   ],

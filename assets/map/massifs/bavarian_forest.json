@@ -1,16 +1,16 @@
 {
   "cropped_size_px": [
-    455,
-    416
+    476,
+    434
   ],
   "extends_to": [
     "Czechia",
     "Austria"
   ],
   "geo_bounds": {
-    "max_latitude": 49.73893,
-    "max_longitude": 13.5722,
-    "min_latitude": 48.87593,
+    "max_latitude": 49.7451,
+    "max_longitude": 13.63905,
+    "min_latitude": 48.84453,
     "min_longitude": 12.12384
   },
   "glyphs": [
@@ -28,9 +28,9 @@
   "label": "Bavarian Forest",
   "map_bbox_px": [
     1197.5,
-    1577.5,
-    1425.0,
-    1785.5
+    1576.0,
+    1435.5,
+    1793.0
   ],
   "massif_segments": [],
   "placement_policy": "named_region_polygon_and_ridge_spine",
@@ -58,9 +58,9 @@
   ],
   "render_bbox_px": [
     2395,
-    3155,
-    2850,
-    3571
+    3152,
+    2871,
+    3586
   ],
   "replacement_status": "needs_custom_forest_highland_asset",
   "ridge_bands": [

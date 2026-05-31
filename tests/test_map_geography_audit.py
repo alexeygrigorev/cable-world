@@ -27,6 +27,50 @@ class MapGeographyAuditTest(unittest.TestCase):
 
         self.assertEqual([], audit_terrain_massif_layer_contract())
 
+    def test_default_map_rejects_tiny_decorative_detail_sources(self) -> None:
+        from map_pipeline.compose_map import (
+            ATLAS_DETAILS,
+            ATLAS_ROUTE_DOT_MIN_RADIUS,
+            ATLAS_ROUTE_DOT_SPACING_SCALE,
+            DEFAULT_ATLAS_DETAIL_KINDS,
+            FOREST_CLUSTER_MIN_SOURCE_WIDTH,
+            FOREST_MASS_MIN_WIDTH,
+            FOREST_MASS_VISUAL_SCALE,
+            ATLAS_FOREST_MASSES,
+            GROUND_TEXTURE_LAT_STEP,
+            GROUND_TEXTURE_LON_STEP,
+            INTEGRATED_LAND_PATTERN_LAT_STEP,
+            INTEGRATED_LAND_PATTERN_LON_STEP,
+            MIN_ATLAS_DETAIL_WIDTH,
+            RELIEF_REGIONS,
+            RELIEF_TREE_CLUSTER_MIN_WIDTH,
+            _relief_tree_cluster_width,
+        )
+
+        self.assertEqual({"bridge", "port", "ship"}, DEFAULT_ATLAS_DETAIL_KINDS)
+        self.assertGreaterEqual(MIN_ATLAS_DETAIL_WIDTH, 104)
+        for detail in ATLAS_DETAILS:
+            if detail["kind"] in DEFAULT_ATLAS_DETAIL_KINDS:
+                self.assertNotIn(detail["kind"], {"castle", "chapel", "lighthouse", "ruins", "tower", "village", "watermill", "windmill"})
+
+        self.assertGreaterEqual(GROUND_TEXTURE_LON_STEP, 0.60)
+        self.assertGreaterEqual(GROUND_TEXTURE_LAT_STEP, 0.56)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LON_STEP, 0.40)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LAT_STEP, 0.36)
+        self.assertGreaterEqual(ATLAS_ROUTE_DOT_SPACING_SCALE, 1.50)
+        self.assertGreaterEqual(ATLAS_ROUTE_DOT_MIN_RADIUS, 4)
+
+        for mass in ATLAS_FOREST_MASSES:
+            for glyph_name, _lon, _lat, width in mass["clusters"]:
+                with self.subTest(forest=mass["id"], glyph=glyph_name):
+                    self.assertGreaterEqual(width, FOREST_CLUSTER_MIN_SOURCE_WIDTH)
+                    self.assertGreaterEqual(max(FOREST_MASS_MIN_WIDTH, int(width * FOREST_MASS_VISUAL_SCALE)), 170)
+
+        for region in RELIEF_REGIONS:
+            for _lon, _lat, tree_size in region.get("trees", []):
+                with self.subTest(region=region["id"], tree_size=tree_size):
+                    self.assertGreaterEqual(_relief_tree_cluster_width(tree_size), RELIEF_TREE_CLUSTER_MIN_WIDTH)
+
     def test_alpine_rendered_segments_are_not_decorative_only_anchors(self) -> None:
         from map_pipeline.compose_map import ALPINE_MASSIF_SEGMENTS, ALPINE_RELIEF_EXTENTS_PATH
         import json
