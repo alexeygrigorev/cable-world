@@ -1470,3 +1470,16 @@ Verification on `main`:
 Important limitation:
 
 - This closes only the Rostock placement regression. The full map is still not accepted as 10/10; #62/#64/#67/#68/#69 and related terrain/art issues remain open.
+
+## Iteration 2026-06-01 02:45
+
+Backlog after integrations:
+
+- Closed in this cycle: #87, #88, #90, #70.
+- Still open: #89, #77, #76, #74, #69, #68, #67, #64, #63, #62, #55, #54, #52.
+- `main` is clean and pushed after `cd188fb Document Rostock placement integration`.
+
+Parallel work started:
+
+- `Bernoulli`: #89 navigation UX for map-first flow and list return state. Scope is limited to map/list navigation behavior and tests, not visual restyle or map assets.
+- `Hume`: #67 map clutter/readability pass. Scope is limited to tiny houses, tiny trees, micro details and route/artifact clutter. Because this changes map visuals, it must produce a reviewer bundle and follow `docs/map-reviewer-gate.md`.
