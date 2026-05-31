@@ -69,3 +69,21 @@ Checks:
 - `index.pck` and `index.wasm` still return `Content-Encoding: gzip`.
 
 Self-audit: stronger `7/10` and closer to `8/10`, but still not `10/10`. Cluster behavior reduces noise and solves the worst "too busy" issue, but the cluster count badges are still more UI-like than ideal atlas landmarks. The next visual step toward 8/10+ is a generated or post-processed underlay with quieter object zones and cluster badges that look more native to the map style.
+
+## Iteration 2026-05-31 11:30
+
+Implemented:
+
+- Generated one 8x8 city landmark sprite sheet for 64 German/European city icons in one image-generation call.
+- Sliced all 64 city landmark icons into `assets/sprites/city_landmarks/` for current and future maps.
+- Added Germany landmarks to the map layer: Berlin, Hamburg, Rostock, Köln, München, Dresden, Stuttgart.
+- Added `map_pipeline/slice_city_landmarks.py` so the sprite sheet slicing is repeatable.
+- Updated German city labels to use umlauts where needed.
+- Enlarged city landmark rendering and changed cluster badges to a quieter parchment/atlas treatment.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+
+Self-audit: direction improved, but still not `8/10`. City pictograms make the map more recognizable and less generic, but some icons are still too small/partly hidden on desktop and cluster badges remain a compromise. Next step: tune landmark placement/priority and replace count badges with native atlas group markers.

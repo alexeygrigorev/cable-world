@@ -61,6 +61,8 @@ Rubric estimate after iteration 2026-05-31 10:49: 7/10 candidate.
 
 Rubric estimate after cluster iteration 2026-05-31 11:06: stronger 7/10, still not 8/10.
 
+Rubric estimate after city landmark iteration 2026-05-31 11:30: direction improved, still about 7/10.
+
 What passes:
 
 - The map loads on Web with gzip.
@@ -96,3 +98,10 @@ Cluster iteration result:
 - Object-dense areas now collapse into low-zoom cluster count markers.
 - Clicking a cluster zooms to the group and expands it into individual transport icons.
 - This addresses the "too busy" issue functionally, but the visual style still needs polish before 8/10+.
+
+City landmark iteration result:
+
+- A unified 64-icon European city landmark sheet was generated and sliced.
+- Germany landmarks now appear directly on the map, including Dresden.
+- Labels now use umlauts for German city names where needed.
+- This improves geographic recognition, but icon size/placement and cluster styling still need more art direction before a confident 8/10.

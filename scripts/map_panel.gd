@@ -11,12 +11,15 @@ class OfflineMapLayer:
 	var geo_bounds: Dictionary = {}
 	var map_scope := "germany"
 	var _germany_texture: Texture2D = null
+	var _city_icon_textures: Dictionary = {}
 	const CITY_LABELS := [
-		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city"},
-		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital"},
-		{"name": "Rostock", "coordinates": Vector2(12.0991, 54.0924), "kind": "city"},
-		{"name": "Koeln", "coordinates": Vector2(6.9603, 50.9375), "kind": "city"},
-		{"name": "Muenchen", "coordinates": Vector2(11.5820, 48.1351), "kind": "city"},
+		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
+		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
+		{"name": "Rostock", "coordinates": Vector2(12.0991, 54.0924), "kind": "city", "icon": "rostock"},
+		{"name": "Köln", "coordinates": Vector2(6.9603, 50.9375), "kind": "city", "icon": "cologne"},
+		{"name": "München", "coordinates": Vector2(11.5820, 48.1351), "kind": "city", "icon": "munich"},
+		{"name": "Dresden", "coordinates": Vector2(13.7373, 51.0504), "kind": "city", "icon": "dresden"},
+		{"name": "Stuttgart", "coordinates": Vector2(9.1829, 48.7758), "kind": "city", "icon": "stuttgart"},
 	]
 	const TERRAIN_LABELS := [
 		{"name": "Harz", "coordinates": Vector2(10.56, 51.80)},
@@ -92,12 +95,35 @@ class OfflineMapLayer:
 	func _draw_city_label(font: Font, label_data: Dictionary) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
 		var is_capital := str(label_data.get("kind", "")) == "capital"
-		var dot_radius := (5.0 if is_capital else 4.0) * zoom
+		var dot_radius := (4.4 if is_capital else 3.6) * zoom
 		var label_size := 18 if is_capital else 15
+		_draw_city_icon(label_data, position)
 		draw_circle(position, dot_radius + 2.0, Color(0.95, 0.80, 0.40, 0.84))
 		draw_circle(position, dot_radius, Color("#2a1f16"))
-		var text_pos := position + Vector2(9.0, -7.0) * zoom
+		var text_pos := position + Vector2(15.0, -5.0) * zoom
 		_draw_label_text(font, str(label_data["name"]), text_pos, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
+
+	func _draw_city_icon(label_data: Dictionary, position: Vector2) -> void:
+		var icon_id := str(label_data.get("icon", ""))
+		if icon_id.is_empty():
+			return
+		var texture: Texture2D = _city_icon_texture(icon_id)
+		if texture == null:
+			return
+			var icon_size: float = clamp(54.0 * sqrt(max(zoom, 0.75)), 46.0, 78.0)
+			var icon_rect := Rect2(
+				position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom),
+				Vector2(icon_size, icon_size)
+			)
+			draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.28), icon_size * 0.54, Color(0.09, 0.05, 0.02, 0.30))
+			draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.18), icon_size * 0.47, Color(0.95, 0.83, 0.55, 0.18))
+			draw_texture_rect(texture, icon_rect, false)
+
+	func _city_icon_texture(icon_id: String) -> Texture2D:
+		if not _city_icon_textures.has(icon_id):
+			var path := "res://assets/sprites/city_landmarks/city_%s.png" % icon_id
+			_city_icon_textures[icon_id] = load(path) if ResourceLoader.exists(path) else null
+		return _city_icon_textures.get(icon_id, null)
 
 	func _draw_terrain_label(font: Font, label_data: Dictionary) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
@@ -869,19 +895,19 @@ func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Arr
 	marker.icon = null
 	marker.expand_icon = false
 	marker.text = str(cluster_indices.size())
-	marker.add_theme_font_size_override("font_size", 20)
-	marker.add_theme_color_override("font_color", Color("#1f160c"))
-	marker.add_theme_color_override("font_pressed_color", Color("#1f160c"))
+	marker.add_theme_font_size_override("font_size", 19)
+	marker.add_theme_color_override("font_color", Color("#2a1a0b"))
+	marker.add_theme_color_override("font_pressed_color", Color("#2a1a0b"))
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color(1.0, 0.76, 0.26, 0.98)
-	normal_style.border_color = Color("#2a1708")
-	normal_style.shadow_color = Color(0.08, 0.04, 0.01, 0.78)
-	normal_style.shadow_size = 11
+	normal_style.bg_color = Color(0.92, 0.72, 0.38, 0.97)
+	normal_style.border_color = Color("#3a240d")
+	normal_style.shadow_color = Color(0.08, 0.04, 0.01, 0.64)
+	normal_style.shadow_size = 8
 	normal_style.set_border_width_all(3)
-	normal_style.set_corner_radius_all(26)
+	normal_style.set_corner_radius_all(18)
 	marker.add_theme_stylebox_override("normal", normal_style)
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color(1.0, 0.84, 0.36, 1.0)
+	hover_style.bg_color = Color(0.98, 0.78, 0.42, 1.0)
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)

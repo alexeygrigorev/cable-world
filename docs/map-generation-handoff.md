@@ -124,6 +124,59 @@ Planned post-processing:
 
 Runtime note: do not keep `transport_icon_sheet*.png` in `assets/sprites`. Godot only needs the final icon PNGs, which keeps import/load work smaller.
 
+## City landmark generation workflow
+
+User feedback 2026-05-31: карта должна читаться через узнаваемые городские символы, а не только через кружки/счетчики. Для этого сгенерирован один общий 8x8 sprite sheet городских landmark-пиктограмм, затем все 64 иконки разрезаны на будущее.
+
+Generated source:
+
+```text
+/home/alexey/.codex/generated_images/019e7af1-437a-70f1-9164-d2f7b34a9c81/ig_0485449e48f76641016a1bfd703ddc819192289bd37d2762fd.png
+```
+
+Prompt:
+
+```text
+Use case: stylized-concept
+Asset type: 1024x1024 sprite sheet for a Godot 16-bit RPG atlas map UI
+Primary request: Create one consistent sprite sheet of small city landmark pictograms for a European cableways/funiculars map. The icons must feel like native landmarks on a hand-painted 16-bit adventure atlas, not modern app icons.
+Canvas/layout: square 1024x1024 image, 8 columns x 8 rows, one centered icon per cell with generous padding. No text, no labels, no numbers, no grid lines, no borders between cells.
+Icons in order, left to right, top row then next rows:
+Berlin TV Tower; Hamburg harbor warehouse and crane; Rostock Hanseatic brick gate; Munich Frauenkirche twin towers; Cologne Cathedral; Frankfurt skyline tower; Stuttgart hill tower/TV tower; Dresden church dome;
+Heidelberg castle; Düsseldorf Rhine tower; Dortmund industrial tower; Wuppertal suspended railway landmark; Baden-Baden spa pavilion; Koblenz fortress; Garmisch/Zugspitze alpine peak; Harz mountain forest tower;
+Paris Eiffel Tower; London Big Ben/Westminster tower; Madrid Puerta de Alcalá; Barcelona Sagrada Familia; Rome Colosseum; Milan Duomo; Venice canal bridge; Amsterdam canal houses;
+Brussels Grand Place guild house; Prague castle tower; Vienna cathedral; Budapest parliament dome; Warsaw palace tower; Krakow cloth hall tower; Copenhagen Nyhavn houses; Stockholm city hall tower;
+Oslo opera roof; Helsinki cathedral dome; Tallinn old town tower; Riga old town spire; Vilnius cathedral bell tower; Minsk gates towers; Kyiv golden domes; Lviv old town tower;
+Istanbul Galata tower/dome; Ankara citadel; Lisbon Belém tower; Porto bridge; Athens Parthenon; Sofia cathedral dome; Bucharest parliament/palace; Belgrade fortress;
+Zagreb cathedral; Ljubljana castle hill; Bratislava castle; Sarajevo old bridge; Skopje stone bridge; Tirana square tower; Reykjavik church; Dublin castle tower;
+Zurich church towers; Geneva fountain; Luxembourg fortress; Monaco casino facade; Andorra mountain church; San Marino tower; Valletta fortified gate; Strasbourg cathedral.
+Style: polished pixel-art / painterly-pixel hybrid, isometric 2.5D atlas landmark miniatures, warm European adventure-map palette, crisp dark outline, readable at 28-40px, consistent camera angle and lighting. Each icon should be a small symbolic landmark silhouette with a little depth, designed to sit on a detailed map. Make them charming but not childish.
+Background: perfectly flat solid #ff00ff chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #ff00ff anywhere in the icons.
+Avoid: text, letters, city names, flags, watermark, photorealism, modern flat vector UI, mixed styles, large drop shadows, cropped icons, map background behind icons, decorative frames.
+```
+
+Post-processing:
+
+```bash
+mkdir -p tmp/city-landmark-source
+cp /home/alexey/.codex/generated_images/019e7af1-437a-70f1-9164-d2f7b34a9c81/ig_0485449e48f76641016a1bfd703ddc819192289bd37d2762fd.png \
+  tmp/city-landmark-source/city_landmark_sheet_source.png
+uv run python "${CODEX_HOME:-$HOME/.codex}/skills/.system/imagegen/scripts/remove_chroma_key.py" \
+  --input tmp/city-landmark-source/city_landmark_sheet_source.png \
+  --out tmp/city-landmark-source/city_landmark_sheet_alpha.png \
+  --auto-key border \
+  --soft-matte \
+  --transparent-threshold 12 \
+  --opaque-threshold 220 \
+  --despill
+uv run python -m map_pipeline.slice_city_landmarks \
+  --sheet tmp/city-landmark-source/city_landmark_sheet_alpha.png \
+  --out-dir assets/sprites/city_landmarks
+godot --headless --path . --import --quit
+```
+
+Runtime note: keep only sliced `city_*.png` files under `assets/sprites/city_landmarks/`. Source sheets belong under `tmp/` or `$CODEX_HOME/generated_images/`.
+
 ## Map rendering workflow
 
 Data source: local Natural Earth shapefiles under `data/natural_earth/`.
