@@ -27,6 +27,11 @@ LAKE = "#2d7285"
 RIVER = "#3b8fa3"
 ROUTE = "#d8c17a"
 ROUTE_DARK = "#6e5832"
+NAMED_WATER_FILL = (47, 98, 111, 196)
+NAMED_WATER_SHALLOW = (71, 126, 129, 112)
+NAMED_WATER_SHORE = (66, 78, 47, 78)
+NAMED_WATER_OUTLINE = (39, 72, 72, 156)
+NAMED_WATER_HIGHLIGHT = (139, 184, 181, 104)
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 
@@ -434,9 +439,10 @@ def _draw_named_water_body(draw, proj, water_body):
     pts = _smooth_closed_points([_project_point(proj, lon, lat) for lon, lat in water_body["points"]])
     if len(pts) < 3:
         return
-    draw.polygon(pts, fill=(43, 114, 133, 232))
-    draw.line(pts + [pts[0]], fill=(110, 174, 190, 220), width=max(1, RENDER_SCALE * 2), joint="curve")
-    draw.line(pts + [pts[0]], fill=(35, 76, 83, 190), width=max(1, RENDER_SCALE), joint="curve")
+    draw.line(pts + [pts[0]], fill=NAMED_WATER_SHORE, width=max(2, RENDER_SCALE * 7), joint="curve")
+    draw.polygon(pts, fill=NAMED_WATER_FILL)
+    draw.line(pts + [pts[0]], fill=NAMED_WATER_SHALLOW, width=max(1, RENDER_SCALE * 3), joint="curve")
+    draw.line(pts + [pts[0]], fill=NAMED_WATER_OUTLINE, width=max(1, RENDER_SCALE), joint="curve")
 
     min_x = min(x for x, _ in pts)
     max_x = max(x for x, _ in pts)
@@ -457,7 +463,7 @@ def _draw_named_water_body(draw, proj, water_body):
             ),
             190,
             350,
-            fill=(136, 195, 199, 160),
+            fill=NAMED_WATER_HIGHLIGHT,
             width=max(1, RENDER_SCALE),
         )
 

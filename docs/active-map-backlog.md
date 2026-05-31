@@ -35,7 +35,7 @@
 - [x] Первый payload cut для map asset: `assets/map/germany_styled.png` уменьшен примерно с 5.1 MB до 272 KB, `index.pck` gzip примерно с 9.1 MB до 7.1 MB после удаления монолитной heavy подложки.
 - [x] Задокументировать verification protocol: команды, скриншоты, gzip/payload checks, screenshot checklist и критерии `3/10`, `6/10`, `8/10`, `10/10`.
 - [x] Заменить generic lake glyph placement для ключевых озёр на named coordinate outlines: Bodensee, Müritz, Chiemsee, Schweriner See, Plauer See, Schaalsee, Steinhuder Meer, Edersee, Ammersee, Starnberger See, Tegernsee, Berlin lakes.
-- [ ] Настроить visual hierarchy для named lakes: текущий точный слой читается, но местами выглядит слишком синим/маркерным; нужно сделать озёра более естественной частью atlas map.
+- [x] Настроить visual hierarchy для named lakes: точные озёра приглушены, получили shoreline underpaint и softer highlights, поэтому меньше похожи на overlay markers и лучше сидят в atlas map.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
 - [ ] Исправить pan sensitivity: drag пальцем и мышью должен ощущаться примерно 1:1, без ускорения, где 1 см движения пальца сдвигает карту на несколько сантиметров.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.

@@ -453,3 +453,27 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. Named water bodies improve geography auditability and make the map less arbitrary, but the water visual hierarchy now needs art-direction tuning so lakes read as natural map features rather than isolated blue markers.
+
+## Iteration 2026-05-31 17:14
+
+Implemented:
+
+- Tuned named water-body visual hierarchy after the first exact lake-outline pass.
+- Replaced the saturated marker-like lake palette with muted atlas water constants: `NAMED_WATER_FILL`, `NAMED_WATER_SHALLOW`, `NAMED_WATER_SHORE`, `NAMED_WATER_OUTLINE` and `NAMED_WATER_HIGHLIGHT`.
+- Added shoreline underpaint and softer highlights so Bodensee, Müritz, Chiemsee and the other named lakes sit inside the map instead of reading as UI overlays.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about 1.9 MB after the lake hierarchy pass.
+- `build/web/index.pck.gz`: about 5.4 MB after export.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 5626184`, `Cache-Control: no-store`.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`, `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` and `/tmp/cable-world-web-map/desktop-1280x800-initial.png` regenerated after the lake hierarchy pass.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. The exact lake layer now has better hierarchy, but this is not an `8/10` map yet. The next visible win should be a stronger terrain/glyph art pass plus geography audit for relief, city positions, islands and large water bodies.

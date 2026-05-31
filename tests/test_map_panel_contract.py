@@ -342,6 +342,8 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_glyph_center(canvas, proj, glyph_name, lon, lat, target_width):",
             "\"alps_range_1\"",
             "NAMED_WATER_BODIES = [",
+            "NAMED_WATER_FILL = (47, 98, 111, 196)",
+            "NAMED_WATER_SHORE = (66, 78, 47, 78)",
             '"id": "mueritz"',
             '"id": "bodensee"',
             '"id": "chiemsee"',
