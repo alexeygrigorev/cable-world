@@ -217,6 +217,10 @@ class MapPanelContractTest(unittest.TestCase):
             "func _marker_clusters(bounds: Dictionary) -> Dictionary:",
             "func _nearest_cluster(cluster_list: Array[Dictionary], position: Vector2) -> Dictionary:",
             "func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:",
+            "func _apply_marker_style_if_needed(marker: Button, is_selected: bool) -> void:",
+            "func _apply_cluster_marker_style_if_needed(marker: Button, cluster_indices: PackedInt32Array) -> void:",
+            "func _cluster_indices_key(cluster_indices: PackedInt32Array) -> String:",
+            "marker.set_meta(\"style_key\", style_key)",
             "func _apply_cluster_icon_stack(marker: Button, cluster_indices: PackedInt32Array) -> void:",
             "func _cluster_icon_ids(cluster_indices: PackedInt32Array) -> Array[String]:",
             "const CLUSTER_STACK_MAX_ICONS := 3",
@@ -304,7 +308,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("draw_rect", city_icon_rect_body)
         self.assertIn("func _landmark_visual_scale() -> float:", script_text)
         self.assertIn("clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0)", script_text)
-        self.assertIn("const CITY_ICON_LABEL_BASELINE_OVERLAP := 5.0", script_text)
+        self.assertIn("const CITY_ICON_LABEL_BASELINE_OVERLAP := 9.0", script_text)
         self.assertIn("icon_rect.position.y + icon_rect.size.y - CITY_ICON_LABEL_BASELINE_OVERLAP * zoom", script_text)
         self.assertIn("var reserved_label_rects: Array[Rect2] = []", script_text)
         self.assertIn("var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()", script_text)

@@ -1039,3 +1039,19 @@ Checks:
   - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
 
 Self-audit: about `7.15/10`, still not `8/10`. This removes the most obvious land-patch sticker effect from the previous pass. The next large visual blocker is still Alpine/per-massif art: the mountain wall is useful, but not yet recognizable or controlled enough for a `10/10` atlas map.
+
+## Iteration 2026-05-31 21:35
+
+Recorded repeated feedback and reopened regressions instead of treating prior passes as done:
+
+- City label proximity was repeated feedback, not a fresh request. Current code moves labels closer with `CITY_ICON_LABEL_BASELINE_OVERLAP := 9.0`, but this remains subject to screenshot/device review.
+- Runtime object jitter was repeated feedback on `:9000`. First corrective code pass caches marker/cluster style keys so sprites/styles are not recreated on every pan frame; this is not considered closed until the user confirms on device.
+- Tiny houses/details were reopened as a regression because the user still sees them in the live build.
+- Alps feedback was recorded as a blocker: current Alps are too arbitrary and must be rebuilt/validated from real elevation or relief sources, with stronger continuation through Austria, Switzerland and northern Italy.
+- Harz feedback was recorded separately: Harz is too small/invisible and should be visually stronger while staying centered on the real region.
+- City typography feedback was recorded: Berlin may have hierarchy, but other city labels should be mostly uniform; overloaded secondary labels should be hidden instead of rendered tiny.
+
+Checks already run before this documentation pass:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 OK, 2 skipped.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 OK.

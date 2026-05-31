@@ -25,7 +25,7 @@ class OfflineMapLayer:
 	const LANDMARK_VIEWPORT_REFERENCE_WIDTH := 390.0
 	const LANDMARK_VIEWPORT_SCALE_MIN := 0.92
 	const LANDMARK_VIEWPORT_SCALE_MAX := 1.30
-	const CITY_ICON_LABEL_BASELINE_OVERLAP := 5.0
+	const CITY_ICON_LABEL_BASELINE_OVERLAP := 9.0
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
 		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
@@ -633,7 +633,7 @@ func _position_markers() -> void:
 		var is_cluster_marker := clusters.has(index)
 		var marker_size := _marker_visual_size(is_cluster_marker)
 		_apply_marker_visual_size(marker, marker_size)
-		_apply_marker_style(marker, index == selected_index)
+		_apply_marker_style_if_needed(marker, index == selected_index)
 		marker.tooltip_text = "%s: %s" % [
 			"Выбранный объект" if index == selected_index else "Выбрать объект",
 			objects[index].get("name", "без названия")
@@ -655,7 +655,7 @@ func _position_markers() -> void:
 			marker.set_meta("is_cluster_marker", cluster_indices.size() > 1)
 			marker_size = _marker_visual_size(cluster_indices.size() > 1)
 			_apply_marker_visual_size(marker, marker_size)
-			_apply_cluster_marker_style(marker, cluster_indices)
+			_apply_cluster_marker_style_if_needed(marker, cluster_indices)
 
 		if not _coordinates_inside_bounds(coordinates, bounds):
 			marker.position = _map_point_to_screen(base_position, marker_size)
@@ -1144,6 +1144,14 @@ func _apply_marker_style(marker: Button, is_selected: bool) -> void:
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)
 
+func _apply_marker_style_if_needed(marker: Button, is_selected: bool) -> void:
+	var index := int(marker.get_meta("object_index", -1))
+	var style_key := "single:%d:%s:%s" % [index, str(is_selected), _icon_id_for_object(objects[index]) if index >= 0 and index < objects.size() else ""]
+	if str(marker.get_meta("style_key", "")) == style_key:
+		return
+	_apply_marker_style(marker, is_selected)
+	marker.set_meta("style_key", style_key)
+
 func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:
 	_clear_cluster_icon_stack(marker)
 	marker.icon = null
@@ -1167,6 +1175,19 @@ func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Arr
 	marker.add_theme_stylebox_override("focus", normal_style)
 	_apply_cluster_icon_stack(marker, cluster_indices)
 	marker.tooltip_text = "Группа объектов: %s" % _cluster_tooltip(cluster_indices)
+
+func _apply_cluster_marker_style_if_needed(marker: Button, cluster_indices: PackedInt32Array) -> void:
+	var style_key := "cluster:%s" % _cluster_indices_key(cluster_indices)
+	if str(marker.get_meta("style_key", "")) == style_key:
+		return
+	_apply_cluster_marker_style(marker, cluster_indices)
+	marker.set_meta("style_key", style_key)
+
+func _cluster_indices_key(cluster_indices: PackedInt32Array) -> String:
+	var parts: Array[String] = []
+	for index in cluster_indices:
+		parts.append(str(index))
+	return ",".join(parts)
 
 func _clear_cluster_icon_stack(marker: Button) -> void:
 	for child in marker.get_children():
