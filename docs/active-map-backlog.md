@@ -20,7 +20,7 @@
 - [x] Добавить второй atlas detail pass из монолитной карты-донора: деревни, часовни, руины, мельницы, маяки, водяные мельницы и более плотные маршруты как отдельные glyph placements.
 - [x] Исправить аспект и физическое разрешение runtime map texture после расширения bounds: `germany_styled.png` теперь `1932x3072`, близко к Mercator aspect `0.629`, чтобы не растягивать карту и не апскейлить подложку выше источника на `150%`.
 - [x] Убрать artificial half-size/nearest upscale finish из renderer: карта больше не создаёт крупные пиксельные блоки до runtime zoom; финал остается `1932x3072` через `LANCZOS` + full-resolution palette pass.
-- [ ] Оптимизировать payload после full-resolution finish: `index.pck.gz` вырос примерно до `8.4 MB`; нужно сжать map import/asset без возврата к `NEAREST`-пикселизации.
+- [x] Оптимизировать payload после full-resolution finish: source-only glyph/city/transport assets исключены из export, `index.pck.gz` снизился примерно с `8.4 MB` до `5.4 MB` без возврата к `NEAREST`-пикселизации.
 - [ ] Перестать считать текущую procedural/GIS underlay улучшаемой до 8/10 мелкими правками: пользовательская оценка 2026-05-31 — около 4/10. Следующий крупный шаг должен заменить или радикально переработать сам визуальный слой карты.
 - [x] Заменить текущую procedural/GIS underlay на цельную generated RPG-atlas подложку для проверки направления. Текущая самооценка после screenshot review: 6/10, не 8/10.
 - [ ] Провести geography audit новой generated подложки: декоративные AI-города/реки/озера не должны конфликтовать с реальными city/object координатами.

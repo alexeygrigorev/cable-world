@@ -392,3 +392,29 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. This fixes a real technical blocker for the user's `50%..150%` zoom requirement, but increases payload size and does not replace the need for better terrain/city/relief art direction. Next pass should optimize the map import/payload without returning to `NEAREST` blockiness, then continue with high-quality reusable terrain glyphs.
+
+## Iteration 2026-05-31 16:54
+
+Implemented:
+
+- Reduced the Web payload without touching the new full-resolution map finish.
+- Added export excludes for source-only sprite/material assets:
+  - `assets/map/glyphs/map_glyph_sheet.png`
+  - non-outlined transport source icons under `assets/sprites/icon_*.png`
+  - non-outlined city landmark source icons under `assets/sprites/city_landmarks/city_*.png`
+- Kept the runtime assets that the app actually loads: `assets/sprites/outlined/*` and `assets/sprites/city_landmarks/outlined/*`.
+- Added `tests/test_export_payload_contract.py` so Web/Linux/Android presets keep excluding source-only assets.
+
+Evidence:
+
+- `build/web/index.pck.gz`: reduced from about 8.4 MB to about 5.4 MB.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 5653815`, `Cache-Control: no-store`.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`, `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` and `/tmp/cable-world-web-map/desktop-1280x800-initial.png` regenerated after the exclude pass; runtime map/city/transport icons still render.
+
+Checks:
+
+- `python3 -m unittest tests.test_export_payload_contract tests.test_map_panel_contract tests.test_android_export_contract`: 18 OK.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. This removes the payload regression from the full-resolution finish and keeps the iteration testable. It does not solve the remaining 10/10 issues: stronger art direction, terrain/lake/city-position audit, and higher-quality reusable relief glyphs.
