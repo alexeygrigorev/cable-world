@@ -296,3 +296,12 @@ Production direction correction:
 - The map must move to a clean base + glyph-layer composition, documented in `docs/map-production-direction.md`.
 - A whole generated map can be used only as reference/mood or to identify needed glyphs.
 - Quality cannot improve past the current ~6/10 while baked cities, baked random details, and runtime overlays fight each other in one bitmap.
+
+Glyph-pipeline first cut:
+
+- `map_pipeline.compose_map` no longer places baked town/city pictograms in the underlay.
+- `assets/map/germany_styled.png` is regenerated from the clean composed pipeline and is now about 272 KB.
+- Web `index.pck` is about 7.1 MB gzip.
+- Runtime city landmarks are now the only city layer visible over the base.
+
+Rubric estimate remains around 6/10. This removes a structural blocker, but the map still needs more high-quality explicit glyph layers before it looks rich enough.

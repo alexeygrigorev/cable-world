@@ -310,6 +310,10 @@ class MapPanelContractTest(unittest.TestCase):
             'region.get("glyph", "alpine")',
             'def _draw_mountains(canvas, draw, proj, lon, lat, size, glyph="alpine"):',
             "GLYPH_DIR = os.path.join(MAP_DIR, \"glyphs\")",
+            "BAKED_TOWN_DETAILS_ENABLED = False",
+            "BAKED_TOWN_DETAILS = []",
+            "if BAKED_TOWN_DETAILS_ENABLED:",
+            "for lon, lat, size in BAKED_TOWN_DETAILS:",
             "def _load_glyph(name):",
             "def _draw_glyph_center(canvas, proj, glyph_name, lon, lat, target_width):",
             "\"alps_range_1\"",
@@ -328,6 +332,8 @@ class MapPanelContractTest(unittest.TestCase):
 
         northern_lowlands = pipeline_text.split('"id": "northern_lowlands"', 1)[1].split("}", 1)[0]
         self.assertIn('"mountains": []', northern_lowlands)
+        self.assertNotIn("(13.4, 52.5, 38)", pipeline_text)
+        self.assertNotIn("(10.0, 53.5, 34)", pipeline_text)
         self.assertNotIn("(10.0, 53.0, 76)", pipeline_text)
         self.assertNotIn("(12.8, 53.1, 72)", pipeline_text)
 

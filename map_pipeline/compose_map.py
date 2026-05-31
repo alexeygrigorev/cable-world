@@ -28,6 +28,12 @@ ROUTE_DARK = "#6e5832"
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 
+# Runtime city landmarks are the only city/object layer. Keep the generated
+# underlay free of baked villages or city-like pictograms so it can scale to
+# Europe without fighting runtime overlays.
+BAKED_TOWN_DETAILS_ENABLED = False
+BAKED_TOWN_DETAILS = []
+
 RELIEF_REGIONS = [
     {
         "id": "black_forest",
@@ -301,17 +307,9 @@ def _draw_terrain(canvas, proj, land_mask):
         (7.6, 50.2, 36), (10.4, 48.0, 40), (12.2, 49.2, 38),
     ]:
         _draw_tree_cluster(decor, proj, lon, lat, size)
-    for lon, lat, size in [
-        (6.9, 50.9, 34), (7.6, 51.2, 30), (8.7, 50.1, 32),
-        (9.2, 48.8, 33), (11.6, 48.2, 36), (13.4, 52.5, 38),
-        (13.8, 51.1, 34), (10.0, 53.5, 34), (6.8, 51.3, 30),
-        (9.7, 52.4, 31), (12.4, 51.3, 31), (8.0, 48.8, 30),
-        (8.1, 53.1, 24), (11.1, 52.2, 24), (12.9, 52.1, 24),
-        (10.9, 49.45, 24), (7.2, 49.25, 22), (12.0, 50.55, 22),
-        (8.2, 51.0, 22), (9.3, 51.3, 22), (10.3, 51.0, 22),
-        (11.4, 50.9, 22), (8.0, 50.0, 22), (11.1, 53.1, 22),
-    ]:
-        _draw_town(draw, proj, lon, lat, size)
+    if BAKED_TOWN_DETAILS_ENABLED:
+        for lon, lat, size in BAKED_TOWN_DETAILS:
+            _draw_town(draw, proj, lon, lat, size)
     for lon, lat, width, height in [
         (7.6, 52.2, 58, 34), (8.7, 51.2, 72, 38), (9.4, 50.7, 62, 32),
         (11.9, 51.6, 70, 36), (12.8, 52.6, 58, 30), (8.6, 49.6, 66, 34),

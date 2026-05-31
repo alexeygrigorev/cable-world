@@ -244,3 +244,20 @@ Required next work:
 - Decompose the current visual direction into glyph layers: Alps, Harz, Saxon Switzerland / Elbe Sandstone, Erzgebirge, Black Forest, Bavarian Forest, forests, lakes, ships, ports, bridges, and atlas details.
 - Remove baked city/village pictograms from the base map.
 - Keep runtime city landmarks and transport objects as the only city/object overlay.
+
+## Iteration 2026-05-31 15:52
+
+Implemented:
+
+- Removed the baked town/city pictogram list from `map_pipeline.compose_map`.
+- Added `BAKED_TOWN_DETAILS_ENABLED = False` and an empty `BAKED_TOWN_DETAILS` list as a contract: runtime city landmarks are the only city layer.
+- Regenerated `assets/map/germany_styled.png` from the composed glyph pipeline, not from a monolithic generated bitmap.
+- The map asset dropped from about 5.1 MB to about 272 KB.
+- The Web `index.pck` dropped to about 7.1 MB gzip.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows no baked town/village scatter under the runtime city landmarks.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Self-audit: still around `6/10`. This is an architectural correction, not a final visual win. The map is cleaner and expandable, but now needs more explicit glyph detail layers: Saxon Switzerland / Elbe Sandstone, ships/ports, better forest/lake density, and cross-border relief continuity.
