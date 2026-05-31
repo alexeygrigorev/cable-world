@@ -36,6 +36,81 @@ GLYPH_CACHE = {}
 BAKED_TOWN_DETAILS_ENABLED = False
 BAKED_TOWN_DETAILS = []
 
+NAMED_WATER_BODIES = [
+    {
+        "id": "bodensee",
+        "label": "Bodensee",
+        "kind": "cross_border_lake",
+        "points": [(8.96, 47.65), (9.16, 47.55), (9.55, 47.49), (9.78, 47.55), (9.66, 47.68), (9.26, 47.73)],
+    },
+    {
+        "id": "mueritz",
+        "label": "Mueritz",
+        "kind": "lake",
+        "points": [(12.61, 53.55), (12.75, 53.58), (12.86, 53.47), (12.80, 53.31), (12.67, 53.26), (12.58, 53.40)],
+    },
+    {
+        "id": "chiemsee",
+        "label": "Chiemsee",
+        "kind": "lake",
+        "points": [(12.28, 47.90), (12.43, 47.94), (12.60, 47.88), (12.56, 47.78), (12.36, 47.75), (12.23, 47.82)],
+    },
+    {
+        "id": "schweriner_see",
+        "label": "Schweriner See",
+        "kind": "lake",
+        "points": [(11.36, 53.76), (11.54, 53.68), (11.50, 53.53), (11.37, 53.49), (11.28, 53.60)],
+    },
+    {
+        "id": "plauer_see",
+        "label": "Plauer See",
+        "kind": "lake",
+        "points": [(12.20, 53.53), (12.35, 53.48), (12.35, 53.37), (12.20, 53.35), (12.12, 53.44)],
+    },
+    {
+        "id": "schaalsee",
+        "label": "Schaalsee",
+        "kind": "lake",
+        "points": [(10.89, 53.66), (11.05, 53.68), (11.12, 53.58), (11.00, 53.50), (10.87, 53.56)],
+    },
+    {
+        "id": "steinhuder_meer",
+        "label": "Steinhuder Meer",
+        "kind": "lake",
+        "points": [(9.23, 52.50), (9.38, 52.52), (9.48, 52.46), (9.40, 52.40), (9.23, 52.43)],
+    },
+    {
+        "id": "edersee",
+        "label": "Edersee",
+        "kind": "reservoir",
+        "points": [(8.83, 51.19), (8.96, 51.21), (9.10, 51.18), (9.02, 51.13), (8.86, 51.14)],
+    },
+    {
+        "id": "ammersee",
+        "label": "Ammersee",
+        "kind": "lake",
+        "points": [(11.05, 48.04), (11.16, 48.00), (11.18, 47.88), (11.09, 47.84), (11.00, 47.93)],
+    },
+    {
+        "id": "starnberger_see",
+        "label": "Starnberger See",
+        "kind": "lake",
+        "points": [(11.25, 47.98), (11.39, 47.94), (11.39, 47.78), (11.28, 47.74), (11.20, 47.86)],
+    },
+    {
+        "id": "tegernsee",
+        "label": "Tegernsee",
+        "kind": "lake",
+        "points": [(11.69, 47.76), (11.78, 47.75), (11.78, 47.68), (11.70, 47.67), (11.65, 47.72)],
+    },
+    {
+        "id": "berlin_lakes",
+        "label": "Berlin lakes",
+        "kind": "lake_cluster",
+        "points": [(13.62, 52.50), (13.85, 52.47), (13.90, 52.35), (13.72, 52.28), (13.55, 52.37)],
+    },
+]
+
 RELIEF_REGIONS = [
     {
         "id": "black_forest",
@@ -349,23 +424,72 @@ def _draw_waterways(canvas, proj, germany_mask):
         draw.line(pts, fill=(76, 139, 142, 230), width=4 * RENDER_SCALE, joint="curve")
         draw.line(pts, fill=(130, 184, 179, 170), width=1 * RENDER_SCALE, joint="curve")
 
-    for glyph, lon, lat, width in [
-        ("lake_long_1", 9.35, 47.62, 110),   # Bodensee edge
-        ("lake_small_1", 12.42, 47.86, 70),  # Chiemsee
-        ("lake_large_1", 12.75, 53.43, 86),  # Mueritz
-        ("lake_small_3", 13.78, 52.42, 58),  # Berlin lakes
-        ("lake_small_2", 11.43, 53.63, 72),  # Schweriner See
-        ("lake_small_4", 12.27, 53.46, 62),  # Plauer See
-        ("lake_small_3", 10.98, 53.58, 48),  # Schaalsee
-        ("lake_small_1", 9.35, 52.47, 54),   # Steinhuder Meer
-        ("lake_small_4", 9.00, 51.18, 48),   # Edersee
-        ("lake_small_2", 11.10, 47.98, 48),  # Ammersee
-        ("lake_small_3", 11.34, 47.91, 46),  # Starnberger See
-        ("lake_small_4", 11.73, 47.72, 40),  # Tegernsee
-    ]:
-        _draw_glyph_center(layer, proj, glyph, lon, lat, width)
+    for water_body in NAMED_WATER_BODIES:
+        _draw_named_water_body(draw, proj, water_body)
 
     canvas.alpha_composite(layer)
+
+
+def _draw_named_water_body(draw, proj, water_body):
+    pts = _smooth_closed_points([_project_point(proj, lon, lat) for lon, lat in water_body["points"]])
+    if len(pts) < 3:
+        return
+    draw.polygon(pts, fill=(43, 114, 133, 232))
+    draw.line(pts + [pts[0]], fill=(110, 174, 190, 220), width=max(1, RENDER_SCALE * 2), joint="curve")
+    draw.line(pts + [pts[0]], fill=(35, 76, 83, 190), width=max(1, RENDER_SCALE), joint="curve")
+
+    min_x = min(x for x, _ in pts)
+    max_x = max(x for x, _ in pts)
+    min_y = min(y for _, y in pts)
+    max_y = max(y for _, y in pts)
+    width = max(1, max_x - min_x)
+    height = max(1, max_y - min_y)
+    wave_count = max(1, min(4, width // (20 * RENDER_SCALE)))
+    for index in range(wave_count):
+        wave_x = min_x + int(width * (0.24 + index * 0.18))
+        wave_y = min_y + int(height * (0.42 + (index % 2) * 0.18))
+        draw.arc(
+            (
+                wave_x - 8 * RENDER_SCALE,
+                wave_y - 3 * RENDER_SCALE,
+                wave_x + 8 * RENDER_SCALE,
+                wave_y + 5 * RENDER_SCALE,
+            ),
+            190,
+            350,
+            fill=(136, 195, 199, 160),
+            width=max(1, RENDER_SCALE),
+        )
+
+
+def _smooth_closed_points(points, subdivisions=6):
+    if len(points) < 4:
+        return points
+    smoothed = []
+    count = len(points)
+    for index in range(count):
+        p0 = points[(index - 1) % count]
+        p1 = points[index]
+        p2 = points[(index + 1) % count]
+        p3 = points[(index + 2) % count]
+        for step in range(subdivisions):
+            t = step / subdivisions
+            t2 = t * t
+            t3 = t2 * t
+            x = 0.5 * (
+                2 * p1[0]
+                + (-p0[0] + p2[0]) * t
+                + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2
+                + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3
+            )
+            y = 0.5 * (
+                2 * p1[1]
+                + (-p0[1] + p2[1]) * t
+                + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2
+                + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3
+            )
+            smoothed.append((int(round(x)), int(round(y))))
+    return smoothed
 
 
 def _soft_region(canvas, mask, points, fill, blur=26):

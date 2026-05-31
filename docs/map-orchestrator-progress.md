@@ -418,3 +418,38 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. This removes the payload regression from the full-resolution finish and keeps the iteration testable. It does not solve the remaining 10/10 issues: stronger art direction, terrain/lake/city-position audit, and higher-quality reusable relief glyphs.
+
+## Iteration 2026-05-31 17:04
+
+Implemented:
+
+- Replaced generic lake glyph placement for key water bodies with explicit named coordinate outlines in `NAMED_WATER_BODIES`.
+- Added smoothed closed outlines for Bodensee, Müritz, Chiemsee, Schweriner See, Plauer See, Schaalsee, Steinhuder Meer, Edersee, Ammersee, Starnberger See, Tegernsee and Berlin lakes.
+- Kept water bodies reproducible inside `map_pipeline.compose_map` instead of a one-off bitmap.
+- First polygon pass was too angular; added `_smooth_closed_points` to keep coordinate anchoring while avoiding obvious low-poly lake shapes.
+
+- Documented the map verification protocol in `docs/map-production-direction.md`.
+- Made the verification process explicit: renderer command, unittest gate, Godot import/export, gzip header check, Playwright screenshot generation, screenshot review checklist, quality scoring gate and documentation/commit requirements.
+- Added the current named water-body expectations to the screenshot review list so future map passes keep checking lakes/islands instead of treating them as decoration.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about 1.9 MB after the named-lake pass.
+- `build/web/index.pck.gz`: about 5.4 MB after export.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 5631201`, `Cache-Control: no-store`.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`, `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` and `/tmp/cable-world-web-map/desktop-1280x800-initial.png` regenerated after the named-lake pass.
+- `docs/map-production-direction.md` now contains `Verification Protocol`.
+- The protocol names the exact screenshots used for review:
+  - `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+  - `/tmp/cable-world-web-map/mobile-390x844-after-drag.png`
+  - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+- The protocol preserves the honest scoring gate: current working band is still `6/10`; `8/10` and `10/10` require broader proof than one screenshot.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. Named water bodies improve geography auditability and make the map less arbitrary, but the water visual hierarchy now needs art-direction tuning so lakes read as natural map features rather than isolated blue markers.
