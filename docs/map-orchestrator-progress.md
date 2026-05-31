@@ -317,3 +317,27 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. This fixes the immediate south-pan/cropped-München problem and makes the map less empty, but it is not yet the requested `8/10`: the Alps/relief glyph set still needs a dedicated quality pass, and glyph assets should be regenerated or resized around the `150%` maximum so details stay clean at the chosen zoom cap.
+
+## Iteration 2026-05-31 16:26
+
+Implemented:
+
+- Fixed the map texture aspect after expanding the geographic bounds. The expanded Mercator bounds are about `0.629` wide/tall, while the old `1568x2048` texture was `0.766`, which could visibly stretch the map.
+- Regenerated `assets/map/germany_styled.png` at `1932x3072`, close to the active Mercator aspect and large enough that runtime `150%` zoom does not upscale the base map texture beyond its source resolution.
+- Added a contract assertion for `MAP_SIZE = (1932, 3072)` so future map edits do not silently return to the stretched old texture shape.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about 422 KB.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` and `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` regenerated after rebuild.
+- The after-drag screenshot shows the expected `150%` cap with a sharper base map than the previous `1568x2048` texture.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`, gzip payload about 7.1 MB.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 12 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. This removes a technical quality blocker: stretched geometry and source upscaling at `150%`. It does not yet solve the artistic target for Alps/relief glyphs or the overall `8/10+` visual density.

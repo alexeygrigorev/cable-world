@@ -13,7 +13,9 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "natural_earth"
 GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 
 GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
-MAP_SIZE = (1568, 2048)
+# Match the Mercator aspect of GERMANY_BOUNDS and keep enough physical pixels
+# that the runtime 150% zoom does not upscale the map texture above source size.
+MAP_SIZE = (1932, 3072)
 RENDER_SCALE = 2
 
 OCEAN = "#315f6d"

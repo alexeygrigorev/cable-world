@@ -288,6 +288,7 @@ class MapPanelContractTest(unittest.TestCase):
             "RELIEF_REGIONS = [",
             '"id": "alps"',
             '"glyph": "alpine"',
+            "MAP_SIZE = (1932, 3072)",
             '"mountain_glyphs": [',
             '("alps_range_1", 10.05, 47.45, 210)',
             '("highland_forest_1", 10.62, 51.78, 118)',
