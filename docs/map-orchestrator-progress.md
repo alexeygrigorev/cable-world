@@ -1363,3 +1363,8 @@ Notes:
 
 - The first runtime run on `main` failed before import because Godot had not registered the newly added `RideGameView` global class yet. After `godot --headless --path . --import --quit`, runtime checks passed.
 - Parent #52 remains open for production ride gameplay/art polish beyond the MVP slice.
+
+Parallel work:
+
+- `Kuhn` is still active on #88 map/list toggle pictogram.
+- Started `Avicenna` on #90 list screen atlas-style restyle. Scope is limited to list view styling and focused tests; it must not change #88 toggle, #89 navigation flow, map terrain/assets, ride scene or release files.
