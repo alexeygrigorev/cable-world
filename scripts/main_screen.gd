@@ -13,9 +13,10 @@ const ATLAS_CONTROL_BORDER := Color("#3b2a18")
 const ATLAS_CONTROL_INK := Color("#27321f")
 const ATLAS_CONTROL_ACCENT := Color("#31544d")
 const ATLAS_CONTROL_SHADOW := Color(0.12, 0.08, 0.03, 0.42)
-const MAP_LIST_ICON_SIZE := Vector2i(32, 32)
-const MAP_LIST_TOGGLE_SIZE := Vector2(56.0, 56.0)
+const MAP_LIST_ICON_SIZE := Vector2i(40, 40)
+const MAP_LIST_TOGGLE_SIZE := Vector2(60.0, 60.0)
 const MAP_LIST_TOGGLE_MARGIN := Vector2(14.0, 14.0)
+const LIST_MAP_RETURN_SIZE := Vector2(132.0, 52.0)
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
@@ -81,6 +82,7 @@ var collection_stats_script: Resource = null
 var achievements_script: Resource = null
 var orientation_option_is_refreshing: bool = false
 var map_list_toggle_button: Button = null
+var list_map_return_button: Button = null
 
 func _ready() -> void:
 	collection_stats_script = load(COLLECTION_STATS_SCRIPT_PATH) if ResourceLoader.exists(COLLECTION_STATS_SCRIPT_PATH) else null
@@ -156,6 +158,7 @@ func _ready() -> void:
 	map_panel.object_selected.connect(_on_map_object_selected)
 	content_viewport.resized.connect(_sync_content_width)
 	_create_map_list_toggle()
+	_create_list_map_return_button()
 
 	_configure_orientation_setting()
 	_configure_list_filters()
@@ -640,25 +643,23 @@ func _create_map_list_toggle() -> void:
 	map_list_toggle_button.offset_top = MAP_LIST_TOGGLE_MARGIN.y
 	map_list_toggle_button.offset_bottom = MAP_LIST_TOGGLE_MARGIN.y + MAP_LIST_TOGGLE_SIZE.y
 	map_list_toggle_button.z_index = 90
-	map_list_toggle_button.add_theme_color_override("icon_normal_color", ATLAS_CONTROL_INK)
-	map_list_toggle_button.add_theme_color_override("icon_hover_color", Color("#11170e"))
-	map_list_toggle_button.add_theme_color_override("icon_pressed_color", Color("#11170e"))
-	var style := StyleBoxFlat.new()
-	style.bg_color = ATLAS_CONTROL_BG
-	style.border_color = ATLAS_CONTROL_BORDER
-	style.shadow_color = ATLAS_CONTROL_SHADOW
-	style.shadow_size = 5
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(6)
-	style.content_margin_left = 10.0
-	style.content_margin_top = 10.0
-	style.content_margin_right = 10.0
-	style.content_margin_bottom = 10.0
-	map_list_toggle_button.add_theme_stylebox_override("normal", style)
-	map_list_toggle_button.add_theme_stylebox_override("hover", style)
-	map_list_toggle_button.add_theme_stylebox_override("pressed", style)
+	_apply_atlas_toggle_button_style(map_list_toggle_button, true)
 	map_list_toggle_button.pressed.connect(func() -> void: _show_section("list"))
 	add_child(map_list_toggle_button)
+
+func _create_list_map_return_button() -> void:
+	list_map_return_button = Button.new()
+	list_map_return_button.name = "ListMapReturn"
+	list_map_return_button.text = "Карта"
+	list_map_return_button.icon = _make_map_list_icon("map")
+	list_map_return_button.expand_icon = false
+	list_map_return_button.tooltip_text = "Вернуться к карте объектов"
+	list_map_return_button.custom_minimum_size = LIST_MAP_RETURN_SIZE
+	list_map_return_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_apply_atlas_toggle_button_style(list_map_return_button, false)
+	list_map_return_button.pressed.connect(func() -> void: _show_section("map"))
+	list_section.add_child(list_map_return_button)
+	list_section.move_child(list_map_return_button, 0)
 
 func _apply_map_list_button_icons() -> void:
 	map_button.icon = _make_map_list_icon("map")
@@ -667,6 +668,33 @@ func _apply_map_list_button_icons() -> void:
 	list_button.icon = _make_map_list_icon("list")
 	list_button.expand_icon = false
 	list_button.tooltip_text = "Открыть компактный список объектов"
+
+func _apply_atlas_toggle_button_style(button: Button, icon_only: bool) -> void:
+	button.add_theme_color_override("icon_normal_color", Color.WHITE)
+	button.add_theme_color_override("icon_hover_color", Color.WHITE)
+	button.add_theme_color_override("icon_pressed_color", Color.WHITE)
+	button.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
+	button.add_theme_color_override("font_hover_color", Color("#11170e"))
+	button.add_theme_color_override("font_pressed_color", Color("#11170e"))
+	button.add_theme_font_size_override("font_size", 18)
+	var margin := 10.0 if icon_only else 8.0
+	button.add_theme_stylebox_override("normal", _atlas_toggle_style(ATLAS_CONTROL_BG, margin))
+	button.add_theme_stylebox_override("hover", _atlas_toggle_style(Color(0.98, 0.92, 0.76, 0.98), margin))
+	button.add_theme_stylebox_override("pressed", _atlas_toggle_style(Color(0.86, 0.76, 0.55, 0.98), margin))
+
+func _atlas_toggle_style(bg_color: Color, content_margin: float) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_color = ATLAS_CONTROL_BORDER
+	style.shadow_color = ATLAS_CONTROL_SHADOW
+	style.shadow_size = 5
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.content_margin_left = content_margin
+	style.content_margin_top = content_margin
+	style.content_margin_right = content_margin
+	style.content_margin_bottom = content_margin
+	return style
 
 func _make_map_list_icon(kind: String) -> Texture2D:
 	var image := Image.create(MAP_LIST_ICON_SIZE.x, MAP_LIST_ICON_SIZE.y, false, Image.FORMAT_RGBA8)
@@ -678,21 +706,34 @@ func _make_map_list_icon(kind: String) -> Texture2D:
 	return ImageTexture.create_from_image(image)
 
 func _draw_map_icon(image: Image) -> void:
-	_fill_icon_rect(image, Rect2i(4, 6, 7, 20), Color("#d7c06f"))
-	_fill_icon_rect(image, Rect2i(12, 4, 8, 20), Color("#8fb18a"))
-	_fill_icon_rect(image, Rect2i(21, 7, 7, 20), Color("#c7d6da"))
-	_draw_icon_line(image, Vector2i(11, 6), Vector2i(11, 26), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(20, 4), Vector2i(20, 25), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(8, 20), Vector2i(16, 15), ATLAS_CONTROL_ACCENT)
-	_draw_icon_line(image, Vector2i(16, 15), Vector2i(25, 18), ATLAS_CONTROL_ACCENT)
-	_fill_icon_rect(image, Rect2i(15, 13, 4, 4), Color("#7f3f2a"))
+	_fill_icon_rect(image, Rect2i(4, 8, 9, 24), Color("#d7c06f"))
+	_fill_icon_rect(image, Rect2i(14, 6, 10, 24), Color("#8fb18a"))
+	_fill_icon_rect(image, Rect2i(25, 9, 9, 24), Color("#c7d6da"))
+	_draw_icon_line(image, Vector2i(13, 8), Vector2i(13, 32), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(24, 6), Vector2i(24, 31), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(8, 25), Vector2i(17, 18), ATLAS_CONTROL_ACCENT)
+	_draw_icon_line(image, Vector2i(17, 18), Vector2i(29, 22), ATLAS_CONTROL_ACCENT)
+	_draw_icon_pin(image, Vector2i(20, 16), Color("#7f3f2a"))
 
 func _draw_list_icon(image: Image) -> void:
+	_fill_icon_rect(image, Rect2i(7, 4, 24, 30), Color("#e7d59b"))
+	_fill_icon_rect(image, Rect2i(10, 7, 24, 29), Color("#f2e5bd"))
+	_draw_icon_line(image, Vector2i(10, 7), Vector2i(33, 7), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(33, 7), Vector2i(33, 35), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(10, 35), Vector2i(33, 35), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(10, 7), Vector2i(10, 35), ATLAS_CONTROL_BORDER)
+	_fill_icon_rect(image, Rect2i(13, 3, 12, 5), Color("#c46335"))
 	for row in range(3):
-		var y := 6 + row * 9
-		_fill_icon_rect(image, Rect2i(5, y, 5, 5), ATLAS_CONTROL_ACCENT)
-		_fill_icon_rect(image, Rect2i(13, y, 15, 2), ATLAS_CONTROL_INK)
-		_fill_icon_rect(image, Rect2i(13, y + 3, 10, 2), Color("#6e5431"))
+		var y := 12 + row * 7
+		_draw_icon_pin(image, Vector2i(15, y + 1), ATLAS_CONTROL_ACCENT)
+		_fill_icon_rect(image, Rect2i(21, y, 9, 2), ATLAS_CONTROL_INK)
+		_fill_icon_rect(image, Rect2i(21, y + 3, 7, 2), Color("#6e5431"))
+
+func _draw_icon_pin(image: Image, center: Vector2i, color: Color) -> void:
+	_fill_icon_rect(image, Rect2i(center.x - 2, center.y - 2, 5, 5), color)
+	_fill_icon_rect(image, Rect2i(center.x - 1, center.y + 3, 3, 2), color)
+	_fill_icon_rect(image, Rect2i(center.x, center.y + 5, 1, 2), color)
+	_fill_icon_rect(image, Rect2i(center.x - 1, center.y - 1, 3, 3), Color("#f2e5bd"))
 
 func _fill_icon_rect(image: Image, rect: Rect2i, color: Color) -> void:
 	for y in range(rect.position.y, rect.position.y + rect.size.y):
@@ -720,6 +761,8 @@ func _apply_map_focus_chrome(is_map: bool) -> void:
 	selected_object_label.visible = false
 	if map_list_toggle_button != null:
 		map_list_toggle_button.visible = is_map
+	if list_map_return_button != null:
+		list_map_return_button.visible = not is_map
 
 	var margin := 0 if is_map else 12
 	root_margins.add_theme_constant_override("margin_left", margin)
