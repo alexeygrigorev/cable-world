@@ -1,0 +1,152 @@
+{
+  "schema": "cable-world.alpine-relief-extents.v1",
+  "review_status": "first_pass_metadata_guardrail",
+  "notes": [
+    "This file is a source/elevation contract for the current Alpine render anchors.",
+    "It is not a processed DEM output yet; render art must not claim final elevation accuracy until raster clips, hillshade masks and elevation-band polygons are produced.",
+    "Rendered Alpine anchors must be tied to these named massif records or later DEM-derived ridge records, never to random decorative placement."
+  ],
+  "elevation_source_strategy": {
+    "primary": {
+      "id": "copernicus_dem_glo_30",
+      "name": "Copernicus DEM GLO-30",
+      "url": "https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Data/DEM.html",
+      "license_url": "https://docs.sentinel-hub.com/api/latest/static/files/data/dem/resources/license/License-COPDEM-30.pdf",
+      "license_note": "Full, free and open Copernicus DEM 30m product; attribution and product terms must be checked before committing derived raster assets.",
+      "download_status": "planned",
+      "download_date": null,
+      "processing_command": null
+    },
+    "fallbacks": [
+      {
+        "id": "eu_dem",
+        "name": "EU-DEM",
+        "url": "https://www.eea.europa.eu/data-and-maps/data/eu-dem",
+        "license_note": "Legacy European DEM context; use only if current Copernicus DEM access is unsuitable and attribution is documented.",
+        "download_status": "planned",
+        "download_date": null,
+        "processing_command": null
+      },
+      {
+        "id": "nasa_srtm_1_arc_second",
+        "name": "NASA SRTM 1 Arc-Second Global",
+        "url": "https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1",
+        "license_note": "Fallback 1 arc-second elevation source distributed by USGS/NASA LP DAAC; attribution and access path must be recorded before derived assets are committed.",
+        "download_status": "planned",
+        "download_date": null,
+        "processing_command": null
+      },
+      {
+        "id": "natural_earth_terrain",
+        "name": "Natural Earth terrain or hypsometric context",
+        "url": "https://www.naturalearthdata.com/downloads/",
+        "license_note": "Low-detail silhouette/context only; not sufficient for final Alpine validation.",
+        "download_status": "planned_context_only",
+        "download_date": null,
+        "processing_command": null
+      }
+    ],
+    "required_products_before_final_render": [
+      "expanded_bounds_elevation_clip",
+      "normalized_hillshade_mask",
+      "elevation_band_polygons_500_1000_1500_2000m",
+      "named_massif_sector_polygons",
+      "po_valley_swiss_plateau_vienna_basin_lowland_exclusions"
+    ],
+    "anchor_policy": "anchors_must_be_dem_ridge_or_named_massif_centroid"
+  },
+  "coverage_requirements": [
+    {
+      "id": "switzerland",
+      "label": "Switzerland Alpine continuation",
+      "country": "Switzerland",
+      "minimum_rendered_segments": 2
+    },
+    {
+      "id": "austria",
+      "label": "Austria Alpine continuation",
+      "country": "Austria",
+      "minimum_rendered_segments": 2
+    },
+    {
+      "id": "northern_italy",
+      "label": "Northern Italy Alpine / pre-Alpine continuation",
+      "bbox": [6.55, 44.0, 13.25, 46.95],
+      "minimum_rendered_segments": 2
+    },
+    {
+      "id": "german_alpine_edge",
+      "label": "German Alpine edge must be part of the same massif system",
+      "country": "Germany",
+      "required_segment_ids": ["german_alpine_edge_massif"],
+      "minimum_rendered_segments": 1
+    }
+  ],
+  "lowland_exclusions": [
+    {
+      "id": "po_valley",
+      "label": "Po Valley",
+      "bbox": [7.2, 44.4, 12.7, 45.6],
+      "rule": "no_alpine_mountain_glyphs"
+    },
+    {
+      "id": "vienna_basin",
+      "label": "Vienna Basin",
+      "bbox": [15.7, 47.6, 16.8, 48.6],
+      "rule": "no_alpine_mountain_glyphs"
+    },
+    {
+      "id": "swiss_plateau",
+      "label": "Swiss Plateau",
+      "bbox": [6.4, 46.8, 9.5, 47.7],
+      "rule": "soft_foothill_context_only_until_dem_masked"
+    }
+  ],
+  "massif_segments": [
+    {
+      "id": "western_alps_massif",
+      "label": "Western Alps",
+      "source_dataset": "copernicus_dem_glo_30",
+      "geometry_source": "named_massif_first_pass_pending_dem_ridge_extraction",
+      "elevation_band_m": "1000m+ planned, 2000m+ crest mask required before final art",
+      "coverage_regions": ["switzerland", "northern_italy"],
+      "review_status": "pre_dem_contract"
+    },
+    {
+      "id": "swiss_alps_massif",
+      "label": "Swiss Alps",
+      "source_dataset": "copernicus_dem_glo_30",
+      "geometry_source": "named_massif_first_pass_pending_dem_ridge_extraction",
+      "elevation_band_m": "1000m+ planned, 2000m+ crest mask required before final art",
+      "coverage_regions": ["switzerland", "northern_italy"],
+      "review_status": "pre_dem_contract"
+    },
+    {
+      "id": "bavarian_tyrol_alps_massif",
+      "label": "Bavarian and Tyrol Alps",
+      "source_dataset": "copernicus_dem_glo_30",
+      "geometry_source": "named_massif_first_pass_pending_dem_ridge_extraction",
+      "elevation_band_m": "1000m+ planned, 1500m+ German/Austrian edge mask required before final art",
+      "coverage_regions": ["austria", "german_alpine_edge", "northern_italy"],
+      "review_status": "pre_dem_contract"
+    },
+    {
+      "id": "german_alpine_edge_massif",
+      "label": "German Alpine Edge",
+      "source_dataset": "copernicus_dem_glo_30",
+      "geometry_source": "named_massif_first_pass_pending_dem_ridge_extraction",
+      "elevation_band_m": "1000m+ planned, German edge overlap required before final art",
+      "coverage_regions": ["german_alpine_edge", "austria"],
+      "review_status": "pre_dem_contract"
+    },
+    {
+      "id": "austrian_alps_massif",
+      "label": "Austrian Alps",
+      "source_dataset": "copernicus_dem_glo_30",
+      "geometry_source": "named_massif_first_pass_pending_dem_ridge_extraction",
+      "elevation_band_m": "1000m+ planned, 2000m+ crest mask required before final art",
+      "coverage_regions": ["austria", "northern_italy"],
+      "review_status": "pre_dem_contract"
+    }
+  ]
+}

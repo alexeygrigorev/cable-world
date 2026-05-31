@@ -1125,3 +1125,27 @@ Checks:
 - `godot --headless --path . --import --quit`: OK; known local adb daemon warning only.
 
 Visual risk: list mode was not screenshot-reviewed in this implementation pass yet; final acceptance still needs a live mobile/desktop screenshot check if reviewer treats this as map UX.
+
+## Iteration 2026-05-31 22:30
+
+Implemented for #68/#69/#64:
+
+- Added `map_pipeline/data/alpine_relief_extents.json` as the first source/elevation contract for Alpine relief:
+  - primary strategy is Copernicus DEM GLO-30;
+  - EU-DEM, NASA SRTM 1 arc-second and Natural Earth terrain are recorded as fallback/context sources;
+  - final render prerequisites are explicit: elevation clip, hillshade mask, elevation-band polygons, named massif sectors and lowland exclusions.
+- Linked every rendered `ALPINE_MASSIF_SEGMENTS` entry to matching `source_extent_id` metadata.
+- Added `audit_alpine_relief_contract()`:
+  - rejects rendered Alpine segments without source extent metadata;
+  - rejects random/decorative/sticker geometry sources;
+  - checks required coverage for Switzerland, Austria, northern Italy and the German Alpine edge;
+  - checks Po Valley and Vienna Basin lowland exclusions for Alpine glyph anchors.
+- Extended `tests/test_map_geography_audit.py` with direct Alpine source/coverage guardrails.
+
+Checks:
+
+- `uv run python -m unittest tests.test_map_geography_audit`: 4 tests OK.
+- `uv run python -m unittest tests.test_map_panel_contract`: 13 tests OK.
+- `uv run python -m unittest tests.test_europe_expansion_plan_contract`: 7 tests OK.
+
+Self-audit: visual Alps are not improved in this pass. This is intentionally metadata and automated guardrails only, so the current Alpine art remains pre-DEM and below final geography quality until a later render pass consumes real elevation-derived products.

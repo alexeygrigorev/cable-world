@@ -12,9 +12,11 @@ from map_pipeline.projection import MapProjection
 MAP_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "map")
 FONT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "fonts")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "natural_earth")
+PIPELINE_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 MASSIF_DIR = os.path.join(MAP_DIR, "massifs")
 MASSIF_MANIFEST_PATH = os.path.join(MASSIF_DIR, "manifest.json")
+ALPINE_RELIEF_EXTENTS_PATH = os.path.join(PIPELINE_DATA_DIR, "alpine_relief_extents.json")
 
 GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
 # Match the Mercator aspect of GERMANY_BOUNDS and keep enough physical pixels
@@ -159,6 +161,7 @@ ALPINE_MASSIF_SEGMENTS = [
     {
         "id": "western_alps_massif",
         "label": "Western Alps",
+        "source_extent_id": "western_alps_massif",
         "arc": [(6.20, 46.78), (7.10, 46.55), (8.05, 46.45)],
         "shadow": [(6.00, 46.95), (7.05, 46.66), (8.35, 46.58), (8.55, 47.18), (7.25, 47.30), (6.10, 47.22)],
         "glyphs": [
@@ -170,6 +173,7 @@ ALPINE_MASSIF_SEGMENTS = [
     {
         "id": "swiss_alps_massif",
         "label": "Swiss Alps",
+        "source_extent_id": "swiss_alps_massif",
         "arc": [(8.05, 46.48), (9.10, 46.46), (10.20, 46.58)],
         "shadow": [(7.75, 46.70), (9.05, 46.46), (10.45, 46.62), (10.65, 47.28), (9.25, 47.28), (7.80, 47.14)],
         "glyphs": [
@@ -181,6 +185,7 @@ ALPINE_MASSIF_SEGMENTS = [
     {
         "id": "bavarian_tyrol_alps_massif",
         "label": "Bavarian and Tyrol Alps",
+        "source_extent_id": "bavarian_tyrol_alps_massif",
         "arc": [(10.20, 46.60), (11.30, 46.82), (12.45, 47.05)],
         "shadow": [(9.95, 46.84), (11.25, 46.74), (12.75, 47.06), (12.95, 47.78), (11.25, 47.78), (10.05, 47.46)],
         "glyphs": [
@@ -193,6 +198,7 @@ ALPINE_MASSIF_SEGMENTS = [
     {
         "id": "german_alpine_edge_massif",
         "label": "German Alpine Edge",
+        "source_extent_id": "german_alpine_edge_massif",
         "required_country_overlap": "Germany",
         "arc": [(10.15, 47.55), (11.10, 47.55), (12.25, 47.62), (13.05, 47.70)],
         "shadow": [(9.85, 47.48), (10.95, 47.36), (12.45, 47.46), (13.35, 47.70), (13.20, 48.04), (11.45, 47.98), (10.00, 47.86)],
@@ -206,6 +212,7 @@ ALPINE_MASSIF_SEGMENTS = [
     {
         "id": "austrian_alps_massif",
         "label": "Austrian Alps",
+        "source_extent_id": "austrian_alps_massif",
         "arc": [(12.45, 47.05), (13.70, 47.28), (15.25, 47.62)],
         "shadow": [(12.20, 47.26), (13.75, 47.18), (15.75, 47.60), (15.95, 48.18), (14.05, 48.15), (12.35, 47.82)],
         "glyphs": [
@@ -672,6 +679,129 @@ def audit_geography_layers():
 
     errors.extend(audit_runtime_landmark_placement(country_geometries=country_geometries))
     return errors
+
+
+def audit_alpine_relief_contract():
+    errors = []
+    if not os.path.exists(ALPINE_RELIEF_EXTENTS_PATH):
+        return [f"Alpine relief extents metadata is missing: {ALPINE_RELIEF_EXTENTS_PATH}"]
+    with open(ALPINE_RELIEF_EXTENTS_PATH, "r", encoding="utf-8") as file:
+        contract = json.load(file)
+
+    if contract.get("schema") != "cable-world.alpine-relief-extents.v1":
+        errors.append("Alpine relief extents metadata has an unknown schema")
+
+    source_strategy = contract.get("elevation_source_strategy", {})
+    primary_source = source_strategy.get("primary", {})
+    fallback_sources = source_strategy.get("fallbacks", [])
+    source_ids = {primary_source.get("id")}
+    source_ids.update(source.get("id") for source in fallback_sources)
+    source_ids.discard(None)
+    for required_source in ("copernicus_dem_glo_30", "eu_dem", "nasa_srtm_1_arc_second"):
+        if required_source not in source_ids:
+            errors.append(f"Alpine elevation source strategy is missing {required_source}")
+    for source in [primary_source] + list(fallback_sources):
+        if not source:
+            continue
+        for required_key in ("id", "name", "url", "license_note", "download_status"):
+            if not source.get(required_key):
+                errors.append(f"Alpine elevation source {source.get('id', '<missing>')} lacks {required_key}")
+    if source_strategy.get("anchor_policy") != "anchors_must_be_dem_ridge_or_named_massif_centroid":
+        errors.append("Alpine anchor policy must forbid random decorative anchors")
+
+    extent_segments = {segment.get("id"): segment for segment in contract.get("massif_segments", [])}
+    rendered_segments = {segment["id"]: segment for segment in ALPINE_MASSIF_SEGMENTS}
+    for segment_id in sorted(set(rendered_segments) - set(extent_segments)):
+        errors.append(f"rendered Alpine segment {segment_id} has no source extent metadata")
+    for segment_id in sorted(set(extent_segments) - set(rendered_segments)):
+        errors.append(f"Alpine source extent {segment_id} is not rendered by ALPINE_MASSIF_SEGMENTS")
+
+    forbidden_geometry_tokens = ("random", "decorative", "sticker")
+    for segment_id, rendered_segment in rendered_segments.items():
+        source_extent_id = rendered_segment.get("source_extent_id")
+        if source_extent_id != segment_id:
+            errors.append(f"rendered Alpine segment {segment_id} must point at matching source_extent_id")
+        extent = extent_segments.get(segment_id)
+        if not extent:
+            continue
+        geometry_source = str(extent.get("geometry_source", ""))
+        if not geometry_source:
+            errors.append(f"Alpine source extent {segment_id} lacks geometry_source")
+        if any(token in geometry_source for token in forbidden_geometry_tokens):
+            errors.append(f"Alpine source extent {segment_id} uses forbidden decorative geometry source")
+        if extent.get("source_dataset") not in source_ids:
+            errors.append(f"Alpine source extent {segment_id} references unknown source_dataset")
+        if not extent.get("coverage_regions"):
+            errors.append(f"Alpine source extent {segment_id} must declare coverage_regions")
+        if not extent.get("elevation_band_m"):
+            errors.append(f"Alpine source extent {segment_id} must declare planned elevation bands")
+        if extent.get("review_status") == "production_approved" and source_strategy.get("primary", {}).get("download_status") == "planned":
+            errors.append(f"Alpine source extent {segment_id} cannot be production approved before DEM processing")
+
+    admin_dataset = "ne_50m_admin_0_countries"
+    if not os.path.isdir(os.path.join(DATA_DIR, admin_dataset)):
+        admin_dataset = "ne_110m_admin_0_countries"
+    countries = _clip_to_bounds(_load_shapefile(admin_dataset), GERMANY_BOUNDS)
+    country_geometries = {row["ADMIN"]: row.geometry for _, row in countries.iterrows()}
+    segment_geometries = {
+        segment_id: _alpine_segment_geometry(segment)
+        for segment_id, segment in rendered_segments.items()
+    }
+
+    for requirement in contract.get("coverage_requirements", []):
+        requirement_id = requirement.get("id", "<missing>")
+        required_segment_ids = requirement.get("required_segment_ids") or list(rendered_segments)
+        required_segment_ids = [segment_id for segment_id in required_segment_ids if segment_id in segment_geometries]
+        if requirement.get("country"):
+            target = country_geometries.get(requirement["country"])
+            if target is None:
+                errors.append(f"Alpine coverage requirement {requirement_id} references unknown country")
+                continue
+        else:
+            target = box(*requirement["bbox"])
+        overlapping_segments = [
+            segment_id
+            for segment_id in required_segment_ids
+            if segment_geometries[segment_id].intersects(target)
+        ]
+        minimum = int(requirement.get("minimum_rendered_segments", 1))
+        if len(overlapping_segments) < minimum:
+            errors.append(
+                f"Alpine coverage requirement {requirement_id} has only "
+                f"{len(overlapping_segments)} rendered segment overlaps; expected {minimum}"
+            )
+        for segment_id in requirement.get("required_segment_ids", []):
+            if segment_id not in overlapping_segments:
+                errors.append(f"Alpine coverage requirement {requirement_id} must include {segment_id}")
+
+    for exclusion in contract.get("lowland_exclusions", []):
+        if exclusion.get("rule") != "no_alpine_mountain_glyphs":
+            continue
+        exclusion_box = box(*exclusion["bbox"])
+        for segment in ALPINE_MASSIF_SEGMENTS:
+            for glyph_name, lon, lat, _width, _y_offset in segment.get("glyphs", []):
+                if exclusion_box.covers(Point(lon, lat)):
+                    errors.append(
+                        f"Alpine glyph {segment['id']}:{glyph_name} falls inside lowland exclusion {exclusion['id']}"
+                    )
+    return errors
+
+
+def _alpine_segment_geometry(segment):
+    shadow = segment.get("shadow", [])
+    if len(shadow) >= 3:
+        polygon = Polygon(shadow)
+        if polygon.is_valid and polygon.area > 0:
+            return polygon
+    points = list(segment.get("arc", []))
+    points.extend((lon, lat) for _glyph_name, lon, lat, _width, _y_offset in segment.get("glyphs", []))
+    if not points:
+        return Polygon()
+    min_lon = min(lon for lon, _lat in points)
+    max_lon = max(lon for lon, _lat in points)
+    min_lat = min(lat for _lon, lat in points)
+    max_lat = max(lat for _lon, lat in points)
+    return box(min_lon, min_lat, max_lon, max_lat)
 
 
 def audit_runtime_landmark_placement(country_geometries=None):
@@ -1544,6 +1674,7 @@ def _massif_source_metadata(segment, image_name, render_bbox, cropped_size, proj
     return {
         "id": segment["id"],
         "label": segment["label"],
+        "source_extent_id": segment.get("source_extent_id", segment["id"]),
         "source_type": "massif_segment",
         "image": image_name,
         "render_bbox_px": [int(value) for value in render_bbox],
