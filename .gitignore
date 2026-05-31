@@ -4,6 +4,7 @@
 build/
 dist/
 tmp/
+worktrees/
 __pycache__/
 
 # Terraform local state; remote/backend setup is documented separately.
