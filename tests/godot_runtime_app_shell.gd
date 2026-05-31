@@ -18,6 +18,15 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 	if screen.map_list_toggle_button != null:
 		_expect(screen.map_list_toggle_button.visible, "Map/list toggle must be visible on the map.", failures)
 		_expect(screen.map_list_toggle_button.icon != null, "Map/list toggle must use a pictogram icon at runtime.", failures)
+		_expect(screen.map_list_toggle_button.text == "", "Map/list toggle must stay icon-only on the map.", failures)
+		_expect(screen.map_list_toggle_button.anchor_left == 0.0 and screen.map_list_toggle_button.anchor_right == 0.0, "Map/list toggle must live in its own top-left map corner.", failures)
+		_expect(screen.map_list_toggle_button.offset_left >= 12.0, "Map/list toggle must keep atlas-map margin from the left edge.", failures)
+		_expect(screen.map_list_toggle_button.offset_right <= 80.0, "Map/list toggle must stay away from top-right zoom controls.", failures)
+		_expect(screen.map_list_toggle_button.custom_minimum_size.x >= 56.0 and screen.map_list_toggle_button.custom_minimum_size.y >= 56.0, "Map/list toggle must remain a readable touch target.", failures)
+		if screen.map_panel != null and screen.map_panel.zoom_controls != null:
+			var toggle_rect: Rect2 = screen.map_list_toggle_button.get_global_rect().grow(8.0)
+			var zoom_rect: Rect2 = screen.map_panel.zoom_controls.get_global_rect().grow(8.0)
+			_expect(not toggle_rect.intersects(zoom_rect, true), "Map/list toggle must not visually merge with zoom controls.", failures)
 		screen.map_list_toggle_button.emit_signal("pressed")
 
 	_expect(not screen.map_section.visible, "Map section must hide after pressing the map/list toggle.", failures)

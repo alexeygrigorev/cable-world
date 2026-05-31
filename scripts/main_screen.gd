@@ -14,6 +14,8 @@ const ATLAS_CONTROL_INK := Color("#27321f")
 const ATLAS_CONTROL_ACCENT := Color("#31544d")
 const ATLAS_CONTROL_SHADOW := Color(0.12, 0.08, 0.03, 0.42)
 const MAP_LIST_ICON_SIZE := Vector2i(32, 32)
+const MAP_LIST_TOGGLE_SIZE := Vector2(56.0, 56.0)
+const MAP_LIST_TOGGLE_MARGIN := Vector2(14.0, 14.0)
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
@@ -628,14 +630,15 @@ func _create_map_list_toggle() -> void:
 	map_list_toggle_button.icon = _make_map_list_icon("list")
 	map_list_toggle_button.expand_icon = false
 	map_list_toggle_button.tooltip_text = "Открыть список объектов"
-	map_list_toggle_button.custom_minimum_size = Vector2(52.0, 52.0)
-	map_list_toggle_button.size = Vector2(52.0, 52.0)
-	map_list_toggle_button.anchor_left = 1.0
-	map_list_toggle_button.anchor_right = 1.0
-	map_list_toggle_button.offset_left = -68.0
-	map_list_toggle_button.offset_right = -16.0
-	map_list_toggle_button.offset_top = 16.0
-	map_list_toggle_button.offset_bottom = 68.0
+	map_list_toggle_button.custom_minimum_size = MAP_LIST_TOGGLE_SIZE
+	map_list_toggle_button.size = MAP_LIST_TOGGLE_SIZE
+	map_list_toggle_button.anchor_left = 0.0
+	map_list_toggle_button.anchor_right = 0.0
+	map_list_toggle_button.offset_left = MAP_LIST_TOGGLE_MARGIN.x
+	map_list_toggle_button.offset_right = MAP_LIST_TOGGLE_MARGIN.x + MAP_LIST_TOGGLE_SIZE.x
+	map_list_toggle_button.offset_top = MAP_LIST_TOGGLE_MARGIN.y
+	map_list_toggle_button.offset_bottom = MAP_LIST_TOGGLE_MARGIN.y + MAP_LIST_TOGGLE_SIZE.y
+	map_list_toggle_button.z_index = 90
 	map_list_toggle_button.add_theme_color_override("icon_normal_color", ATLAS_CONTROL_INK)
 	map_list_toggle_button.add_theme_color_override("icon_hover_color", Color("#11170e"))
 	map_list_toggle_button.add_theme_color_override("icon_pressed_color", Color("#11170e"))
@@ -646,6 +649,10 @@ func _create_map_list_toggle() -> void:
 	style.shadow_size = 5
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(6)
+	style.content_margin_left = 10.0
+	style.content_margin_top = 10.0
+	style.content_margin_right = 10.0
+	style.content_margin_bottom = 10.0
 	map_list_toggle_button.add_theme_stylebox_override("normal", style)
 	map_list_toggle_button.add_theme_stylebox_override("hover", style)
 	map_list_toggle_button.add_theme_stylebox_override("pressed", style)
