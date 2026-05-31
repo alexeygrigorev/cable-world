@@ -22,6 +22,7 @@ class OfflineMapLayer:
 	const OVERLAY_CONTROL_SAFE_WIDTH := 242.0
 	const OVERLAY_CONTROL_SAFE_HEIGHT := 78.0
 	const SECONDARY_CITY_LABEL_ZOOM := 1.20
+	const BARE_CITY_LABEL_ZOOM := 1.55
 	const LANDMARK_VIEWPORT_REFERENCE_WIDTH := 390.0
 	const LANDMARK_VIEWPORT_SCALE_MIN := 0.92
 	const LANDMARK_VIEWPORT_SCALE_MAX := 1.30
@@ -140,6 +141,8 @@ class OfflineMapLayer:
 		var is_town := str(label_data.get("kind", "")) == "town"
 		if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:
 			return
+		if not _city_label_has_icon(label_data) and zoom < BARE_CITY_LABEL_ZOOM:
+			return
 		var label_size := 17 if is_capital else (14 if is_town else 15)
 		var icon_rect := _city_icon_rect(label_data, position)
 		var label_rect := Rect2()
@@ -170,6 +173,10 @@ class OfflineMapLayer:
 			Vector2(icon_size, icon_size)
 		)
 		return icon_rect
+
+	func _city_label_has_icon(label_data: Dictionary) -> bool:
+		var icon_id := str(label_data.get("icon", ""))
+		return not icon_id.is_empty() and _city_icon_texture(icon_id) != null
 
 	func _city_icon_offset(label_data: Dictionary) -> Vector2:
 		return Vector2(label_data.get("icon_offset", Vector2.ZERO)) * zoom

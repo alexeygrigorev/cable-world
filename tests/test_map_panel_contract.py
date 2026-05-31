@@ -328,6 +328,34 @@ class MapPanelContractTest(unittest.TestCase):
             city_icon_rect_body.index("return icon_rect"),
         )
 
+    def test_default_city_labels_have_pictograms_or_stay_hidden(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+        city_labels_block = script_text.split("const CITY_LABELS := [", 1)[1].split("]", 1)[0]
+        city_entries = re.findall(r'\{"name": "([^"]+)".*?"kind": "([^"]+)".*?"icon": "([^"]*)"', city_labels_block)
+
+        self.assertGreaterEqual(len(city_entries), 20)
+        self.assertIn("const BARE_CITY_LABEL_ZOOM := 1.55", script_text)
+        self.assertIn("func _city_label_has_icon(label_data: Dictionary) -> bool:", script_text)
+        self.assertIn("if not _city_label_has_icon(label_data) and zoom < BARE_CITY_LABEL_ZOOM:", script_text)
+        self.assertIn('"Nürnberg"', script_text)
+        self.assertIn('"München"', script_text)
+        self.assertIn('"Düsseldorf"', script_text)
+        self.assertNotIn('"Nurnberg"', script_text)
+        self.assertNotIn('"Munchen"', script_text)
+        self.assertNotIn('"Dusseldorf"', script_text)
+
+        for name, kind, icon_id in city_entries:
+            if kind in {"capital", "city"}:
+                self.assertTrue(icon_id, f"{name} is visible at default zoom but has no city pictogram")
+                self.assertTrue(
+                    (ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / f"city_{icon_id}.png").exists(),
+                    f"{name} references a missing outlined city pictogram: {icon_id}",
+                )
+
+        no_icon_labels = [name for name, _kind, icon_id in city_entries if not icon_id]
+        self.assertIn("Leipzig", no_icon_labels)
+        self.assertIn("Nürnberg", no_icon_labels)
+
     def test_map_pipeline_uses_named_relief_layers(self) -> None:
         pipeline_text = (ROOT / "map_pipeline" / "compose_map.py").read_text(encoding="utf-8")
 
