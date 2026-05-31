@@ -13,6 +13,8 @@
 - [ ] Заменить cluster count badges на более нативные atlas group markers: сейчас они функциональны, но все еще выглядят как UI-счетчики.
 - [x] #60 Убрать залитые фоновые плашки под транспортными пиктограммами: оставить естественный outline/glow, чтобы объекты читались лучше городов и выглядели частью карты.
 - [x] #61 Масштабировать транспортные и городские иконки вместе с zoom, но с максимальным порогом размера, чтобы пиксель-арт не раздувался.
+- [x] Добавить outline-only runtime sprites для транспортных и city landmark иконок: объекты должны читаться поверх детальной карты без кругов, плашек и фоновых подложек.
+- [x] Снизить clutter на default zoom: второстепенные подписи городов появляются после zoom `1.20`, а названия под иконками стали ближе к пиктограммам.
 - [ ] #62 Перевести рельеф из декоративных гор в точные переиспользуемые overlay-слои: Alps, Harz, Black Forest, Erzgebirge, Bavarian Forest и другие реальные массивы. Германия начата; нужно расширить и проверить слой по Европе.
 - [x] Начать настройку масштаба/якорей terrain glyphs через явные `mountain_glyphs`: Альпы, Harz, Erzgebirge, Black Forest и Bavarian Forest больше не выбираются hash-ом.
 - [ ] Проверить и откалибровать `mountain_glyphs` по реальным relief extents: Альпы должны начинаться/заканчиваться по настоящему массиву, Harz/Erzgebirge/Black Forest/Bavarian Forest не должны расползаться за свои области.
@@ -27,5 +29,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending explicit relief placement commit after current review.
-- Текущий рельеф Германии перешел на reusable sprite glyphs для гор, лесов и озер; главные горные массивы уже имеют явные placements. Blocker для `8/10+` теперь проверка этих placements по реальным relief extent и дальнейшая Европа без country-only clipping.
+- Последний map commit на момент обновления backlog: pending outline readability commit after current review.
+- Текущий рельеф Германии перешел на reusable sprite glyphs для гор, лесов и озер; главные горные массивы уже имеют явные placements. Иконки транспорта и городов теперь грузятся из outlined runtime variants. Blocker для `8/10+` теперь проверка этих placements по реальным relief extent, list/cluster styling и дальнейшая Европа без country-only clipping.

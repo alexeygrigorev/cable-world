@@ -175,3 +175,22 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-map-v11.png`
 
 Rubric estimate after explicit relief placement iteration 2026-05-31: still around 7/10. It is materially closer to 8/10 because major relief is now controllable by real layer definitions, but final quality still needs calibrated extents against a real relief source and a pass on label/marker crowding.
+
+Outline readability iteration result:
+
+- Transport and city landmark sprites now have generated outline-only runtime variants under `assets/sprites/outlined/` and `assets/sprites/city_landmarks/outlined/`.
+- The map UI loads those outlined variants, so objects can read over forests/lakes/routes without reintroducing circles, plaques, or background disks.
+- City labels were moved closer to their pictograms. Secondary town labels are hidden until zoom `1.20`, while major landmarks such as Berlin, Hamburg, Rostock, Köln, München, Dresden and Stuttgart remain available at the default view.
+- Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns gzip and no-store headers.
+- Browser verification regenerated screenshots via `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright node scripts/verify-web-map.mjs`.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-marker-click.png`
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
+
+Rubric estimate after outline readability iteration 2026-05-31: still about 7/10, not 8/10. Readability is better and the "circles around objects" issue is reduced, but desktop composition still crops some labels/icons at the edges and terrain accuracy still needs real relief/lake extent calibration before a confident 8/10.

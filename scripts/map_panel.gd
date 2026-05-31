@@ -12,6 +12,7 @@ class OfflineMapLayer:
 	var map_scope := "germany"
 	var _germany_texture: Texture2D = null
 	var _city_icon_textures: Dictionary = {}
+	const SECONDARY_CITY_LABEL_ZOOM := 1.20
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
 		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
@@ -116,10 +117,12 @@ class OfflineMapLayer:
 		var position := _geo_to_screen(label_data["coordinates"])
 		var is_capital := str(label_data.get("kind", "")) == "capital"
 		var is_town := str(label_data.get("kind", "")) == "town"
+		if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:
+			return
 		var label_size := 18 if is_capital else (12 if is_town else 15)
 		var icon_rect := _draw_city_icon(label_data, position)
 		if icon_rect.size != Vector2.ZERO:
-			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 8.0 * zoom
+			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 4.0 * zoom
 			_draw_centered_label_text(font, str(label_data["name"]), icon_rect.get_center().x, label_baseline_y, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
 		else:
 			_draw_centered_label_text(font, str(label_data["name"]), position.x, position.y + 12.0 * zoom, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
@@ -141,7 +144,7 @@ class OfflineMapLayer:
 
 	func _city_icon_texture(icon_id: String) -> Texture2D:
 		if not _city_icon_textures.has(icon_id):
-			var path := "res://assets/sprites/city_landmarks/city_%s.png" % icon_id
+			var path := "res://assets/sprites/city_landmarks/outlined/city_%s.png" % icon_id
 			_city_icon_textures[icon_id] = load(path) if ResourceLoader.exists(path) else null
 		return _city_icon_textures.get(icon_id, null)
 
@@ -922,7 +925,7 @@ func _icon_for_object(object_data: Dictionary) -> Texture2D:
 
 func _marker_icon_texture(icon_id: String) -> Texture2D:
 	if not marker_icons.has(icon_id):
-		var path := "res://assets/sprites/%s.png" % icon_id
+		var path := "res://assets/sprites/outlined/%s.png" % icon_id
 		marker_icons[icon_id] = load(path) if ResourceLoader.exists(path) else null
 	var texture: Texture2D = marker_icons.get(icon_id, null)
 	return texture

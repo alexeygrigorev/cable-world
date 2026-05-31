@@ -98,9 +98,11 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"Köln"', script_text)
         self.assertIn('"München"', script_text)
         self.assertIn('"Dresden"', script_text)
-        self.assertIn("city_landmarks/city_%s.png", script_text)
+        self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
-        self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y", script_text)
+        self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 4.0 * zoom", script_text)
+        self.assertIn("const SECONDARY_CITY_LABEL_ZOOM := 1.20", script_text)
+        self.assertIn("if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:", script_text)
         self.assertIn("position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))", script_text)
         self.assertIn("_update_map_reference_data()", script_text)
         self.assertIn('toolbar.name = "ПанельИнструментов"', script_text)
@@ -187,6 +189,7 @@ class MapPanelContractTest(unittest.TestCase):
             "func _apply_marker_visual_size(marker: Button, marker_size: Vector2) -> void:",
             "marker.size = marker_size",
             "func _marker_icon_texture(icon_id: String) -> Texture2D:",
+            '"res://assets/sprites/outlined/%s.png"',
             "func _focus_cluster(marker: Button) -> void:",
             'marker.set_meta("cluster_indices"',
             'marker.set_meta("is_cluster_marker"',
@@ -275,18 +278,46 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_alpine_mountains(draw, x, y, s):",
             "def _draw_forested_highland(draw, x, y, s):",
             "def _draw_border_highland(draw, x, y, s):",
-			"def _draw_dotted_route(draw, pts):",
-			"_draw_dotted_route(draw, pts)",
-			"def _draw_field_patch(draw, proj, lon, lat, width, height):",
-			"def _draw_marsh_patch(draw, proj, lon, lat, size):",
-			"def _draw_castle_marker(draw, proj, lon, lat, size):",
-		]:
+            "def _draw_dotted_route(draw, pts):",
+            "_draw_dotted_route(draw, pts)",
+            "def _draw_field_patch(draw, proj, lon, lat, width, height):",
+            "def _draw_marsh_patch(draw, proj, lon, lat, size):",
+            "def _draw_castle_marker(draw, proj, lon, lat, size):",
+        ]:
             self.assertIn(expected, pipeline_text)
 
         northern_lowlands = pipeline_text.split('"id": "northern_lowlands"', 1)[1].split("}", 1)[0]
         self.assertIn('"mountains": []', northern_lowlands)
         self.assertNotIn("(10.0, 53.0, 76)", pipeline_text)
         self.assertNotIn("(12.8, 53.1, 72)", pipeline_text)
+
+    def test_sprite_outline_pipeline_is_reproducible(self) -> None:
+        outline_text = (ROOT / "map_pipeline" / "outline_sprites.py").read_text(encoding="utf-8")
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "def _outline_sprite(source_path: Path, output_path: Path, radius: int, color: tuple[int, int, int, int]) -> None:",
+            "ImageFilter.MaxFilter(radius * 2 + 1)",
+            "ImageChops.subtract(outline_alpha, alpha)",
+            "--source-dir",
+            "--out-dir",
+            "--prefix",
+            "--radius",
+            "--color",
+        ]:
+            self.assertIn(expected, outline_text)
+
+        for path in [
+            ROOT / "assets" / "sprites" / "outlined" / "icon_cable_gondola.png",
+            ROOT / "assets" / "sprites" / "outlined" / "icon_funicular.png",
+            ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / "city_berlin.png",
+            ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / "city_hamburg.png",
+            ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / "city_rostock.png",
+        ]:
+            self.assertTrue(path.exists(), f"Missing outlined sprite: {path}")
+
+        self.assertIn('"res://assets/sprites/outlined/%s.png"', script_text)
+        self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
 
     def test_map_panel_initially_focuses_germany_when_present(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")

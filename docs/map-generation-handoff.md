@@ -127,6 +127,19 @@ Planned post-processing:
 
 Runtime note: do not keep `transport_icon_sheet*.png` in `assets/sprites`. Godot only needs the final icon PNGs, which keeps import/load work smaller.
 
+Runtime visibility pass:
+
+```bash
+uv run python -m map_pipeline.outline_sprites \
+  --source-dir assets/sprites \
+  --out-dir assets/sprites/outlined \
+  --prefix icon_ \
+  --radius 3 \
+  --color '#23170de8'
+```
+
+The UI loads `assets/sprites/outlined/icon_*.png`. These variants add only a natural dark pixel outline around the sprite alpha; they do not add circles, plaques, pins, or map-colored backgrounds.
+
 ## City landmark generation workflow
 
 User feedback 2026-05-31: карта должна читаться через узнаваемые городские символы, а не только через кружки/счетчики. Для этого сгенерирован один общий 8x8 sprite sheet городских landmark-пиктограмм, затем все 64 иконки разрезаны на будущее.
@@ -179,6 +192,19 @@ godot --headless --path . --import --quit
 ```
 
 Runtime note: keep only sliced `city_*.png` files under `assets/sprites/city_landmarks/`. Source sheets belong under `tmp/` or `$CODEX_HOME/generated_images/`.
+
+City icon visibility pass:
+
+```bash
+uv run python -m map_pipeline.outline_sprites \
+  --source-dir assets/sprites/city_landmarks \
+  --out-dir assets/sprites/city_landmarks/outlined \
+  --prefix city_ \
+  --radius 2 \
+  --color '#25180fe0'
+```
+
+The app loads `assets/sprites/city_landmarks/outlined/city_*.png`. Major city landmarks remain visible at the default zoom. Smaller town labels are intentionally hidden until zoom `1.20` to avoid the “too busy” failure mode.
 
 ## Map rendering workflow
 
