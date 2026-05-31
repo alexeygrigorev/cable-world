@@ -699,3 +699,30 @@ Evidence:
 - `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 tests OK, including the real geography audit.
 
 Self-audit: still about `6.5/10`. This does not improve the pixels directly, but it removes a major process risk: the next terrain/lake/Europe edits now have automated guardrails against putting mountains/water/details in impossible places. It supports future `8/10+`, but the visible art pass is still required.
+
+## Iteration 2026-05-31 20:53
+
+Implemented:
+
+- Raised `MIN_ATLAS_DETAIL_WIDTH` from `66` to `78`, so small atlas detail glyphs read more like intentional places and less like pixel dust at mobile zoom.
+- Split named water rendering into `_draw_named_water_bodies()` and kept the straight procedural river/blue-line layer disabled after screenshot review.
+- Softened named water alpha/shore/highlight values so lakes sit more naturally in the atlas underlay and do not compete with clickable transport/city markers.
+- Updated contracts for the new water/detail readability pass.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about `2.37 MB`.
+- First attempted river pass was rejected during self-review because it produced long straight blue strips; the final exported pass does not call `_draw_waterways()` from `main()`.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows larger atlas details, no circular city-marker backgrounds and runtime city labels still on the default font.
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png` shows the new underlay in the exported web build.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6281373`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 19 tests OK, 1 skipped under plain Python.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 tests OK.
+- `godot --headless --path . --import --quit`: import completed. Existing nested worktree warning and adb daemon warning remain.
+- Web export rebuilt, gzip files regenerated and `scripts/serve-web.sh --no-export` restarted on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still about `6.5/10`, not `8/10`. The detail readability is better and the failed river-strip direction was avoided, but several named lakes still look too round/blobby on mobile. The next visible pass should improve lake silhouettes and continue terrain/mountain art calibration rather than claiming completion.

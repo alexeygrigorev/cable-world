@@ -28,11 +28,11 @@ LAKE = "#2d7285"
 RIVER = "#3b8fa3"
 ROUTE = "#d8c17a"
 ROUTE_DARK = "#6e5832"
-NAMED_WATER_FILL = (47, 98, 111, 196)
-NAMED_WATER_SHALLOW = (71, 126, 129, 112)
-NAMED_WATER_SHORE = (66, 78, 47, 78)
-NAMED_WATER_OUTLINE = (39, 72, 72, 156)
-NAMED_WATER_HIGHLIGHT = (139, 184, 181, 104)
+NAMED_WATER_FILL = (47, 98, 111, 150)
+NAMED_WATER_SHALLOW = (71, 126, 129, 82)
+NAMED_WATER_SHORE = (66, 78, 47, 58)
+NAMED_WATER_OUTLINE = (39, 72, 72, 118)
+NAMED_WATER_HIGHLIGHT = (139, 184, 181, 76)
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 FONT_CACHE = {}
@@ -472,7 +472,7 @@ ATLAS_DETAIL_KIND_SCALE = {
     "watermill": 1.55,
     "windmill": 1.55,
 }
-MIN_ATLAS_DETAIL_WIDTH = 66
+MIN_ATLAS_DETAIL_WIDTH = 78
 
 
 def audit_geography_layers():
@@ -658,13 +658,23 @@ def _draw_waterways(canvas, proj, germany_mask):
     ]
     for river in rivers:
         pts = [_project_point(proj, lon, lat) for lon, lat in river]
-        draw.line(pts, fill=(42, 81, 85, 190), width=7 * RENDER_SCALE, joint="curve")
-        draw.line(pts, fill=(76, 139, 142, 230), width=4 * RENDER_SCALE, joint="curve")
-        draw.line(pts, fill=(130, 184, 179, 170), width=1 * RENDER_SCALE, joint="curve")
+        draw.line(pts, fill=(38, 68, 70, 138), width=8 * RENDER_SCALE, joint="curve")
+        draw.line(pts, fill=(53, 116, 126, 204), width=4 * RENDER_SCALE, joint="curve")
+        draw.line(pts, fill=(135, 184, 176, 128), width=max(1, RENDER_SCALE), joint="curve")
 
     for water_body in NAMED_WATER_BODIES:
         _draw_named_water_body(draw, proj, water_body)
 
+    canvas.alpha_composite(layer)
+
+
+def _draw_named_water_bodies(canvas, proj, germany_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    for water_body in NAMED_WATER_BODIES:
+        _draw_named_water_body(draw, proj, water_body)
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
+    layer.putalpha(alpha)
     canvas.alpha_composite(layer)
 
 
@@ -1384,6 +1394,7 @@ def main():
     _draw_neighbor_ground_texture(canvas, proj, neighbor_mask)
     _draw_ground_texture(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
+    _draw_named_water_bodies(canvas, proj, germany_mask)
     _draw_atlas_forest_masses(canvas, proj, land_mask)
     _draw_atlas_routes(canvas, proj, germany_mask)
     _draw_atlas_details(canvas, proj)

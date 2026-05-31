@@ -38,6 +38,7 @@
 - [x] Задокументировать verification protocol: команды, скриншоты, gzip/payload checks, screenshot checklist и критерии `3/10`, `6/10`, `8/10`, `10/10`.
 - [x] Заменить generic lake glyph placement для ключевых озёр на named coordinate outlines: Bodensee, Müritz, Chiemsee, Schweriner See, Plauer See, Schaalsee, Steinhuder Meer, Edersee, Ammersee, Starnberger See, Tegernsee, Berlin lakes.
 - [x] Настроить visual hierarchy для named lakes: точные озёра приглушены, получили shoreline underpaint и softer highlights, поэтому меньше похожи на overlay markers и лучше сидят в atlas map.
+- [ ] Доработать форму named lakes: текущий слой полезен для ориентира, но часть озёр на mobile всё ещё выглядит как маленькие round blobs; нужно сделать силуэты более узнаваемыми и менее похожими на маркеры.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
 - [x] Исправить pan sensitivity: drag пальцем и мышью теперь использует viewport-local `event.relative` и `PAN_DRAG_SCALE := 1.0`, чтобы движение было 1:1 в координатах карты, без `screen_relative` acceleration.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
@@ -48,7 +49,7 @@
 - [x] Усилить visual hierarchy интерактивных объектов: transport markers теперь крупнее city landmarks на default/mobile и имеют больший cap (`60..96`) против более сдержанных city landmarks (`42..76`).
 - [x] Добавить outline-only runtime sprites для транспортных и city landmark иконок: объекты должны читаться поверх детальной карты без кругов, плашек и фоновых подложек.
 - [x] Убрать jitter у runtime объектов при pan/zoom: транспортные маркеры, city landmarks и размеры иконок snap-аются к целым пикселям по тому же принципу, что и подписи.
-- [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 66`, чтобы не превращаться в шум.
+- [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 78`, чтобы не превращаться в шум.
 - [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
 - [x] Вернуть journey-map структуру без технических полос: добавлен controlled `ATLAS_ROUTE_SEGMENTS` layer с короткими dotted atlas trails, без continuous `draw.line` и без blue procedural waterways.
@@ -73,5 +74,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending geography audit guardrails.
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.5/10` по плотности и читаемости, но нельзя оценивать ее как `8/10`: некоторые forest+village clusters тяжеловаты, marker composition в городах всё еще плотная, нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.
+- Последний map commit на момент обновления backlog: pending named water/detail readability pass.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.5/10` по плотности и читаемости, но нельзя оценивать ее как `8/10`: некоторые water blobs и forest+village clusters тяжеловаты, marker composition в городах всё еще плотная, нужна более сильная художественная плотность, visual audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.
