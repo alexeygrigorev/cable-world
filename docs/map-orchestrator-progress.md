@@ -1604,3 +1604,16 @@ Verification on `main`:
 Important limitation:
 
 - Full map quality is still not accepted as 10/10. Alpine band/stripe artifacts and broader terrain/art polish remain in #62/#64/#68/#69 and related issues.
+
+## Iteration 2026-06-01 03:55
+
+Backlog after #67:
+
+- Closed in recent cycle: #89, #67; #63 contract slice integrated but #63 remains open.
+- Still open: #92, #91, #77, #76, #74, #69, #68, #64, #63, #62, #55, #54, #52.
+- `main` is clean and pushed after `fb01272 Document map clutter integration`.
+
+Parallel work started:
+
+- `Kepler`: #91 ride navigation UX from selected map/object flow into playable ride and back, without touching ride art or map assets.
+- `Lagrange`: #64 Germany terrain accuracy audit/contract, focused on source-backed terrain checks and documentation, not a visual art pass.
