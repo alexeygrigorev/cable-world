@@ -42,6 +42,7 @@
 - [ ] Доработать форму named lakes: текущий слой полезен для ориентира, но часть озёр на mobile всё ещё выглядит как маленькие round blobs; нужно сделать силуэты более узнаваемыми и менее похожими на маркеры.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
 - [x] #70 Первый pass: исправить placement Rostock city landmark. Иконка получила data-driven `icon_offset`, поэтому больше не висит в открытом море и визуально сидит ближе к суше/портовой зоне; подпись остаётся рядом.
+- [x] #70 Второй pass: усилить Rostock `icon_offset` до `Vector2(0.0, 52.0)`, потому что меньший offset всё ещё воспринимался как "висит на море" на runtime screenshot.
 - [x] Исправить pan sensitivity: drag пальцем и мышью теперь использует viewport-local `event.relative` и `PAN_DRAG_SCALE := 1.0`, чтобы движение было 1:1 в координатах карты, без `screen_relative` acceleration.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
 - [ ] Довести city landmark layer: сделать иконки достаточно крупными, не перекрывать labels/markers, использовать правильные немецкие названия с умляутами.
@@ -53,6 +54,7 @@
 - [x] Убрать jitter у runtime объектов при pan/zoom: транспортные маркеры, city landmarks и размеры иконок snap-аются к целым пикселям по тому же принципу, что и подписи.
 - [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 78`, чтобы не превращаться в шум.
 - [x] #67 Первый pass: убрать именно мелкие домики и мелкие деревья из default render. Поселковые detail kinds (`village`, `chapel`, `ruins`, `watermill`, `windmill`) больше не рендерятся по умолчанию, россыпь мелких одиночных tree clusters убрана; оставшиеся дома/леса должны быть крупными landmark-глифами.
+- [x] #68 Первый pass: добавить отдельный `german_alpine_edge_massif`, чтобы Альпы были видны внутри южной Германии, а не только южнее границы.
 - [ ] #67 Follow-up: проверить mobile руками и убрать/укрупнить оставшиеся дома/лесные glyphs, если пользователь всё ещё воспринимает их как мелкий шум.
 - [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.

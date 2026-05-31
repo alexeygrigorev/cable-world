@@ -787,3 +787,25 @@ Checks:
 - Web export rebuilt and served on `http://127.0.0.1:9000/`; Playwright screenshots regenerated.
 
 Self-audit: this addresses `#70` first pass. The broader map remains below `8/10`; next high-impact work is German Alps visibility and separate massif sprite layers (`#68`, `#69`).
+
+## Iteration 2026-05-31 19:25
+
+Implemented:
+
+- Added a separate `german_alpine_edge_massif` segment to the map composition pipeline so the German side of the Alps is visible around Bavaria instead of only continuing south of the border.
+- Increased Rostock's runtime city landmark offset from `Vector2(0.0, 23.0)` to `Vector2(0.0, 52.0)` after user feedback that it still looked like it was hanging over the sea.
+- Kept Rostock's real coordinates unchanged; this remains a drawing offset for the icon, not a fake city coordinate.
+
+Evidence:
+
+- `assets/map/germany_styled.png` regenerated with the German Alpine edge visible in the south.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows Rostock's pictogram on land and the Alps visible near München.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6439694`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 19 tests OK, 1 skipped under plain Python.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 tests OK.
+- Web export rebuilt, gzip files regenerated, server restarted on `http://127.0.0.1:9000/`, and Playwright screenshots regenerated.
+
+Self-audit: about `6.8/10`, still not `8/10`. This fixes two concrete geography/readability defects, but `#69` is still the important architectural/art task: each mountain massif needs its own reusable glyph/sprite layer, with stronger terrain accuracy and less ad hoc composition.

@@ -98,7 +98,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"Köln"', script_text)
         self.assertIn('"München"', script_text)
         self.assertIn('"Dresden"', script_text)
-        self.assertIn('"icon_offset": Vector2(0.0, 23.0)', script_text)
+        self.assertIn('"icon_offset": Vector2(0.0, 52.0)', script_text)
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
         self.assertIn('load("res://assets/fonts/LiberationSerif-BoldItalic.ttf")', script_text)
         self.assertIn("var city_font := _city_label_font()", script_text)
@@ -332,6 +332,7 @@ class MapPanelContractTest(unittest.TestCase):
             '"id": "western_alps_massif"',
             '"id": "swiss_alps_massif"',
             '"id": "bavarian_tyrol_alps_massif"',
+            '"id": "german_alpine_edge_massif"',
             '"id": "austrian_alps_massif"',
             '"massif_segments": ALPINE_MASSIF_SEGMENTS',
             '"mountain_glyphs": [',
