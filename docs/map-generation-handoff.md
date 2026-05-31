@@ -206,6 +206,71 @@ uv run python -m map_pipeline.outline_sprites \
 
 The app loads `assets/sprites/city_landmarks/outlined/city_*.png`. Major city landmarks remain visible at the default zoom. Smaller town labels are intentionally hidden until zoom `1.20` to avoid the “too busy” failure mode.
 
+## Terrain and forest glyph generation workflow
+
+User feedback 2026-05-31: trees and land texture must move toward the stronger generated donor map language, but the production map must remain glyph-based and expandable. The first new terrain sheet was generated as one 4x4 sheet, then sliced into reusable map glyphs.
+
+Generated source:
+
+```text
+/home/alexey/.codex/generated_images/019e7af1-437a-70f1-9164-d2f7b34a9c81/ig_0023c5c793b5ea5e016a1c82b09f80819198e46012daa6c8cf.png
+```
+
+Project source copy:
+
+```text
+assets/map/glyphs/terrain_forest_sheet.png
+```
+
+This source sheet is excluded from Godot exports together with the other map pipeline source glyphs; runtime only needs `assets/map/germany_styled.png`.
+
+Prompt:
+
+```text
+Use case: stylized-concept
+Asset type: 1024x1024 game map sprite sheet for a Godot atlas map.
+Primary request: Create a single 4x4 sprite sheet of reusable map glyphs: large readable forest masses, mixed deciduous/conifer forest clusters, grassy land texture patches, meadow tufts, small rocky forest foothills. Each cell must contain exactly one centered glyph with generous padding.
+Style/medium: polished 16-bit RPG / pixel journey atlas, top-down fantasy travel map, warm European adventure-map palette, visually compatible with classic RPG map sprites. Similar density and readability to a hand-painted fantasy atlas, not GIS.
+Composition/framing: orthographic top-down/isometric map glyphs, no perspective horizon, no UI. Keep all objects inside their cells. Make the forest glyphs large and readable from mobile-map distance, not tiny icons.
+Color palette: warm olive grass, deep pine greens, yellow-green highlights, dark brown ink outlines, small beige stone accents only where needed.
+Materials/textures: hand-painted pixel-art foliage, clustered tree canopies, subtle ground texture patches with soft irregular edges.
+Text: none.
+Constraints: perfectly flat solid #ff00ff chroma-key background only; no shadows cast onto background; no gradients or texture in the background; do not use #ff00ff inside any glyph. No labels, no city buildings, no roads, no water, no mountains except tiny stones inside foothill forest glyphs. The sheet must be cleanly sliceable into 16 equal cells.
+```
+
+Post-processing:
+
+```bash
+uv run python -m map_pipeline.slice_terrain_forest_glyphs \
+  --sheet assets/map/glyphs/terrain_forest_sheet.png \
+  --out-dir assets/map/glyphs
+```
+
+Output files:
+
+- `atlas_forest_pine_dense.png`
+- `atlas_forest_mixed_large.png`
+- `atlas_forest_deciduous_dense.png`
+- `atlas_forest_pine_round.png`
+- `atlas_forest_mixed_wide.png`
+- `atlas_forest_pine_tall.png`
+- `atlas_forest_broadleaf_round.png`
+- `atlas_forest_mixed_tall.png`
+- `atlas_forest_pine_small.png`
+- `atlas_forest_mixed_small.png`
+- `atlas_land_grass_patch.png`
+- `atlas_land_tuft_patch.png`
+- `atlas_land_flower_meadow.png`
+- `atlas_land_rocky_meadow.png`
+- `atlas_forest_rocky_pine.png`
+- `atlas_forest_rocky_mixed.png`
+
+Composition:
+
+- `ATLAS_FOREST_MASSES` places the forest glyphs by explicit German region coordinates.
+- `ATLAS_LAND_DETAIL_PATCHES` places the land/meadow glyphs as a separate terrain layer under routes, details, city landmarks and transport markers.
+- `audit_geography_layers()` checks that forest glyph ids start with `atlas_forest_`, land detail ids start with `atlas_land_`, and all anchors remain inside the map bounds.
+
 ## Map rendering workflow
 
 Data source: local Natural Earth shapefiles under `data/natural_earth/`.

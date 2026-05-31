@@ -984,3 +984,30 @@ Pending visual debt:
 - Alpine massif art still needs separate recognizable Alps segments, not generic mountain decoration.
 
 Self-audit: still about `6.9/10`. This iteration records and slightly corrects the problem, but does not yet reach the requested donor-map decomposition quality.
+
+## Iteration 2026-05-31 21:12
+
+Implemented:
+
+- Used the `imagegen` skill to generate one 4x4 `terrain_forest_sheet.png` instead of separate forest/land requests.
+- Added reproducible slicing in `map_pipeline.slice_terrain_forest_glyphs`.
+- Sliced 16 reusable map glyphs:
+  - 12 `atlas_forest_*` glyphs for pine, mixed, deciduous and rocky forest masses;
+  - 4 `atlas_land_*` glyphs for grass, meadow and rocky land patches.
+- Replaced the old `forest_cluster_*` placements in `ATLAS_FOREST_MASSES` with the new large atlas forest glyphs.
+- Added `ATLAS_LAND_DETAIL_PATCHES` as a separate coordinate layer under forest/details/markers.
+- Updated export presets to exclude `assets/map/glyphs/**` from runtime payload; the final Web pck gzip dropped to about `5.7 MB` even after adding source glyph assets.
+- Documented the prompt, generated source, slicer command and output files in `docs/map-generation-handoff.md`.
+
+Checks:
+
+- `uv run python -m map_pipeline.compose_map`: regenerated `assets/map/germany_styled.png`.
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 20 tests OK, 2 skipped under plain Python where geo dependencies are unavailable.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract`: 15 tests OK.
+- Godot import/export completed; known nested-worktree and adb warnings only.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 5891071`, `Cache-Control: no-store`.
+- Playwright screenshots regenerated:
+  - `/tmp/cable-world-web-map/mobile-390x844-initial.png`
+  - `/tmp/cable-world-web-map/desktop-1280x800-initial.png`
+
+Self-audit: about `7.1/10`, still not `8/10`. Forest masses now look much more like real atlas glyphs and less like tiny dots. The weak part is land patches: they add life, but a few read as separate yellow blobs rather than fully integrated terrain. Alps also still need a better per-massif art pass before the map can honestly clear `8/10`.

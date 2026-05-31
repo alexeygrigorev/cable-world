@@ -20,8 +20,11 @@ class ExportPayloadContractTest(unittest.TestCase):
 
     def test_export_presets_exclude_source_only_sprite_assets(self) -> None:
         required_excludes = [
+            "assets/map/glyphs/**",
             "assets/map/glyphs/map_glyph_sheet.png",
             "assets/map/glyphs/map_glyph_sheet.png.import",
+            "assets/map/glyphs/terrain_forest_sheet.png",
+            "assets/map/glyphs/terrain_forest_sheet.png.import",
             "assets/map/massifs/**",
             "assets/sprites/icon_*.png",
             "assets/sprites/icon_*.png.import",

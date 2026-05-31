@@ -469,85 +469,96 @@ ATLAS_FOREST_MASSES = [
         "id": "lueneburg_heath",
         "label": "Lueneburg Heath",
         "clusters": [
-            ("forest_cluster_1", 10.02, 53.03, 118),
-            ("forest_cluster_4", 10.46, 52.88, 98),
-            ("forest_cluster_2", 9.58, 52.72, 78),
+            ("atlas_forest_pine_dense", 10.02, 53.03, 118),
+            ("atlas_forest_pine_round", 10.46, 52.88, 98),
+            ("atlas_forest_pine_small", 9.58, 52.72, 78),
         ],
     },
     {
         "id": "mecklenburg_lake_forests",
         "label": "Mecklenburg Lake District forests",
         "clusters": [
-            ("forest_cluster_2", 12.30, 53.52, 110),
-            ("forest_cluster_6", 12.80, 53.22, 88),
-            ("forest_cluster_3", 13.18, 53.70, 76),
+            ("atlas_forest_mixed_large", 12.30, 53.52, 110),
+            ("atlas_forest_broadleaf_round", 12.80, 53.22, 88),
+            ("atlas_forest_mixed_small", 13.18, 53.70, 76),
         ],
     },
     {
         "id": "spreewald_lausitz",
         "label": "Spreewald and Lausitz",
         "clusters": [
-            ("forest_cluster_5", 13.95, 51.86, 92),
-            ("forest_cluster_2", 14.38, 51.52, 82),
+            ("atlas_forest_mixed_wide", 13.95, 51.86, 92),
+            ("atlas_forest_deciduous_dense", 14.38, 51.52, 82),
         ],
     },
     {
         "id": "teutoburg_weser",
         "label": "Teutoburg and Weser uplands",
         "clusters": [
-            ("forest_cluster_3", 8.65, 52.08, 96),
-            ("forest_cluster_1", 9.36, 51.72, 78),
+            ("atlas_forest_mixed_tall", 8.65, 52.08, 96),
+            ("atlas_forest_pine_small", 9.36, 51.72, 78),
         ],
     },
     {
         "id": "sauerland_rothaar",
         "label": "Sauerland and Rothaar",
         "clusters": [
-            ("forest_cluster_4", 8.05, 51.18, 118),
-            ("forest_cluster_2", 8.52, 50.96, 82),
+            ("atlas_forest_rocky_mixed", 8.05, 51.18, 118),
+            ("atlas_forest_mixed_large", 8.52, 50.96, 82),
         ],
     },
     {
         "id": "eifel_ardennes_edge",
         "label": "Eifel and Ardennes edge",
         "clusters": [
-            ("forest_cluster_6", 6.52, 50.28, 118),
-            ("forest_cluster_1", 7.05, 50.10, 86),
+            ("atlas_forest_mixed_wide", 6.52, 50.28, 118),
+            ("atlas_forest_pine_dense", 7.05, 50.10, 86),
         ],
     },
     {
         "id": "spessart_odenwald",
         "label": "Spessart and Odenwald",
         "clusters": [
-            ("forest_cluster_5", 9.35, 50.03, 104),
-            ("forest_cluster_3", 8.82, 49.66, 92),
+            ("atlas_forest_deciduous_dense", 9.35, 50.03, 104),
+            ("atlas_forest_mixed_tall", 8.82, 49.66, 92),
         ],
     },
     {
         "id": "thuringian_forest",
         "label": "Thuringian Forest",
         "clusters": [
-            ("forest_cluster_2", 10.82, 50.74, 118),
-            ("forest_cluster_4", 11.36, 50.58, 88),
+            ("atlas_forest_rocky_pine", 10.82, 50.74, 118),
+            ("atlas_forest_pine_round", 11.36, 50.58, 88),
         ],
     },
     {
         "id": "franconian_swabian_uplands",
         "label": "Franconian and Swabian uplands",
         "clusters": [
-            ("forest_cluster_1", 10.55, 49.45, 92),
-            ("forest_cluster_5", 9.58, 48.62, 94),
-            ("forest_cluster_3", 11.42, 49.02, 78),
+            ("atlas_forest_pine_dense", 10.55, 49.45, 92),
+            ("atlas_forest_deciduous_dense", 9.58, 48.62, 94),
+            ("atlas_forest_mixed_tall", 11.42, 49.02, 78),
         ],
     },
     {
         "id": "upper_bavaria_foothills",
         "label": "Upper Bavaria foothill forests",
         "clusters": [
-            ("forest_cluster_2", 11.34, 48.02, 86),
-            ("forest_cluster_6", 12.15, 48.10, 84),
+            ("atlas_forest_rocky_mixed", 11.34, 48.02, 86),
+            ("atlas_forest_rocky_pine", 12.15, 48.10, 84),
         ],
     },
+]
+
+ATLAS_LAND_DETAIL_PATCHES = [
+    ("atlas_land_grass_patch", 8.95, 53.38, 210),
+    ("atlas_land_tuft_patch", 11.20, 53.28, 178),
+    ("atlas_land_flower_meadow", 7.70, 52.54, 184),
+    ("atlas_land_rocky_meadow", 12.25, 52.22, 168),
+    ("atlas_land_grass_patch", 9.95, 51.34, 190),
+    ("atlas_land_tuft_patch", 13.72, 50.62, 180),
+    ("atlas_land_flower_meadow", 8.72, 49.16, 188),
+    ("atlas_land_rocky_meadow", 10.52, 48.74, 174),
 ]
 
 ATLAS_DETAIL_KIND_SCALE = {
@@ -640,10 +651,16 @@ def audit_geography_layers():
     for forest_mass in ATLAS_FOREST_MASSES:
         for glyph_name, lon, lat, width in forest_mass["clusters"]:
             _audit_point(errors, bounds_poly, lon, lat, f"forest:{forest_mass['id']}:{glyph_name}")
-            if not str(glyph_name).startswith("forest_cluster_"):
+            if not str(glyph_name).startswith("atlas_forest_"):
                 errors.append(f"forest mass {forest_mass['id']} uses non-forest glyph {glyph_name}")
             if width < 70:
                 errors.append(f"forest mass {forest_mass['id']} cluster {glyph_name} is too small to read")
+    for glyph_name, lon, lat, width in ATLAS_LAND_DETAIL_PATCHES:
+        _audit_point(errors, bounds_poly, lon, lat, f"land detail:{glyph_name}")
+        if not str(glyph_name).startswith("atlas_land_"):
+            errors.append(f"land detail {glyph_name} must use atlas_land_* glyphs")
+        if width < 150:
+            errors.append(f"land detail {glyph_name} is too small to read as terrain")
 
     errors.extend(audit_runtime_landmark_placement(country_geometries=country_geometries))
     return errors
@@ -1150,6 +1167,15 @@ def _draw_atlas_forest_masses(canvas, proj, land_mask):
             display_width = max(FOREST_MASS_MIN_WIDTH, int(width * FOREST_MASS_VISUAL_SCALE))
             _draw_glyph_center(layer, proj, glyph_name, lon, lat, display_width)
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), land_mask)
+    layer.putalpha(alpha)
+    canvas.alpha_composite(layer)
+
+
+def _draw_atlas_land_detail_patches(canvas, proj, germany_mask):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    for glyph_name, lon, lat, width in ATLAS_LAND_DETAIL_PATCHES:
+        _draw_glyph_center(layer, proj, glyph_name, lon, lat, width)
+    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
     layer.putalpha(alpha)
     canvas.alpha_composite(layer)
 
@@ -1971,6 +1997,7 @@ def main():
     _draw_ground_texture(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
     _draw_named_water_bodies(canvas, proj, germany_mask)
+    _draw_atlas_land_detail_patches(canvas, proj, germany_mask)
     _draw_atlas_forest_masses(canvas, proj, land_mask)
     _draw_atlas_routes(canvas, proj, germany_mask)
     _draw_atlas_details(canvas, proj)
