@@ -341,3 +341,30 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. This removes a technical quality blocker: stretched geometry and source upscaling at `150%`. It does not yet solve the artistic target for Alps/relief glyphs or the overall `8/10+` visual density.
+
+## Iteration 2026-05-31 16:41
+
+Implemented:
+
+- Expanded the Alps relief from a Germany-edge patch into a cross-border band spanning France, Switzerland, Italy and Austria inside the current extended map bounds.
+- Added explicit `ridge_bands` for `main_alpine_wall` and `northern_alpine_foothills`, rendered before the individual mountain glyphs.
+- Replaced the first geometric/sawtooth ridge attempt with a softer continuous ridge layer so the Alps read as one mountain mass instead of isolated pasted icons.
+- Redistributed `alps_range_*` and `alps_peak_*` glyphs across the Alpine arc.
+- Rechecked the active zoom requirement: runtime zoom is capped at `50%..150%`, the zoom percentage is visible on screen, and the base map source remains `1932x3072` so `150%` does not upscale the base texture above its source pixels in the tested mobile/desktop views.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about 453 KB.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows northern Germany plus München/Alps reachable in the same extended map.
+- `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` shows the `150%` zoom cap and scaled glyph/marker presentation.
+- `/tmp/cable-world-web-map/desktop-1280x800-initial.png` shows the same map without the previous texture stretch.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 12 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. The Alps are now structurally closer to the requested direction, but this is not the final 8/10+ art pass. The next quality step remains a proper high-resolution terrain glyph set and relief/lake/city-position audit, with source assets sized for the `150%` maximum.

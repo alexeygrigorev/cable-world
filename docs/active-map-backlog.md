@@ -43,6 +43,7 @@
 - [x] Сделать стартовый zoom адаптивным: portrait остается крупным, landscape/desktop не получает дополнительный `1.10` zoom и меньше режет ориентиры у краев.
 - [ ] #62 Перевести рельеф из декоративных гор в точные переиспользуемые overlay-слои: Alps, Harz, Black Forest, Erzgebirge, Bavarian Forest и другие реальные массивы. Германия начата; нужно расширить и проверить слой по Европе.
 - [x] Начать настройку масштаба/якорей terrain glyphs через явные `mountain_glyphs`: Альпы, Harz, Erzgebirge, Black Forest и Bavarian Forest больше не выбираются hash-ом.
+- [x] Сделать первый непрерывный cross-border pass для Альп: explicit `main_alpine_wall` и `northern_alpine_foothills` ridge bands плюс перераспределенные `alps_range_*` glyphs вместо короткого обрубленного массива только у юга Германии.
 - [ ] Проверить и откалибровать `mountain_glyphs` по реальным relief extents: Альпы должны начинаться/заканчиваться по настоящему массиву, Harz/Erzgebirge/Black Forest/Bavarian Forest не должны расползаться за свои области.
 - [ ] #64 Провести terrain accuracy audit текущей Германии: убрать ложные большие горы у Hamburg/севера и проверить, что все видимые горы соответствуют реальности.
 - [ ] #63 Спроектировать Europe map pipeline для следующих стран и регионов: France, Spain, Italy, Switzerland, Austria, Germany neighbors, Scandinavia, Finland, Baltics, Russia, Belarus, Ukraine до украинских гор, Turkey; рельефные слои должны продолжаться через границы.
@@ -56,5 +57,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending map texture aspect/resolution iteration.
+- Последний map commit на момент обновления backlog: pending Alpine ridge-band iteration.
 - Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, отдельные high-quality mountain glyphs for Alps/etc. и дальнейшая Европа через explicit layers.

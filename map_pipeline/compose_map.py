@@ -57,13 +57,36 @@ RELIEF_REGIONS = [
         "fill": (58, 112, 63, 112),
         "blur": 20,
         "extends_to": ["France", "Switzerland", "Italy", "Austria", "Slovenia"],
-        "points": [(9.45, 47.85), (10.5, 47.1), (12.1, 46.95), (13.35, 47.25), (13.9, 48.0), (11.5, 48.35)],
-        "trees": [(10.0, 48.2, 44), (11.0, 48.05, 50), (12.35, 48.0, 46)],
+        "points": [
+            (5.95, 46.45), (7.15, 46.05), (8.75, 45.78), (10.35, 45.82),
+            (12.05, 46.02), (14.05, 46.38), (16.05, 46.92), (16.25, 47.70),
+            (14.40, 48.18), (12.05, 48.30), (10.10, 48.05), (8.35, 47.55),
+            (6.65, 47.18),
+        ],
+        "trees": [(8.45, 47.35, 50), (10.0, 48.2, 44), (11.0, 48.05, 50), (12.35, 48.0, 46), (14.15, 47.75, 44)],
+        "ridge_bands": [
+            {
+                "id": "main_alpine_wall",
+                "points": [(6.25, 46.62), (7.45, 46.34), (8.85, 46.23), (10.25, 46.30), (11.70, 46.43), (13.20, 46.66), (14.80, 47.00), (15.80, 47.30)],
+                "height": 82,
+                "step": 42,
+            },
+            {
+                "id": "northern_alpine_foothills",
+                "points": [(8.00, 47.28), (9.55, 47.08), (10.95, 47.12), (12.35, 47.32), (13.75, 47.55)],
+                "height": 50,
+                "step": 48,
+            },
+        ],
         "mountain_glyphs": [
-            ("alps_range_1", 10.05, 47.45, 210),
-            ("alps_range_3", 11.20, 47.33, 265),
-            ("alps_range_2", 12.38, 47.43, 220),
-            ("alps_peak_2", 13.15, 47.62, 120),
+            ("alps_range_3", 7.20, 46.72, 235),
+            ("alps_range_1", 8.65, 46.60, 265),
+            ("alps_range_3", 10.05, 46.72, 285),
+            ("alps_range_2", 11.45, 46.88, 275),
+            ("alps_range_1", 12.85, 47.08, 255),
+            ("alps_range_3", 14.30, 47.28, 245),
+            ("alps_peak_2", 10.95, 47.48, 130),
+            ("alps_peak_1", 13.15, 47.62, 125),
         ],
         "mountains": [],
     },
@@ -371,6 +394,8 @@ def _draw_terrain(canvas, proj, land_mask):
     for region in RELIEF_REGIONS:
         for lon, lat, size in region.get("trees", []):
             _draw_tree_cluster(decor, proj, lon, lat, size)
+        for ridge_band in region.get("ridge_bands", []):
+            _draw_alpine_ridge_band(decor, proj, ridge_band)
         for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):
             _draw_glyph_center(decor, proj, glyph_name, lon, lat, width)
         for lon, lat, size in region.get("mountains", []):
@@ -577,6 +602,44 @@ def _draw_tree_cluster(canvas, proj, lon, lat, radius):
     glyphs = ["forest_cluster_1", "forest_cluster_2", "forest_cluster_3", "forest_cluster_4", "forest_cluster_5", "forest_cluster_6"]
     glyph = glyphs[_stable_hash(round(lon, 2), round(lat, 2), int(radius)) % len(glyphs)]
     _draw_glyph_at(canvas, glyph, x, y, radius * 2.0)
+
+
+def _draw_alpine_ridge_band(canvas, proj, ridge_band):
+    points = [_project_point(proj, lon, lat) for lon, lat in ridge_band["points"]]
+    if len(points) < 2:
+        return
+
+    ridge_layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ridge_layer)
+    height = int(ridge_band.get("height", 72) * RENDER_SCALE)
+    lower_points = [(x, y + int(height * 0.58)) for x, y in reversed(points)]
+    upper_points = [(x, y - int(height * 0.32)) for x, y in points]
+    band_polygon = upper_points + lower_points
+    draw.polygon(band_polygon, fill=(56, 86, 55, 76))
+    draw.line(points, fill=(74, 75, 49, 122), width=max(2, int(height * 0.34)), joint="curve")
+    draw.line([(x, y - int(height * 0.12)) for x, y in points], fill=(134, 124, 74, 92), width=max(2, int(height * 0.12)), joint="curve")
+    draw.line([(x, y + int(height * 0.40)) for x, y in points], fill=(39, 67, 48, 74), width=max(2, int(height * 0.20)), joint="curve")
+
+    step = max(18 * RENDER_SCALE, int(ridge_band.get("step", 44) * RENDER_SCALE))
+    for start, end in zip(points, points[1:]):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        segment_length = max(1.0, math.hypot(dx, dy))
+        count = max(1, int(segment_length / step))
+        normal_x = -dy / segment_length
+        normal_y = dx / segment_length
+        for index in range(count):
+            t = (index + 0.35) / count
+            cx = start[0] + dx * t
+            cy = start[1] + dy * t
+            mark = int(height * (0.10 + 0.02 * ((index + count) % 3)))
+            left = (int(cx - dx / segment_length * mark * 0.95), int(cy - dy / segment_length * mark * 0.95))
+            peak = (int(cx - normal_x * mark * 1.35), int(cy - normal_y * mark * 1.35))
+            right = (int(cx + dx / segment_length * mark * 0.95), int(cy + dy / segment_length * mark * 0.95))
+            draw.line([left, peak, right], fill=(54, 48, 33, 90), width=max(1, RENDER_SCALE), joint="curve")
+
+    ridge_layer = ridge_layer.filter(ImageFilter.GaussianBlur(0.30 * RENDER_SCALE))
+    canvas.alpha_composite(ridge_layer)
 
 
 def _forest_sprite(radius):
