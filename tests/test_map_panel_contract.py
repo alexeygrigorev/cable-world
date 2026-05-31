@@ -156,7 +156,7 @@ class MapPanelContractTest(unittest.TestCase):
             "MOUSE_BUTTON_WHEEL_UP",
             "MOUSE_BUTTON_WHEEL_DOWN",
             "const PAN_DRAG_SCALE := 1.0",
-            "const TOUCH_PAN_DRAG_SCALE := 0.34",
+            "const TOUCH_PAN_DRAG_SCALE := 1.0",
             "func _pan_by(screen_delta: Vector2) -> void:",
             "pan_offset += screen_delta * PAN_DRAG_SCALE",
             "func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:",

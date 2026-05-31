@@ -2,6 +2,7 @@ extends SceneTree
 
 const TEST_SCRIPT_PATHS: Array[String] = [
 	"res://tests/godot_runtime_smoke.gd",
+	"res://tests/godot_runtime_map_panel.gd",
 ]
 const TEST_SCRIPTS_ENV: String = "MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS"
 
@@ -10,8 +11,14 @@ var passed_count: int = 0
 
 
 func _init() -> void:
+	call_deferred("_run_all_tests")
+
+
+func _run_all_tests() -> void:
 	for test_script_path in _test_script_paths():
 		_run_test_script(test_script_path)
+
+	await process_frame
 
 	if failed_count > 0:
 		push_error("Godot runtime tests failed: %d failed, %d passed." % [failed_count, passed_count])
