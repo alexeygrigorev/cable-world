@@ -35,9 +35,14 @@ const CONTENT_WIDTH_GUARD := 2.0
 @onready var collection_button: Button = %CollectionButton
 @onready var journal_button: Button = %JournalButton
 @onready var settings_button: Button = %SettingsButton
+@onready var root_margins: MarginContainer = $Отступы
+@onready var app_title_label: Label = $Отступы/Оболочка/Заголовок
+@onready var app_subtitle_label: Label = $Отступы/Оболочка/Подзаголовок
+@onready var navigation_area: Control = $Отступы/Оболочка/НавигацияОбласть
 @onready var navigation_scroll: ScrollContainer = %НавигацияПрокрутка
 @onready var current_section_label: Label = %CurrentSectionLabel
 @onready var map_section: VBoxContainer = %MapSection
+@onready var map_title_label: Label = $Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/MapSection/КартаЗаголовок
 @onready var list_section: VBoxContainer = %ListSection
 @onready var card_section: VBoxContainer = %CardSection
 @onready var object_mode_section: VBoxContainer = %ObjectModeSection
@@ -48,6 +53,7 @@ const CONTENT_WIDTH_GUARD := 2.0
 @onready var journal_section: VBoxContainer = %JournalSection
 @onready var settings_section: VBoxContainer = %SettingsSection
 @onready var content_viewport: Control = $Отступы/Оболочка/Содержимое/ContentViewport
+@onready var content_panel: PanelContainer = $Отступы/Оболочка/Содержимое
 @onready var content_scroll: ScrollContainer = %ContentScroll
 @onready var sections_container: VBoxContainer = $Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции
 @onready var collection_rows: VBoxContainer = %CollectionRows
@@ -66,6 +72,7 @@ var app_settings: RefCounted = AppSettings.new()
 var collection_stats_script: Resource = null
 var achievements_script: Resource = null
 var orientation_option_is_refreshing: bool = false
+var map_list_toggle_button: Button = null
 
 func _ready() -> void:
 	collection_stats_script = load(COLLECTION_STATS_SCRIPT_PATH) if ResourceLoader.exists(COLLECTION_STATS_SCRIPT_PATH) else null
@@ -139,13 +146,12 @@ func _ready() -> void:
 	map_panel.set_objects(objects)
 	map_panel.object_selected.connect(_on_map_object_selected)
 	content_viewport.resized.connect(_sync_content_width)
+	_create_map_list_toggle()
 
 	_configure_orientation_setting()
 	_configure_list_filters()
 	_sync_content_width()
 	_refresh_collection()
-	if not objects.is_empty():
-		_select_object(0, false)
 	_show_section("map")
 
 func set_collection_stats(next_stats: Dictionary) -> void:
@@ -603,15 +609,63 @@ func _show_section(section_name: String) -> void:
 
 	var title: String = section_titles.get(section_name, section_name)
 	current_section_label.text = "Раздел: %s" % title
+	_apply_map_focus_chrome(section_name == "map")
 	_sync_content_width()
 	_scroll_navigation_to_current(section_name)
+
+func _create_map_list_toggle() -> void:
+	map_list_toggle_button = Button.new()
+	map_list_toggle_button.name = "MapListToggle"
+	map_list_toggle_button.text = "☰"
+	map_list_toggle_button.tooltip_text = "Открыть список объектов"
+	map_list_toggle_button.custom_minimum_size = Vector2(52.0, 52.0)
+	map_list_toggle_button.size = Vector2(52.0, 52.0)
+	map_list_toggle_button.anchor_left = 1.0
+	map_list_toggle_button.anchor_right = 1.0
+	map_list_toggle_button.offset_left = -68.0
+	map_list_toggle_button.offset_right = -16.0
+	map_list_toggle_button.offset_top = 16.0
+	map_list_toggle_button.offset_bottom = 68.0
+	map_list_toggle_button.add_theme_font_size_override("font_size", 26)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(1.0, 0.98, 0.90, 0.92)
+	style.border_color = Color("#31544d")
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	map_list_toggle_button.add_theme_stylebox_override("normal", style)
+	map_list_toggle_button.add_theme_stylebox_override("hover", style)
+	map_list_toggle_button.add_theme_stylebox_override("pressed", style)
+	map_list_toggle_button.pressed.connect(func() -> void: _show_section("list"))
+	add_child(map_list_toggle_button)
+
+func _apply_map_focus_chrome(is_map: bool) -> void:
+	app_title_label.visible = not is_map
+	app_subtitle_label.visible = not is_map
+	navigation_area.visible = not is_map
+	current_section_label.visible = false
+	map_title_label.visible = false
+	selected_object_label.visible = false
+	if map_list_toggle_button != null:
+		map_list_toggle_button.visible = is_map
+
+	var margin := 0 if is_map else 12
+	root_margins.add_theme_constant_override("margin_left", margin)
+	root_margins.add_theme_constant_override("margin_top", margin)
+	root_margins.add_theme_constant_override("margin_right", margin)
+	root_margins.add_theme_constant_override("margin_bottom", margin)
+	map_section.add_theme_constant_override("separation", 0 if is_map else 10)
+
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(1.0, 1.0, 1.0, 0.0) if is_map else Color("#f7f3e7")
+	panel_style.border_color = Color(1.0, 1.0, 1.0, 0.0) if is_map else Color("#6f7d67")
+	panel_style.set_border_width_all(0 if is_map else 2)
+	panel_style.set_corner_radius_all(0 if is_map else 8)
+	content_panel.add_theme_stylebox_override("panel", panel_style)
 
 func _sync_content_width() -> void:
 	if content_viewport == null or content_scroll == null or sections_container == null:
 		return
 	var content_width: float = max(0.0, content_viewport.size.x - CONTENT_WIDTH_GUARD)
-	content_scroll.position = Vector2.ZERO
-	content_scroll.size = content_viewport.size
 	content_scroll.scroll_horizontal = 0
 	content_scroll.set_deferred("scroll_horizontal", 0)
 	sections_container.custom_minimum_size.x = content_width

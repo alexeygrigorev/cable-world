@@ -9,18 +9,33 @@ class OfflineMapLayer:
 	var pan_offset := Vector2.ZERO
 	var zoom := 1.0
 	var geo_bounds: Dictionary = {}
+	var map_scope := "germany"
+	var _germany_texture: Texture2D = null
+	const CITY_LABELS := [
+		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city"},
+		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital"},
+		{"name": "Rostock", "coordinates": Vector2(12.0991, 54.0924), "kind": "city"},
+		{"name": "Koeln", "coordinates": Vector2(6.9603, 50.9375), "kind": "city"},
+		{"name": "Muenchen", "coordinates": Vector2(11.5820, 48.1351), "kind": "city"},
+	]
+	const TERRAIN_LABELS := [
+		{"name": "Harz", "coordinates": Vector2(10.56, 51.80)},
+		{"name": "Zugspitze", "coordinates": Vector2(10.99, 47.43)},
+		{"name": "Alps", "coordinates": Vector2(11.70, 47.12)},
+	]
 
 	func _draw() -> void:
 		var rect := Rect2(Vector2.ZERO, size)
-		draw_rect(rect, Color("#dfe8e2"))
-		_draw_graticule()
+		draw_rect(rect, Color("#c8dce8"))
 		_draw_land_mass()
-		_draw_place_labels()
-		_draw_scale_bar()
-		draw_rect(rect, Color("#2f4b45"), false, 2.0)
+		if _germany_texture == null:
+			_draw_graticule()
 
 	func _map_point(point: Vector2) -> Vector2:
 		return pan_offset + point * zoom
+
+	func map_base_size() -> Vector2:
+		return _map_base_size_for_viewport(size, geo_bounds)
 
 	func _draw_graticule() -> void:
 		if geo_bounds.is_empty():
@@ -56,60 +71,77 @@ class OfflineMapLayer:
 	func _draw_land_mass() -> void:
 		if geo_bounds.is_empty() or size.x <= 0.0 or size.y <= 0.0:
 			return
-		var germany_outline := [
-			Vector2(7.4, 54.9), Vector2(9.8, 54.8), Vector2(14.0, 53.7),
-			Vector2(14.9, 51.1), Vector2(13.2, 50.0), Vector2(12.6, 48.3),
-			Vector2(10.2, 47.2), Vector2(8.1, 47.6), Vector2(6.1, 49.0),
-			Vector2(6.0, 51.4), Vector2(7.4, 54.9),
-		]
-		var points: PackedVector2Array = []
-		for coordinates in germany_outline:
-			points.append(_geo_to_screen(coordinates))
-		if points.size() >= 3:
-			draw_colored_polygon(points, Color("#f3edd2"))
-			draw_polyline(points, Color("#7b8a62"), 2.0, true)
-		var route_line := [
-			Vector2(13.59, 52.52), Vector2(11.10, 51.75),
-			Vector2(9.18, 48.78), Vector2(11.02, 47.42),
-		]
-		var route_points: PackedVector2Array = []
-		for coordinates in route_line:
-			route_points.append(_geo_to_screen(coordinates))
-		if route_points.size() >= 2:
-			draw_polyline(route_points, Color("#e0a934"), 3.0, true)
-
-	func _draw_place_labels() -> void:
-		if geo_bounds.is_empty():
+		if map_scope != "germany":
 			return
-		var places := [
-			{"title": "Берлин", "coordinates": Vector2(13.405, 52.52)},
-			{"title": "Гарц", "coordinates": Vector2(11.04, 51.75)},
-			{"title": "Штутгарт", "coordinates": Vector2(9.18, 48.78)},
-			{"title": "Цугшпитце", "coordinates": Vector2(11.02, 47.42)},
-		]
-		for place in places:
-			var position := _geo_to_screen(place["coordinates"])
-			if position.x < -20.0 or position.x > size.x + 20.0 or position.y < -20.0 or position.y > size.y + 20.0:
-				continue
-			draw_circle(position, 4.0, Color("#31544d"))
-			draw_string(
-				get_theme_default_font(),
-				position + Vector2(7.0, -6.0),
-				str(place["title"]),
-				HORIZONTAL_ALIGNMENT_LEFT,
-				120.0, 12,
-				Color("#263b36")
-			)
+		if _germany_texture == null:
+			_germany_texture = load("res://assets/map/germany_styled.png")
+		if _germany_texture == null:
+			return
+		var tex_rect := Rect2(_map_point(Vector2.ZERO), map_base_size() * zoom)
+		draw_texture_rect(_germany_texture, tex_rect, false)
+		draw_rect(tex_rect, Color(0.93, 0.82, 0.55, 0.10), true)
+		_draw_landmark_labels()
+
+	func _draw_landmark_labels() -> void:
+		var font := get_theme_default_font()
+		for label_data in CITY_LABELS:
+			_draw_city_label(font, label_data)
+		for label_data in TERRAIN_LABELS:
+			_draw_terrain_label(font, label_data)
+
+	func _draw_city_label(font: Font, label_data: Dictionary) -> void:
+		var position := _geo_to_screen(label_data["coordinates"])
+		var is_capital := str(label_data.get("kind", "")) == "capital"
+		var dot_radius := (5.0 if is_capital else 4.0) * zoom
+		var label_size := 18 if is_capital else 15
+		draw_circle(position, dot_radius + 2.0, Color(0.95, 0.80, 0.40, 0.84))
+		draw_circle(position, dot_radius, Color("#2a1f16"))
+		var text_pos := position + Vector2(9.0, -7.0) * zoom
+		_draw_label_text(font, str(label_data["name"]), text_pos, label_size, Color("#f6df9b"), Color(0.11, 0.07, 0.03, 0.90))
+
+	func _draw_terrain_label(font: Font, label_data: Dictionary) -> void:
+		var position := _geo_to_screen(label_data["coordinates"])
+		var text_pos := position + Vector2(7.0, -5.0) * zoom
+		_draw_label_text(font, str(label_data["name"]), text_pos, 14, Color("#efe2bd"), Color(0.12, 0.08, 0.04, 0.78))
+
+	func _draw_label_text(font: Font, text: String, position: Vector2, font_size: int, text_color: Color, shadow_color: Color) -> void:
+		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
+		var shadow_offset := Vector2(1.7, 1.7)
+		draw_string(font, position + Vector2(-1.3, 0.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
+		draw_string(font, position + Vector2(1.3, 0.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
+		draw_string(font, position + Vector2(0.0, -1.3), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
+		draw_string(font, position + Vector2(0.0, 1.3), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
+		draw_string(font, position + shadow_offset, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
+		draw_string(font, position, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, text_color)
 
 	func _geo_to_screen(coordinates: Vector2) -> Vector2:
-		return _map_point(_project_coordinates(coordinates, geo_bounds, size))
+		return _map_point(_project_coordinates(coordinates, geo_bounds, map_base_size()))
+
+	static func _map_base_size_for_viewport(viewport_size: Vector2, bounds: Dictionary) -> Vector2:
+		if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or bounds.is_empty():
+			return viewport_size
+
+		var aspect := _projected_aspect(bounds)
+		var viewport_aspect := viewport_size.x / viewport_size.y
+		if viewport_aspect > aspect:
+			return Vector2(viewport_size.x, viewport_size.x / aspect)
+		return Vector2(viewport_size.y * aspect, viewport_size.y)
+
+	static func _projected_aspect(bounds: Dictionary) -> float:
+		var min_longitude: float = float(bounds["min_longitude"])
+		var max_longitude: float = float(bounds["max_longitude"])
+		var min_latitude: float = float(bounds["min_latitude"])
+		var max_latitude: float = float(bounds["max_latitude"])
+		var longitude_span: float = max(0.000001, deg_to_rad(max_longitude - min_longitude))
+		var min_mercator_y: float = _mercator_y(min_latitude)
+		var max_mercator_y: float = _mercator_y(max_latitude)
+		var mercator_span: float = max(0.000001, max_mercator_y - min_mercator_y)
+		return longitude_span / mercator_span
 
 	static func _project_coordinates(coordinates: Vector2, bounds: Dictionary, map_size: Vector2) -> Vector2:
 		if bounds.is_empty():
 			return Vector2.ZERO
 
-		var marker_size := Vector2(44.0, 48.0)
-		var map_padding := 24.0
 		var min_longitude: float = float(bounds["min_longitude"])
 		var max_longitude: float = float(bounds["max_longitude"])
 		var min_latitude: float = float(bounds["min_latitude"])
@@ -120,10 +152,7 @@ class OfflineMapLayer:
 		var mercator_span: float = max(0.000001, max_mercator_y - min_mercator_y)
 		var x_ratio: float = (coordinates.x - min_longitude) / longitude_span
 		var y_ratio: float = (max_mercator_y - _mercator_y(coordinates.y)) / mercator_span
-		return Vector2(
-			map_padding + x_ratio * max(1.0, map_size.x - marker_size.x - map_padding * 2.0),
-			map_padding + y_ratio * max(1.0, map_size.y - marker_size.y - map_padding * 2.0)
-		)
+		return Vector2(x_ratio * map_size.x, y_ratio * map_size.y)
 
 	static func _mercator_y(latitude: float) -> float:
 		var clamped_latitude: float = clamp(latitude, -85.0, 85.0)
@@ -131,21 +160,48 @@ class OfflineMapLayer:
 		return log(tan(PI / 4.0 + radians / 2.0))
 
 const MARKER_SIZE := Vector2(44.0, 44.0)
-const MAP_MIN_HEIGHT := 140.0
-const MAP_VIEW_HEIGHT := 200.0
-const MAP_LANDSCAPE_MIN_HEIGHT := 100.0
+const ICON_MARKER_SIZE := Vector2(52.0, 52.0)
+const MAP_MIN_HEIGHT := 360.0
+const MAP_VIEW_HEIGHT := 720.0
+const MAP_LANDSCAPE_MIN_HEIGHT := 320.0
 const MAP_PADDING := 24.0
 const MARKER_SPREAD_DISTANCE := 58.0
 const MARKER_SPREAD_STEP := 42.0
+const MARKER_LOCAL_CLUSTER_DISTANCE := 44.0
+const MARKER_LOCAL_CLUSTER_RADIUS := 28.0
+const OBJECT_CLUSTER_ZOOM_THRESHOLD := 1.45
+const OBJECT_CLUSTER_SCREEN_DISTANCE := 118.0
 const SELECTED_NAME_LIMIT := 42
 const MAP_FILTER_ALL := "all"
 const MAP_FILTER_VISITED := "visited"
 const MAP_FILTER_NOT_VISITED := "not_visited"
 const MAP_SCOPE_GERMANY := "germany"
 const MAP_SCOPE_ALL := "all"
-const MIN_ZOOM := 0.45
+const TRANSPORT_TYPE_ICON := {
+	"cable_gondola": "icon_cable_gondola",
+	"cable_aerial_tram": "icon_aerial_tram",
+	"cable_urban": "icon_cable_gondola",
+	"cable_tourist": "icon_cable_gondola",
+	"funicular_classic": "icon_funicular",
+	"funicular_water": "icon_funicular",
+	"funicular_modern": "icon_funicular",
+	"rail_cog": "icon_cog_railway",
+	"rail_mountain": "icon_cog_railway",
+	"rail_suspended": "icon_suspended_monorail",
+	"elevator_vertical": "icon_elevator",
+	"elevator_inclined": "icon_elevator",
+	"elevator_panoramic": "icon_elevator",
+	"suspended_train": "icon_suspended_monorail",
+	"monorail": "icon_suspended_monorail",
+	"suspended_ferry": "icon_suspended_monorail",
+	"escalator_unusual": "icon_station",
+	"special_transport_system": "icon_station",
+	"unique_engineering_object": "icon_station",
+}
+const MIN_ZOOM := 1.0
 const MAX_ZOOM := 4.0
 const ZOOM_STEP := 1.25
+const DEFAULT_ZOOM := 1.10
 const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
 const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
@@ -170,21 +226,23 @@ var drag_distance := 0.0
 var suppress_next_marker_press := false
 var active_touch_index := -1
 var last_touch_positions: Dictionary = {}
+var marker_icons: Dictionary = {}
+var map_view_initialized := false
 
 func _ready() -> void:
 	custom_minimum_size.y = max(custom_minimum_size.y, MAP_MIN_HEIGHT)
 	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color("#f7f3e7")
-	panel_style.border_color = Color("#6f7d67")
-	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(8)
+	panel_style.bg_color = Color(1.0, 1.0, 1.0, 0.0)
+	panel_style.border_color = Color(1.0, 1.0, 1.0, 0.0)
+	panel_style.set_border_width_all(0)
+	panel_style.set_corner_radius_all(0)
 	add_theme_stylebox_override("panel", panel_style)
 
 	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 6)
-	margin.add_theme_constant_override("margin_top", 6)
-	margin.add_theme_constant_override("margin_right", 6)
-	margin.add_theme_constant_override("margin_bottom", 6)
+	margin.add_theme_constant_override("margin_left", 0)
+	margin.add_theme_constant_override("margin_top", 0)
+	margin.add_theme_constant_override("margin_right", 0)
+	margin.add_theme_constant_override("margin_bottom", 0)
 	add_child(margin)
 
 	var rows := VBoxContainer.new()
@@ -227,6 +285,7 @@ func _ready() -> void:
 
 	var toolbar := HBoxContainer.new()
 	toolbar.name = "ПанельИнструментов"
+	toolbar.visible = false
 	toolbar.add_theme_constant_override("separation", 6)
 	toolbar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rows.add_child(toolbar)
@@ -246,13 +305,19 @@ func _ready() -> void:
 	zoom_controls = HBoxContainer.new()
 	zoom_controls.name = "МасштабКарты"
 	zoom_controls.add_theme_constant_override("separation", 6)
-	toolbar.add_child(zoom_controls)
+	zoom_controls.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	zoom_controls.offset_left = -164.0
+	zoom_controls.offset_top = 12.0
+	zoom_controls.offset_right = -12.0
+	zoom_controls.offset_bottom = 60.0
+	map_layer.add_child(zoom_controls)
 	_add_zoom_button(zoom_controls, "-", 1.0 / ZOOM_STEP)
 	_add_zoom_button(zoom_controls, "+", ZOOM_STEP)
 	_add_fit_button(zoom_controls)
 
 	_refresh_markers()
 	call_deferred("_sync_map_canvas_height")
+	call_deferred("_reset_map_view")
 
 func set_objects(next_objects: Array[Dictionary]) -> void:
 	objects = next_objects
@@ -293,12 +358,14 @@ func _refresh_markers() -> void:
 
 		var marker := Button.new()
 		marker.name = "Маркер%d" % (index + 1)
-		marker.custom_minimum_size = MARKER_SIZE
-		marker.size = MARKER_SIZE
+		marker.custom_minimum_size = ICON_MARKER_SIZE
+		marker.size = ICON_MARKER_SIZE
 		marker.toggle_mode = true
 		marker.focus_mode = Control.FOCUS_ALL
 		marker.mouse_filter = Control.MOUSE_FILTER_PASS
 		marker.add_theme_font_size_override("font_size", 18)
+		marker.icon = _icon_for_object(objects[index])
+		marker.expand_icon = true
 		marker.tooltip_text = "Выбрать объект: %s" % objects[index].get("name", "без названия")
 		marker.set_meta("object_index", index)
 		marker.gui_input.connect(_on_marker_gui_input)
@@ -319,13 +386,13 @@ func _sync_map_canvas_height() -> void:
 
 	var target_height := MAP_VIEW_HEIGHT
 	if size.y > 0.0:
-		var available_height: float = max(1.0, size.y - 12.0)
+		var available_height: float = max(1.0, size.y)
 		if size.x > size.y:
-			target_height = max(MAP_LANDSCAPE_MIN_HEIGHT, min(MAP_LANDSCAPE_MIN_HEIGHT, available_height))
+			target_height = max(MAP_LANDSCAPE_MIN_HEIGHT, available_height)
 		else:
-			target_height = max(MAP_LANDSCAPE_MIN_HEIGHT, min(MAP_VIEW_HEIGHT, available_height))
+			target_height = max(MAP_LANDSCAPE_MIN_HEIGHT, available_height)
 	map_layer.custom_minimum_size.y = target_height
-	custom_minimum_size.y = target_height + 14.0
+	custom_minimum_size.y = target_height
 
 func _on_map_layer_resized() -> void:
 	map_layer.queue_redraw()
@@ -334,7 +401,10 @@ func _on_map_layer_resized() -> void:
 	if empty_state_label != null:
 		empty_state_label.size = map_layer.size
 	_update_map_reference_data()
-	_apply_map_transform()
+	if not map_view_initialized:
+		_reset_map_view()
+	else:
+		_apply_map_transform()
 	_position_markers()
 
 func _position_markers() -> void:
@@ -345,7 +415,8 @@ func _position_markers() -> void:
 	if bounds.is_empty():
 		return
 
-	var placed_positions: Array[Vector2] = []
+	var clusters := _marker_clusters(bounds)
+	var base_positions: Array[Vector2] = []
 
 	for marker_number in marker_buttons.size():
 		var marker := marker_buttons[marker_number]
@@ -353,26 +424,104 @@ func _position_markers() -> void:
 		if index < 0 or index >= objects.size():
 			continue
 
+		marker.set_meta("cluster_indices", PackedInt32Array([index]))
+		marker.set_meta("cluster_center", Vector2.ZERO)
+		marker.set_meta("is_cluster_marker", false)
+		marker.visible = _object_matches_filter(objects[index])
+		marker.button_pressed = index == selected_index
+		marker.text = ""
+		marker.add_theme_font_size_override("font_size", 20)
+		marker.add_theme_color_override("font_color", Color("#ffffff") if index == selected_index else Color("#10231f"))
+		marker.add_theme_color_override("font_pressed_color", Color("#ffffff"))
+		_apply_marker_style(marker, index == selected_index)
+		marker.tooltip_text = "%s: %s" % [
+			"Выбранный объект" if index == selected_index else "Выбрать объект",
+			objects[index].get("name", "без названия")
+		]
 		var coordinates := _object_coordinates(objects[index])
-		var base_position := OfflineMapLayer._project_coordinates(coordinates, bounds, map_layer.size)
+		var layer := map_layer as OfflineMapLayer
+		var map_size := layer.map_base_size()
+		var base_position := OfflineMapLayer._project_coordinates(coordinates, bounds, map_size)
+		if clusters.has(index):
+			var cluster: Dictionary = clusters[index]
+			var cluster_indices: PackedInt32Array = cluster["indices"]
+			var is_representative := int(cluster_indices[0]) == index
+			marker.visible = is_representative and _object_matches_filter(objects[index])
+			if not is_representative:
+				continue
+			base_position = cluster["center"]
+			marker.set_meta("cluster_indices", cluster_indices)
+			marker.set_meta("cluster_center", base_position)
+			marker.set_meta("is_cluster_marker", cluster_indices.size() > 1)
+			_apply_cluster_marker_style(marker, cluster_indices)
+
 		if not _coordinates_inside_bounds(coordinates, bounds):
 			marker.position = _map_point_to_screen(base_position)
 			continue
-		var spread_position := _spread_marker_position(base_position, placed_positions, map_layer.size)
+		var local_position := _local_cluster_marker_position(base_position, base_positions)
 		var clamped_position := Vector2(
-			clamp(spread_position.x, MAP_PADDING, max(MAP_PADDING, map_layer.size.x - MARKER_SIZE.x - MAP_PADDING)),
-			clamp(spread_position.y, MAP_PADDING, max(MAP_PADDING, map_layer.size.y - MARKER_SIZE.y - MAP_PADDING))
+			clamp(local_position.x, MAP_PADDING, max(MAP_PADDING, map_size.x - MAP_PADDING)),
+			clamp(local_position.y, MAP_PADDING, max(MAP_PADDING, map_size.y - MAP_PADDING))
 		)
 		marker.position = _map_point_to_screen(clamped_position)
-		placed_positions.append(clamped_position)
+		base_positions.append(base_position)
+
+func _marker_clusters(bounds: Dictionary) -> Dictionary:
+	var result := {}
+	if zoom >= OBJECT_CLUSTER_ZOOM_THRESHOLD:
+		return result
+	if map_layer == null:
+		return result
+
+	var layer := map_layer as OfflineMapLayer
+	var map_size := layer.map_base_size()
+	var cluster_list: Array[Dictionary] = []
+	for marker in marker_buttons:
+		var index := int(marker.get_meta("object_index", -1))
+		if index < 0 or index >= objects.size():
+			continue
+		if not _object_matches_filter(objects[index]):
+			continue
+		var coordinates := _object_coordinates(objects[index])
+		if not _coordinates_inside_bounds(coordinates, bounds):
+			continue
+		var base_position := OfflineMapLayer._project_coordinates(coordinates, bounds, map_size)
+		var cluster: Dictionary = _nearest_cluster(cluster_list, base_position)
+		if cluster.is_empty():
+			cluster_list.append({
+				"indices": PackedInt32Array([index]),
+				"center": base_position,
+			})
+		else:
+			var indices: PackedInt32Array = cluster["indices"]
+			var old_count := indices.size()
+			indices.append(index)
+			cluster["indices"] = indices
+			cluster["center"] = (Vector2(cluster["center"]) * float(old_count) + base_position) / float(old_count + 1)
+
+	for cluster in cluster_list:
+		var indices: PackedInt32Array = cluster["indices"]
+		if indices.size() <= 1:
+			continue
+		for index in indices:
+			result[int(index)] = cluster
+	return result
+
+func _nearest_cluster(cluster_list: Array[Dictionary], position: Vector2) -> Dictionary:
+	for cluster in cluster_list:
+		var distance: float = position.distance_to(Vector2(cluster["center"])) * zoom
+		if distance <= OBJECT_CLUSTER_SCREEN_DISTANCE:
+			return cluster
+	return {}
 
 func _refresh_marker_styles() -> void:
 	for marker in marker_buttons:
 		var index := int(marker.get_meta("object_index", -1))
 		marker.visible = _object_matches_filter(objects[index]) if index >= 0 and index < objects.size() else false
 		var is_selected := index == selected_index
+		marker.set_meta("is_cluster_marker", false)
 		marker.button_pressed = is_selected
-		marker.text = "✓" if is_selected else "•"
+		marker.text = ""
 		marker.add_theme_font_size_override("font_size", 20)
 		marker.add_theme_color_override("font_color", Color("#ffffff") if is_selected else Color("#10231f"))
 		marker.add_theme_color_override("font_pressed_color", Color("#ffffff"))
@@ -381,6 +530,7 @@ func _refresh_marker_styles() -> void:
 			"Выбранный объект" if is_selected else "Выбрать объект",
 			objects[index].get("name", "без названия") if index >= 0 and index < objects.size() else "без названия"
 		]
+	_position_markers()
 
 func _update_summary_label() -> void:
 	if summary_label == null:
@@ -406,8 +556,8 @@ func _spread_marker_position(base_position: Vector2, placed_positions: Array[Vec
 		return base_position
 
 	var max_position := Vector2(
-		max(MAP_PADDING, map_size.x - MARKER_SIZE.x - MAP_PADDING),
-		max(MAP_PADDING, map_size.y - MARKER_SIZE.y - MAP_PADDING)
+		max(MAP_PADDING, map_size.x - MAP_PADDING),
+		max(MAP_PADDING, map_size.y - MAP_PADDING)
 	)
 	for attempt in 32:
 		var angle: float = TAU * float(attempt % 8) / 8.0
@@ -427,6 +577,16 @@ func _is_clear_marker_position(position: Vector2, placed_positions: Array[Vector
 		if position.distance_to(placed_position) < MARKER_SPREAD_DISTANCE:
 			return false
 	return true
+
+func _local_cluster_marker_position(base_position: Vector2, base_positions: Array[Vector2]) -> Vector2:
+	var nearby_count := 0
+	for placed_position in base_positions:
+		if base_position.distance_to(placed_position) < MARKER_LOCAL_CLUSTER_DISTANCE:
+			nearby_count += 1
+	if nearby_count == 0:
+		return base_position
+	var angle := TAU * float(nearby_count - 1) / 6.0
+	return base_position + Vector2(cos(angle), sin(angle)) * MARKER_LOCAL_CLUSTER_RADIUS
 
 func _add_filter_button(parent: Container, title: String, filter_id: String) -> void:
 	var button := Button.new()
@@ -462,14 +622,20 @@ func _add_map_control_button(parent: Container, title: String, tooltip: String, 
 	button.custom_minimum_size = minimum_size
 	button.size = minimum_size
 	button.add_theme_font_size_override("font_size", 24 if title.length() <= 2 else 18)
+	button.add_theme_color_override("font_color", Color("#27321f"))
+	button.add_theme_color_override("font_hover_color", Color("#11170e"))
+	button.add_theme_color_override("font_pressed_color", Color("#11170e"))
+	button.add_theme_color_override("font_disabled_color", Color("#52604a"))
 	_apply_map_control_style(button)
 	button.pressed.connect(on_pressed)
 	parent.add_child(button)
 
 func _apply_map_control_style(button: Button) -> void:
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color("#ffffff")
-	normal_style.border_color = Color("#31544d")
+	normal_style.bg_color = Color(0.96, 0.90, 0.72, 0.94)
+	normal_style.border_color = Color("#3b2a18")
+	normal_style.shadow_color = Color(0.12, 0.08, 0.03, 0.42)
+	normal_style.shadow_size = 5
 	normal_style.set_border_width_all(2)
 	normal_style.set_corner_radius_all(6)
 	button.add_theme_stylebox_override("normal", normal_style)
@@ -560,10 +726,10 @@ func _zoom_at(pivot: Vector2, factor: float) -> void:
 	_apply_map_transform()
 
 func _reset_map_view() -> void:
-	map_scope = MAP_SCOPE_ALL
 	_update_map_reference_data()
-	zoom = 1.0
-	pan_offset = Vector2.ZERO
+	zoom = DEFAULT_ZOOM
+	pan_offset = _default_pan_offset()
+	map_view_initialized = true
 	_apply_map_transform()
 
 func _apply_map_transform() -> void:
@@ -582,7 +748,8 @@ func _clamp_pan_offset() -> void:
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
 
-	var scaled_size := viewport_size * zoom
+	var layer := map_layer as OfflineMapLayer
+	var scaled_size := layer.map_base_size() * zoom
 	if scaled_size.x <= viewport_size.x:
 		pan_offset.x = (viewport_size.x - scaled_size.x) * 0.5
 	else:
@@ -594,8 +761,45 @@ func _clamp_pan_offset() -> void:
 		pan_offset.y = clamp(pan_offset.y, viewport_size.y - scaled_size.y - PAN_LIMIT_PADDING, PAN_LIMIT_PADDING)
 
 func _map_point_to_screen(point: Vector2) -> Vector2:
-	var marker_center := MARKER_SIZE * 0.5
-	return pan_offset + (point + marker_center) * zoom - marker_center
+	return pan_offset + point * zoom - ICON_MARKER_SIZE * 0.5
+
+func _default_pan_offset() -> Vector2:
+	if map_layer == null:
+		return Vector2.ZERO
+	var layer := map_layer as OfflineMapLayer
+	return map_layer.size * 0.5 - _initial_focus_map_point(layer) * zoom
+
+func _initial_focus_map_point(layer: OfflineMapLayer) -> Vector2:
+	if map_scope == MAP_SCOPE_GERMANY:
+		return layer.map_base_size() * 0.5
+
+	var bounds := _active_coordinate_bounds()
+	if bounds.is_empty():
+		return layer.map_base_size() * 0.5
+
+	var has_any := false
+	var min_position := Vector2.ZERO
+	var max_position := Vector2.ZERO
+	for object_data in objects:
+		if not _has_coordinates(object_data) or not _object_visible_in_scope(object_data):
+			continue
+		var coordinates := _object_coordinates(object_data)
+		if not _coordinates_inside_bounds(coordinates, bounds):
+			continue
+		var position := OfflineMapLayer._project_coordinates(coordinates, bounds, layer.map_base_size())
+		if not has_any:
+			min_position = position
+			max_position = position
+			has_any = true
+			continue
+		min_position.x = min(min_position.x, position.x)
+		min_position.y = min(min_position.y, position.y)
+		max_position.x = max(max_position.x, position.x)
+		max_position.y = max(max_position.y, position.y)
+
+	if not has_any:
+		return layer.map_base_size() * 0.5
+	return (min_position + max_position) * 0.5
 
 func _visible_marker_count() -> int:
 	var count := 0
@@ -631,19 +835,64 @@ func _compact_text(text: String, max_length: int) -> String:
 		return normalized
 	return normalized.substr(0, max(0, max_length - 1)).strip_edges() + "…"
 
+func _icon_for_object(object_data: Dictionary) -> Texture2D:
+	var icon_id := _icon_id_for_object(object_data)
+	if not marker_icons.has(icon_id):
+		var path := "res://assets/sprites/%s.png" % icon_id
+		marker_icons[icon_id] = load(path) if ResourceLoader.exists(path) else null
+	var texture: Texture2D = marker_icons.get(icon_id, null)
+	return texture
+
+func _icon_id_for_object(object_data: Dictionary) -> String:
+	var transport_type_id := str(object_data.get("transport_type_id", ""))
+	return TRANSPORT_TYPE_ICON.get(transport_type_id, "icon_station")
+
 func _apply_marker_style(marker: Button, is_selected: bool) -> void:
+	marker.icon = _icon_for_object(objects[int(marker.get_meta("object_index", -1))]) if int(marker.get_meta("object_index", -1)) >= 0 else null
+	marker.expand_icon = true
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color("#d64f2a") if is_selected else Color("#fff8df")
-	normal_style.border_color = Color("#6a1d13") if is_selected else Color("#31544d")
-	normal_style.set_border_width_all(4 if is_selected else 2)
-	normal_style.set_corner_radius_all(8)
+	normal_style.bg_color = Color(1.0, 0.83, 0.28, 0.96) if is_selected else Color(0.97, 0.86, 0.54, 0.92)
+	normal_style.border_color = Color("#fff0a3") if is_selected else Color("#2b1b0d")
+	normal_style.shadow_color = Color(0.08, 0.05, 0.02, 0.72)
+	normal_style.shadow_size = 10 if is_selected else 8
+	normal_style.set_border_width_all(2)
+	normal_style.set_corner_radius_all(26)
 	marker.add_theme_stylebox_override("normal", normal_style)
 
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color("#ba3f21") if is_selected else Color("#f1e7be")
+	hover_style.bg_color = Color(1.0, 0.88, 0.42, 0.98)
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)
+
+func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:
+	marker.icon = null
+	marker.expand_icon = false
+	marker.text = str(cluster_indices.size())
+	marker.add_theme_font_size_override("font_size", 20)
+	marker.add_theme_color_override("font_color", Color("#1f160c"))
+	marker.add_theme_color_override("font_pressed_color", Color("#1f160c"))
+	var normal_style := StyleBoxFlat.new()
+	normal_style.bg_color = Color(1.0, 0.76, 0.26, 0.98)
+	normal_style.border_color = Color("#2a1708")
+	normal_style.shadow_color = Color(0.08, 0.04, 0.01, 0.78)
+	normal_style.shadow_size = 11
+	normal_style.set_border_width_all(3)
+	normal_style.set_corner_radius_all(26)
+	marker.add_theme_stylebox_override("normal", normal_style)
+	var hover_style := normal_style.duplicate()
+	hover_style.bg_color = Color(1.0, 0.84, 0.36, 1.0)
+	marker.add_theme_stylebox_override("hover", hover_style)
+	marker.add_theme_stylebox_override("pressed", normal_style)
+	marker.add_theme_stylebox_override("focus", normal_style)
+	marker.tooltip_text = "Группа объектов: %s" % _cluster_tooltip(cluster_indices)
+
+func _cluster_tooltip(cluster_indices: PackedInt32Array) -> String:
+	var names: Array[String] = []
+	for index in cluster_indices:
+		if int(index) >= 0 and int(index) < objects.size():
+			names.append(str(objects[int(index)].get("name", "без названия")))
+	return ", ".join(names)
 
 func _coordinate_bounds() -> Dictionary:
 	var has_any_coordinates := false
@@ -684,9 +933,12 @@ func _coordinate_bounds() -> Dictionary:
 
 func _active_coordinate_bounds() -> Dictionary:
 	if map_scope == MAP_SCOPE_GERMANY:
-		var germany_objects := _germany_objects()
-		if not germany_objects.is_empty():
-			return _coordinate_bounds_for_objects(germany_objects)
+		return {
+			"min_longitude": 4.5,
+			"max_longitude": 15.5,
+			"min_latitude": 46.5,
+			"max_latitude": 55.5,
+		}
 	return _coordinate_bounds()
 
 func _coordinate_bounds_for_objects(source_objects: Array) -> Dictionary:
@@ -755,6 +1007,7 @@ func _update_map_reference_data() -> void:
 
 	var layer := map_layer as OfflineMapLayer
 	layer.geo_bounds = _active_coordinate_bounds()
+	layer.map_scope = map_scope
 	layer.queue_redraw()
 
 func _has_coordinates(object_data: Dictionary) -> bool:
@@ -773,11 +1026,40 @@ func _on_marker_pressed(index: int) -> void:
 		return
 	if index < 0 or index >= objects.size():
 		return
+	var marker := _marker_for_object_index(index)
+	if marker != null and bool(marker.get_meta("is_cluster_marker", false)):
+		_focus_cluster(marker)
+		return
 
 	object_selected.emit(index)
+
+func _marker_for_object_index(index: int) -> Button:
+	for marker in marker_buttons:
+		if int(marker.get_meta("object_index", -1)) == index:
+			return marker
+	return null
+
+func _focus_cluster(marker: Button) -> void:
+	if map_layer == null:
+		return
+	var center := Vector2(marker.get_meta("cluster_center", Vector2.ZERO))
+	if center == Vector2.ZERO:
+		return
+	var target_zoom: float = min(MAX_ZOOM, max(OBJECT_CLUSTER_ZOOM_THRESHOLD + 0.25, zoom * ZOOM_STEP))
+	zoom = target_zoom
+	pan_offset = map_layer.size * 0.5 - center * zoom
+	_apply_map_transform()
 
 func _on_marker_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenDrag:
 		suppress_next_marker_press = true
+		pan_offset += event.relative
+		drag_distance += event.relative.length()
+		_apply_map_transform()
+		accept_event()
 	elif event is InputEventMouseMotion and bool(event.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		suppress_next_marker_press = true
+		pan_offset += event.relative
+		drag_distance += event.relative.length()
+		_apply_map_transform()
+		accept_event()
