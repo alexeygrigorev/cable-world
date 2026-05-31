@@ -16,7 +16,7 @@ Reviewer должен:
 - получить свежие screenshots через Playwright и просмотреть их глазами;
 - проверить map interaction: pan, zoom, clickability, отсутствие marker jitter;
 - сверить визуальное качество с `docs/map-quality-rubric.md`;
-- записать итог: `PASS` только для карты `10/10`; `REJECT` для всего, что ниже.
+- записать итог: `ACCEPT` только для карты `10/10`; `REJECT` для всего, что ниже.
 
 Если карта выглядит как текущий baseline около `6/10`, это не pass. Такой результат может быть технически полезным prototype, но reviewer обязан вернуть задачу на доработку.
 
@@ -34,6 +34,39 @@ Godot import and smoke run:
 godot --headless --path . --import --quit
 godot --headless --path . --quit-after 1
 ```
+
+Canonical review bundle command:
+
+```bash
+ISSUE=issue-81 scripts/create-map-review-bundle.sh
+```
+
+This command rebuilds/exports the Web build through `scripts/serve-web.sh`, serves the exact reviewed build on `http://127.0.0.1:9000/` or the next documented free port, collects Playwright screenshots, checks gzip/no-cache headers, copies build metadata and writes `review-report.md`.
+
+The bundle contains:
+
+- `screenshots/` with all required screenshots;
+- `web-build.json` copied from the reviewed live build;
+- `index.reviewed.html` with the reviewed build stamp;
+- `reviewed-commit.txt`;
+- `git-status.txt`;
+- `logs/serve-web.log`;
+- `logs/playwright-screenshots.log`;
+- `logs/header-check.log`;
+- `review-report.md`.
+
+`review-report.md` starts as `Decision: REJECT`. Reviewer may change it to `ACCEPT` only after naming every screenshot as checked and scoring the touched scope `10/10`.
+
+If Playwright is not available locally, install/use it outside the project dependency graph, then run the same bundle command:
+
+```bash
+PLAYWRIGHT_DIR=/tmp/cable-world-playwright
+npm install --prefix "$PLAYWRIGHT_DIR" playwright
+"$PLAYWRIGHT_DIR/node_modules/.bin/playwright" install chromium
+PLAYWRIGHT_PACKAGE="$PLAYWRIGHT_DIR/node_modules/playwright" ISSUE=issue-81 scripts/create-map-review-bundle.sh
+```
+
+Manual fallback/debug sequence, if the bundle command needs to be inspected step by step:
 
 Web export:
 
@@ -99,6 +132,8 @@ Reviewer may add extra manual browser/device checks, but may not skip the comman
 Review at minimum:
 
 - `mobile-390x844-initial.png`;
+- `mobile-390x844-zoom-150.png`;
+- `mobile-390x844-zoom-200.png`;
 - `mobile-390x844-after-marker-click.png`;
 - `mobile-390x844-after-drag.png`;
 - `desktop-1280x800-initial.png`;
@@ -121,7 +156,7 @@ The reviewer must inspect screenshots for:
 
 ## Acceptance Rule
 
-`PASS` requires all of the following:
+`ACCEPT` requires all of the following:
 
 - required commands pass;
 - live map loads from the reviewed Web export;
@@ -132,7 +167,7 @@ The reviewer must inspect screenshots for:
 - geography review finds no visible major mismatch;
 - visual review scores `10/10` by `docs/map-quality-rubric.md`.
 
-Anything below `10/10` is `REJECT` for this gate. The reviewer should still record the estimated score and the specific blockers, for example: "current map is about 6/10; reject because city pictograms are missing for visible Nürnberg/Leipzig, small trees read as noise, jitter remains during pan, and Alps/Harz are not readable enough."
+Anything below `10/10` is `REJECT` for this gate. Any visual regression in map readability, glyph scale, icon/label alignment, terrain plausibility or list/map switch affordance is `REJECT`. Rejected visual regressions must go back to an implementer/fix-worker before integration. The reviewer should still record the estimated score and the specific blockers, for example: "current map is about 6/10; reject because city pictograms are missing for visible Nürnberg/Leipzig, small trees read as noise, jitter remains during pan, and Alps/Harz are not readable enough."
 
 ## Review Record Template
 
@@ -142,19 +177,31 @@ Worktree:
 Branch:
 Reviewed commit:
 Live URL:
+Review bundle:
 Screenshot directory:
+Build metadata:
 
 Commands:
 - python3 -m unittest discover -s tests: PASS/FAIL
 - godot --headless --path . --import --quit: PASS/FAIL
 - godot --headless --path . --quit-after 1: PASS/FAIL
-- godot --headless --path . --export-release Web build/web/index.html: PASS/FAIL
-- scripts/serve-web.sh --no-export: PASS/FAIL
-- Playwright screenshots: PASS/FAIL
-- gzip header check: PASS/FAIL
+- ISSUE=issue-81 scripts/create-map-review-bundle.sh: PASS/FAIL
+- Web rebuild/export via scripts/serve-web.sh: PASS/FAIL
+- Playwright screenshots via scripts/verify-web-map.mjs: PASS/FAIL
+- gzip/no-cache/header/build metadata check: PASS/FAIL
+
+Screenshots checked:
+- mobile-390x844-initial.png: CHECKED/REJECT
+- mobile-390x844-zoom-150.png: CHECKED/REJECT
+- mobile-390x844-zoom-200.png: CHECKED/REJECT
+- mobile-390x844-after-marker-click.png: CHECKED/REJECT
+- mobile-390x844-after-drag.png: CHECKED/REJECT
+- desktop-1280x800-initial.png: CHECKED/REJECT
+- desktop-1280x800-after-marker-click.png: CHECKED/REJECT
+- desktop-1280x800-after-drag.png: CHECKED/REJECT
 
 Rubric score:
-Decision: PASS/REJECT
+Decision: ACCEPT/REJECT
 Blockers:
 Next action:
 ```

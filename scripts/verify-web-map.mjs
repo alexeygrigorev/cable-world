@@ -20,10 +20,21 @@ async function screenshot(page, name) {
   console.log(path);
 }
 
+async function zoomAndScreenshot(page, name, zoomName, wheelDelta) {
+  await page.mouse.wheel(0, wheelDelta);
+  await page.waitForTimeout(700);
+  await screenshot(page, `${name}-${zoomName}`);
+}
+
 async function runViewport(browser, name, viewport, markerPoint) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
   await waitForGodot(page);
   await screenshot(page, `${name}-initial`);
+
+  if (name.startsWith("mobile-")) {
+    await zoomAndScreenshot(page, name, "zoom-150", -420);
+    await zoomAndScreenshot(page, name, "zoom-200", -420);
+  }
 
   if (markerPoint) {
     await page.mouse.click(markerPoint.x, markerPoint.y);
