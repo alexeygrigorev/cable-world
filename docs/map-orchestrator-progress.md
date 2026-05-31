@@ -1295,3 +1295,41 @@ Parallel work currently active:
 
 - `Nash`: #68/#69 Alpine production terrain glyph-layer slice.
 - `Dalton`: #87 playable ride MVP slice for #52.
+
+## Iteration 2026-06-01 01:25
+
+Backlog intake from latest user feedback:
+
+- Created #88: `Map/list toggle: replace generic button with clear atlas-style pictogram`.
+- Created #89: `Navigation UX: map-first flow with coherent list return state`.
+- Created #90: `List screen: restyle object list to match atlas map UI`.
+
+Parallel work started:
+
+- `Kuhn`: #88 map/list toggle pictogram and minimal UI contract work. Scope is limited to the toggle/affordance; it must not change map terrain assets, list restyle scope, ride scene or release files. The worker was corrected after parallel issue creation assigned different numbers than expected.
+
+Strict review result for `Nash` #68/#69 Alpine production-slice candidate:
+
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-68-69-alps-production-slice`.
+- Branch: `issue-68-69-alps-production-slice`, pushed to `origin/issue-68-69-alps-production-slice`.
+- Reviewed commit: `a0d96086011d8a5d6022eb4eba763abb1d7b4c39`.
+- Review bundle: `tmp/map-review/issue-68-69-alps-production-slice-postcommit`.
+- Build id: `a0d96086011d-20260531T225800Z`.
+- Inspected screenshots:
+  - `desktop-1280x800-initial.png`;
+  - `mobile-390x844-initial.png`;
+  - `mobile-390x844-zoom-200.png`.
+- Decision: `REJECT`, do not merge to `main`.
+- Estimated score: about `6/10` to `7/10`, below the mandatory `10/10` map gate.
+
+Reject blockers:
+
+- Alpine area is stronger than before, but still reads as a dense pasted mountain band rather than a geography-verified, cohesive Alpine massif.
+- Mobile view is overloaded; mountains, forests, icons and labels compete.
+- Relief layers still do not integrate as a polished reusable per-massif terrain system.
+- The result is useful as reference/prototype evidence, but not acceptable for integration under `docs/map-reviewer-gate.md`.
+
+Issue comments recorded:
+
+- #68: Alpine candidate rejected with branch, checks and blockers.
+- #69: terrain glyph candidate rejected; keep the issue open and split into smaller massif-specific work.
