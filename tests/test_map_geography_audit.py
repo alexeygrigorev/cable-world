@@ -27,6 +27,32 @@ class MapGeographyAuditTest(unittest.TestCase):
 
         self.assertEqual([], audit_terrain_massif_layer_contract())
 
+    def test_rostock_runtime_landmark_requires_landward_icon_offset(self) -> None:
+        import map_pipeline.compose_map as compose_map
+
+        original_audits = [dict(landmark) for landmark in compose_map.CITY_LANDMARK_PLACEMENT_AUDITS]
+        try:
+            current_errors = compose_map.audit_runtime_landmark_placement()
+            self.assertEqual([], current_errors)
+
+            rostock = next(landmark for landmark in original_audits if landmark["name"] == "Rostock")
+            compose_map.CITY_LANDMARK_PLACEMENT_AUDITS = [
+                dict(rostock, icon_offset=(0.0, 0.0)),
+            ]
+            unadjusted_errors = compose_map.audit_runtime_landmark_placement()
+            self.assertTrue(
+                any("runtime landmark Rostock" in error for error in unadjusted_errors),
+                "Rostock's raw city coordinate places the icon over Baltic water; keep the landward offset.",
+            )
+        finally:
+            compose_map.CITY_LANDMARK_PLACEMENT_AUDITS = original_audits
+
+    def test_coastal_city_landmarks_are_part_of_runtime_land_audit(self) -> None:
+        from map_pipeline.compose_map import CITY_LANDMARK_PLACEMENT_AUDITS
+
+        audited_names = {landmark["name"] for landmark in CITY_LANDMARK_PLACEMENT_AUDITS}
+        self.assertGreaterEqual(audited_names, {"Hamburg", "Kiel", "Lübeck", "Rostock"})
+
     def test_alpine_rendered_segments_are_not_decorative_only_anchors(self) -> None:
         from map_pipeline.compose_map import ALPINE_MASSIF_SEGMENTS, ALPINE_RELIEF_EXTENTS_PATH
         import json

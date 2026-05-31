@@ -57,6 +57,27 @@ MASSIF_SOURCE_MANIFEST = []
 RUNTIME_LANDMARK_AUDIT_VIEWPORT = (390, 844)
 CITY_LANDMARK_PLACEMENT_AUDITS = [
     {
+        "name": "Hamburg",
+        "coordinates": (9.9937, 53.5511),
+        "icon_offset": (0.0, 0.0),
+        "icon_size": 48.0,
+        "required_land_samples": ("top", "center", "bottom"),
+    },
+    {
+        "name": "Kiel",
+        "coordinates": (10.1228, 54.3233),
+        "icon_offset": (0.0, 0.0),
+        "icon_size": 0.0,
+        "required_land_samples": ("coordinate",),
+    },
+    {
+        "name": "Lübeck",
+        "coordinates": (10.6866, 53.8655),
+        "icon_offset": (0.0, 0.0),
+        "icon_size": 0.0,
+        "required_land_samples": ("coordinate",),
+    },
+    {
         "name": "Rostock",
         "coordinates": (12.0991, 54.0924),
         "icon_offset": (0.0, 52.0),
