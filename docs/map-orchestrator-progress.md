@@ -1513,3 +1513,8 @@ Verification on `main`:
 Risk note:
 
 - Extreme pan values are still normalized through existing `MapPanel._apply_map_transform()` bounds, which matches current map behavior.
+
+Parallel work:
+
+- `Hume` is still active on #67 map clutter/readability pass.
+- Started `Epicurus` on #63 Europe pipeline non-render planning/data contract. Scope is limited to docs/tests/non-render metadata for region/layer roadmap; it must not touch map render assets, terrain glyph art, UI, ride scene or release files.
