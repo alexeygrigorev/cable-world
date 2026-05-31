@@ -4,7 +4,7 @@ import sys
 
 import geopandas as gpd
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
-from shapely.geometry import Point, box
+from shapely.geometry import Point, Polygon, box
 
 from map_pipeline.projection import MapProjection
 
@@ -473,6 +473,72 @@ ATLAS_DETAIL_KIND_SCALE = {
     "windmill": 1.55,
 }
 MIN_ATLAS_DETAIL_WIDTH = 66
+
+
+def audit_geography_layers():
+    errors = []
+    bounds_poly = box(*GERMANY_BOUNDS)
+    relief_polygons = {region["id"]: Polygon(region["points"]) for region in RELIEF_REGIONS}
+
+    for region in RELIEF_REGIONS:
+        region_id = region["id"]
+        region_polygon = relief_polygons[region_id]
+        if not region_polygon.is_valid or region_polygon.area <= 0:
+            errors.append(f"relief region {region_id} has invalid polygon")
+        if region_id == "northern_lowlands":
+            for key in ("mountain_glyphs", "ridge_bands", "massif_segments"):
+                if region.get(key):
+                    errors.append(f"northern_lowlands must not define {key}")
+            if region.get("mountains"):
+                errors.append("northern_lowlands must not define mountains")
+
+        for glyph_name, lon, lat, _width in region.get("mountain_glyphs", []):
+            _audit_point(errors, bounds_poly, lon, lat, f"{region_id}:{glyph_name}")
+            if not region_polygon.buffer(0.20).covers(Point(lon, lat)):
+                errors.append(f"mountain glyph {glyph_name} is outside relief region {region_id}")
+
+        for ridge_band in region.get("ridge_bands", []):
+            for lon, lat in ridge_band["points"]:
+                _audit_point(errors, bounds_poly, lon, lat, f"{region_id}:{ridge_band['id']}")
+                if not region_polygon.buffer(0.25).covers(Point(lon, lat)):
+                    errors.append(f"ridge band {ridge_band['id']} is outside relief region {region_id}")
+
+        for segment in region.get("massif_segments", []):
+            for point_group in ("arc", "shadow"):
+                for lon, lat in segment.get(point_group, []):
+                    _audit_point(errors, bounds_poly, lon, lat, f"{region_id}:{segment['id']}:{point_group}")
+                    if not region_polygon.buffer(0.50).covers(Point(lon, lat)):
+                        errors.append(f"massif {segment['id']} {point_group} is outside relief region {region_id}")
+            for glyph_name, lon, lat, _width, _y_offset in segment.get("glyphs", []):
+                _audit_point(errors, bounds_poly, lon, lat, f"{region_id}:{segment['id']}:{glyph_name}")
+                if not region_polygon.buffer(0.25).covers(Point(lon, lat)):
+                    errors.append(f"massif glyph {glyph_name} is outside relief region {region_id}")
+
+    for water_body in NAMED_WATER_BODIES:
+        if len(water_body["points"]) < 4:
+            errors.append(f"water body {water_body['id']} needs at least four outline points")
+        for lon, lat in water_body["points"]:
+            _audit_point(errors, bounds_poly, lon, lat, f"water:{water_body['id']}")
+
+    for detail in ATLAS_DETAILS:
+        _audit_point(errors, bounds_poly, detail["lon"], detail["lat"], f"detail:{detail['id']}")
+        if str(detail["glyph"]).startswith(("alps_", "border_highland", "highland_forest")):
+            errors.append(f"atlas detail {detail['id']} must not use relief glyph {detail['glyph']}")
+
+    for forest_mass in ATLAS_FOREST_MASSES:
+        for glyph_name, lon, lat, width in forest_mass["clusters"]:
+            _audit_point(errors, bounds_poly, lon, lat, f"forest:{forest_mass['id']}:{glyph_name}")
+            if not str(glyph_name).startswith("forest_cluster_"):
+                errors.append(f"forest mass {forest_mass['id']} uses non-forest glyph {glyph_name}")
+            if width < 70:
+                errors.append(f"forest mass {forest_mass['id']} cluster {glyph_name} is too small to read")
+
+    return errors
+
+
+def _audit_point(errors, bounds_poly, lon, lat, label):
+    if not bounds_poly.covers(Point(lon, lat)):
+        errors.append(f"{label} point ({lon}, {lat}) is outside map bounds")
 
 
 def _scale_size(size):

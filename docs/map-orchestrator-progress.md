@@ -676,3 +676,26 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still about `6.5/10`. The cluster layer is less UI-like, but marker composition remains dense in cities with many objects and needs a stronger final interaction/art pass before the map can honestly reach `8/10`.
+
+## Iteration 2026-05-31 19:45
+
+Implemented:
+
+- Added `audit_geography_layers()` to `map_pipeline.compose_map`.
+- The audit checks manual terrain/water/detail/forest data instead of relying only on screenshot review:
+  - relief polygons must be valid;
+  - `northern_lowlands` must not define mountain glyphs, ridge bands, massif segments or decorative mountains;
+  - mountain glyph anchors must stay inside their named relief region with a small tolerance;
+  - Alpine ridge/massif points must stay near the Alps region;
+  - named water bodies must have real outline polygons and stay inside map bounds;
+  - atlas details cannot accidentally use relief glyphs;
+  - forest mass clusters must use forest glyphs and remain readable size.
+- Added `tests/test_map_geography_audit.py`; it skips under plain `python3` if map pipeline dependencies are absent, and runs fully under `uv`.
+- Added contract coverage so the audit function and its key failure modes stay in the pipeline.
+
+Evidence:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 19 tests, OK, 1 skipped because plain Python lacks map pipeline dependencies.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 tests OK, including the real geography audit.
+
+Self-audit: still about `6.5/10`. This does not improve the pixels directly, but it removes a major process risk: the next terrain/lake/Europe edits now have automated guardrails against putting mountains/water/details in impossible places. It supports future `8/10+`, but the visible art pass is still required.

@@ -59,8 +59,9 @@
 - [ ] #62 Перевести рельеф из декоративных гор в точные переиспользуемые overlay-слои: Alps, Harz, Black Forest, Erzgebirge, Bavarian Forest и другие реальные массивы. Германия начата; Альпы переведены в составной Alpine massif layer, но нужно расширить и проверить слой по Европе.
 - [x] Начать настройку масштаба/якорей terrain glyphs через явные `mountain_glyphs`: Альпы, Harz, Erzgebirge, Black Forest и Bavarian Forest больше не выбираются hash-ом.
 - [x] Сделать первый непрерывный cross-border pass для Альп: explicit `main_alpine_wall` и `northern_alpine_foothills` ridge bands плюс перераспределенные `alps_range_*` glyphs вместо короткого обрубленного массива только у юга Германии.
-- [ ] Проверить и откалибровать `mountain_glyphs` по реальным relief extents: Альпы теперь состоят из `western_alps_massif`, `swiss_alps_massif`, `bavarian_tyrol_alps_massif`, `austrian_alps_massif`, но их scale/edge still need geography audit; Harz/Erzgebirge/Black Forest/Bavarian Forest не должны расползаться за свои области.
-- [ ] #64 Провести terrain accuracy audit текущей Германии: убрать ложные большие горы у Hamburg/севера и проверить, что все видимые горы соответствуют реальности.
+- [x] Добавить automated geography guardrails: `audit_geography_layers()` проверяет relief polygons, northern lowlands без гор, anchors mountain/ridge/massif внутри named regions, water/detail/forest bounds и glyph types.
+- [ ] Визуально откалибровать `mountain_glyphs` по реальным relief extents: automated audit теперь ловит грубые ошибки placement, но scale/edge/art still need human screenshot/geography review; Harz/Erzgebirge/Black Forest/Bavarian Forest не должны расползаться за свои области.
+- [ ] #64 Провести terrain accuracy audit текущей Германии по скриншотам/карте высот: automated guardrails есть, но нужно визуально проверить, что нет ложных больших гор у Hamburg/севера и что все видимые горы выглядят соразмерно реальности.
 - [ ] #63 Спроектировать Europe map pipeline для следующих стран и регионов: France, Spain, Italy, Switzerland, Austria, Germany neighbors, Scandinavia, Finland, Baltics, Russia, Belarus, Ukraine до украинских гор, Turkey; рельефные слои должны продолжаться через границы.
 - [ ] #63 Позже разбить большую Europe pipeline issue на маленькие блоки по странам/регионам/слоям, но пока держать общий список в одной issue, чтобы ничего не потерять.
 - [ ] Перегенерировать/переразмерить glyph source assets под рабочий максимум `200%`, чтобы atlas details и terrain glyphs были четкими на максимальном приближении без лишней пиксельности.
@@ -72,5 +73,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending atlas-style cluster icon stack.
+- Последний map commit на момент обновления backlog: pending geography audit guardrails.
 - Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.5/10` по плотности и читаемости, но нельзя оценивать ее как `8/10`: некоторые forest+village clusters тяжеловаты, marker composition в городах всё еще плотная, нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.
