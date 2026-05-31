@@ -3,12 +3,13 @@ import os
 import sys
 
 import geopandas as gpd
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from shapely.geometry import Point, box
 
 from map_pipeline.projection import MapProjection
 
 MAP_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "map")
+FONT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "fonts")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "natural_earth")
 GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 
@@ -34,6 +35,7 @@ NAMED_WATER_OUTLINE = (39, 72, 72, 156)
 NAMED_WATER_HIGHLIGHT = (139, 184, 181, 104)
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
+FONT_CACHE = {}
 
 # Runtime city landmarks are the only city/object layer. Keep the generated
 # underlay free of baked villages or city-like pictograms so it can scale to
@@ -50,7 +52,7 @@ NAMED_WATER_BODIES = [
     },
     {
         "id": "mueritz",
-        "label": "Mueritz",
+        "label": "Müritz",
         "kind": "lake",
         "points": [(12.61, 53.55), (12.75, 53.58), (12.86, 53.47), (12.80, 53.31), (12.67, 53.26), (12.58, 53.40)],
     },
@@ -959,20 +961,44 @@ def _draw_town(draw, proj, lon, lat, size):
         draw.polygon(roof, fill="#7e3e31")
 
 
+MAP_LABELS = [
+    {"name": "Harz", "lon": 10.3600, "lat": 51.7000, "size": 22, "kind": "relief"},
+    {"name": "Zugspitze", "lon": 10.9900, "lat": 47.4300, "size": 19, "kind": "peak"},
+    {"name": "Alpen", "lon": 11.7000, "lat": 47.1200, "size": 25, "kind": "relief"},
+    {"name": "Müritz", "lon": 12.7500, "lat": 53.4300, "size": 20, "kind": "water"},
+    {"name": "Rügen", "lon": 13.3800, "lat": 54.4500, "size": 20, "kind": "island"},
+]
+
+
+def _map_label_font(size):
+    key = int(size)
+    if key not in FONT_CACHE:
+        font_path = os.path.join(FONT_DIR, "LiberationSerif-BoldItalic.ttf")
+        try:
+            FONT_CACHE[key] = ImageFont.truetype(font_path, key * RENDER_SCALE)
+        except OSError:
+            FONT_CACHE[key] = ImageFont.load_default()
+    return FONT_CACHE[key]
+
+
 def _draw_map_labels(canvas, proj, germany_mask):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
-    for name, lon, lat in [
-        ("Harz", 10.5600, 51.8000),
-        ("Zugspitze", 10.9900, 47.4300),
-        ("Alpen", 11.7000, 47.1200),
-        ("Mueritz", 12.7500, 53.4300),
-        ("Ruegen", 13.3800, 54.4500),
-    ]:
-        x, y = _project_point(proj, lon, lat)
-        text_pos = (x + 8 * RENDER_SCALE, y - 10 * RENDER_SCALE)
-        draw.text((text_pos[0] + RENDER_SCALE, text_pos[1] + RENDER_SCALE), name, fill=(42, 31, 22, 180))
-        draw.text(text_pos, name, fill=(244, 225, 165, 230))
+    for label in MAP_LABELS:
+        x, y = _project_point(proj, label["lon"], label["lat"])
+        font = _map_label_font(label["size"])
+        name = label["name"]
+        bbox = draw.textbbox((0, 0), name, font=font, stroke_width=2 * RENDER_SCALE)
+        text_width = bbox[2] - bbox[0]
+        text_pos = (x - text_width // 2, y - 13 * RENDER_SCALE)
+        draw.text(
+            text_pos,
+            name,
+            font=font,
+            fill=(242, 221, 162, 232),
+            stroke_width=2 * RENDER_SCALE,
+            stroke_fill=(47, 34, 20, 205),
+        )
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
     layer.putalpha(alpha)
     canvas.alpha_composite(layer)

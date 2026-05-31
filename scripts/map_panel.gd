@@ -15,6 +15,7 @@ class OfflineMapLayer:
 	var draw_city_labels := true
 	var draw_terrain_labels := true
 	var _germany_texture: Texture2D = null
+	var _atlas_label_font: Font = null
 	var _city_icon_textures: Dictionary = {}
 	const LANDMARK_EDGE_MARGIN := 96.0
 	const LANDMARK_VIEWPORT_MARGIN := 6.0
@@ -120,7 +121,7 @@ class OfflineMapLayer:
 		draw_rect(tex_rect, Color(0.93, 0.82, 0.55, 0.10), true)
 
 	func _draw_landmark_labels() -> void:
-		var font := get_theme_default_font()
+		var font := _map_label_font()
 		var occupied_rects: Array[Rect2] = reserved_label_rects.duplicate()
 		if draw_city_labels:
 			for label_data in CITY_LABELS:
@@ -244,6 +245,11 @@ class OfflineMapLayer:
 		draw_string(font, position + Vector2(0.0, 1.3), text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
 		draw_string(font, position + shadow_offset, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, shadow_color)
 		draw_string(font, position, text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size, text_color)
+
+	func _map_label_font() -> Font:
+		if _atlas_label_font == null:
+			_atlas_label_font = load("res://assets/fonts/LiberationSerif-BoldItalic.ttf")
+		return _atlas_label_font if _atlas_label_font != null else get_theme_default_font()
 
 	func _centered_label_rect(font: Font, text: String, center_x: float, baseline_y: float, font_size: int) -> Rect2:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
@@ -418,7 +424,7 @@ func _ready() -> void:
 	map_layer = OfflineMapLayer.new()
 	map_layer.name = "ТочкиОбъектов"
 	map_layer.set("draw_city_labels", false)
-	map_layer.set("draw_terrain_labels", true)
+	map_layer.set("draw_terrain_labels", false)
 	map_layer.custom_minimum_size = Vector2(0.0, MAP_VIEW_HEIGHT)
 	map_layer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	map_layer.size_flags_vertical = Control.SIZE_EXPAND_FILL

@@ -509,3 +509,30 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still not `8/10`; call it about `6/10` overall, with the Alpine area improved toward `6.5/10`. The Alps now read as a real massif, but the scale may be too dominant and needs geography/art audit against Switzerland/Austria/Italy before this can count as final.
+
+## Iteration 2026-05-31 17:39
+
+Implemented:
+
+- Added a vendored atlas label font: `assets/fonts/LiberationSerif-BoldItalic.ttf`.
+- Switched runtime map city labels to use the atlas font through `_map_label_font()` instead of the generic theme font.
+- Switched baked terrain labels in `map_pipeline.compose_map` to the same serif italic font through `ImageFont.truetype`.
+- Replaced ASCII terrain label text with proper umlauts: `Müritz`, `Rügen`.
+- Removed runtime terrain label drawing from `map_layer` so labels no longer appear twice; terrain labels are now baked into the underlay, while city labels remain a runtime overlay above objects.
+- Repositioned the `Harz` terrain label so it remains readable next to the Harz glyph/detail cluster.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about 2.26 MB after the atlas-label pass.
+- Mobile screenshot `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows city labels in the serif atlas style and no duplicated terrain labels.
+- Desktop screenshot `/tmp/cable-world-web-map/desktop-1280x800-initial.png` shows `Harz`, `Müritz`, `Berlin`, `Dresden`, `Köln` and `Hamburg` in a more consistent map-label style.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6159504`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10` overall. The labels now move toward the requested Middle-earth/atlas direction, but the map still needs stronger terrain art, geography audit and better cross-border density before it can be honestly called `8/10`.

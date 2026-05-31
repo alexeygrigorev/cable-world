@@ -99,6 +99,9 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"München"', script_text)
         self.assertIn('"Dresden"', script_text)
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
+        self.assertIn('load("res://assets/fonts/LiberationSerif-BoldItalic.ttf")', script_text)
+        self.assertIn("var font := _map_label_font()", script_text)
+        self.assertIn("func _map_label_font() -> Font:", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
         self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 1.5 * zoom", script_text)
         self.assertIn("const LANDMARK_EDGE_MARGIN := 96.0", script_text)
@@ -108,6 +111,8 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:", script_text)
         self.assertIn("var map_label_layer: Control", script_text)
         self.assertIn('map_label_layer.name = "ПодписиГородов"', script_text)
+        self.assertIn('map_layer.set("draw_terrain_labels", false)', script_text)
+        self.assertIn('map_label_layer.set("draw_terrain_labels", false)', script_text)
         self.assertIn("_update_map_reference_data()", script_text)
         self.assertIn('toolbar.name = "ПанельИнструментов"', script_text)
         self.assertIn("toolbar.visible = false", script_text)
@@ -328,6 +333,8 @@ class MapPanelContractTest(unittest.TestCase):
             'region.get("glyph", "alpine")',
             'def _draw_mountains(canvas, draw, proj, lon, lat, size, glyph="alpine"):',
             "GLYPH_DIR = os.path.join(MAP_DIR, \"glyphs\")",
+            "FONT_DIR = os.path.join(os.path.dirname(__file__), \"..\", \"assets\", \"fonts\")",
+            "ImageFont.truetype(font_path, key * RENDER_SCALE)",
             "BAKED_TOWN_DETAILS_ENABLED = False",
             "BAKED_TOWN_DETAILS = []",
             "if BAKED_TOWN_DETAILS_ENABLED:",
@@ -367,6 +374,11 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_field_patch(draw, proj, lon, lat, width, height):",
             "def _draw_marsh_patch(draw, proj, lon, lat, size):",
             "def _draw_castle_marker(draw, proj, lon, lat, size):",
+            "MAP_LABELS = [",
+            '"name": "Müritz"',
+            '"name": "Rügen"',
+            "LiberationSerif-BoldItalic.ttf",
+            "def _map_label_font(size):",
             "def _pixel_finish(canvas: Image.Image) -> Image.Image:",
             "quantize(colors=64",
             "ImageFilter.UnsharpMask(radius=0.7",
@@ -375,6 +387,12 @@ class MapPanelContractTest(unittest.TestCase):
 
         self.assertNotIn("MAP_SIZE[0] // 2", pipeline_text)
         self.assertNotIn("Image.Resampling.NEAREST", pipeline_text)
+        self.assertNotIn('"name": "Mueritz"', pipeline_text)
+        self.assertNotIn('"name": "Ruegen"', pipeline_text)
+        self.assertTrue(
+            (ROOT / "assets" / "fonts" / "LiberationSerif-BoldItalic.ttf").exists(),
+            "Atlas map label font must be vendored for reproducible map text.",
+        )
 
         northern_lowlands = pipeline_text.split('"id": "northern_lowlands"', 1)[1].split("}", 1)[0]
         self.assertIn('"mountains": []', northern_lowlands)
