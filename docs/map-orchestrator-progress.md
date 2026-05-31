@@ -368,3 +368,27 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. The Alps are now structurally closer to the requested direction, but this is not the final 8/10+ art pass. The next quality step remains a proper high-resolution terrain glyph set and relief/lake/city-position audit, with source assets sized for the `150%` maximum.
+
+## Iteration 2026-05-31 16:48
+
+Implemented:
+
+- Removed the renderer's artificial half-size pixelation pass. The map no longer renders to `MAP_SIZE / 2` and then stretches back to `MAP_SIZE` with `Image.Resampling.NEAREST`.
+- Kept the final map at `1932x3072`, but now downsamples the internal `2x` render buffer with `Image.Resampling.LANCZOS`, quantizes at full output resolution and applies a light sharpen pass.
+- Added a contract guard so the map pipeline cannot silently reintroduce the half-size/nearest upscale finish.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about 1.9 MB.
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` and `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` regenerated. The `150%` screenshot is visibly less blocky than the previous nearest-upscaled map.
+- `build/web/index.pck.gz`: about 8.4 MB after the quality pass.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract`: 12 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still around `6/10`. This fixes a real technical blocker for the user's `50%..150%` zoom requirement, but increases payload size and does not replace the need for better terrain/city/relief art direction. Next pass should optimize the map import/payload without returning to `NEAREST` blockiness, then continue with high-quality reusable terrain glyphs.

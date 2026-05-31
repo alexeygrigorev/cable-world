@@ -855,10 +855,9 @@ def main():
 
 
 def _pixel_finish(canvas: Image.Image) -> Image.Image:
-    small_size = (MAP_SIZE[0] // 2, MAP_SIZE[1] // 2)
-    pixel = canvas.resize(small_size, Image.Resampling.BILINEAR).convert("RGB")
-    pixel = pixel.quantize(colors=48, method=Image.Quantize.MEDIANCUT).convert("RGB")
-    return pixel.resize(MAP_SIZE, Image.Resampling.NEAREST)
+    full_resolution = canvas.resize(MAP_SIZE, Image.Resampling.LANCZOS).convert("RGB")
+    stylized = full_resolution.quantize(colors=64, method=Image.Quantize.MEDIANCUT).convert("RGB")
+    return stylized.filter(ImageFilter.UnsharpMask(radius=0.7, percent=90, threshold=2))
 
 
 if __name__ == "__main__":

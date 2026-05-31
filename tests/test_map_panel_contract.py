@@ -351,8 +351,14 @@ class MapPanelContractTest(unittest.TestCase):
             "def _draw_field_patch(draw, proj, lon, lat, width, height):",
             "def _draw_marsh_patch(draw, proj, lon, lat, size):",
             "def _draw_castle_marker(draw, proj, lon, lat, size):",
+            "def _pixel_finish(canvas: Image.Image) -> Image.Image:",
+            "quantize(colors=64",
+            "ImageFilter.UnsharpMask(radius=0.7",
         ]:
             self.assertIn(expected, pipeline_text)
+
+        self.assertNotIn("MAP_SIZE[0] // 2", pipeline_text)
+        self.assertNotIn("Image.Resampling.NEAREST", pipeline_text)
 
         northern_lowlands = pipeline_text.split('"id": "northern_lowlands"', 1)[1].split("}", 1)[0]
         self.assertIn('"mountains": []', northern_lowlands)
