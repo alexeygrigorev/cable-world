@@ -10,6 +10,7 @@ from map_pipeline.projection import MapProjection
 
 MAP_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "map")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "natural_earth")
+GLYPH_DIR = os.path.join(MAP_DIR, "glyphs")
 
 GERMANY_BOUNDS = (4.5, 46.5, 15.5, 55.5)
 MAP_SIZE = (1568, 2048)
@@ -24,6 +25,8 @@ LAKE = "#2d7285"
 RIVER = "#3b8fa3"
 ROUTE = "#d8c17a"
 ROUTE_DARK = "#6e5832"
+FOREST_SPRITE_CACHE = {}
+GLYPH_CACHE = {}
 
 RELIEF_REGIONS = [
     {
@@ -144,7 +147,8 @@ def _draw_geometry(draw, geom, proj, fill, outline=None, width=1):
     for poly in geoms:
         pts = _polygon_points(poly, proj)
         if len(pts) >= 3:
-            draw.polygon(pts, fill=fill)
+            if fill is not None:
+                draw.polygon(pts, fill=fill)
             if outline:
                 draw.line(pts + [pts[0]], fill=outline, width=width, joint="curve")
 
@@ -166,7 +170,19 @@ def _draw_country_layer(canvas, proj):
     mask = Image.new("L", canvas.size, 0)
     mask_draw = ImageDraw.Draw(mask)
     _draw_geometry(mask_draw, germany, proj, 255)
-    return germany, mask
+
+    land_mask = Image.new("L", canvas.size, 0)
+    land_mask_draw = ImageDraw.Draw(land_mask)
+    for _, row in countries.iterrows():
+        _draw_geometry(land_mask_draw, row.geometry, proj, 255)
+    return germany, mask, land_mask
+
+
+def _draw_country_border_overlay(canvas, proj, germany_geom):
+    draw = ImageDraw.Draw(canvas)
+    _draw_geometry(draw, germany_geom, proj, None, (230, 201, 119, 150), 7 * RENDER_SCALE)
+    _draw_geometry(draw, germany_geom, proj, None, GERMANY_EDGE, 4 * RENDER_SCALE)
+    _draw_geometry(draw, germany_geom, proj, None, (49, 39, 25, 230), 2 * RENDER_SCALE)
 
 
 def _draw_ocean_texture(canvas):
@@ -194,7 +210,6 @@ def _draw_lakes(canvas, proj, germany_mask):
     draw = ImageDraw.Draw(layer)
     for _, row in lakes.iterrows():
         _draw_geometry(draw, row.geometry, proj, LAKE, "#6eabc9", 2 * RENDER_SCALE)
-    layer.putalpha(Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask))
     canvas.alpha_composite(layer)
 
 
@@ -219,20 +234,22 @@ def _draw_waterways(canvas, proj, germany_mask):
         draw.line(pts, fill=(76, 139, 142, 230), width=4 * RENDER_SCALE, joint="curve")
         draw.line(pts, fill=(130, 184, 179, 170), width=1 * RENDER_SCALE, joint="curve")
 
-    for lon, lat, rx, ry in [
-        (9.35, 47.62, 0.42, 0.14),   # Bodensee edge
-        (12.42, 47.86, 0.24, 0.12),  # Chiemsee
-        (12.75, 53.43, 0.22, 0.16),  # Mueritz
-        (13.78, 52.42, 0.18, 0.11),  # Berlin lakes
+    for glyph, lon, lat, width in [
+        ("lake_long_1", 9.35, 47.62, 110),   # Bodensee edge
+        ("lake_small_1", 12.42, 47.86, 70),  # Chiemsee
+        ("lake_large_1", 12.75, 53.43, 86),  # Mueritz
+        ("lake_small_3", 13.78, 52.42, 58),  # Berlin lakes
+        ("lake_small_2", 11.43, 53.63, 72),  # Schweriner See
+        ("lake_small_4", 12.27, 53.46, 62),  # Plauer See
+        ("lake_small_3", 10.98, 53.58, 48),  # Schaalsee
+        ("lake_small_1", 9.35, 52.47, 54),   # Steinhuder Meer
+        ("lake_small_4", 9.00, 51.18, 48),   # Edersee
+        ("lake_small_2", 11.10, 47.98, 48),  # Ammersee
+        ("lake_small_3", 11.34, 47.91, 46),  # Starnberger See
+        ("lake_small_4", 11.73, 47.72, 40),  # Tegernsee
     ]:
-        x, y = _project_point(proj, lon, lat)
-        w = int(rx * 110 * RENDER_SCALE)
-        h = int(ry * 110 * RENDER_SCALE)
-        draw.ellipse((x - w, y - h, x + w, y + h), fill=(52, 112, 124, 220), outline=(31, 70, 78, 220), width=2 * RENDER_SCALE)
-        draw.arc((x - w // 2, y - h // 2, x + w // 2, y + h // 2), 20, 170, fill=(132, 188, 188, 180), width=1 * RENDER_SCALE)
+        _draw_glyph_center(layer, proj, glyph, lon, lat, width)
 
-    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
-    layer.putalpha(alpha)
     canvas.alpha_composite(layer)
 
 
@@ -241,16 +258,17 @@ def _soft_region(canvas, mask, points, fill, blur=26):
     draw = ImageDraw.Draw(layer)
     draw.polygon(points, fill=fill)
     layer = layer.filter(ImageFilter.GaussianBlur(blur * RENDER_SCALE))
-    alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), mask)
-    layer.putalpha(alpha)
+    if mask is not None:
+        alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), mask)
+        layer.putalpha(alpha)
     canvas.alpha_composite(layer)
 
 
-def _draw_terrain(canvas, proj, germany_mask):
+def _draw_terrain(canvas, proj, land_mask):
     for region in RELIEF_REGIONS:
         _soft_region(
             canvas,
-            germany_mask,
+            land_mask,
             [_project_point(proj, lon, lat) for lon, lat in region["points"]],
             region["fill"],
             blur=region["blur"],
@@ -260,25 +278,51 @@ def _draw_terrain(canvas, proj, germany_mask):
     draw = ImageDraw.Draw(decor)
     for region in RELIEF_REGIONS:
         for lon, lat, size in region.get("trees", []):
-            _draw_tree_cluster(draw, proj, lon, lat, size)
+            _draw_tree_cluster(decor, proj, lon, lat, size)
         for lon, lat, size in region.get("mountains", []):
-            _draw_mountains(draw, proj, lon, lat, size, region.get("glyph", "alpine"))
+            _draw_mountains(decor, draw, proj, lon, lat, size, region.get("glyph", "alpine"))
     for lon, lat, size in [
         (9.8, 50.4, 38), (11.0, 49.0, 38), (6.3, 51.4, 28),
         (8.8, 50.0, 28), (9.6, 52.0, 24), (12.3, 52.4, 24),
-        (13.7, 52.0, 23), (14.1, 53.0, 20),
+        (13.7, 52.0, 23), (14.1, 53.0, 20), (10.1, 53.2, 44),
+        (13.9, 52.2, 42), (11.1, 50.8, 46), (9.2, 51.0, 40),
+        (7.6, 50.2, 36), (10.4, 48.0, 40), (12.2, 49.2, 38),
     ]:
-        _draw_tree_cluster(draw, proj, lon, lat, size)
+        _draw_tree_cluster(decor, proj, lon, lat, size)
     for lon, lat, size in [
         (6.9, 50.9, 34), (7.6, 51.2, 30), (8.7, 50.1, 32),
         (9.2, 48.8, 33), (11.6, 48.2, 36), (13.4, 52.5, 38),
         (13.8, 51.1, 34), (10.0, 53.5, 34), (6.8, 51.3, 30),
         (9.7, 52.4, 31), (12.4, 51.3, 31), (8.0, 48.8, 30),
+        (8.1, 53.1, 24), (11.1, 52.2, 24), (12.9, 52.1, 24),
+        (10.9, 49.45, 24), (7.2, 49.25, 22), (12.0, 50.55, 22),
+        (8.2, 51.0, 22), (9.3, 51.3, 22), (10.3, 51.0, 22),
+        (11.4, 50.9, 22), (8.0, 50.0, 22), (11.1, 53.1, 22),
     ]:
         _draw_town(draw, proj, lon, lat, size)
+    for lon, lat, width, height in [
+        (7.6, 52.2, 58, 34), (8.7, 51.2, 72, 38), (9.4, 50.7, 62, 32),
+        (11.9, 51.6, 70, 36), (12.8, 52.6, 58, 30), (8.6, 49.6, 66, 34),
+        (10.8, 48.6, 56, 30), (13.2, 51.35, 54, 30),
+        (6.9, 52.7, 58, 28), (9.9, 52.9, 60, 28), (11.2, 52.7, 52, 26),
+        (12.2, 50.1, 48, 24), (7.4, 48.3, 44, 24), (10.0, 49.6, 50, 24),
+    ]:
+        _draw_field_patch(draw, proj, lon, lat, width, height)
+    for lon, lat, size in [
+        (8.7, 53.4, 38), (11.6, 53.8, 34), (13.0, 54.0, 30),
+        (12.3, 53.3, 34), (9.8, 54.1, 28), (14.1, 52.0, 30),
+        (13.8, 51.85, 28),
+    ]:
+        _draw_marsh_patch(draw, proj, lon, lat, size)
+    for lon, lat, size in [
+        (8.7150, 49.4106, 24),   # Heidelberg Schloss
+        (10.3067, 50.9669, 22),  # Wartburg
+        (8.9678, 48.3232, 20),   # Hohenzollern
+        (10.7498, 47.5576, 24),  # Neuschwanstein
+        (11.4175, 53.6244, 20),  # Schwerin Schloss
+    ]:
+        _draw_castle_marker(draw, proj, lon, lat, size)
 
-    alpha = Image.composite(decor.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
-    decor.putalpha(alpha)
     canvas.alpha_composite(decor)
 
 
@@ -323,9 +367,9 @@ def _draw_ground_texture(canvas, proj, germany_mask, germany_geom):
                 else:
                     length = (9 + seed % 10) * scale
                     draw.line((x - length // 2, y, x + length // 2, y + scale), fill=(101, 118, 68, 42), width=max(1, scale))
-            lat += 0.42
+            lat += 0.34
             lat_index += 1
-        lon += 0.48
+        lon += 0.38
         lon_index += 1
 
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
@@ -347,26 +391,136 @@ def _draw_field_hatch(draw, x, y, size, color):
         draw.line((x - s // 2, yy, x + s // 2, yy + s // 5), fill=color, width=max(1, RENDER_SCALE))
 
 
+def _draw_field_patch(draw, proj, lon, lat, width, height):
+    x, y = _project_point(proj, lon, lat)
+    w = width * RENDER_SCALE
+    h = height * RENDER_SCALE
+    fill = (158, 149, 82, 48)
+    outline = (92, 104, 59, 62)
+    polygon = [
+        (x - w // 2, y - h // 3),
+        (x + w // 2, y - h // 2),
+        (x + w // 2, y + h // 3),
+        (x - w // 3, y + h // 2),
+    ]
+    draw.polygon(polygon, fill=fill)
+    draw.line(polygon + [polygon[0]], fill=outline, width=max(1, RENDER_SCALE))
+    for step in range(-2, 3):
+        yy = y + step * h // 6
+        draw.line((x - w // 3, yy, x + w // 3, yy + h // 8), fill=(202, 183, 111, 58), width=max(1, RENDER_SCALE))
+
+
+def _draw_marsh_patch(draw, proj, lon, lat, size):
+    x, y = _project_point(proj, lon, lat)
+    s = size * RENDER_SCALE
+    draw.ellipse((x - s, y - s // 3, x + s, y + s // 3), fill=(75, 128, 105, 34))
+    for index in range(7):
+        offset = (index - 3) * s // 5
+        draw.arc((x + offset - s // 5, y - s // 5, x + offset + s // 5, y + s // 5), 210, 340, fill=(57, 101, 85, 72), width=max(1, RENDER_SCALE))
+
+
+def _draw_castle_marker(draw, proj, lon, lat, size):
+    x, y = _project_point(proj, lon, lat)
+    s = size * RENDER_SCALE
+    draw.ellipse((x - s * 0.72, y + s * 0.34, x + s * 0.72, y + s * 0.62), fill=(66, 52, 34, 50))
+    wall = (181, 137, 82)
+    outline = (68, 48, 31)
+    roof = (117, 56, 43)
+    body = (x - s * 0.42, y - s * 0.08, x + s * 0.42, y + s * 0.42)
+    draw.rectangle(body, fill=wall, outline=outline, width=max(1, RENDER_SCALE))
+    for offset in [-0.48, 0.48]:
+        cx = x + int(offset * s)
+        tower = (cx - s * 0.16, y - s * 0.28, cx + s * 0.16, y + s * 0.42)
+        draw.rectangle(tower, fill=wall, outline=outline, width=max(1, RENDER_SCALE))
+        draw.polygon(
+            [(cx - s * 0.22, y - s * 0.28), (cx, y - s * 0.55), (cx + s * 0.22, y - s * 0.28)],
+            fill=roof,
+        )
+    draw.polygon([(x - s * 0.48, y - s * 0.08), (x, y - s * 0.38), (x + s * 0.48, y - s * 0.08)], fill=roof)
+    draw.line((x - s * 0.48, y - s * 0.08, x, y - s * 0.38, x + s * 0.48, y - s * 0.08), fill=outline, width=max(1, RENDER_SCALE))
+
+
 def _draw_hill_mark(draw, x, y, size, color):
     s = size * RENDER_SCALE
     draw.arc((x - s, y - s // 2, x + s, y + s // 2), 200, 340, fill=color, width=max(1, RENDER_SCALE * 2))
 
 
-def _draw_tree_cluster(draw, proj, lon, lat, radius):
+def _load_glyph(name):
+    if name not in GLYPH_CACHE:
+        path = os.path.join(GLYPH_DIR, f"{name}.png")
+        GLYPH_CACHE[name] = Image.open(path).convert("RGBA") if os.path.exists(path) else None
+    return GLYPH_CACHE[name]
+
+
+def _draw_glyph_center(canvas, proj, glyph_name, lon, lat, target_width):
     x, y = _project_point(proj, lon, lat)
+    return _draw_glyph_at(canvas, glyph_name, x, y, target_width)
+
+
+def _draw_glyph_at(canvas, glyph_name, x, y, target_width):
+    if canvas is None:
+        return False
+    glyph = _load_glyph(glyph_name)
+    if glyph is None:
+        return False
+    width = max(1, int(target_width * RENDER_SCALE))
+    height = max(1, int(width * glyph.height / glyph.width))
+    resized = glyph.resize((width, height), Image.Resampling.LANCZOS)
+    canvas.alpha_composite(resized, (int(x - width * 0.5), int(y - height * 0.62)))
+    return True
+
+
+def _draw_tree_cluster(canvas, proj, lon, lat, radius):
+    x, y = _project_point(proj, lon, lat)
+    glyphs = ["forest_cluster_1", "forest_cluster_2", "forest_cluster_3", "forest_cluster_4", "forest_cluster_5", "forest_cluster_6"]
+    glyph = glyphs[_stable_hash(round(lon, 2), round(lat, 2), int(radius)) % len(glyphs)]
+    _draw_glyph_at(canvas, glyph, x, y, radius * 2.0)
+
+
+def _forest_sprite(radius):
+    key = int(radius)
+    if key in FOREST_SPRITE_CACHE:
+        return FOREST_SPRITE_CACHE[key]
+
     r = radius * RENDER_SCALE
-    draw.ellipse((x - r, y + r * 0.20, x + r, y + r * 0.62), fill=(104, 125, 62, 42))
-    colors = ["#47733f", "#5f944e", "#86ad58", "#386b48"]
-    for i in range(18):
+    width = int(r * 2.2)
+    height = int(r * 1.55)
+    sprite = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(sprite)
+    cx = width // 2
+    cy = int(height * 0.46)
+    draw.ellipse((cx - r, cy + r * 0.20, cx + r, cy + r * 0.62), fill=(73, 86, 48, 48))
+    colors = [(55, 103, 72, 235), (72, 122, 65, 232), (97, 143, 76, 224), (48, 91, 71, 230)]
+    for i in range(22):
         angle = i * 2.399
-        dist = (0.18 + (i % 5) * 0.14) * r
-        cx = x + int(math.cos(angle) * dist)
-        cy = y + int(math.sin(angle) * dist * 0.65)
-        rr = int(r * (0.16 + (i % 3) * 0.025))
-        draw.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), fill=colors[i % len(colors)])
+        dist = (0.12 + (i % 6) * 0.12) * r
+        tx = cx + int(math.cos(angle) * dist)
+        ty = cy + int(math.sin(angle) * dist * 0.58)
+        size = int(r * (0.15 + (i % 4) * 0.025))
+        _draw_tree_glyph(draw, tx, ty, size, colors[i % len(colors)])
+    FOREST_SPRITE_CACHE[key] = sprite
+    return sprite
 
 
-def _draw_mountains(draw, proj, lon, lat, size, glyph="alpine"):
+def _draw_tree_glyph(draw, x, y, size, color):
+    trunk = (80, 57, 33, 190)
+    outline = (41, 64, 45, 150)
+    draw.rectangle((x - max(1, size // 8), y, x + max(1, size // 8), y + size // 2), fill=trunk)
+    draw.ellipse((x - size, y - size, x + size, y + size // 2), fill=outline)
+    inner = max(1, int(size * 0.82))
+    draw.ellipse((x - inner, y - inner, x + inner, y + inner // 2), fill=color)
+
+
+def _draw_mountains(canvas, draw, proj, lon, lat, size, glyph="alpine"):
+    target_width = size * (3.15 if glyph == "alpine" else 2.75)
+    if glyph == "alpine":
+        sprite = ["alps_range_1", "alps_range_2", "alps_range_3"][_stable_hash(lon, lat, size) % 3]
+    elif glyph == "border_highland":
+        sprite = ["border_highland_1", "border_highland_2"][_stable_hash(lon, lat, size) % 2]
+    else:
+        sprite = ["highland_forest_1", "highland_forest_2", "highland_forest_3"][_stable_hash(lon, lat, size) % 3]
+    if _draw_glyph_center(canvas, proj, sprite, lon, lat, target_width):
+        return
     x, y = _project_point(proj, lon, lat)
     s = size * RENDER_SCALE
     if glyph == "alpine":
@@ -502,15 +656,16 @@ def main():
     canvas = Image.new("RGBA", render_size, OCEAN)
     _draw_ocean_texture(canvas)
     print("Step 1: Draw countries and Germany mask")
-    germany, germany_mask = _draw_country_layer(canvas, proj)
+    germany, germany_mask, land_mask = _draw_country_layer(canvas, proj)
 
     print("Step 2: Add terrain, texture, lakes, and routes")
-    _draw_terrain(canvas, proj, germany_mask)
+    _draw_terrain(canvas, proj, land_mask)
     _draw_ground_texture(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
     _draw_waterways(canvas, proj, germany_mask)
     _draw_routes(canvas, proj, germany_mask)
     _draw_map_labels(canvas, proj, germany_mask)
+    _draw_country_border_overlay(canvas, proj, germany)
 
     print("Step 3: Finish clean interactive map underlay")
 

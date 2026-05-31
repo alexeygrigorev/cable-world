@@ -83,7 +83,7 @@ Next action: run a contrast/readability iteration before claiming any score abov
 Iteration result:
 
 - Marker readability improved with larger parchment buttons, dark border, and shadow.
-- City/terrain labels now provide orientation: Berlin, Hamburg, Rostock, Koeln, Muenchen, Harz, Zugspitze, Alps.
+- City/terrain labels now provide orientation: Berlin, Hamburg, Rostock, Koeln, Muenchen, Harz, Zugspitze, Alpen.
 - Zoom controls are visible on the map; default zoom is closer, and zoom-out stops at base fill.
 - Browser screenshots were regenerated under `/tmp/cable-world-web-map/`.
 
@@ -146,3 +146,18 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-map-v5.png`
 
 Rubric estimate after dotted route iteration 2026-05-31 13:43: still 7/10 candidate, but closer to 8/10 on marker readability. Remaining risk: trails may now be too subtle and need a small contrast increase after user review.
+
+Sprite glyph terrain iteration result:
+
+- User rated the previous state around 6/10: still visually boring, marker backings were still noticeable, and mountains/lakes/forests needed to read as intentional map features.
+- Generated one reusable `assets/map/glyphs/map_glyph_sheet.png` sprite sheet with Alpine ranges, forested highlands, border highlands, lakes, and forest clusters, then sliced it into project assets.
+- The map pipeline now places glyphs by geographic coordinates/layer definitions: Alps, Harz/Black Forest/Bavarian Forest/Erzgebirge, lake anchors, and forest clusters are not random decorative stamps.
+- Country clipping was changed from Germany-only to land-mask clipping for soft relief, so cross-border ranges can continue beyond Germany while ocean stays clean.
+- Germany border is redrawn as a visible atlas border on top of the relief, so removing Germany-only clipping does not make borders ambiguous.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-map-v9.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-map-v9.png`
+
+Rubric estimate after sprite glyph terrain iteration 2026-05-31: stronger 7/10 candidate, not 8/10 yet. Alps and forests finally read as map glyphs, but the exact scale/extent of every range still needs geographic tuning before it satisfies the 10/10 terrain accuracy criterion.

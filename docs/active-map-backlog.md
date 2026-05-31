@@ -14,15 +14,17 @@
 - [x] #60 Убрать залитые фоновые плашки под транспортными пиктограммами: оставить естественный outline/glow, чтобы объекты читались лучше городов и выглядели частью карты.
 - [x] #61 Масштабировать транспортные и городские иконки вместе с zoom, но с максимальным порогом размера, чтобы пиксель-арт не раздувался.
 - [ ] #62 Перевести рельеф из декоративных гор в точные переиспользуемые overlay-слои: Alps, Harz, Black Forest, Erzgebirge, Bavarian Forest и другие реальные массивы. Германия начата; нужно расширить и проверить слой по Европе.
+- [ ] Настроить масштаб/якоря terrain glyphs по реальным географическим extent: Альпы должны начинаться/заканчиваться по настоящему массиву, Harz/Erzgebirge/Black Forest/Bavarian Forest не должны расползаться за свои области.
 - [ ] #64 Провести terrain accuracy audit текущей Германии: убрать ложные большие горы у Hamburg/севера и проверить, что все видимые горы соответствуют реальности.
 - [ ] #63 Спроектировать Europe map pipeline для следующих стран и регионов: France, Spain, Italy, Switzerland, Austria, Germany neighbors, Scandinavia, Finland, Baltics, Russia, Belarus, Ukraine до украинских гор, Turkey; рельефные слои должны продолжаться через границы.
 - [ ] #63 Позже разбить большую Europe pipeline issue на маленькие блоки по странам/регионам/слоям, но пока держать общий список в одной issue, чтобы ничего не потерять.
 - [ ] Оформить list mode отдельной задачей: список при переключении с карты должен соответствовать стилю карты, а не выглядеть как чужой UI.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.
+- [ ] #65 Разобрать Godot headless shutdown warnings/RID leaks: сейчас `godot --headless --path . --quit-after 1` выходит с кодом 0, но печатает CanvasItem/ObjectDB/DummyTexture/ShapedText/Font leak warnings.
 - [ ] Обновлять GitHub issue #54 после каждой проверяемой итерации и регулярно коммитить.
 
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: `7da7f67 Improve map relief accuracy and marker readability`.
-- Текущий рельеф Германии стал точнее и модульнее; blocker для `8/10+` сместился с грубой географической ошибки на art direction: underlay все еще плосковата относительно reference target, а dotted routes могут быть слишком тонкими.
+- Последний map commit на момент обновления backlog: pending sprite-glyph terrain commit after current review.
+- Текущий рельеф Германии перешел на reusable sprite glyphs для гор, лесов и озер; blocker для `8/10+` теперь масштаб/extent этих glyphs по реальной географии и дальнейшая Европа без country-only clipping.

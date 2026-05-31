@@ -20,11 +20,29 @@ class OfflineMapLayer:
 		{"name": "München", "coordinates": Vector2(11.5820, 48.1351), "kind": "city", "icon": "munich"},
 		{"name": "Dresden", "coordinates": Vector2(13.7373, 51.0504), "kind": "city", "icon": "dresden"},
 		{"name": "Stuttgart", "coordinates": Vector2(9.1829, 48.7758), "kind": "city", "icon": "stuttgart"},
+		{"name": "Hannover", "coordinates": Vector2(9.7320, 52.3759), "kind": "town", "icon": ""},
+		{"name": "Bremen", "coordinates": Vector2(8.8017, 53.0793), "kind": "town", "icon": ""},
+		{"name": "Kiel", "coordinates": Vector2(10.1228, 54.3233), "kind": "town", "icon": ""},
+		{"name": "Lübeck", "coordinates": Vector2(10.6866, 53.8655), "kind": "town", "icon": ""},
+		{"name": "Düsseldorf", "coordinates": Vector2(6.7735, 51.2277), "kind": "town", "icon": "duesseldorf"},
+		{"name": "Dortmund", "coordinates": Vector2(7.4653, 51.5136), "kind": "town", "icon": "dortmund"},
+		{"name": "Essen", "coordinates": Vector2(7.0116, 51.4556), "kind": "town", "icon": ""},
+		{"name": "Frankfurt", "coordinates": Vector2(8.6821, 50.1109), "kind": "town", "icon": "frankfurt"},
+		{"name": "Leipzig", "coordinates": Vector2(12.3731, 51.3397), "kind": "town", "icon": ""},
+		{"name": "Magdeburg", "coordinates": Vector2(11.6276, 52.1205), "kind": "town", "icon": ""},
+		{"name": "Wolfsburg", "coordinates": Vector2(10.7865, 52.4227), "kind": "town", "icon": ""},
+		{"name": "Kassel", "coordinates": Vector2(9.4797, 51.3127), "kind": "town", "icon": ""},
+		{"name": "Erfurt", "coordinates": Vector2(11.0299, 50.9848), "kind": "town", "icon": ""},
+		{"name": "Nürnberg", "coordinates": Vector2(11.0767, 49.4521), "kind": "town", "icon": ""},
+		{"name": "Regensburg", "coordinates": Vector2(12.1016, 49.0134), "kind": "town", "icon": ""},
+		{"name": "Augsburg", "coordinates": Vector2(10.8978, 48.3705), "kind": "town", "icon": ""},
+		{"name": "Freiburg", "coordinates": Vector2(7.8421, 47.9990), "kind": "town", "icon": ""},
+		{"name": "Saarbrücken", "coordinates": Vector2(6.9969, 49.2402), "kind": "town", "icon": ""},
 	]
 	const TERRAIN_LABELS := [
 		{"name": "Harz", "coordinates": Vector2(10.56, 51.80)},
 		{"name": "Zugspitze", "coordinates": Vector2(10.99, 47.43)},
-		{"name": "Alps", "coordinates": Vector2(11.70, 47.12)},
+		{"name": "Alpen", "coordinates": Vector2(11.70, 47.12)},
 		{"name": "Müritz", "coordinates": Vector2(12.75, 53.43)},
 		{"name": "Rügen", "coordinates": Vector2(13.38, 54.45)},
 	]
@@ -97,7 +115,8 @@ class OfflineMapLayer:
 	func _draw_city_label(font: Font, label_data: Dictionary) -> void:
 		var position := _geo_to_screen(label_data["coordinates"])
 		var is_capital := str(label_data.get("kind", "")) == "capital"
-		var label_size := 18 if is_capital else 15
+		var is_town := str(label_data.get("kind", "")) == "town"
+		var label_size := 18 if is_capital else (12 if is_town else 15)
 		var icon_rect := _draw_city_icon(label_data, position)
 		if icon_rect.size != Vector2.ZERO:
 			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 8.0 * zoom
@@ -117,8 +136,6 @@ class OfflineMapLayer:
 			position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom),
 			Vector2(icon_size, icon_size)
 		)
-		draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.28), icon_size * 0.54, Color(0.09, 0.05, 0.02, 0.30))
-		draw_circle(icon_rect.get_center() + Vector2(0.0, icon_size * 0.18), icon_size * 0.47, Color(0.95, 0.83, 0.55, 0.18))
 		draw_texture_rect(texture, icon_rect, false)
 		return icon_rect
 
@@ -918,17 +935,16 @@ func _apply_marker_style(marker: Button, is_selected: bool) -> void:
 	marker.icon = _icon_for_object(objects[int(marker.get_meta("object_index", -1))]) if int(marker.get_meta("object_index", -1)) >= 0 else null
 	marker.expand_icon = true
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color(1.0, 0.74, 0.22, 0.08) if is_selected else Color(0.04, 0.03, 0.02, 0.0)
-	normal_style.border_color = Color("#fff0a3") if is_selected else Color("#f1d484")
-	normal_style.shadow_color = Color(0.03, 0.02, 0.01, 0.42)
-	normal_style.shadow_size = 5 if is_selected else 4
-	normal_style.set_border_width_all(2)
-	normal_style.set_corner_radius_all(26)
+	normal_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
+	normal_style.border_color = Color(0.0, 0.0, 0.0, 0.0)
+	normal_style.shadow_color = Color(0.0, 0.0, 0.0, 0.0)
+	normal_style.shadow_size = 0
+	normal_style.set_border_width_all(0)
+	normal_style.set_corner_radius_all(0)
 	marker.add_theme_stylebox_override("normal", normal_style)
 
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color(1.0, 0.86, 0.34, 0.12)
-	hover_style.border_color = Color("#ffe58a")
+	hover_style.bg_color = Color(1.0, 0.86, 0.34, 0.08)
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)
@@ -941,15 +957,15 @@ func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Arr
 	marker.add_theme_color_override("font_color", Color("#f7e4b0"))
 	marker.add_theme_color_override("font_pressed_color", Color("#f7e4b0"))
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color(0.04, 0.03, 0.02, 0.0)
-	normal_style.border_color = Color("#f2c86a")
-	normal_style.shadow_color = Color(0.03, 0.02, 0.01, 0.46)
-	normal_style.shadow_size = 5
-	normal_style.set_border_width_all(2)
-	normal_style.set_corner_radius_all(26)
+	normal_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
+	normal_style.border_color = Color(0.0, 0.0, 0.0, 0.0)
+	normal_style.shadow_color = Color(0.0, 0.0, 0.0, 0.0)
+	normal_style.shadow_size = 0
+	normal_style.set_border_width_all(0)
+	normal_style.set_corner_radius_all(0)
 	marker.add_theme_stylebox_override("normal", normal_style)
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color(1.0, 0.84, 0.32, 0.12)
+	hover_style.bg_color = Color(1.0, 0.84, 0.32, 0.08)
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)

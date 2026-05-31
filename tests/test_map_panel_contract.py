@@ -231,6 +231,8 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_body)
         self.assertIn("_draw_centered_label_text", city_label_body)
         self.assertNotIn("draw_circle(position", city_label_body)
+        self.assertNotIn("draw_circle", city_icon_body)
+        self.assertNotIn("draw_rect", city_icon_body)
         self.assertLess(
             city_icon_body.index("if texture == null:"),
             city_icon_body.index("draw_texture_rect(texture, icon_rect, false)"),
@@ -257,13 +259,22 @@ class MapPanelContractTest(unittest.TestCase):
             "for region in RELIEF_REGIONS:",
             'for lon, lat, size in region.get("mountains", []):',
             'region.get("glyph", "alpine")',
-            'def _draw_mountains(draw, proj, lon, lat, size, glyph="alpine"):',
+            'def _draw_mountains(canvas, draw, proj, lon, lat, size, glyph="alpine"):',
+            "GLYPH_DIR = os.path.join(MAP_DIR, \"glyphs\")",
+            "def _load_glyph(name):",
+            "def _draw_glyph_center(canvas, proj, glyph_name, lon, lat, target_width):",
+            "\"alps_range_1\"",
+            "\"lake_large_1\"",
+            "\"forest_cluster_1\"",
             "def _draw_alpine_mountains(draw, x, y, s):",
             "def _draw_forested_highland(draw, x, y, s):",
             "def _draw_border_highland(draw, x, y, s):",
-            "def _draw_dotted_route(draw, pts):",
-            "_draw_dotted_route(draw, pts)",
-        ]:
+			"def _draw_dotted_route(draw, pts):",
+			"_draw_dotted_route(draw, pts)",
+			"def _draw_field_patch(draw, proj, lon, lat, width, height):",
+			"def _draw_marsh_patch(draw, proj, lon, lat, size):",
+			"def _draw_castle_marker(draw, proj, lon, lat, size):",
+		]:
             self.assertIn(expected, pipeline_text)
 
         northern_lowlands = pipeline_text.split('"id": "northern_lowlands"', 1)[1].split("}", 1)[0]
