@@ -1,16 +1,16 @@
 {
   "cropped_size_px": [
-    262,
-    154
+    274,
+    265
   ],
   "extends_to": [
     "Czechia"
   ],
   "geo_bounds": {
-    "max_latitude": 51.1531,
-    "max_longitude": 14.59402,
-    "min_latitude": 50.84472,
-    "min_longitude": 13.76002
+    "max_latitude": 51.2926,
+    "max_longitude": 14.61949,
+    "min_latitude": 50.76228,
+    "min_longitude": 13.74728
   },
   "glyphs": [
     {
@@ -26,10 +26,10 @@
   "kind": "sandstone_highland",
   "label": "Saxon Switzerland / Elbe Sandstone",
   "map_bbox_px": [
-    1454.5,
-    1228.5,
-    1585.5,
-    1305.5
+    1452.5,
+    1193.5,
+    1589.5,
+    1326.0
   ],
   "massif_segments": [],
   "placement_policy": "named_sandstone_region_polygon_and_rim",
@@ -60,10 +60,10 @@
     }
   ],
   "render_bbox_px": [
-    2909,
-    2457,
-    3171,
-    2611
+    2905,
+    2387,
+    3179,
+    2652
   ],
   "replacement_status": "needs_custom_sandstone_asset",
   "ridge_bands": [

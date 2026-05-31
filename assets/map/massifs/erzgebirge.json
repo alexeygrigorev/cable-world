@@ -1,13 +1,13 @@
 {
   "cropped_size_px": [
     605,
-    273
+    297
   ],
   "extends_to": [
     "Czechia"
   ],
   "geo_bounds": {
-    "max_latitude": 51.12116,
+    "max_latitude": 51.16906,
     "max_longitude": 14.46033,
     "min_latitude": 50.5727,
     "min_longitude": 12.53447
@@ -34,7 +34,7 @@
   "label": "Erzgebirge",
   "map_bbox_px": [
     1262.0,
-    1236.5,
+    1224.5,
     1564.5,
     1373.0
   ],
@@ -64,7 +64,7 @@
   ],
   "render_bbox_px": [
     2524,
-    2473,
+    2449,
     3129,
     2746
   ],

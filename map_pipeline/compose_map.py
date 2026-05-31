@@ -42,15 +42,20 @@ NAMED_WATER_HIGHLIGHT = (139, 184, 181, 54)
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 FONT_CACHE = {}
-FOREST_MASS_VISUAL_SCALE = 1.55
-FOREST_MASS_MIN_WIDTH = 138
-FOREST_CLUSTER_MIN_SOURCE_WIDTH = 86
+FOREST_MASS_VISUAL_SCALE = 1.90
+FOREST_MASS_MIN_WIDTH = 170
+FOREST_CLUSTER_MIN_SOURCE_WIDTH = 96
+RELIEF_TREE_CLUSTER_MIN_WIDTH = 146
 LAND_DETAIL_VISUAL_SCALE = 0.74
 LAND_DETAIL_ALPHA_SCALE = 0.48
 LAND_DETAIL_TINT_STRENGTH = 0.28
-INTEGRATED_LAND_PATTERN_LON_STEP = 0.24
-INTEGRATED_LAND_PATTERN_LAT_STEP = 0.22
-INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.70
+GROUND_TEXTURE_LON_STEP = 0.62
+GROUND_TEXTURE_LAT_STEP = 0.58
+INTEGRATED_LAND_PATTERN_LON_STEP = 0.42
+INTEGRATED_LAND_PATTERN_LAT_STEP = 0.38
+INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.46
+ATLAS_ROUTE_DOT_SPACING_SCALE = 1.75
+ATLAS_ROUTE_DOT_MIN_RADIUS = 4
 EXPORT_MASSIF_SOURCE_LAYERS = True
 MASSIF_SOURCE_MANIFEST = []
 
@@ -528,8 +533,8 @@ ATLAS_FOREST_MASSES = [
         "id": "spreewald_lausitz",
         "label": "Spreewald and Lausitz",
         "clusters": [
-            ("atlas_forest_mixed_wide", 13.95, 51.86, 92),
-            ("atlas_forest_deciduous_dense", 14.38, 51.52, 90),
+            ("atlas_forest_mixed_wide", 13.95, 51.86, 104),
+            ("atlas_forest_deciduous_dense", 14.38, 51.52, 104),
         ],
     },
     {
@@ -537,7 +542,7 @@ ATLAS_FOREST_MASSES = [
         "label": "Teutoburg and Weser uplands",
         "clusters": [
             ("atlas_forest_mixed_tall", 8.65, 52.08, 104),
-            ("atlas_forest_pine_small", 9.36, 51.72, 90),
+            ("atlas_forest_pine_small", 9.36, 51.72, 100),
         ],
     },
     {
@@ -545,7 +550,7 @@ ATLAS_FOREST_MASSES = [
         "label": "Sauerland and Rothaar",
         "clusters": [
             ("atlas_forest_rocky_mixed", 8.05, 51.18, 118),
-            ("atlas_forest_mixed_large", 8.52, 50.96, 90),
+            ("atlas_forest_mixed_large", 8.52, 50.96, 100),
         ],
     },
     {
@@ -553,7 +558,7 @@ ATLAS_FOREST_MASSES = [
         "label": "Eifel and Ardennes edge",
         "clusters": [
             ("atlas_forest_mixed_wide", 6.52, 50.28, 118),
-            ("atlas_forest_pine_dense", 7.05, 50.10, 86),
+            ("atlas_forest_pine_dense", 7.05, 50.10, 100),
         ],
     },
     {
@@ -561,7 +566,7 @@ ATLAS_FOREST_MASSES = [
         "label": "Spessart and Odenwald",
         "clusters": [
             ("atlas_forest_deciduous_dense", 9.35, 50.03, 104),
-            ("atlas_forest_mixed_tall", 8.82, 49.66, 92),
+            ("atlas_forest_mixed_tall", 8.82, 49.66, 100),
         ],
     },
     {
@@ -569,15 +574,15 @@ ATLAS_FOREST_MASSES = [
         "label": "Thuringian Forest",
         "clusters": [
             ("atlas_forest_rocky_pine", 10.82, 50.74, 118),
-            ("atlas_forest_pine_round", 11.36, 50.58, 88),
+            ("atlas_forest_pine_round", 11.36, 50.58, 100),
         ],
     },
     {
         "id": "franconian_swabian_uplands",
         "label": "Franconian and Swabian uplands",
         "clusters": [
-            ("atlas_forest_pine_dense", 10.55, 49.45, 92),
-            ("atlas_forest_deciduous_dense", 9.58, 48.62, 94),
+            ("atlas_forest_pine_dense", 10.55, 49.45, 100),
+            ("atlas_forest_deciduous_dense", 9.58, 48.62, 100),
         ],
     },
     {
@@ -585,7 +590,7 @@ ATLAS_FOREST_MASSES = [
         "label": "Upper Bavaria foothill forests",
         "clusters": [
             ("atlas_forest_rocky_mixed", 11.34, 48.02, 96),
-            ("atlas_forest_rocky_pine", 12.15, 48.10, 92),
+            ("atlas_forest_rocky_pine", 12.15, 48.10, 100),
         ],
     },
 ]
@@ -614,7 +619,7 @@ ATLAS_DETAIL_KIND_SCALE = {
     "watermill": 1.55,
     "windmill": 1.55,
 }
-MIN_ATLAS_DETAIL_WIDTH = 86
+MIN_ATLAS_DETAIL_WIDTH = 104
 DEFAULT_ATLAS_DETAIL_KINDS = {"bridge", "port", "ship"}
 
 
@@ -687,6 +692,11 @@ def audit_geography_layers():
         _audit_point(errors, bounds_poly, detail["lon"], detail["lat"], f"detail:{detail['id']}")
         if str(detail["glyph"]).startswith(("alps_", "border_highland", "highland_forest")):
             errors.append(f"atlas detail {detail['id']} must not use relief glyph {detail['glyph']}")
+        if detail["kind"] in DEFAULT_ATLAS_DETAIL_KINDS:
+            kind_scale = ATLAS_DETAIL_KIND_SCALE.get(detail["kind"], 1.0)
+            target_width = max(MIN_ATLAS_DETAIL_WIDTH, detail["width"] * kind_scale)
+            if target_width < MIN_ATLAS_DETAIL_WIDTH:
+                errors.append(f"default atlas detail {detail['id']} is too small for the default map")
 
     for forest_mass in ATLAS_FOREST_MASSES:
         for glyph_name, lon, lat, width in forest_mass["clusters"]:
@@ -695,6 +705,14 @@ def audit_geography_layers():
                 errors.append(f"forest mass {forest_mass['id']} uses non-forest glyph {glyph_name}")
             if width < FOREST_CLUSTER_MIN_SOURCE_WIDTH:
                 errors.append(f"forest mass {forest_mass['id']} cluster {glyph_name} is too small for the default map")
+            display_width = max(FOREST_MASS_MIN_WIDTH, int(width * FOREST_MASS_VISUAL_SCALE))
+            if display_width < FOREST_MASS_MIN_WIDTH:
+                errors.append(f"forest mass {forest_mass['id']} cluster {glyph_name} renders below the forest readability minimum")
+    for region in RELIEF_REGIONS:
+        for lon, lat, tree_size in region.get("trees", []):
+            _audit_point(errors, bounds_poly, lon, lat, f"relief tree:{region['id']}")
+            if _relief_tree_cluster_width(tree_size) < RELIEF_TREE_CLUSTER_MIN_WIDTH:
+                errors.append(f"relief tree cluster in {region['id']} is too small for the default map")
     for glyph_name, lon, lat, width in ATLAS_LAND_DETAIL_PATCHES:
         _audit_point(errors, bounds_poly, lon, lat, f"land detail:{glyph_name}")
         if not str(glyph_name).startswith("atlas_land_"):
@@ -1106,36 +1124,36 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
                 fill=color,
             )
 
-    for y in range(0, height, 18 * RENDER_SCALE):
-        for x in range(0, width, 18 * RENDER_SCALE):
+    for y in range(0, height, 42 * RENDER_SCALE):
+        for x in range(0, width, 46 * RENDER_SCALE):
             seed = _stable_hash("land_texture", x // RENDER_SCALE, y // RENDER_SCALE)
-            alpha = 14 + seed % 18
+            alpha = 8 + seed % 10
             if seed % 5 == 0:
                 color = (219, 203, 132, alpha)
             elif seed % 5 in (1, 2):
                 color = (78, 112, 62, alpha)
             else:
                 color = (91, 84, 50, alpha)
-            rr = (1 + seed % 3) * RENDER_SCALE
-            jitter_x = ((seed >> 8) % 11 - 5) * RENDER_SCALE
-            jitter_y = ((seed >> 16) % 11 - 5) * RENDER_SCALE
-            draw.ellipse((x + jitter_x - rr, y + jitter_y - rr, x + jitter_x + rr, y + jitter_y + rr), fill=color)
-            if seed % 7 == 0:
-                blade_h = (4 + (seed >> 21) % 5) * RENDER_SCALE
-                blade_x = x + jitter_x + ((seed >> 24) % 9 - 4) * RENDER_SCALE
-                blade_y = y + jitter_y
+            jitter_x = ((seed >> 8) % 17 - 8) * RENDER_SCALE
+            jitter_y = ((seed >> 16) % 17 - 8) * RENDER_SCALE
+            if seed % 3 == 0:
+                patch_w = (18 + (seed >> 21) % 13) * RENDER_SCALE
+                patch_h = (8 + (seed >> 25) % 7) * RENDER_SCALE
                 draw.arc(
                     (
-                        blade_x - 4 * RENDER_SCALE,
-                        blade_y - blade_h,
-                        blade_x + 4 * RENDER_SCALE,
-                        blade_y + blade_h,
+                        x + jitter_x - patch_w,
+                        y + jitter_y - patch_h,
+                        x + jitter_x + patch_w,
+                        y + jitter_y + patch_h,
                     ),
                     215,
                     330,
-                    fill=(62, 98, 51, 24),
+                    fill=color,
                     width=max(1, RENDER_SCALE),
                 )
+            else:
+                rr = (3 + seed % 5) * RENDER_SCALE
+                draw.ellipse((x + jitter_x - rr, y + jitter_y - rr, x + jitter_x + rr, y + jitter_y + rr), fill=color)
 
     for y in range(0, height, 72 * RENDER_SCALE):
         x_offset = ((y // (72 * RENDER_SCALE)) % 2) * 36 * RENDER_SCALE
@@ -1462,27 +1480,25 @@ def _draw_ground_texture(canvas, proj, germany_mask, germany_geom):
         lat_index = 0
         while lat <= 55.25:
             seed = _stable_hash(lon_index, lat_index)
-            jitter_lon = ((seed & 255) / 255.0 - 0.5) * 0.32
-            jitter_lat = (((seed >> 8) & 255) / 255.0 - 0.5) * 0.24
+            jitter_lon = ((seed & 255) / 255.0 - 0.5) * 0.26
+            jitter_lat = (((seed >> 8) & 255) / 255.0 - 0.5) * 0.22
             point_lon = lon + jitter_lon
             point_lat = lat + jitter_lat
             if germany_geom.contains(Point(point_lon, point_lat)):
                 x, y = _project_point(proj, point_lon, point_lat)
                 kind = seed % 9
-                scale = RENDER_SCALE
                 if kind in (0, 1, 2):
-                    color = (76, 112, 62, 80) if point_lat < 52.0 else (91, 111, 66, 64)
-                    _draw_tuft(draw, x, y, 8 + seed % 9, color)
+                    color = (76, 112, 62, 46) if point_lat < 52.0 else (91, 111, 66, 38)
+                    _draw_tuft(draw, x, y, 17 + seed % 10, color)
                 elif kind in (3, 4, 5) and point_lat < 51.8:
-                    _draw_hill_mark(draw, x, y, 16 + seed % 12, (113, 100, 73, 70))
+                    _draw_hill_mark(draw, x, y, 24 + seed % 14, (113, 100, 73, 46))
                 elif kind == 6:
-                    rr = (2 + seed % 3) * scale
-                    draw.ellipse((x - rr, y - rr, x + rr, y + rr), fill=(70, 103, 77, 58))
+                    _draw_hill_mark(draw, x, y, 19 + seed % 10, (70, 103, 77, 32))
                 else:
-                    _draw_tuft(draw, x, y, 6 + seed % 7, (87, 110, 68, 48))
-            lat += 0.34
+                    _draw_tuft(draw, x, y, 15 + seed % 9, (87, 110, 68, 30))
+            lat += GROUND_TEXTURE_LAT_STEP
             lat_index += 1
-        lon += 0.38
+        lon += GROUND_TEXTURE_LON_STEP
         lon_index += 1
 
     alpha = Image.composite(layer.getchannel("A"), Image.new("L", canvas.size, 0), germany_mask)
@@ -1508,7 +1524,7 @@ def _draw_integrated_land_pattern(canvas, proj, germany_mask, germany_geom):
             if germany_geom.contains(Point(point_lon, point_lat)):
                 x, y = _project_point(proj, point_lon, point_lat)
                 kind = seed % 12
-                size = 7 + ((seed >> 16) % 9)
+                size = 13 + ((seed >> 16) % 11)
                 if point_lat > 52.2 and kind in (3, 4, 8):
                     kind = 1
                 if point_lat < 48.7 and kind in (0, 1, 2):
@@ -1530,10 +1546,10 @@ def _draw_integrated_land_pattern(canvas, proj, germany_mask, germany_geom):
 def _draw_land_pattern_mark(draw, x, y, size, kind, seed):
     s = size * RENDER_SCALE
     line_width = max(1, RENDER_SCALE)
-    warm_grass = (88, 112, 63, 52)
-    dry_grass = (166, 150, 82, 45)
-    earth = (104, 91, 57, 42)
-    shadow_green = (61, 93, 55, 40)
+    warm_grass = (88, 112, 63, 36)
+    dry_grass = (166, 150, 82, 32)
+    earth = (104, 91, 57, 30)
+    shadow_green = (61, 93, 55, 28)
 
     if kind in (0, 1, 2):
         color = warm_grass if kind != 2 else shadow_green
@@ -1563,18 +1579,14 @@ def _draw_land_pattern_mark(draw, x, y, size, kind, seed):
                 (x - s // 2, y - s // 4, x + s // 2, y + s // 3),
                 205,
                 335,
-                fill=(76, 103, 61, 34),
+                fill=(76, 103, 61, 24),
                 width=line_width,
             )
     elif kind in (8, 9):
-        color = (92, 96, 64, 42)
-        for index in range(3):
-            ox = ((seed >> (index * 4)) % 9 - 4) * RENDER_SCALE
-            oy = ((seed >> (index * 5 + 12)) % 7 - 3) * RENDER_SCALE
-            rr = max(RENDER_SCALE, s // (5 + index))
-            draw.ellipse((x + ox - rr, y + oy - rr, x + ox + rr, y + oy + rr), fill=color)
+        color = (92, 96, 64, 26)
+        draw.arc((x - s, y - s // 3, x + s, y + s // 2), 205, 335, fill=color, width=line_width)
     else:
-        color = (72, 105, 60, 42)
+        color = (72, 105, 60, 28)
         draw.line((x, y - s // 2, x - s // 2, y + s // 2), fill=color, width=line_width)
         draw.line((x, y - s // 2, x + s // 2, y + s // 2), fill=color, width=line_width)
 
@@ -1676,7 +1688,11 @@ def _draw_tree_cluster(canvas, proj, lon, lat, radius):
     x, y = _project_point(proj, lon, lat)
     glyphs = ["forest_cluster_1", "forest_cluster_2", "forest_cluster_3", "forest_cluster_4", "forest_cluster_5", "forest_cluster_6"]
     glyph = glyphs[_stable_hash(round(lon, 2), round(lat, 2), int(radius)) % len(glyphs)]
-    _draw_glyph_at(canvas, glyph, x, y, radius * 2.0)
+    _draw_glyph_at(canvas, glyph, x, y, _relief_tree_cluster_width(radius))
+
+
+def _relief_tree_cluster_width(radius):
+    return max(RELIEF_TREE_CLUSTER_MIN_WIDTH, radius * 2.0)
 
 
 def _draw_alpine_ridge_band(canvas, proj, ridge_band):
@@ -2291,11 +2307,11 @@ def _draw_atlas_dotted_route(draw, points, step):
     for point in points[1:]:
         segment_length = math.dist(last_point, point)
         distance_since_dot += segment_length
-        if distance_since_dot >= step * RENDER_SCALE:
-            rr = (2 if dot_index % 3 else 3) * RENDER_SCALE
-            draw.ellipse((point[0] - rr, point[1] - rr, point[0] + rr, point[1] + rr), fill=(64, 46, 25, 118))
+        if distance_since_dot >= step * RENDER_SCALE * ATLAS_ROUTE_DOT_SPACING_SCALE:
+            rr = (ATLAS_ROUTE_DOT_MIN_RADIUS + (1 if dot_index % 3 == 0 else 0)) * RENDER_SCALE
+            draw.ellipse((point[0] - rr, point[1] - rr, point[0] + rr, point[1] + rr), fill=(64, 46, 25, 104))
             inner = max(1, rr - RENDER_SCALE)
-            draw.ellipse((point[0] - inner, point[1] - inner, point[0] + inner, point[1] + inner), fill=(224, 195, 121, 168))
+            draw.ellipse((point[0] - inner, point[1] - inner, point[0] + inner, point[1] + inner), fill=(224, 195, 121, 132))
             distance_since_dot = 0.0
             dot_index += 1
         last_point = point

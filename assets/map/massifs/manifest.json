@@ -2,7 +2,7 @@
   "layers": [
     {
       "cropped_size_px": [
-        383,
+        387,
         846
       ],
       "extends_to": [],
@@ -10,7 +10,7 @@
         "max_latitude": 49.40465,
         "max_longitude": 8.6,
         "min_latitude": 47.62168,
-        "min_longitude": 7.38082
+        "min_longitude": 7.36809
       },
       "glyphs": [
         {
@@ -26,7 +26,7 @@
       "kind": "forested_highland",
       "label": "Black Forest",
       "map_bbox_px": [
-        452.5,
+        450.5,
         1658.5,
         644.0,
         2081.5
@@ -56,7 +56,7 @@
         }
       ],
       "render_bbox_px": [
-        905,
+        901,
         3317,
         1288,
         4163
@@ -606,7 +606,7 @@
     {
       "cropped_size_px": [
         3208,
-        1123
+        1199
       ],
       "extends_to": [
         "France",
@@ -616,7 +616,7 @@
         "Slovenia"
       ],
       "geo_bounds": {
-        "max_latitude": 48.44297,
+        "max_latitude": 48.60314,
         "max_longitude": 16.03921,
         "min_latitude": 46.01714,
         "min_longitude": 5.82741
@@ -628,7 +628,7 @@
       "label": "Alps",
       "map_bbox_px": [
         208.5,
-        1888.5,
+        1850.5,
         1812.5,
         2450.0
       ],
@@ -696,7 +696,7 @@
       ],
       "render_bbox_px": [
         417,
-        3777,
+        3701,
         3625,
         4900
       ],
@@ -804,17 +804,17 @@
     },
     {
       "cropped_size_px": [
-        455,
-        416
+        476,
+        434
       ],
       "extends_to": [
         "Czechia",
         "Austria"
       ],
       "geo_bounds": {
-        "max_latitude": 49.73893,
-        "max_longitude": 13.5722,
-        "min_latitude": 48.87593,
+        "max_latitude": 49.7451,
+        "max_longitude": 13.63905,
+        "min_latitude": 48.84453,
         "min_longitude": 12.12384
       },
       "glyphs": [
@@ -832,9 +832,9 @@
       "label": "Bavarian Forest",
       "map_bbox_px": [
         1197.5,
-        1577.5,
-        1425.0,
-        1785.5
+        1576.0,
+        1435.5,
+        1793.0
       ],
       "massif_segments": [],
       "placement_policy": "named_region_polygon_and_ridge_spine",
@@ -862,9 +862,9 @@
       ],
       "render_bbox_px": [
         2395,
-        3155,
-        2850,
-        3571
+        3152,
+        2871,
+        3586
       ],
       "replacement_status": "needs_custom_forest_highland_asset",
       "ridge_bands": [
@@ -908,11 +908,11 @@
     {
       "cropped_size_px": [
         443,
-        462
+        465
       ],
       "extends_to": [],
       "geo_bounds": {
-        "max_latitude": 52.24752,
+        "max_latitude": 52.25336,
         "max_longitude": 11.33439,
         "min_latitude": 51.33834,
         "min_longitude": 9.92422
@@ -939,7 +939,7 @@
       "label": "Harz",
       "map_bbox_px": [
         852.0,
-        951.0,
+        949.5,
         1073.5,
         1182.0
       ],
@@ -973,7 +973,7 @@
       ],
       "render_bbox_px": [
         1704,
-        1902,
+        1899,
         2147,
         2364
       ],
@@ -1043,13 +1043,13 @@
     {
       "cropped_size_px": [
         605,
-        273
+        297
       ],
       "extends_to": [
         "Czechia"
       ],
       "geo_bounds": {
-        "max_latitude": 51.12116,
+        "max_latitude": 51.16906,
         "max_longitude": 14.46033,
         "min_latitude": 50.5727,
         "min_longitude": 12.53447
@@ -1076,7 +1076,7 @@
       "label": "Erzgebirge",
       "map_bbox_px": [
         1262.0,
-        1236.5,
+        1224.5,
         1564.5,
         1373.0
       ],
@@ -1106,7 +1106,7 @@
       ],
       "render_bbox_px": [
         2524,
-        2473,
+        2449,
         3129,
         2746
       ],
@@ -1146,17 +1146,17 @@
     },
     {
       "cropped_size_px": [
-        262,
-        154
+        274,
+        265
       ],
       "extends_to": [
         "Czechia"
       ],
       "geo_bounds": {
-        "max_latitude": 51.1531,
-        "max_longitude": 14.59402,
-        "min_latitude": 50.84472,
-        "min_longitude": 13.76002
+        "max_latitude": 51.2926,
+        "max_longitude": 14.61949,
+        "min_latitude": 50.76228,
+        "min_longitude": 13.74728
       },
       "glyphs": [
         {
@@ -1172,10 +1172,10 @@
       "kind": "sandstone_highland",
       "label": "Saxon Switzerland / Elbe Sandstone",
       "map_bbox_px": [
-        1454.5,
-        1228.5,
-        1585.5,
-        1305.5
+        1452.5,
+        1193.5,
+        1589.5,
+        1326.0
       ],
       "massif_segments": [],
       "placement_policy": "named_sandstone_region_polygon_and_rim",
@@ -1206,10 +1206,10 @@
         }
       ],
       "render_bbox_px": [
-        2909,
-        2457,
-        3171,
-        2611
+        2905,
+        2387,
+        3179,
+        2652
       ],
       "replacement_status": "needs_custom_sandstone_asset",
       "ridge_bands": [
@@ -1247,17 +1247,17 @@
     },
     {
       "cropped_size_px": [
-        538,
-        555
+        585,
+        627
       ],
       "extends_to": [
         "Belgium",
         "Luxembourg"
       ],
       "geo_bounds": {
-        "max_latitude": 50.6817,
-        "max_longitude": 7.64185,
-        "min_latitude": 49.54937,
+        "max_latitude": 50.79849,
+        "max_longitude": 7.79146,
+        "min_latitude": 49.52046,
         "min_longitude": 5.92927
       },
       "glyphs": [],
@@ -1267,9 +1267,9 @@
       "label": "Eifel Hunsrueck",
       "map_bbox_px": [
         224.5,
-        1346.0,
-        493.5,
-        1623.5
+        1317.0,
+        517.0,
+        1630.5
       ],
       "massif_segments": [],
       "placement_policy": "named_region_polygon_and_low_spine",
@@ -1297,9 +1297,9 @@
       ],
       "render_bbox_px": [
         449,
-        2692,
-        987,
-        3247
+        2634,
+        1034,
+        3261
       ],
       "replacement_status": "needs_custom_low_highland_asset",
       "ridge_bands": [
