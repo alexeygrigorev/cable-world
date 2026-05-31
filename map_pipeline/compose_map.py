@@ -51,11 +51,13 @@ LAND_DETAIL_ALPHA_SCALE = 0.48
 LAND_DETAIL_TINT_STRENGTH = 0.28
 GROUND_TEXTURE_LON_STEP = 0.62
 GROUND_TEXTURE_LAT_STEP = 0.58
-INTEGRATED_LAND_PATTERN_LON_STEP = 0.42
-INTEGRATED_LAND_PATTERN_LAT_STEP = 0.38
-INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.46
+INTEGRATED_LAND_PATTERN_LON_STEP = 0.72
+INTEGRATED_LAND_PATTERN_LAT_STEP = 0.66
+INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.30
+INTEGRATED_LAND_PATTERN_MIN_SIZE = 22
 ATLAS_ROUTE_DOT_SPACING_SCALE = 1.75
 ATLAS_ROUTE_DOT_MIN_RADIUS = 4
+DEFAULT_ATLAS_ROUTES_ENABLED = False
 EXPORT_MASSIF_SOURCE_LAYERS = True
 MASSIF_SOURCE_MANIFEST = []
 
@@ -619,8 +621,8 @@ ATLAS_DETAIL_KIND_SCALE = {
     "watermill": 1.55,
     "windmill": 1.55,
 }
-MIN_ATLAS_DETAIL_WIDTH = 104
-DEFAULT_ATLAS_DETAIL_KINDS = {"bridge", "port", "ship"}
+MIN_ATLAS_DETAIL_WIDTH = 118
+DEFAULT_ATLAS_DETAIL_KINDS = {"ship"}
 
 
 def audit_geography_layers():
@@ -713,6 +715,8 @@ def audit_geography_layers():
             _audit_point(errors, bounds_poly, lon, lat, f"relief tree:{region['id']}")
             if _relief_tree_cluster_width(tree_size) < RELIEF_TREE_CLUSTER_MIN_WIDTH:
                 errors.append(f"relief tree cluster in {region['id']} is too small for the default map")
+    if DEFAULT_ATLAS_ROUTES_ENABLED:
+        errors.append("default atlas routes must stay hidden until route dots read above mobile screenshot scale")
     for glyph_name, lon, lat, width in ATLAS_LAND_DETAIL_PATCHES:
         _audit_point(errors, bounds_poly, lon, lat, f"land detail:{glyph_name}")
         if not str(glyph_name).startswith("atlas_land_"):
@@ -1524,7 +1528,7 @@ def _draw_integrated_land_pattern(canvas, proj, germany_mask, germany_geom):
             if germany_geom.contains(Point(point_lon, point_lat)):
                 x, y = _project_point(proj, point_lon, point_lat)
                 kind = seed % 12
-                size = 13 + ((seed >> 16) % 11)
+                size = INTEGRATED_LAND_PATTERN_MIN_SIZE + ((seed >> 16) % 11)
                 if point_lat > 52.2 and kind in (3, 4, 8):
                     kind = 1
                 if point_lat < 48.7 and kind in (0, 1, 2):
@@ -2381,7 +2385,8 @@ def main():
     _draw_named_water_bodies(canvas, proj, germany_mask)
     _draw_atlas_land_detail_patches(canvas, proj, germany_mask)
     _draw_atlas_forest_masses(canvas, proj, land_mask)
-    _draw_atlas_routes(canvas, proj, germany_mask)
+    if DEFAULT_ATLAS_ROUTES_ENABLED:
+        _draw_atlas_routes(canvas, proj, germany_mask)
     _draw_atlas_details(canvas, proj)
     _draw_neighbor_country_labels(canvas, proj, neighbor_mask)
     _draw_map_labels(canvas, proj, germany_mask)

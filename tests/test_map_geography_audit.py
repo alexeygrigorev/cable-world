@@ -58,6 +58,7 @@ class MapGeographyAuditTest(unittest.TestCase):
             ATLAS_DETAILS,
             ATLAS_ROUTE_DOT_MIN_RADIUS,
             ATLAS_ROUTE_DOT_SPACING_SCALE,
+            DEFAULT_ATLAS_ROUTES_ENABLED,
             DEFAULT_ATLAS_DETAIL_KINDS,
             FOREST_CLUSTER_MIN_SOURCE_WIDTH,
             FOREST_MASS_MIN_WIDTH,
@@ -65,24 +66,29 @@ class MapGeographyAuditTest(unittest.TestCase):
             ATLAS_FOREST_MASSES,
             GROUND_TEXTURE_LAT_STEP,
             GROUND_TEXTURE_LON_STEP,
+            INTEGRATED_LAND_PATTERN_ALPHA_SCALE,
             INTEGRATED_LAND_PATTERN_LAT_STEP,
             INTEGRATED_LAND_PATTERN_LON_STEP,
+            INTEGRATED_LAND_PATTERN_MIN_SIZE,
             MIN_ATLAS_DETAIL_WIDTH,
             RELIEF_REGIONS,
             RELIEF_TREE_CLUSTER_MIN_WIDTH,
             _relief_tree_cluster_width,
         )
 
-        self.assertEqual({"bridge", "port", "ship"}, DEFAULT_ATLAS_DETAIL_KINDS)
-        self.assertGreaterEqual(MIN_ATLAS_DETAIL_WIDTH, 104)
+        self.assertEqual({"ship"}, DEFAULT_ATLAS_DETAIL_KINDS)
+        self.assertFalse(DEFAULT_ATLAS_ROUTES_ENABLED)
+        self.assertGreaterEqual(MIN_ATLAS_DETAIL_WIDTH, 118)
         for detail in ATLAS_DETAILS:
             if detail["kind"] in DEFAULT_ATLAS_DETAIL_KINDS:
-                self.assertNotIn(detail["kind"], {"castle", "chapel", "lighthouse", "ruins", "tower", "village", "watermill", "windmill"})
+                self.assertNotIn(detail["kind"], {"bridge", "castle", "chapel", "lighthouse", "port", "ruins", "tower", "village", "watermill", "windmill"})
 
         self.assertGreaterEqual(GROUND_TEXTURE_LON_STEP, 0.60)
         self.assertGreaterEqual(GROUND_TEXTURE_LAT_STEP, 0.56)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LON_STEP, 0.40)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LAT_STEP, 0.36)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LON_STEP, 0.70)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LAT_STEP, 0.64)
+        self.assertLessEqual(INTEGRATED_LAND_PATTERN_ALPHA_SCALE, 0.32)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_MIN_SIZE, 22)
         self.assertGreaterEqual(ATLAS_ROUTE_DOT_SPACING_SCALE, 1.50)
         self.assertGreaterEqual(ATLAS_ROUTE_DOT_MIN_RADIUS, 4)
 
