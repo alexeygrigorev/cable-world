@@ -82,3 +82,12 @@ Replace the current baked Germany underlay with a cleaner composed map:
 - keep or regenerate glyphs for Alps, Harz, Saxon Switzerland, forests, lakes, ships, and decorative atlas details;
 - place those glyphs explicitly in `map_pipeline`;
 - keep runtime city landmarks and transport objects as the only city/object layer.
+
+Current reproducible commands:
+
+```bash
+uv run python -m map_pipeline.generate_map_detail_glyphs
+uv run python -m map_pipeline.compose_map
+godot --headless --path . --import --quit
+PORT=9000 scripts/serve-web.sh
+```

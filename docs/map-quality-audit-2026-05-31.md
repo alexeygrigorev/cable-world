@@ -305,3 +305,11 @@ Glyph-pipeline first cut:
 - Runtime city landmarks are now the only city layer visible over the base.
 
 Rubric estimate remains around 6/10. This removes a structural blocker, but the map still needs more high-quality explicit glyph layers before it looks rich enough.
+
+Atlas detail glyph iteration:
+
+- Added reproducible glyph generation for ships, ports, bridges, castles, and a tower.
+- Added explicit `ATLAS_DETAILS` placement data instead of embedding those details in a whole generated bitmap.
+- The details are intentionally small so they add life without becoming city markers or competing with runtime transport icons.
+
+Rubric estimate remains around 6/10. The architecture is now more correct, but visual richness still needs more region-specific glyph work.

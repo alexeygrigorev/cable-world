@@ -261,3 +261,26 @@ Evidence:
 - `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
 
 Self-audit: still around `6/10`. This is an architectural correction, not a final visual win. The map is cleaner and expandable, but now needs more explicit glyph detail layers: Saxon Switzerland / Elbe Sandstone, ships/ports, better forest/lake density, and cross-border relief continuity.
+
+## Iteration 2026-05-31 16:02
+
+Implemented:
+
+- Added `map_pipeline.generate_map_detail_glyphs`, a reproducible generator for small transparent atlas detail glyphs:
+  - `detail_ship`
+  - `detail_port`
+  - `detail_bridge`
+  - `detail_castle`
+  - `detail_tower`
+- Added `ATLAS_DETAILS` to `map_pipeline.compose_map`, with explicit `id`, `kind`, `glyph`, `lon`, `lat`, `width`, and `region`.
+- Replaced procedural castle drawing with data-driven detail glyph placement.
+- Added first ships/ports/bridges/castles/tower without adding baked city clutter.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows ships/ports/castles as small atlas details while runtime city landmarks remain the only city layer.
+- `assets/map/germany_styled.png`: about 276 KB.
+- `build/web/index.pck`: about 7.1 MB gzip.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Cache-Control: no-store`.
+
+Self-audit: still around `6/10`. This improves the production architecture and adds visual detail, but the map still needs stronger art direction, better regional density, and a relief/lake/city-position audit before claiming `8/10`.

@@ -141,6 +141,22 @@ RELIEF_REGIONS = [
     },
 ]
 
+ATLAS_DETAILS = [
+    {"id": "north_sea_sail", "kind": "ship", "glyph": "detail_ship", "lon": 7.85, "lat": 54.28, "width": 52, "region": "north_sea"},
+    {"id": "kiel_ferry", "kind": "ship", "glyph": "detail_ship", "lon": 10.28, "lat": 54.42, "width": 46, "region": "baltic_sea"},
+    {"id": "rostock_ferry", "kind": "ship", "glyph": "detail_ship", "lon": 12.25, "lat": 54.22, "width": 46, "region": "baltic_sea"},
+    {"id": "hamburg_port", "kind": "port", "glyph": "detail_port", "lon": 9.90, "lat": 53.48, "width": 54, "region": "lower_elbe"},
+    {"id": "luebeck_port", "kind": "port", "glyph": "detail_port", "lon": 10.82, "lat": 53.95, "width": 42, "region": "baltic_sea"},
+    {"id": "rhein_bridge", "kind": "bridge", "glyph": "detail_bridge", "lon": 6.96, "lat": 50.94, "width": 48, "region": "rhein"},
+    {"id": "dresden_elbe_bridge", "kind": "bridge", "glyph": "detail_bridge", "lon": 13.74, "lat": 51.05, "width": 42, "region": "elbe"},
+    {"id": "heidelberg_castle", "kind": "castle", "glyph": "detail_castle", "lon": 8.7150, "lat": 49.4106, "width": 44, "region": "neckar"},
+    {"id": "wartburg_castle", "kind": "castle", "glyph": "detail_castle", "lon": 10.3067, "lat": 50.9669, "width": 40, "region": "thuringian_forest"},
+    {"id": "hohenzollern_castle", "kind": "castle", "glyph": "detail_castle", "lon": 8.9678, "lat": 48.3232, "width": 38, "region": "swabian_alb"},
+    {"id": "neuschwanstein_castle", "kind": "castle", "glyph": "detail_castle", "lon": 10.7498, "lat": 47.5576, "width": 42, "region": "alps"},
+    {"id": "schwerin_castle", "kind": "castle", "glyph": "detail_castle", "lon": 11.4175, "lat": 53.6244, "width": 40, "region": "north_german_plain"},
+    {"id": "harz_tower", "kind": "tower", "glyph": "detail_tower", "lon": 10.62, "lat": 51.80, "width": 34, "region": "harz"},
+]
+
 
 def _scale_size(size):
     return (size[0] * RENDER_SCALE, size[1] * RENDER_SCALE)
@@ -337,16 +353,22 @@ def _draw_terrain(canvas, proj, land_mask):
         (13.8, 51.85, 28),
     ]:
         _draw_marsh_patch(draw, proj, lon, lat, size)
-    for lon, lat, size in [
-        (8.7150, 49.4106, 24),   # Heidelberg Schloss
-        (10.3067, 50.9669, 22),  # Wartburg
-        (8.9678, 48.3232, 20),   # Hohenzollern
-        (10.7498, 47.5576, 24),  # Neuschwanstein
-        (11.4175, 53.6244, 20),  # Schwerin Schloss
-    ]:
-        _draw_castle_marker(draw, proj, lon, lat, size)
 
     canvas.alpha_composite(decor)
+
+
+def _draw_atlas_details(canvas, proj):
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    for detail in ATLAS_DETAILS:
+        _draw_glyph_center(
+            layer,
+            proj,
+            detail["glyph"],
+            detail["lon"],
+            detail["lat"],
+            detail["width"],
+        )
+    canvas.alpha_composite(layer)
 
 
 def _stable_hash(*values) -> int:
@@ -686,6 +708,7 @@ def main():
     _draw_ground_texture(canvas, proj, germany_mask, germany)
     _draw_lakes(canvas, proj, germany_mask)
     _draw_waterways(canvas, proj, germany_mask)
+    _draw_atlas_details(canvas, proj)
     _draw_routes(canvas, proj, germany_mask)
     _draw_map_labels(canvas, proj, germany_mask)
     _draw_country_border_overlay(canvas, proj, germany)
