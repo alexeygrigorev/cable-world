@@ -18,6 +18,8 @@ __pycache__/
 *.sqlite3
 *.db
 
+.env
+
 # Системные и редакторские файлы
 .DS_Store
 Thumbs.db
