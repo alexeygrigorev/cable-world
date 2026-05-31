@@ -25,6 +25,8 @@ class OfflineMapLayer:
 		{"name": "Harz", "coordinates": Vector2(10.56, 51.80)},
 		{"name": "Zugspitze", "coordinates": Vector2(10.99, 47.43)},
 		{"name": "Alps", "coordinates": Vector2(11.70, 47.12)},
+		{"name": "Müritz", "coordinates": Vector2(12.75, 53.43)},
+		{"name": "Rügen", "coordinates": Vector2(13.38, 54.45)},
 	]
 
 	func _draw() -> void:
@@ -145,6 +147,7 @@ class OfflineMapLayer:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, scaled_size)
 		var position := Vector2(center_x - text_size.x * 0.5, baseline_y)
+		position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))
 		_draw_label_text(font, text, position, font_size, text_color, shadow_color)
 
 	func _geo_to_screen(coordinates: Vector2) -> Vector2:
@@ -194,6 +197,9 @@ class OfflineMapLayer:
 
 const MARKER_SIZE := Vector2(44.0, 44.0)
 const ICON_MARKER_SIZE := Vector2(52.0, 52.0)
+const MARKER_ZOOM_SIZE_MIN := 48.0
+const MARKER_ZOOM_SIZE_MAX := 78.0
+const CLUSTER_MARKER_ZOOM_SIZE_MAX := 70.0
 const MAP_MIN_HEIGHT := 360.0
 const MAP_VIEW_HEIGHT := 720.0
 const MAP_LANDSCAPE_MIN_HEIGHT := 320.0
@@ -210,7 +216,7 @@ const MAP_FILTER_VISITED := "visited"
 const MAP_FILTER_NOT_VISITED := "not_visited"
 const MAP_SCOPE_GERMANY := "germany"
 const MAP_SCOPE_ALL := "all"
-const GERMANY_INITIAL_FOCUS_COORDINATES := Vector2(11.35, 51.45)
+const GERMANY_INITIAL_FOCUS_COORDINATES := Vector2(10.70, 51.45)
 const TRANSPORT_TYPE_ICON := {
 	"cable_gondola": "icon_cable_gondola",
 	"cable_aerial_tram": "icon_aerial_tram",
@@ -468,6 +474,9 @@ func _position_markers() -> void:
 		marker.add_theme_font_size_override("font_size", 20)
 		marker.add_theme_color_override("font_color", Color("#ffffff") if index == selected_index else Color("#10231f"))
 		marker.add_theme_color_override("font_pressed_color", Color("#ffffff"))
+		var is_cluster_marker := clusters.has(index)
+		var marker_size := _marker_visual_size(is_cluster_marker)
+		_apply_marker_visual_size(marker, marker_size)
 		_apply_marker_style(marker, index == selected_index)
 		marker.tooltip_text = "%s: %s" % [
 			"Выбранный объект" if index == selected_index else "Выбрать объект",
@@ -488,17 +497,19 @@ func _position_markers() -> void:
 			marker.set_meta("cluster_indices", cluster_indices)
 			marker.set_meta("cluster_center", base_position)
 			marker.set_meta("is_cluster_marker", cluster_indices.size() > 1)
+			marker_size = _marker_visual_size(cluster_indices.size() > 1)
+			_apply_marker_visual_size(marker, marker_size)
 			_apply_cluster_marker_style(marker, cluster_indices)
 
 		if not _coordinates_inside_bounds(coordinates, bounds):
-			marker.position = _map_point_to_screen(base_position)
+			marker.position = _map_point_to_screen(base_position, marker_size)
 			continue
 		var local_position := _local_cluster_marker_position(base_position, base_positions)
 		var clamped_position := Vector2(
 			clamp(local_position.x, MAP_PADDING, max(MAP_PADDING, map_size.x - MAP_PADDING)),
 			clamp(local_position.y, MAP_PADDING, max(MAP_PADDING, map_size.y - MAP_PADDING))
 		)
-		marker.position = _map_point_to_screen(clamped_position)
+		marker.position = _map_point_to_screen(clamped_position, marker_size)
 		base_positions.append(base_position)
 
 func _marker_clusters(bounds: Dictionary) -> Dictionary:
@@ -804,8 +815,17 @@ func _clamp_pan_offset() -> void:
 	else:
 		pan_offset.y = clamp(pan_offset.y, viewport_size.y - scaled_size.y - PAN_LIMIT_PADDING, PAN_LIMIT_PADDING)
 
-func _map_point_to_screen(point: Vector2) -> Vector2:
-	return pan_offset + point * zoom - ICON_MARKER_SIZE * 0.5
+func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZE) -> Vector2:
+	return pan_offset + point * zoom - marker_size * 0.5
+
+func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:
+	var max_size: float = CLUSTER_MARKER_ZOOM_SIZE_MAX if is_cluster_marker else MARKER_ZOOM_SIZE_MAX
+	var size_value: float = clamp(ICON_MARKER_SIZE.x * sqrt(max(zoom, 0.75)), MARKER_ZOOM_SIZE_MIN, max_size)
+	return Vector2(size_value, size_value)
+
+func _apply_marker_visual_size(marker: Button, marker_size: Vector2) -> void:
+	marker.custom_minimum_size = marker_size
+	marker.size = marker_size
 
 func _default_pan_offset() -> Vector2:
 	if map_layer == null:
@@ -898,16 +918,17 @@ func _apply_marker_style(marker: Button, is_selected: bool) -> void:
 	marker.icon = _icon_for_object(objects[int(marker.get_meta("object_index", -1))]) if int(marker.get_meta("object_index", -1)) >= 0 else null
 	marker.expand_icon = true
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color(1.0, 0.83, 0.28, 0.96) if is_selected else Color(0.97, 0.86, 0.54, 0.92)
-	normal_style.border_color = Color("#fff0a3") if is_selected else Color("#2b1b0d")
-	normal_style.shadow_color = Color(0.08, 0.05, 0.02, 0.72)
-	normal_style.shadow_size = 10 if is_selected else 8
+	normal_style.bg_color = Color(1.0, 0.74, 0.22, 0.08) if is_selected else Color(0.04, 0.03, 0.02, 0.0)
+	normal_style.border_color = Color("#fff0a3") if is_selected else Color("#f1d484")
+	normal_style.shadow_color = Color(0.03, 0.02, 0.01, 0.42)
+	normal_style.shadow_size = 5 if is_selected else 4
 	normal_style.set_border_width_all(2)
 	normal_style.set_corner_radius_all(26)
 	marker.add_theme_stylebox_override("normal", normal_style)
 
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color(1.0, 0.88, 0.42, 0.98)
+	hover_style.bg_color = Color(1.0, 0.86, 0.34, 0.12)
+	hover_style.border_color = Color("#ffe58a")
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)
@@ -915,20 +936,20 @@ func _apply_marker_style(marker: Button, is_selected: bool) -> void:
 func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:
 	marker.icon = _marker_icon_texture("icon_station")
 	marker.expand_icon = true
-	marker.text = str(cluster_indices.size())
+	marker.text = ""
 	marker.add_theme_font_size_override("font_size", 15)
 	marker.add_theme_color_override("font_color", Color("#f7e4b0"))
 	marker.add_theme_color_override("font_pressed_color", Color("#f7e4b0"))
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color(0.16, 0.10, 0.05, 0.46)
+	normal_style.bg_color = Color(0.04, 0.03, 0.02, 0.0)
 	normal_style.border_color = Color("#f2c86a")
-	normal_style.shadow_color = Color(0.05, 0.03, 0.01, 0.78)
-	normal_style.shadow_size = 10
+	normal_style.shadow_color = Color(0.03, 0.02, 0.01, 0.46)
+	normal_style.shadow_size = 5
 	normal_style.set_border_width_all(2)
 	normal_style.set_corner_radius_all(26)
 	marker.add_theme_stylebox_override("normal", normal_style)
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color(0.24, 0.14, 0.06, 0.58)
+	hover_style.bg_color = Color(1.0, 0.84, 0.32, 0.12)
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)

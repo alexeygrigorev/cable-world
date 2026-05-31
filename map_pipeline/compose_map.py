@@ -25,6 +25,90 @@ RIVER = "#3b8fa3"
 ROUTE = "#d8c17a"
 ROUTE_DARK = "#6e5832"
 
+RELIEF_REGIONS = [
+    {
+        "id": "black_forest",
+        "label": "Black Forest",
+        "kind": "forested_highland",
+        "glyph": "forested_highland",
+        "fill": (45, 101, 58, 92),
+        "blur": 24,
+        "points": [(7.45, 49.2), (8.25, 48.9), (8.55, 47.75), (7.65, 47.45), (6.95, 48.25)],
+        "trees": [(8.0, 49.0, 82), (8.15, 48.45, 76), (7.8, 47.95, 70)],
+        "mountains": [(8.05, 48.15, 34)],
+    },
+    {
+        "id": "alps",
+        "label": "Alps",
+        "kind": "cross_border_mountain",
+        "glyph": "alpine",
+        "fill": (58, 112, 63, 112),
+        "blur": 20,
+        "extends_to": ["France", "Switzerland", "Italy", "Austria", "Slovenia"],
+        "points": [(9.45, 47.85), (10.5, 47.1), (12.1, 46.95), (13.35, 47.25), (13.9, 48.0), (11.5, 48.35)],
+        "trees": [(10.0, 48.2, 44), (11.0, 48.05, 50), (12.35, 48.0, 46)],
+        "mountains": [(10.45, 47.62, 74), (11.05, 47.45, 98), (11.75, 47.50, 88), (12.55, 47.58, 70)],
+    },
+    {
+        "id": "bavarian_forest",
+        "label": "Bavarian Forest",
+        "kind": "forested_highland",
+        "glyph": "forested_highland",
+        "fill": (49, 105, 60, 80),
+        "blur": 22,
+        "extends_to": ["Czechia", "Austria"],
+        "points": [(11.8, 49.35), (12.55, 48.8), (13.7, 48.8), (13.85, 49.35), (12.7, 49.85)],
+        "trees": [(12.8, 49.35, 72), (13.2, 49.05, 62)],
+        "mountains": [(12.9, 49.2, 34)],
+    },
+    {
+        "id": "harz",
+        "label": "Harz",
+        "kind": "isolated_mountain_range",
+        "glyph": "forested_highland",
+        "fill": (73, 125, 66, 64),
+        "blur": 20,
+        "points": [(10.0, 52.05), (10.85, 52.15), (11.35, 51.65), (10.75, 51.35), (9.9, 51.55)],
+        "trees": [(10.55, 51.75, 58)],
+        "mountains": [(10.62, 51.78, 32)],
+    },
+    {
+        "id": "erzgebirge",
+        "label": "Erzgebirge",
+        "kind": "border_mountain_range",
+        "glyph": "border_highland",
+        "fill": (64, 116, 63, 74),
+        "blur": 18,
+        "extends_to": ["Czechia"],
+        "points": [(12.3, 50.95), (13.15, 50.45), (14.65, 50.45), (14.9, 50.85), (13.55, 51.15)],
+        "trees": [(13.75, 50.85, 62)],
+        "mountains": [(13.25, 50.62, 36), (14.05, 50.7, 30)],
+    },
+    {
+        "id": "eifel_hunsrueck",
+        "label": "Eifel Hunsrueck",
+        "kind": "low_highland",
+        "glyph": "low_highland",
+        "fill": (61, 112, 60, 58),
+        "blur": 24,
+        "extends_to": ["Belgium", "Luxembourg"],
+        "points": [(5.9, 50.8), (7.7, 50.55), (7.75, 49.65), (6.25, 49.45), (5.55, 50.1)],
+        "trees": [(7.05, 49.75, 64), (7.35, 50.45, 48)],
+        "mountains": [],
+    },
+    {
+        "id": "northern_lowlands",
+        "label": "North German Plain",
+        "kind": "lowland",
+        "glyph": "lowland",
+        "fill": (178, 154, 75, 64),
+        "blur": 36,
+        "points": [(5.4, 54.6), (14.9, 54.85), (14.4, 52.65), (5.8, 52.65)],
+        "trees": [(8.0, 53.25, 34), (10.0, 53.05, 36), (11.7, 53.2, 32), (12.8, 53.1, 30)],
+        "mountains": [],
+    },
+]
+
 
 def _scale_size(size):
     return (size[0] * RENDER_SCALE, size[1] * RENDER_SCALE)
@@ -163,54 +247,28 @@ def _soft_region(canvas, mask, points, fill, blur=26):
 
 
 def _draw_terrain(canvas, proj, germany_mask):
-    _soft_region(
-        canvas,
-        germany_mask,
-        [_project_point(proj, 7.0, 49.4), _project_point(proj, 9.1, 48.0), _project_point(proj, 8.2, 47.3), _project_point(proj, 6.2, 48.2)],
-        (46, 103, 59, 92),
-    )
-    _soft_region(
-        canvas,
-        germany_mask,
-        [_project_point(proj, 9.8, 48.0), _project_point(proj, 13.6, 47.2), _project_point(proj, 14.9, 48.9), _project_point(proj, 11.4, 49.4)],
-        (52, 115, 62, 98),
-    )
-    _soft_region(
-        canvas,
-        germany_mask,
-        [_project_point(proj, 9.0, 51.9), _project_point(proj, 11.2, 52.2), _project_point(proj, 12.4, 50.6), _project_point(proj, 10.0, 50.0)],
-        (70, 123, 64, 78),
-    )
-    _soft_region(
-        canvas,
-        germany_mask,
-        [_project_point(proj, 5.4, 53.9), _project_point(proj, 14.8, 54.7), _project_point(proj, 14.0, 52.9), _project_point(proj, 6.0, 52.6)],
-        (176, 153, 70, 72),
-        blur=34,
-    )
+    for region in RELIEF_REGIONS:
+        _soft_region(
+            canvas,
+            germany_mask,
+            [_project_point(proj, lon, lat) for lon, lat in region["points"]],
+            region["fill"],
+            blur=region["blur"],
+        )
 
     decor = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(decor)
+    for region in RELIEF_REGIONS:
+        for lon, lat, size in region.get("trees", []):
+            _draw_tree_cluster(draw, proj, lon, lat, size)
+        for lon, lat, size in region.get("mountains", []):
+            _draw_mountains(draw, proj, lon, lat, size, region.get("glyph", "alpine"))
     for lon, lat, size in [
-        (10.7, 47.7, 96), (11.3, 47.8, 110), (12.2, 47.9, 88),
-        (8.2, 48.4, 80), (9.8, 50.4, 70), (10.4, 51.6, 74),
-        (13.1, 50.8, 72), (7.4, 51.1, 64), (11.0, 49.0, 62),
-        (7.3, 50.6, 28), (8.8, 50.0, 24), (9.6, 52.0, 24),
-        (12.3, 52.4, 27), (13.7, 52.0, 25), (8.0, 53.3, 23),
-        (11.7, 53.2, 23), (14.1, 53.0, 22), (6.3, 51.4, 24),
-        (12.8, 49.5, 26), (7.7, 49.1, 22), (10.0, 48.2, 25),
-        (8.0, 49.0, 92), (7.0, 49.7, 76), (9.1, 49.7, 68),
-        (10.8, 50.8, 82), (11.8, 51.2, 70), (13.8, 51.8, 78),
-        (12.8, 53.1, 72), (10.0, 53.0, 76), (7.9, 52.3, 70),
+        (9.8, 50.4, 38), (11.0, 49.0, 38), (6.3, 51.4, 28),
+        (8.8, 50.0, 28), (9.6, 52.0, 24), (12.3, 52.4, 24),
+        (13.7, 52.0, 23), (14.1, 53.0, 20),
     ]:
         _draw_tree_cluster(draw, proj, lon, lat, size)
-    for lon, lat, size in [
-        (10.9, 47.35, 112), (11.7, 47.45, 104), (12.6, 47.55, 86),
-        (10.5, 47.75, 70), (12.2, 48.0, 68), (8.1, 48.1, 58),
-        (9.3, 48.6, 52), (10.2, 50.2, 48), (13.2, 50.5, 52),
-        (7.7, 50.1, 44), (10.6, 51.8, 46), (14.0, 50.8, 44),
-    ]:
-        _draw_mountains(draw, proj, lon, lat, size)
     for lon, lat, size in [
         (6.9, 50.9, 34), (7.6, 51.2, 30), (8.7, 50.1, 32),
         (9.2, 48.8, 33), (11.6, 48.2, 36), (13.4, 52.5, 38),
@@ -308,18 +366,58 @@ def _draw_tree_cluster(draw, proj, lon, lat, radius):
         draw.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), fill=colors[i % len(colors)])
 
 
-def _draw_mountains(draw, proj, lon, lat, size):
+def _draw_mountains(draw, proj, lon, lat, size, glyph="alpine"):
     x, y = _project_point(proj, lon, lat)
     s = size * RENDER_SCALE
+    if glyph == "alpine":
+        _draw_alpine_mountains(draw, x, y, s)
+    elif glyph == "border_highland":
+        _draw_border_highland(draw, x, y, s)
+    else:
+        _draw_forested_highland(draw, x, y, s)
+
+
+def _draw_alpine_mountains(draw, x, y, s):
     draw.ellipse((x - s, y + s * 0.48, x + s, y + s * 0.92), fill=(117, 103, 75, 45))
-    for offset, scale in [(-0.45, 0.9), (0.0, 1.15), (0.46, 0.82)]:
+    for offset, scale in [(-0.54, 0.88), (-0.15, 1.08), (0.28, 1.22), (0.62, 0.78)]:
         cx = x + int(offset * s)
         h = int(s * scale)
-        base = int(s * 0.55 * scale)
-        pts = [(cx - base, y + int(s * 0.64)), (cx, y - h // 2), (cx + base, y + int(s * 0.64))]
-        draw.polygon(pts, fill="#766e5a")
-        draw.polygon([(cx, y - h // 2), (cx - base // 3, y + int(s * 0.18)), (cx + base // 7, y + int(s * 0.28))], fill="#f2f0e7")
-        draw.line(pts + [pts[0]], fill="#5a5143", width=max(2, s // 35))
+        base = int(s * 0.50 * scale)
+        pts = [(cx - base, y + int(s * 0.66)), (cx, y - h // 2), (cx + base, y + int(s * 0.66))]
+        draw.polygon(pts, fill="#746b57")
+        draw.polygon([(cx, y - h // 2), (cx - base // 3, y + int(s * 0.12)), (cx + base // 8, y + int(s * 0.26))], fill="#f3f0df")
+        draw.line(pts + [pts[0]], fill="#514939", width=max(2, s // 36))
+
+
+def _draw_forested_highland(draw, x, y, s):
+    draw.ellipse((x - s, y + s * 0.32, x + s, y + s * 0.80), fill=(70, 92, 55, 54))
+    for offset, scale in [(-0.45, 0.70), (0.05, 0.86), (0.48, 0.62)]:
+        cx = x + int(offset * s)
+        h = int(s * scale)
+        base = int(s * 0.60 * scale)
+        pts = [(cx - base, y + int(s * 0.54)), (cx, y - h // 3), (cx + base, y + int(s * 0.54))]
+        draw.polygon(pts, fill="#6c7353")
+        draw.line(pts + [pts[0]], fill="#4f563e", width=max(2, s // 40))
+    colors = ["#315f45", "#47733f", "#6f944b"]
+    for i in range(10):
+        cx = x + int((i % 5 - 2) * s * 0.22)
+        cy = y + int((0.22 + (i // 5) * 0.16) * s)
+        rr = max(2, int(s * 0.10))
+        draw.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), fill=colors[i % len(colors)])
+
+
+def _draw_border_highland(draw, x, y, s):
+    draw.ellipse((x - s * 0.95, y + s * 0.38, x + s * 0.95, y + s * 0.76), fill=(91, 88, 66, 46))
+    ridge = []
+    for index, offset in enumerate([-0.75, -0.45, -0.12, 0.20, 0.52, 0.78]):
+        px = x + int(offset * s)
+        py = y + int((0.10 if index % 2 == 0 else -0.04) * s)
+        ridge.append((px, py))
+    baseline = y + int(s * 0.46)
+    for left, peak in zip(ridge, ridge[1:]):
+        pts = [(left[0], baseline), peak, (peak[0] + int(s * 0.18), baseline)]
+        draw.polygon(pts, fill="#747056")
+        draw.line(pts + [pts[0]], fill="#514d3a", width=max(2, s // 44))
 
 
 def _draw_town(draw, proj, lon, lat, size):
@@ -340,19 +438,13 @@ def _draw_map_labels(canvas, proj, germany_mask):
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
     for name, lon, lat in [
-        ("Hamburg", 9.9937, 53.5511),
-        ("Berlin", 13.4050, 52.5200),
-        ("Koeln", 6.9603, 50.9375),
-        ("Frankfurt", 8.6821, 50.1109),
-        ("Stuttgart", 9.1829, 48.7758),
-        ("Muenchen", 11.5820, 48.1351),
-        ("Dresden", 13.7373, 51.0504),
         ("Harz", 10.5600, 51.8000),
         ("Zugspitze", 10.9900, 47.4300),
+        ("Alpen", 11.7000, 47.1200),
+        ("Mueritz", 12.7500, 53.4300),
+        ("Ruegen", 13.3800, 54.4500),
     ]:
         x, y = _project_point(proj, lon, lat)
-        dot = 4 * RENDER_SCALE
-        draw.ellipse((x - dot, y - dot, x + dot, y + dot), fill=(44, 34, 24, 210))
         text_pos = (x + 8 * RENDER_SCALE, y - 10 * RENDER_SCALE)
         draw.text((text_pos[0] + RENDER_SCALE, text_pos[1] + RENDER_SCALE), name, fill=(42, 31, 22, 180))
         draw.text(text_pos, name, fill=(244, 225, 165, 230))

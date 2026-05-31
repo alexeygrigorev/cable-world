@@ -101,6 +101,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("city_landmarks/city_%s.png", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
         self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y", script_text)
+        self.assertIn("position.x = clamp(position.x, 4.0, max(4.0, size.x - text_size.x - 4.0))", script_text)
         self.assertIn("_update_map_reference_data()", script_text)
         self.assertIn('toolbar.name = "ПанельИнструментов"', script_text)
         self.assertIn("toolbar.visible = false", script_text)
@@ -123,6 +124,9 @@ class MapPanelContractTest(unittest.TestCase):
         for expected in [
             "var pan_offset := Vector2.ZERO",
             "var zoom := 1.0",
+            "const MARKER_ZOOM_SIZE_MIN := 48.0",
+            "const MARKER_ZOOM_SIZE_MAX := 78.0",
+            "const CLUSTER_MARKER_ZOOM_SIZE_MAX := 70.0",
             "func _on_map_layer_gui_input(event: InputEvent) -> void:",
             "InputEventMouseButton",
             "InputEventMouseMotion",
@@ -152,7 +156,7 @@ class MapPanelContractTest(unittest.TestCase):
             "const DRAG_TAP_SUPPRESS_DISTANCE := 10.0",
             "const OBJECT_CLUSTER_ZOOM_THRESHOLD := 1.45",
             "const OBJECT_CLUSTER_SCREEN_DISTANCE := 118.0",
-            "const GERMANY_INITIAL_FOCUS_COORDINATES := Vector2(11.35, 51.45)",
+            "const GERMANY_INITIAL_FOCUS_COORDINATES := Vector2(10.70, 51.45)",
             "OfflineMapLayer._project_coordinates(GERMANY_INITIAL_FOCUS_COORDINATES",
             'button.text = title',
             '"+"',
@@ -176,6 +180,12 @@ class MapPanelContractTest(unittest.TestCase):
             "func _nearest_cluster(cluster_list: Array[Dictionary], position: Vector2) -> Dictionary:",
             "func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:",
             'marker.icon = _marker_icon_texture("icon_station")',
+            'marker.text = ""',
+            "func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZE) -> Vector2:",
+            "func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:",
+            "clamp(ICON_MARKER_SIZE.x * sqrt(max(zoom, 0.75)), MARKER_ZOOM_SIZE_MIN, max_size)",
+            "func _apply_marker_visual_size(marker: Button, marker_size: Vector2) -> void:",
+            "marker.size = marker_size",
             "func _marker_icon_texture(icon_id: String) -> Texture2D:",
             "func _focus_cluster(marker: Button) -> void:",
             'marker.set_meta("cluster_indices"',
@@ -225,6 +235,39 @@ class MapPanelContractTest(unittest.TestCase):
             city_icon_body.index("if texture == null:"),
             city_icon_body.index("draw_texture_rect(texture, icon_rect, false)"),
         )
+
+    def test_map_pipeline_uses_named_relief_layers(self) -> None:
+        pipeline_text = (ROOT / "map_pipeline" / "compose_map.py").read_text(encoding="utf-8")
+
+        for expected in [
+            "RELIEF_REGIONS = [",
+            '"id": "alps"',
+            '"glyph": "alpine"',
+            '"extends_to": ["France", "Switzerland", "Italy", "Austria", "Slovenia"]',
+            '"id": "black_forest"',
+            '"glyph": "forested_highland"',
+            '"id": "harz"',
+            '"id": "erzgebirge"',
+            '"glyph": "border_highland"',
+            '"id": "bavarian_forest"',
+            '"id": "northern_lowlands"',
+            '"kind": "lowland"',
+            '"glyph": "lowland"',
+            '"mountains": []',
+            "for region in RELIEF_REGIONS:",
+            'for lon, lat, size in region.get("mountains", []):',
+            'region.get("glyph", "alpine")',
+            'def _draw_mountains(draw, proj, lon, lat, size, glyph="alpine"):',
+            "def _draw_alpine_mountains(draw, x, y, s):",
+            "def _draw_forested_highland(draw, x, y, s):",
+            "def _draw_border_highland(draw, x, y, s):",
+        ]:
+            self.assertIn(expected, pipeline_text)
+
+        northern_lowlands = pipeline_text.split('"id": "northern_lowlands"', 1)[1].split("}", 1)[0]
+        self.assertIn('"mountains": []', northern_lowlands)
+        self.assertNotIn("(10.0, 53.0, 76)", pipeline_text)
+        self.assertNotIn("(12.8, 53.1, 72)", pipeline_text)
 
     def test_map_panel_initially_focuses_germany_when_present(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")

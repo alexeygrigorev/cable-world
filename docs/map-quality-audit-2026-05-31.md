@@ -117,3 +117,19 @@ Label/pan/splash iteration result:
 - City labels now sit centered under city pictograms and city dots were removed to reduce visual noise.
 - Pan speed was reduced again; device feel-test is still required because this is perception-sensitive.
 - The splash image was regenerated with a more plausible cableway structure, but it should still be treated as stylized art rather than engineering documentation.
+
+Relief/marker iteration result:
+
+- Runtime map source returned to reproducible `map_pipeline.compose_map`, so relief, water and islands are geography-driven rather than inherited from an unaudited generated underlay.
+- Relief is now split into named layers: Alps, Black Forest, Harz, Erzgebirge, Bavarian Forest, Eifel/Hunsrueck and North German Plain.
+- Mountain symbols are typed by layer: `alpine`, `forested_highland`, `border_highland`, `lowland`. North German Plain has no mountain glyphs.
+- Transport marker plates were reduced to a thin atlas outline and light shadow; the heavy black circular backing was removed.
+- City labels clamp inside the viewport, so Berlin/Dresden labels do not cut off at the screen edge.
+- Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns `Content-Encoding: gzip` and `Cache-Control: no-store`.
+
+Screenshots:
+
+- `/tmp/cable-world-web-map/mobile-390x844-map-v4.png`
+- `/tmp/cable-world-web-map/desktop-1280x800-map-v4.png`
+
+Rubric estimate after relief/marker iteration 2026-05-31 13:36: stronger 7/10 candidate. The map is more accurate and readable, but still not 8/10 because the procedural underlay is visually flatter than the reference and desktop/landscape composition needs another art-direction pass.

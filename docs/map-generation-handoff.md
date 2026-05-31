@@ -38,6 +38,9 @@ Quality gate: перед тем как считать карту готовой,
   - output остается `assets/map/germany_styled.png`;
   - карта теперь является чистой underlay-подложкой без маркеров и подписей, потому что интерактивные объекты рисует Godot.
   - renderer использует `ne_50m_admin_0_countries`, если dataset уже скачан; fallback остается `ne_110m_admin_0_countries`.
+  - рельеф описан именованными слоями `RELIEF_REGIONS`: `alps`, `black_forest`, `harz`, `erzgebirge`, `bavarian_forest`, `eifel_hunsrueck`, `northern_lowlands`.
+  - mountain glyphs являются стилизованными символами типа рельефа, а не портретами конкретных гор. Координаты и полигон слоя решают, где символ допустим; визуальный стиль glyph решает, как выглядит массив.
+  - для `northern_lowlands` список `mountains` должен оставаться пустым: это полигональное правило для North German Plain, а не общее правило "на севере нет гор". Для Норвегии/Швеции северные mountain layers будут отдельными слоями с собственными glyphs.
 - `map_pipeline/adapt_generated_underlay.py`
   - повторяемо адаптирует один generated RPG map PNG в runtime asset `assets/map/germany_styled.png`;
   - crop/resize сохраняет target aspect `1568x2048`, затем quantize-компрессия оставляет карту пригодной для Web.
@@ -194,7 +197,14 @@ Procedural fallback render command:
 uv run python -m map_pipeline.compose_map
 ```
 
-Current 10/10-target visual workflow uses a generated RPG underlay, then adapts it into the exact runtime aspect:
+Current runtime map workflow uses a reproducible procedural atlas underlay:
+
+```bash
+uv run python -m map_pipeline.compose_map
+godot --headless --path . --import --quit
+```
+
+The older generated RPG underlay workflow is kept only as visual reference/experiment. Do not use it as the authoritative geography source unless it is re-audited against the relief/water/island criteria:
 
 ```bash
 uv run python -m map_pipeline.adapt_generated_underlay \
@@ -202,6 +212,18 @@ uv run python -m map_pipeline.adapt_generated_underlay \
   --out assets/map/germany_styled.png
 godot --headless --path . --import --quit
 ```
+
+## Relief and mountain glyph rules
+
+- Real geography comes from named relief polygons/layers, not from decorative placements.
+- A mountain glyph may be generic, but it must be placed only inside a real mountain/highland layer that supports that visual weight.
+- Each layer should declare the intended glyph type:
+  - `alpine`: sharp snowy high mountains for Alps and future Switzerland/Austria/Italy layers.
+  - `forested_highland`: rounded forested hills/mountains for Black Forest, Bavarian Forest, Harz-like regions.
+  - `border_highland`: smaller ridge symbols for Erzgebirge and similar border ranges.
+  - `lowland`: no mountain glyphs; may use fields, marsh/forest texture, towns, rivers, islands, lakes.
+- Large lakes and islands must be geography-driven. Do not add decorative lakes unless they correspond to real features; important shapes like Rügen must remain readable through Natural Earth coast/island geometry or explicit audited overlays.
+- For future Europe expansion, do not encode accuracy as latitude rules. Encode it as region/layer rules: Norway can have northern mountains; North German Plain should not.
 
 Generated RPG underlay prompt:
 
