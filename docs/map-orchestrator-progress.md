@@ -726,3 +726,15 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still about `6.5/10`, not `8/10`. The detail readability is better and the failed river-strip direction was avoided, but several named lakes still look too round/blobby on mobile. The next visible pass should improve lake silhouettes and continue terrain/mountain art calibration rather than claiming completion.
+
+## Backlog Triage 2026-05-31 21:05
+
+Created GitHub issues from the latest user feedback so the work follows issues instead of relying on chat memory:
+
+- `#66` Map texture: add reusable ground and water base textures.
+- `#67` Map clutter: remove or enlarge tiny houses and tiny trees. The user clarified that "details" means small houses/trees specifically, not every atlas detail.
+- `#68` Map terrain: make German Alps visible and correctly placed.
+- `#69` Map terrain sprites: create separate glyph/sprite layer per mountain massif.
+- `#70` Map city coordinates: fix Rostock landmark placement on land.
+
+Current priority order: fix visible clutter from tiny houses/trees, add base land/water texture, then recalibrate Rostock/Alps/massif sprite layers under the existing geography-audit process.

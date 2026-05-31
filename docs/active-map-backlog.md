@@ -13,6 +13,7 @@
 ## Open Items
 
 - [ ] Перевести текущую карту в glyph-based production pipeline: чистая база без baked городов + отдельные переиспользуемые glyph layers для гор, лесов, озер, кораблей и atlas details.
+- [ ] #66 Добавить базовую reproducible текстуру земли и воды: land/water не должны выглядеть плоскими заливками, но текстура не должна конкурировать с маркерами и подписями.
 - [x] Первый production cut: `map_pipeline.compose_map` больше не рисует baked town/city pictograms в underlay; runtime city landmarks остаются единственным городским слоем.
 - [x] Добавить первый atlas detail layer: reproducible glyphs для ships/ports/bridges/castles/tower + explicit `ATLAS_DETAILS` placement по координатам.
 - [x] Расширить runtime map bounds южнее Германии: можно панорамировать вниз к München/Alps и видеть соседние страны как контурную основу без ручных overlay-глифов.
@@ -40,6 +41,7 @@
 - [x] Настроить visual hierarchy для named lakes: точные озёра приглушены, получили shoreline underpaint и softer highlights, поэтому меньше похожи на overlay markers и лучше сидят в atlas map.
 - [ ] Доработать форму named lakes: текущий слой полезен для ориентира, но часть озёр на mobile всё ещё выглядит как маленькие round blobs; нужно сделать силуэты более узнаваемыми и менее похожими на маркеры.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
+- [ ] #70 Исправить placement Rostock city landmark: сейчас Росток визуально висит на море; иконка должна сидеть на суше/портовом побережье, подпись должна оставаться рядом.
 - [x] Исправить pan sensitivity: drag пальцем и мышью теперь использует viewport-local `event.relative` и `PAN_DRAG_SCALE := 1.0`, чтобы движение было 1:1 в координатах карты, без `screen_relative` acceleration.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
 - [ ] Довести city landmark layer: сделать иконки достаточно крупными, не перекрывать labels/markers, использовать правильные немецкие названия с умляутами.
@@ -50,6 +52,7 @@
 - [x] Добавить outline-only runtime sprites для транспортных и city landmark иконок: объекты должны читаться поверх детальной карты без кругов, плашек и фоновых подложек.
 - [x] Убрать jitter у runtime объектов при pan/zoom: транспортные маркеры, city landmarks и размеры иконок snap-аются к целым пикселям по тому же принципу, что и подписи.
 - [x] Увеличить мелкие atlas details: домики/часовни/мельницы/руины/водяные мельницы имеют `MIN_ATLAS_DETAIL_WIDTH = 78`, чтобы не превращаться в шум.
+- [ ] #67 Убрать или увеличить именно мелкие домики и мелкие деревья: если объект не читается на mobile default zoom, он не должен оставаться на карте как pixel dust.
 - [x] Добавить первый explicit forest mass layer: `ATLAS_FOREST_MASSES` покрывает Lüneburger Heide, Mecklenburg lake forests, Spreewald/Lausitz, Teutoburg/Weser, Sauerland/Rothaar, Eifel, Spessart/Odenwald, Thuringian Forest, Franconian/Swabian uplands и Upper Bavaria foothills.
 - [x] Убрать странные декоративные полоски из текущего рендера: route overlay и слишком прямые procedural waterways больше не вызываются, field hatch/field patch заменены на более спокойные tufts/hill marks.
 - [x] Вернуть journey-map структуру без технических полос: добавлен controlled `ATLAS_ROUTE_SEGMENTS` layer с короткими dotted atlas trails, без continuous `draw.line` и без blue procedural waterways.
@@ -58,6 +61,8 @@
 - [x] Перевести map labels в atlas-style: vendored `LiberationSerif-BoldItalic.ttf`, runtime city labels и baked terrain labels используют один serif italic стиль; terrain labels больше не дублируются runtime-слоем.
 - [x] Вернуть шрифт runtime city labels по user feedback: города снова используют theme/default font; atlas serif оставлен для terrain/map labels.
 - [ ] #62 Перевести рельеф из декоративных гор в точные переиспользуемые overlay-слои: Alps, Harz, Black Forest, Erzgebirge, Bavarian Forest и другие реальные массивы. Германия начата; Альпы переведены в составной Alpine massif layer, но нужно расширить и проверить слой по Европе.
+- [ ] #69 Сделать отдельные glyph/sprite layers для каждого горного массива: Alps, Harz, Black Forest, Erzgebirge, Saxon Switzerland / Elbe Sandstone, Bavarian Forest; не использовать generic random mountains как финальный подход.
+- [ ] #68 Исправить немецкую часть Альп: сейчас Альпы визуально слишком “не в Германии”; южная кромка Германии/Bavaria/Zugspitze должна явно читаться как Alpine edge, при этом массив должен продолжаться в Austria/Switzerland/Italy.
 - [x] Начать настройку масштаба/якорей terrain glyphs через явные `mountain_glyphs`: Альпы, Harz, Erzgebirge, Black Forest и Bavarian Forest больше не выбираются hash-ом.
 - [x] Сделать первый непрерывный cross-border pass для Альп: explicit `main_alpine_wall` и `northern_alpine_foothills` ridge bands плюс перераспределенные `alps_range_*` glyphs вместо короткого обрубленного массива только у юга Германии.
 - [x] Добавить automated geography guardrails: `audit_geography_layers()` проверяет relief polygons, northern lowlands без гор, anchors mountain/ridge/massif внутри named regions, water/detail/forest bounds и glyph types.
