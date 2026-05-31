@@ -1176,3 +1176,29 @@ Checks:
 - `python3 -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 25 tests OK, 6 skipped under plain Python where geography dependencies are unavailable.
 
 Self-audit: this improves the architecture and review gate, not visual quality. The map is still not `10/10`; Alps remain pre-DEM/generic and the named layers still need custom art replacement.
+
+## Iteration 2026-05-31 23:58
+
+Orchestration/release state:
+
+- Published `v0.1.23` from `main` commit `c43b014`.
+- GitHub Release assets verified:
+  - `mir-trossov-android-0.1.23.apk`;
+  - `mir-trossov-linux-0.1.23.zip`;
+  - `mir-trossov-web-0.1.23.zip`.
+- Closed #53 because #85 delivered the compact atlas-styled list mode and map/list switch.
+- Closed #48 because the current map-first screen hides app title, subtitle, navigation, section label, map heading and selected-object label; only the fullscreen map and the allowed list toggle remain in map mode.
+- `main` is clean and synced with `origin/main` after the release.
+
+Parallel work started from the remaining backlog:
+
+- #70 worker: fix Rostock city landmark placement so the pictogram is on land near the Baltic coast.
+- #83 worker: add more Godot-native runtime coverage for high-value UI behavior.
+- #67 worker: remove or enlarge remaining tiny house/tree/detail glyphs that still read as pixel dust.
+- strict map reviewer: run `docs/map-reviewer-gate.md` against current `main`/`v0.1.23` and reject anything below `10/10`.
+- glyph inventory explorer: find reference/donor/monolithic map images and current glyph assets so #69 can move from guardrails to real reusable terrain art.
+
+Current map quality note:
+
+- The map must still be treated as rejected baseline until the strict reviewer returns `ACCEPT`.
+- User-visible blockers remain: reusable massif glyphs are not yet production art, Alps are not yet elevation-derived, some details may still be too small/noisy, and current map quality is not accepted above roughly `6/10`.
