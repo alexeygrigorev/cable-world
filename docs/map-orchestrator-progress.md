@@ -1528,3 +1528,43 @@ Triage for #52 ride parent after #87:
 - Created #91: `Ride UX: open playable ride directly from selected map/object flow`.
 - Created #92: `Ride art polish: replace drawn placeholder side-view with reusable ride sprites`.
 - Added a #52 comment documenting why the parent remains open and which children cover the remaining scope.
+
+## Iteration 2026-06-01 03:32
+
+Integrated reviewed #63 Europe expansion non-render contract slice:
+
+- Worker: `Epicurus`.
+- Worktree: `/home/alexey/git/cable-world-issue-63`.
+- Worker branch: `issue-63-europe-layer-contract`.
+- Worker commit: `3b62c57 Add Europe expansion region contract`.
+- Integrated commit on `main`: `1d37b95 Add Europe expansion region contract`.
+- Decision: `ACCEPT` for this non-render contract slice. #63 remains open for real per-region metadata, DEM processing and later render integration.
+
+What landed:
+
+- Added `map_pipeline/data/europe_expansion_regions.json` as a planning/data contract, not a render manifest.
+- Added `tests/test_europe_expansion_regions_contract.py`.
+- Updated `docs/europe-expansion-plan.md`, `docs/map-production-direction.md` and `docs/active-map-backlog.md`.
+
+Contractual coverage now includes:
+
+- France, Spain, Italy, Switzerland, Austria.
+- Germany neighbors: Denmark, Netherlands, Belgium, Luxembourg, Czechia, Poland plus shared France/Switzerland/Austria.
+- Nordics, Finland, Baltics.
+- Russia/Belarus/Ukraine to Ukrainian mountains.
+- Turkey as a medium-detail bridge region.
+- Lower-detail remaining Europe context.
+- Cross-border relief rule: Alps cannot stop at Germany; Po Valley, Vienna Basin, Swiss Plateau and North European Plain are lowland/exclusion context; mountains must come from DEM-derived ridges, elevation bands or named massif geometry, not decorative placement.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_europe_expansion_regions_contract tests.test_europe_expansion_plan_contract`: PASS, 16 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 269 tests, 9 skipped.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Remaining work:
+
+- #63 stays open.
+- #74/#76/#77 remain open child implementation blocks; this contract makes their scope auditable but does not implement those regions.
