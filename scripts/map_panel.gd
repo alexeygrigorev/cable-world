@@ -210,6 +210,7 @@ const MAP_FILTER_VISITED := "visited"
 const MAP_FILTER_NOT_VISITED := "not_visited"
 const MAP_SCOPE_GERMANY := "germany"
 const MAP_SCOPE_ALL := "all"
+const GERMANY_INITIAL_FOCUS_COORDINATES := Vector2(11.35, 51.45)
 const TRANSPORT_TYPE_ICON := {
 	"cable_gondola": "icon_cable_gondola",
 	"cable_aerial_tram": "icon_aerial_tram",
@@ -814,7 +815,7 @@ func _default_pan_offset() -> Vector2:
 
 func _initial_focus_map_point(layer: OfflineMapLayer) -> Vector2:
 	if map_scope == MAP_SCOPE_GERMANY:
-		return layer.map_base_size() * 0.5
+		return OfflineMapLayer._project_coordinates(GERMANY_INITIAL_FOCUS_COORDINATES, _active_coordinate_bounds(), layer.map_base_size())
 
 	var bounds := _active_coordinate_bounds()
 	if bounds.is_empty():
@@ -880,6 +881,9 @@ func _compact_text(text: String, max_length: int) -> String:
 
 func _icon_for_object(object_data: Dictionary) -> Texture2D:
 	var icon_id := _icon_id_for_object(object_data)
+	return _marker_icon_texture(icon_id)
+
+func _marker_icon_texture(icon_id: String) -> Texture2D:
 	if not marker_icons.has(icon_id):
 		var path := "res://assets/sprites/%s.png" % icon_id
 		marker_icons[icon_id] = load(path) if ResourceLoader.exists(path) else null
@@ -909,22 +913,22 @@ func _apply_marker_style(marker: Button, is_selected: bool) -> void:
 	marker.add_theme_stylebox_override("focus", normal_style)
 
 func _apply_cluster_marker_style(marker: Button, cluster_indices: PackedInt32Array) -> void:
-	marker.icon = null
-	marker.expand_icon = false
+	marker.icon = _marker_icon_texture("icon_station")
+	marker.expand_icon = true
 	marker.text = str(cluster_indices.size())
-	marker.add_theme_font_size_override("font_size", 19)
-	marker.add_theme_color_override("font_color", Color("#2a1a0b"))
-	marker.add_theme_color_override("font_pressed_color", Color("#2a1a0b"))
+	marker.add_theme_font_size_override("font_size", 15)
+	marker.add_theme_color_override("font_color", Color("#f7e4b0"))
+	marker.add_theme_color_override("font_pressed_color", Color("#f7e4b0"))
 	var normal_style := StyleBoxFlat.new()
-	normal_style.bg_color = Color(0.92, 0.72, 0.38, 0.97)
-	normal_style.border_color = Color("#3a240d")
-	normal_style.shadow_color = Color(0.08, 0.04, 0.01, 0.64)
-	normal_style.shadow_size = 8
-	normal_style.set_border_width_all(3)
-	normal_style.set_corner_radius_all(18)
+	normal_style.bg_color = Color(0.16, 0.10, 0.05, 0.46)
+	normal_style.border_color = Color("#f2c86a")
+	normal_style.shadow_color = Color(0.05, 0.03, 0.01, 0.78)
+	normal_style.shadow_size = 10
+	normal_style.set_border_width_all(2)
+	normal_style.set_corner_radius_all(26)
 	marker.add_theme_stylebox_override("normal", normal_style)
 	var hover_style := normal_style.duplicate()
-	hover_style.bg_color = Color(0.98, 0.78, 0.42, 1.0)
+	hover_style.bg_color = Color(0.24, 0.14, 0.06, 0.58)
 	marker.add_theme_stylebox_override("hover", hover_style)
 	marker.add_theme_stylebox_override("pressed", normal_style)
 	marker.add_theme_stylebox_override("focus", normal_style)

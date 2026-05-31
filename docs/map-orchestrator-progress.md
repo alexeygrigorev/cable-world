@@ -133,3 +133,14 @@ Implemented:
   - no funicular rails or ground track are mixed into the aerial cable car.
 
 Self-audit: this is a stronger splash candidate, but still stylized art rather than an engineering diagram. Do not score the whole project as `10/10` from this change alone.
+
+## Iteration 2026-05-31 12:50
+
+Implemented:
+
+- Changed the Germany initial map focus from the generated image center to a real geographic anchor: `Vector2(11.35, 51.45)`.
+- Kept city/object coordinates unchanged; only the first camera position changed.
+- Changed low-zoom cluster markers from plain numeric parchment buttons to atlas-style station markers with a small count label.
+- Added contract coverage for the initial focus coordinate and cluster station icon treatment.
+
+Self-audit: this should make the first mobile frame more recognizable and reduce the UI-button feeling of clusters. It still needs fresh screenshot review before claiming any score increase.
