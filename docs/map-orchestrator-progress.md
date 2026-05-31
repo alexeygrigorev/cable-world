@@ -1368,3 +1368,4 @@ Parallel work:
 
 - `Kuhn` is still active on #88 map/list toggle pictogram.
 - Started `Avicenna` on #90 list screen atlas-style restyle. Scope is limited to list view styling and focused tests; it must not change #88 toggle, #89 navigation flow, map terrain/assets, ride scene or release files.
+- Started `Banach` on #70 Rostock landmark placement. Scope is limited to Rostock/city placement calibration plus tests/review evidence; because this touches the map, it must produce screenshot evidence and follow `docs/map-reviewer-gate.md`.
