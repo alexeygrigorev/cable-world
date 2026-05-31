@@ -1333,3 +1333,33 @@ Issue comments recorded:
 
 - #68: Alpine candidate rejected with branch, checks and blockers.
 - #69: terrain glyph candidate rejected; keep the issue open and split into smaller massif-specific work.
+
+## Iteration 2026-06-01 01:45
+
+Integrated reviewed #87 ride MVP slice:
+
+- Worker: `Dalton`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-87-ride-mvp`.
+- Worker branch: `issue-87-ride-mvp`.
+- Worker commit: `e72d15f Add playable ride MVP slice`.
+- Integrated commit on `main`: `3a4f2dc Add playable ride MVP slice`.
+- Decision: `ACCEPT` for #87 scope; #87 closed.
+
+What landed:
+
+- Added `scripts/ride_game_view.gd` side-view playable ride area with sky, mountains, trees, stations, cable and moving cabin.
+- Updated `scripts/ride_panel.gd` with mobile speed controls, reset, passenger labels and end-of-ride score.
+- Added `tests/godot_runtime_ride_panel.gd` and expanded `tests/test_ride_mode_contract.py`.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_ride_mode_contract tests.test_app_shell_contract`: PASS, 16 tests.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 259 tests, 9 skipped.
+- `godot --headless --path . --quit-after 1`: exit 0 with already documented Godot 4.6.3 headless teardown diagnostics.
+
+Notes:
+
+- The first runtime run on `main` failed before import because Godot had not registered the newly added `RideGameView` global class yet. After `godot --headless --path . --import --quit`, runtime checks passed.
+- Parent #52 remains open for production ride gameplay/art polish beyond the MVP slice.
