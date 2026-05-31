@@ -37,7 +37,7 @@
 - [x] Заменить generic lake glyph placement для ключевых озёр на named coordinate outlines: Bodensee, Müritz, Chiemsee, Schweriner See, Plauer See, Schaalsee, Steinhuder Meer, Edersee, Ammersee, Starnberger See, Tegernsee, Berlin lakes.
 - [x] Настроить visual hierarchy для named lakes: точные озёра приглушены, получили shoreline underpaint и softer highlights, поэтому меньше похожи на overlay markers и лучше сидят в atlas map.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
-- [ ] Исправить pan sensitivity: drag пальцем и мышью должен ощущаться примерно 1:1, без ускорения, где 1 см движения пальца сдвигает карту на несколько сантиметров.
+- [x] Исправить pan sensitivity: drag пальцем и мышью теперь использует viewport-local `event.relative` и `PAN_DRAG_SCALE := 1.0`, чтобы движение было 1:1 в координатах карты, без `screen_relative` acceleration.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
 - [ ] Довести city landmark layer: сделать иконки достаточно крупными, не перекрывать labels/markers, использовать правильные немецкие названия с умляутами.
 - [ ] Заменить cluster count badges на более нативные atlas group markers: сейчас они функциональны, но все еще выглядят как UI-счетчики.
@@ -46,10 +46,10 @@
 - [x] Добавить outline-only runtime sprites для транспортных и city landmark иконок: объекты должны читаться поверх детальной карты без кругов, плашек и фоновых подложек.
 - [x] Снизить clutter на default zoom: второстепенные подписи городов появляются после zoom `1.20`, а названия под иконками стали ближе к пиктограммам.
 - [x] Сделать стартовый zoom адаптивным: portrait остается крупным, landscape/desktop не получает дополнительный `1.10` zoom и меньше режет ориентиры у краев.
-- [ ] #62 Перевести рельеф из декоративных гор в точные переиспользуемые overlay-слои: Alps, Harz, Black Forest, Erzgebirge, Bavarian Forest и другие реальные массивы. Германия начата; нужно расширить и проверить слой по Европе.
+- [ ] #62 Перевести рельеф из декоративных гор в точные переиспользуемые overlay-слои: Alps, Harz, Black Forest, Erzgebirge, Bavarian Forest и другие реальные массивы. Германия начата; Альпы переведены в составной Alpine massif layer, но нужно расширить и проверить слой по Европе.
 - [x] Начать настройку масштаба/якорей terrain glyphs через явные `mountain_glyphs`: Альпы, Harz, Erzgebirge, Black Forest и Bavarian Forest больше не выбираются hash-ом.
 - [x] Сделать первый непрерывный cross-border pass для Альп: explicit `main_alpine_wall` и `northern_alpine_foothills` ridge bands плюс перераспределенные `alps_range_*` glyphs вместо короткого обрубленного массива только у юга Германии.
-- [ ] Проверить и откалибровать `mountain_glyphs` по реальным relief extents: Альпы должны начинаться/заканчиваться по настоящему массиву, Harz/Erzgebirge/Black Forest/Bavarian Forest не должны расползаться за свои области.
+- [ ] Проверить и откалибровать `mountain_glyphs` по реальным relief extents: Альпы теперь состоят из `western_alps_massif`, `swiss_alps_massif`, `bavarian_tyrol_alps_massif`, `austrian_alps_massif`, но их scale/edge still need geography audit; Harz/Erzgebirge/Black Forest/Bavarian Forest не должны расползаться за свои области.
 - [ ] #64 Провести terrain accuracy audit текущей Германии: убрать ложные большие горы у Hamburg/севера и проверить, что все видимые горы соответствуют реальности.
 - [ ] #63 Спроектировать Europe map pipeline для следующих стран и регионов: France, Spain, Italy, Switzerland, Austria, Germany neighbors, Scandinavia, Finland, Baltics, Russia, Belarus, Ukraine до украинских гор, Turkey; рельефные слои должны продолжаться через границы.
 - [ ] #63 Позже разбить большую Europe pipeline issue на маленькие блоки по странам/регионам/слоям, но пока держать общий список в одной issue, чтобы ничего не потерять.
@@ -62,5 +62,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending Alpine ridge-band iteration.
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, отдельные high-quality mountain glyphs for Alps/etc. и дальнейшая Европа через explicit layers.
+- Последний map commit на момент обновления backlog: pending composed Alpine massif iteration.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6/10`, местами ближе к `6.5/10` по южному виду из-за более узнаваемых Альп. Нельзя оценивать ее как `8/10`: нужна более сильная художественная плотность, audit рельефа/озер/координат, finer high-quality mountain glyphs and broader Europe explicit layers.

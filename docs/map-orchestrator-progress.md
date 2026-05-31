@@ -477,3 +477,35 @@ Checks:
 - `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
 
 Self-audit: still around `6/10`. The exact lake layer now has better hierarchy, but this is not an `8/10` map yet. The next visible win should be a stronger terrain/glyph art pass plus geography audit for relief, city positions, islands and large water bodies.
+
+## Iteration 2026-05-31 17:22
+
+Implemented:
+
+- Reworked the Alps from a generic mountain row into a composed Alpine massif layer.
+- Added `ALPINE_MASSIF_SEGMENTS` with named segments:
+  - `western_alps_massif`
+  - `swiss_alps_massif`
+  - `bavarian_tyrol_alps_massif`
+  - `austrian_alps_massif`
+- Each segment has an explicit geographic arc, a soft relief shadow and multiple overlapping Alpine glyph placements. This keeps the production direction as reusable glyph layers, not a monolithic generated map.
+- Did not spend a new image-generation request for this pass; reused the existing Alpine glyph source assets and composed them more intentionally.
+- Tightened city labels under landmark pictograms: label baseline moved from `4.0 * zoom` to `1.5 * zoom`.
+- Changed pan drag to viewport-local deltas: mouse/touch panning now uses `event.relative` with `PAN_DRAG_SCALE := 1.0` instead of `screen_relative`, so drag speed should feel closer to 1:1 across desktop and mobile.
+
+Evidence:
+
+- `assets/map/germany_styled.png`: `1932x3072`, about 2.2 MB after the composed Alpine massif pass.
+- Mobile screenshot `/tmp/cable-world-web-map/mobile-390x844-initial.png` now shows a continuous Alpine wall near München/Alpen instead of disconnected generic mountains.
+- Mobile screenshot `/tmp/cable-world-web-map/mobile-390x844-after-drag.png` shows zoom capped at `150%` with the new pan behavior active.
+- Desktop screenshot `/tmp/cable-world-web-map/desktop-1280x800-initial.png` regenerated after the same build.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 5916349`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 18 OK.
+- `godot --headless --path . --import --quit`: no parse/import errors. Existing worktree warning and adb daemon warning remain.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`.
+- `PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs`: screenshots regenerated.
+
+Self-audit: still not `8/10`; call it about `6/10` overall, with the Alpine area improved toward `6.5/10`. The Alps now read as a real massif, but the scale may be too dominant and needs geography/art audit against Switzerland/Austria/Italy before this can count as final.

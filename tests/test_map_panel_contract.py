@@ -100,7 +100,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"Dresden"', script_text)
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
         self.assertIn("func _draw_centered_label_text(", script_text)
-        self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 4.0 * zoom", script_text)
+        self.assertIn("var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 1.5 * zoom", script_text)
         self.assertIn("const LANDMARK_EDGE_MARGIN := 96.0", script_text)
         self.assertIn("const SECONDARY_CITY_LABEL_ZOOM := 1.20", script_text)
         self.assertIn("func _screen_point_near_viewport(position: Vector2, margin: float) -> bool:", script_text)
@@ -144,12 +144,12 @@ class MapPanelContractTest(unittest.TestCase):
             "InputEventMagnifyGesture",
             "MOUSE_BUTTON_WHEEL_UP",
             "MOUSE_BUTTON_WHEEL_DOWN",
-            "const PAN_DRAG_SCALE := 0.22",
+            "const PAN_DRAG_SCALE := 1.0",
             "func _pan_by(screen_delta: Vector2) -> void:",
             "pan_offset += screen_delta * PAN_DRAG_SCALE",
             "func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:",
             "func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:",
-            "event.screen_relative",
+            "event.relative",
             "pan_offset = _default_pan_offset()",
             "func _zoom_at(pivot: Vector2, factor: float) -> void:",
             "clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM)",
@@ -292,9 +292,15 @@ class MapPanelContractTest(unittest.TestCase):
             '"ridge_bands": [',
             '"id": "main_alpine_wall"',
             '"id": "northern_alpine_foothills"',
+            "ALPINE_MASSIF_SEGMENTS = [",
+            '"id": "western_alps_massif"',
+            '"id": "swiss_alps_massif"',
+            '"id": "bavarian_tyrol_alps_massif"',
+            '"id": "austrian_alps_massif"',
+            '"massif_segments": ALPINE_MASSIF_SEGMENTS',
             '"mountain_glyphs": [',
-            '("alps_range_3", 10.05, 46.72, 285)',
-            '("alps_range_1", 12.85, 47.08, 255)',
+            '("alps_range_3", 10.05, 46.72, 245)',
+            '("alps_range_1", 12.85, 47.08, 225)',
             '("highland_forest_1", 10.62, 51.78, 118)',
             '("border_highland_1", 13.10, 50.66, 145)',
             '"extends_to": ["France", "Switzerland", "Italy", "Austria", "Slovenia"]',
@@ -314,7 +320,9 @@ class MapPanelContractTest(unittest.TestCase):
             "for region in RELIEF_REGIONS:",
             'for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):',
             'for ridge_band in region.get("ridge_bands", []):',
+            'for massif_segment in region.get("massif_segments", []):',
             "def _draw_alpine_ridge_band(canvas, proj, ridge_band):",
+            "def _draw_alpine_massif_segment(canvas, proj, segment):",
             "_draw_glyph_center(decor, proj, glyph_name, lon, lat, width)",
             'for lon, lat, size in region.get("mountains", []):',
             'region.get("glyph", "alpine")',

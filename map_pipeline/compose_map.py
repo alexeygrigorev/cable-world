@@ -116,6 +116,55 @@ NAMED_WATER_BODIES = [
     },
 ]
 
+ALPINE_MASSIF_SEGMENTS = [
+    {
+        "id": "western_alps_massif",
+        "label": "Western Alps",
+        "arc": [(6.20, 46.78), (7.10, 46.55), (8.05, 46.45)],
+        "shadow": [(6.00, 46.95), (7.05, 46.66), (8.35, 46.58), (8.55, 47.18), (7.25, 47.30), (6.10, 47.22)],
+        "glyphs": [
+            ("alps_range_3", 6.75, 46.78, 300, 0.00),
+            ("alps_peak_1", 7.45, 46.58, 150, -0.03),
+            ("alps_range_1", 7.92, 46.72, 255, 0.04),
+        ],
+    },
+    {
+        "id": "swiss_alps_massif",
+        "label": "Swiss Alps",
+        "arc": [(8.05, 46.48), (9.10, 46.46), (10.20, 46.58)],
+        "shadow": [(7.75, 46.70), (9.05, 46.46), (10.45, 46.62), (10.65, 47.28), (9.25, 47.28), (7.80, 47.14)],
+        "glyphs": [
+            ("alps_range_1", 8.60, 46.72, 330, 0.00),
+            ("alps_peak_2", 9.35, 46.52, 170, -0.05),
+            ("alps_range_3", 10.00, 46.82, 300, 0.03),
+        ],
+    },
+    {
+        "id": "bavarian_tyrol_alps_massif",
+        "label": "Bavarian and Tyrol Alps",
+        "arc": [(10.20, 46.60), (11.30, 46.82), (12.45, 47.05)],
+        "shadow": [(9.95, 46.84), (11.25, 46.74), (12.75, 47.06), (12.95, 47.78), (11.25, 47.78), (10.05, 47.46)],
+        "glyphs": [
+            ("alps_range_2", 10.55, 46.96, 330, 0.00),
+            ("alps_range_1", 11.42, 47.12, 320, -0.01),
+            ("alps_peak_1", 12.05, 46.95, 160, -0.06),
+            ("alps_range_3", 12.45, 47.24, 275, 0.03),
+        ],
+    },
+    {
+        "id": "austrian_alps_massif",
+        "label": "Austrian Alps",
+        "arc": [(12.45, 47.05), (13.70, 47.28), (15.25, 47.62)],
+        "shadow": [(12.20, 47.26), (13.75, 47.18), (15.75, 47.60), (15.95, 48.18), (14.05, 48.15), (12.35, 47.82)],
+        "glyphs": [
+            ("alps_range_1", 13.05, 47.34, 300, 0.00),
+            ("alps_peak_2", 13.82, 47.24, 145, -0.04),
+            ("alps_range_3", 14.45, 47.56, 290, 0.02),
+            ("alps_range_2", 15.20, 47.78, 245, 0.04),
+        ],
+    },
+]
+
 RELIEF_REGIONS = [
     {
         "id": "black_forest",
@@ -158,13 +207,14 @@ RELIEF_REGIONS = [
                 "step": 48,
             },
         ],
+        "massif_segments": ALPINE_MASSIF_SEGMENTS,
         "mountain_glyphs": [
-            ("alps_range_3", 7.20, 46.72, 235),
-            ("alps_range_1", 8.65, 46.60, 265),
-            ("alps_range_3", 10.05, 46.72, 285),
-            ("alps_range_2", 11.45, 46.88, 275),
-            ("alps_range_1", 12.85, 47.08, 255),
-            ("alps_range_3", 14.30, 47.28, 245),
+            ("alps_range_3", 7.20, 46.72, 215),
+            ("alps_range_1", 8.65, 46.60, 230),
+            ("alps_range_3", 10.05, 46.72, 245),
+            ("alps_range_2", 11.45, 46.88, 235),
+            ("alps_range_1", 12.85, 47.08, 225),
+            ("alps_range_3", 14.30, 47.28, 215),
             ("alps_peak_2", 10.95, 47.48, 130),
             ("alps_peak_1", 13.15, 47.62, 125),
         ],
@@ -526,6 +576,8 @@ def _draw_terrain(canvas, proj, land_mask):
             _draw_tree_cluster(decor, proj, lon, lat, size)
         for ridge_band in region.get("ridge_bands", []):
             _draw_alpine_ridge_band(decor, proj, ridge_band)
+        for massif_segment in region.get("massif_segments", []):
+            _draw_alpine_massif_segment(decor, proj, massif_segment)
         for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):
             _draw_glyph_center(decor, proj, glyph_name, lon, lat, width)
         for lon, lat, size in region.get("mountains", []):
@@ -770,6 +822,30 @@ def _draw_alpine_ridge_band(canvas, proj, ridge_band):
 
     ridge_layer = ridge_layer.filter(ImageFilter.GaussianBlur(0.30 * RENDER_SCALE))
     canvas.alpha_composite(ridge_layer)
+
+
+def _draw_alpine_massif_segment(canvas, proj, segment):
+    shadow_points = [_project_point(proj, lon, lat) for lon, lat in segment.get("shadow", [])]
+    if len(shadow_points) >= 3:
+        shadow_layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+        shadow_draw = ImageDraw.Draw(shadow_layer)
+        shadow_draw.polygon(shadow_points, fill=(47, 75, 45, 84))
+        shadow_draw.line(shadow_points + [shadow_points[0]], fill=(108, 113, 68, 80), width=5 * RENDER_SCALE, joint="curve")
+        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(9 * RENDER_SCALE))
+        canvas.alpha_composite(shadow_layer)
+
+    arc_points = [_project_point(proj, lon, lat) for lon, lat in segment.get("arc", [])]
+    if len(arc_points) >= 2:
+        line_layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+        line_draw = ImageDraw.Draw(line_layer)
+        line_draw.line(arc_points, fill=(43, 59, 40, 120), width=10 * RENDER_SCALE, joint="curve")
+        line_draw.line([(x, y - 5 * RENDER_SCALE) for x, y in arc_points], fill=(180, 168, 112, 92), width=3 * RENDER_SCALE, joint="curve")
+        line_layer = line_layer.filter(ImageFilter.GaussianBlur(1.2 * RENDER_SCALE))
+        canvas.alpha_composite(line_layer)
+
+    for glyph_name, lon, lat, width, y_offset in segment.get("glyphs", []):
+        x, y = _project_point(proj, lon, lat)
+        _draw_glyph_at(canvas, glyph_name, x, y + int(float(y_offset) * width * RENDER_SCALE), width)
 
 
 def _forest_sprite(radius):

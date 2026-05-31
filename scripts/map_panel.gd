@@ -141,7 +141,7 @@ class OfflineMapLayer:
 		var icon_rect := _city_icon_rect(label_data, position)
 		var label_rect := Rect2()
 		if icon_rect.size != Vector2.ZERO:
-			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 4.0 * zoom
+			var label_baseline_y := icon_rect.position.y + icon_rect.size.y + 1.5 * zoom
 			label_rect = _centered_label_rect(font, str(label_data["name"]), icon_rect.get_center().x, label_baseline_y, label_size)
 		else:
 			label_rect = _centered_label_rect(font, str(label_data["name"]), position.x, position.y + 12.0 * zoom, label_size)
@@ -360,7 +360,7 @@ const DEFAULT_LANDSCAPE_ZOOM := 1.0
 const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
 const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
-const PAN_DRAG_SCALE := 0.22
+const PAN_DRAG_SCALE := 1.0
 const DRAG_TAP_SUPPRESS_DISTANCE := 10.0
 
 var objects: Array[Dictionary] = []
@@ -886,7 +886,7 @@ func _handle_mouse_button(event: InputEventMouseButton) -> void:
 func _handle_mouse_motion(event: InputEventMouseMotion) -> void:
 	if dragging or bool(event.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		_pan_by(_pan_delta_from_mouse_motion(event))
-		drag_distance += event.screen_relative.length()
+		drag_distance += event.relative.length()
 		if drag_distance >= DRAG_TAP_SUPPRESS_DISTANCE:
 			suppress_next_marker_press = true
 		_apply_map_transform()
@@ -912,7 +912,7 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 			_zoom_at(event.position, current_distance / previous_distance)
 	else:
 		_pan_by(_pan_delta_from_screen_drag(event))
-		drag_distance += event.screen_relative.length()
+		drag_distance += event.relative.length()
 		if drag_distance >= DRAG_TAP_SUPPRESS_DISTANCE:
 			suppress_next_marker_press = true
 		_apply_map_transform()
@@ -930,10 +930,10 @@ func _pan_by(screen_delta: Vector2) -> void:
 	pan_offset += screen_delta * PAN_DRAG_SCALE
 
 func _pan_delta_from_mouse_motion(event: InputEventMouseMotion) -> Vector2:
-	return event.screen_relative
+	return event.relative
 
 func _pan_delta_from_screen_drag(event: InputEventScreenDrag) -> Vector2:
-	return event.screen_relative
+	return event.relative
 
 func _zoom_at(pivot: Vector2, factor: float) -> void:
 	var previous_zoom := zoom
