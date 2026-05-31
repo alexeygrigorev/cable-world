@@ -20,6 +20,8 @@
 - implementer делает изменения в отдельном worktree для конкретного Issue;
 - reviewer проверяет результат, запускает проверки и требует доработки при рисках.
 
+Для задач по карте reviewer обязан применять строгий [Map Reviewer Gate](docs/map-reviewer-gate.md): открыть свежий live Web build на `http://127.0.0.1:9000/` или documented fallback port, сделать Playwright screenshots, проверить pan/zoom/clickability/jitter/geography/labels/clutter и отклонить результат, если карта ниже `10/10` по `docs/map-quality-rubric.md`.
+
 ## Worktree
 
 Для каждой задачи создается отдельный worktree от актуальной интеграционной ветки. Название ветки должно ссылаться на Issue, например `issue-12-local-journal`.
@@ -35,6 +37,8 @@
 
 В интеграцию попадает только одна reviewed-задача за раз. После слияния запускаются быстрые проверки и, когда появится Godot в CI, headless-сценарии.
 
+Последовательность для любой задачи остается строгой: Issue задает контракт, implementer работает в отдельном worktree, reviewer проверяет этот worktree, затем интегрируется ровно одна reviewed-задача. Незавершенные, непроверенные или rejected map changes не попадают в интеграцию.
+
 ## Проверки
 
 Сейчас обязательна команда:
@@ -42,6 +46,8 @@
 ```bash
 python3 -m unittest discover -s tests
 ```
+
+Для map-related задач обязательный reviewer набор расширяется документом [Map Reviewer Gate](docs/map-reviewer-gate.md): full tests, Godot import/run, Web export, local serve на `:9000`, Playwright screenshots и gzip header check.
 
 Позже обязательный набор расширяется:
 
