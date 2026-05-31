@@ -145,7 +145,7 @@ Screenshots:
 - `/tmp/cable-world-web-map/mobile-390x844-map-v5.png`
 - `/tmp/cable-world-web-map/desktop-1280x800-map-v5.png`
 
-Rubric estimate after dotted route iteration 2026-05-31 13:43: still 7/10 candidate, but closer to 8/10 on marker readability. Remaining risk: trails may now be too subtle and need a small contrast increase after user review.
+Corrected rubric estimate after later user review 2026-05-31: this should not have been scored as 7/10. The procedural underlay still reads too much like a GIS canvas with map symbols layered on top, so it belongs around 4/10 until the base art direction changes.
 
 Sprite glyph terrain iteration result:
 
@@ -160,7 +160,7 @@ Screenshots:
 - `/tmp/cable-world-web-map/mobile-390x844-map-v9.png`
 - `/tmp/cable-world-web-map/desktop-1280x800-map-v9.png`
 
-Rubric estimate after sprite glyph terrain iteration 2026-05-31: stronger 7/10 candidate, not 8/10 yet. Alps and forests finally read as map glyphs, but the exact scale/extent of every range still needs geographic tuning before it satisfies the 10/10 terrain accuracy criterion.
+Corrected rubric estimate after later user review 2026-05-31: not 7/10. Sprite glyphs improved individual details, but the overall map still fails the reference-target art direction. Treat this as 4/10 unless a new underlay makes the whole map feel cohesive.
 
 Explicit relief placement iteration result:
 
@@ -174,7 +174,7 @@ Screenshots:
 - `/tmp/cable-world-web-map/mobile-390x844-map-v11.png`
 - `/tmp/cable-world-web-map/desktop-1280x800-map-v11.png`
 
-Rubric estimate after explicit relief placement iteration 2026-05-31: still around 7/10. It is materially closer to 8/10 because major relief is now controllable by real layer definitions, but final quality still needs calibrated extents against a real relief source and a pass on label/marker crowding.
+Corrected rubric estimate after later user review 2026-05-31: still around 4/10 visually. Explicit relief placement is useful technical infrastructure, but it does not by itself solve the weak visual direction.
 
 Outline readability iteration result:
 
@@ -193,7 +193,7 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
 - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
 
-Rubric estimate after outline readability iteration 2026-05-31: still about 7/10, not 8/10. Readability is better and the "circles around objects" issue is reduced, but desktop composition still crops some labels/icons at the edges and terrain accuracy still needs real relief/lake extent calibration before a confident 8/10.
+Corrected rubric estimate after later user review 2026-05-31: still around 4/10. Outline readability fixes marker contrast, but the map still looks bad as a whole, so the score must be capped by art quality.
 
 Adaptive default view iteration result:
 
@@ -212,4 +212,11 @@ Screenshots:
 - `/tmp/cable-world-web-map/desktop-1280x800-after-marker-click.png`
 - `/tmp/cable-world-web-map/desktop-1280x800-after-drag.png`
 
-Rubric estimate after adaptive default view iteration 2026-05-31: still 7/10. Desktop composition is less cramped, but the map is still below 8/10 until relief/lake accuracy is audited against real extents and the dense object clusters become native atlas group markers instead of obvious stacked UI icons.
+Corrected rubric estimate after user review 2026-05-31: 4/10. Desktop composition is less cramped than before, but the base map still does not meet the desired atlas/RPG quality. The next meaningful move is not marker polish; it is replacing or heavily reworking the underlay art direction while preserving coordinate-driven interactive overlays.
+
+Rubric correction note:
+
+- User review: "карта все ещё выглядит очень плохо. где-то на 4/10".
+- Previous assistant estimates around 7/10 were too generous because they over-weighted technical progress: aspect ratio, gzip, clickability, explicit relief data and marker outlines.
+- Updated `docs/map-quality-rubric.md` now caps the score at 4/10 when the map reads as a procedural/GIS canvas with sprites layered on top.
+- New target before claiming 6/10+: the underlay itself must feel like a cohesive 16-bit/RPG atlas screenshot, not a technically correct base map with decorative elements.

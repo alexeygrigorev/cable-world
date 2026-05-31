@@ -6,6 +6,7 @@
 
 ## Open Items
 
+- [ ] Перестать считать текущую procedural/GIS underlay улучшаемой до 8/10 мелкими правками: пользовательская оценка 2026-05-31 — около 4/10. Следующий крупный шаг должен заменить или радикально переработать сам визуальный слой карты.
 - [ ] Проверить и откалибровать координаты city landmarks относительно реальной географии: Росток должен быть у моря, Дрезден не должен визуально уезжать в Чехию, города должны совпадать с реальной картой настолько, насколько позволяет художественная подложка.
 - [ ] Исправить pan sensitivity: drag пальцем и мышью должен ощущаться примерно 1:1, без ускорения, где 1 см движения пальца сдвигает карту на несколько сантиметров.
 - [ ] Разобраться с тем, почему пользователь может видеть старую версию с точками вместо city landmark icons: web rebuild, Godot import, browser cache, service worker/PWA/cache busting.
@@ -30,5 +31,5 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`.
-- Последний map commit на момент обновления backlog: pending adaptive default view commit after current review.
-- Текущий рельеф Германии перешел на reusable sprite glyphs для гор, лесов и озер; главные горные массивы уже имеют явные placements. Иконки транспорта и городов теперь грузятся из outlined runtime variants. Desktop/landscape start view больше не увеличивает карту сверх минимального zoom. Blocker для `8/10+` теперь проверка этих placements по реальным relief extent, list/cluster styling и дальнейшая Европа без country-only clipping.
+- Последний map commit на момент обновления backlog: pending rubric correction after user rated current map 4/10.
+- Текущая карта технически рабочая, но визуально проваливает target. Нельзя больше оценивать ее как 7/10 только из-за координат, gzip, explicit relief placements или marker readability. Blocker для `6/10+` теперь новый art-directed underlay, который с первого взгляда похож на приключенческую atlas/RPG карту.
