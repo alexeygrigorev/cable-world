@@ -70,15 +70,26 @@ npm install --prefix "$PLAYWRIGHT_DIR" playwright
 NODE_PATH="$PLAYWRIGHT_DIR/node_modules" OUT_DIR=tmp/map-review/issue-71 URL="$REVIEW_URL" node scripts/verify-web-map.mjs
 ```
 
-Gzip and cache headers for Web payload:
+Gzip and cache headers for Web payload. The server must disable reuse of stale Web exports and serve gzip for the Godot payload plus map PNGs:
 
 ```bash
-for asset in index.wasm index.pck index.js; do
+for asset in index.html index.wasm index.pck index.js; do
   test -f "build/web/${asset}.gz"
   curl -fsSI -H "Accept-Encoding: gzip" "${REVIEW_URL%/}/${asset}" \
     | tr -d '\r' \
-    | grep -Ei '^(Content-Encoding: gzip|Cache-Control: no-store)$'
+    | grep -Ei '^(Content-Encoding: gzip|Cache-Control: no-store, no-cache, must-revalidate, max-age=0|Pragma: no-cache|Expires: 0)$'
 done
+for png in build/web/*.png; do
+  test -e "$png" || continue
+  asset="$(basename "$png")"
+  test -f "${png}.gz"
+  curl -fsSI -H "Accept-Encoding: gzip" "${REVIEW_URL%/}/${asset}" \
+    | tr -d '\r' \
+    | grep -Ei '^(Content-Encoding: gzip|Cache-Control: no-store, no-cache, must-revalidate, max-age=0|Pragma: no-cache|Expires: 0)$'
+done
+curl -fsS "${REVIEW_URL%/}/.web-build.json" | grep -F '"build_id"'
+curl -fsS "${REVIEW_URL%/}/index.html" | grep -F 'name="cable-world-web-build"'
+scripts/serve-web.sh --check-headers
 ```
 
 Reviewer may add extra manual browser/device checks, but may not skip the commands above for map acceptance.
@@ -114,7 +125,8 @@ The reviewer must inspect screenshots for:
 
 - required commands pass;
 - live map loads from the reviewed Web export;
-- gzip responses are confirmed for `.wasm`, `.pck` and `.js`;
+- gzip responses are confirmed for `.html`, `.wasm`, `.pck`, `.js` and present top-level `.png` files;
+- `Cache-Control: no-store, no-cache, must-revalidate, max-age=0` plus build metadata are confirmed for the reviewed Web export;
 - screenshots exist and were reviewed;
 - interaction review finds no pan, zoom, clickability or jitter blocker;
 - geography review finds no visible major mismatch;

@@ -93,8 +93,8 @@ uv run python -m map_pipeline.compose_map
 python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract
 godot --headless --path . --import --quit
 rm -rf build/web && mkdir -p build/web && godot --headless --path . --export-release Web build/web/index.html
-find build/web -maxdepth 1 -type f \( -name '*.wasm' -o -name '*.pck' -o -name '*.js' -o -name '*.html' \) -print0 | while IFS= read -r -d '' file; do gzip -9 -kf "$file"; done
-curl -I --compressed http://127.0.0.1:9000/index.pck
+scripts/serve-web.sh --check-headers
+scripts/serve-web.sh --no-export
 PLAYWRIGHT_PACKAGE=/tmp/cable-playwright/node_modules/playwright URL=http://127.0.0.1:9000/ node scripts/verify-web-map.mjs
 ```
 
@@ -115,7 +115,7 @@ What to inspect on screenshots:
 - major water bodies and islands are plausible: Bodensee, Müritz, Chiemsee, Schweriner See, Plauer See, Schaalsee, Steinhuder Meer, Edersee, Ammersee, Starnberger See, Tegernsee, Berlin lakes and Rügen;
 - no obvious large mountains in lowland regions unless the region is known to have real relief;
 - map can pan south beyond Germany so München/Alps are not clipped;
-- `index.pck` is served with `Content-Encoding: gzip` and `Cache-Control: no-store`;
+- `.html`, `.js`, `.wasm`, `.pck` and top-level `.png` files are served with gzip, no-store/no-cache headers and build metadata from `scripts/serve-web.sh`;
 - payload size is recorded when it materially changes.
 
 Quality scoring gate:
