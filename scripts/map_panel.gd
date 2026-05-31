@@ -28,7 +28,7 @@ class OfflineMapLayer:
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
 		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
-		{"name": "Rostock", "coordinates": Vector2(12.0991, 54.0924), "kind": "city", "icon": "rostock"},
+		{"name": "Rostock", "coordinates": Vector2(12.0991, 54.0924), "kind": "city", "icon": "rostock", "icon_offset": Vector2(0.0, 23.0)},
 		{"name": "Köln", "coordinates": Vector2(6.9603, 50.9375), "kind": "city", "icon": "cologne"},
 		{"name": "München", "coordinates": Vector2(11.5820, 48.1351), "kind": "city", "icon": "munich"},
 		{"name": "Dresden", "coordinates": Vector2(13.7373, 51.0504), "kind": "city", "icon": "dresden"},
@@ -165,10 +165,13 @@ class OfflineMapLayer:
 			return Rect2()
 		var icon_size: float = round(clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0))
 		var icon_rect := Rect2(
-			_pixel_snap(position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom)),
+			_pixel_snap(position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom) + _city_icon_offset(label_data)),
 			Vector2(icon_size, icon_size)
 		)
 		return icon_rect
+
+	func _city_icon_offset(label_data: Dictionary) -> Vector2:
+		return Vector2(label_data.get("icon_offset", Vector2.ZERO)) * zoom
 
 	func _draw_city_icon(label_data: Dictionary, icon_rect: Rect2) -> void:
 		var texture: Texture2D = _city_icon_texture(str(label_data.get("icon", "")))

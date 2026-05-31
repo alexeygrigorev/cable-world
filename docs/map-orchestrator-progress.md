@@ -766,3 +766,24 @@ Checks:
 - Web export rebuilt and served on `http://127.0.0.1:9000/`; Playwright screenshots regenerated.
 
 Self-audit: about `6.7/10`, still not `8/10`. This is a real readability improvement, but open issues remain: Rostock is visually too far into the water, German Alps need recalibration, and separate massif sprite layers are still required for the target direction.
+
+## Iteration 2026-05-31 21:17
+
+Implemented:
+
+- Added data-driven city landmark icon offsets in `scripts/map_panel.gd`.
+- Applied `icon_offset: Vector2(0.0, 23.0)` to Rostock so the pictogram sits closer to the land/harbor coast instead of floating in the Baltic Sea.
+- Kept the real coordinate and map projection unchanged; this is a marker drawing offset only, so it does not reintroduce viewport clamping or marker drift.
+
+Evidence:
+
+- `/tmp/cable-world-web-map/mobile-390x844-initial.png` shows Rostock no longer floating in open water.
+- `curl -I --compressed http://127.0.0.1:9000/index.pck`: `Content-Encoding: gzip`, `Content-Length: 6360906`, `Cache-Control: no-store`.
+
+Checks:
+
+- `python3 -m unittest tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract tests.test_map_geography_audit`: 19 tests OK, 1 skipped under plain Python.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract tests.test_export_payload_contract tests.test_android_export_contract`: 19 tests OK.
+- Web export rebuilt and served on `http://127.0.0.1:9000/`; Playwright screenshots regenerated.
+
+Self-audit: this addresses `#70` first pass. The broader map remains below `8/10`; next high-impact work is German Alps visibility and separate massif sprite layers (`#68`, `#69`).
