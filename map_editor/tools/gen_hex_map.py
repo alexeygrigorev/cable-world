@@ -122,13 +122,26 @@ def load_ne(name):
     return gpd.read_file(os.path.join(path, shp))
 
 
-def load_massif_polygons():
-    out = []
+def load_massifs():
+    """Return (mountain_polys, pieces).
+
+    mountain_polys: prepared region polygons used only to mark hexes as
+    'mountain' terrain (e.g. the whole Alpine arc from alps.json).
+
+    pieces: the individual art layers to actually draw. An aggregate massif
+    (alps.json, which lists massif_segments) is NOT drawn as one giant image;
+    its segments (western_alps_massif, swiss_alps_massif, ...) are drawn as
+    separate pieces, each with its own image + geo_bounds. Single massifs
+    (harz, black_forest, ...) are their own single piece."""
+    mountain_polys, pieces = [], []
     for path in sorted(glob.glob(os.path.join(MASSIF_DIR, "*.json"))):
-        rp = json.load(open(path)).get("region_polygon")
+        d = json.load(open(path))
+        rp, img, gb = d.get("region_polygon"), d.get("image"), d.get("geo_bounds")
         if rp:
-            out.append(prep(Polygon([(p["longitude"], p["latitude"]) for p in rp])))
-    return out
+            mountain_polys.append(prep(Polygon([(p["longitude"], p["latitude"]) for p in rp])))
+        if img and gb and not d.get("massif_segments"):
+            pieces.append({"id": d["id"], "image": img, "geo_bounds": gb})
+    return mountain_polys, pieces
 
 
 def main():
@@ -138,11 +151,23 @@ def main():
 
     countries = load_ne("ne_50m_admin_0_countries")
     clip = box(minlon - 1, minlat - 1, maxlon + 1, maxlat + 1)
-    countries = countries[countries.geometry.intersects(clip)]
+    countries = countries[countries.geometry.intersects(clip)].copy()
     germany = countries[countries["ADMIN"] == "Germany"].geometry.union_all()
-    land = countries.geometry.union_all()
-    de_prep, land_prep = prep(germany), prep(land)
-    massifs = load_massif_polygons()
+    land_prep = prep(countries.geometry.union_all())
+    # per-country prepared geometry + bbox + ISO code, for fast point lookup
+    cgeo = []
+    for _, row in countries.iterrows():
+        iso = row.get("ISO_A2")
+        if not iso or iso == "-99":
+            iso = str(row.get("ADMIN", "??"))[:3].upper()
+        cgeo.append((iso, prep(row.geometry), row.geometry.bounds))
+    mountain_polys, massif_pieces = load_massifs()
+
+    def country_of(pt):
+        for iso, pg, (bx0, by0, bx1, by1) in cgeo:
+            if bx0 <= pt.x <= bx1 and by0 <= pt.y <= by1 and pg.contains(pt):
+                return iso
+        return "??"
 
     # q,r range covering all of Europe in world px
     xs = [merc(minlon, maxlat)[0], merc(maxlon, minlat)[0]]
@@ -163,12 +188,9 @@ def main():
             pt = Point(lon, lat)
             if not land_prep.contains(pt):
                 continue
-            in_de = de_prep.contains(pt)
-            terrain = "plain"
-            if in_de and any(m.contains(pt) for m in massifs):
-                terrain = "mountain"
-            hexes[f"{q},{r}"] = {"country": "DE" if in_de else "other",
-                                 "terrain": terrain,
+            # massifs are cross-border: mountain regardless of country
+            terrain = "mountain" if any(m.contains(pt) for m in mountain_polys) else "plain"
+            hexes[f"{q},{r}"] = {"country": country_of(pt), "terrain": terrain,
                                  "center": [round(lon, 5), round(lat, 5)]}
 
     for lon, lat in FOREST_POINTS:
@@ -180,6 +202,23 @@ def main():
                 cell["terrain"] = "forest"
 
     features = []
+
+    # separate massif glyph pieces: Alps as its named segments, every other
+    # massif as its own piece — each its own image, placed by real geo_bounds.
+    for m in massif_pieces:
+        gb = m["geo_bounds"]
+        x0, y0 = merc(gb["min_longitude"], gb["max_latitude"])
+        x1, y1 = merc(gb["max_longitude"], gb["min_latitude"])
+        cells = [k for k, c in hexes.items()
+                 if c["terrain"] == "mountain"
+                 and gb["min_longitude"] <= c["center"][0] <= gb["max_longitude"]
+                 and gb["min_latitude"] <= c["center"][1] <= gb["max_latitude"]]
+        aq, ar = world_to_hex((x0 + x1) / 2, (y0 + y1) / 2, s)
+        features.append({"id": m["id"], "glyph": "massif", "image": m["image"],
+                         "label": m["id"], "bounds_px": [round(x0, 1), round(y0, 1),
+                         round(x1, 1), round(y1, 1)], "cells": cells,
+                         "anchor": f"{aq},{ar}"})
+
     for name, lon, lat, kind, icon in CITIES:
         wx, wy = merc(lon, lat)
         q, r = world_to_hex(wx, wy, s)

@@ -9,6 +9,7 @@ const ASSET_DIRS = [
   fileURLToPath(new URL("../assets/sprites/city_landmark_clusters_hi_res/outlined/", import.meta.url)),
   fileURLToPath(new URL("../assets/sprites/city_landmarks/outlined/", import.meta.url)),
   fileURLToPath(new URL("../assets/map/glyphs/", import.meta.url)),
+  fileURLToPath(new URL("../assets/map/massifs/", import.meta.url)),
   fileURLToPath(new URL("../assets/fonts/", import.meta.url)),
 ];
 const MIME = { png: "image/png", ttf: "font/ttf", otf: "font/otf", woff2: "font/woff2" };
@@ -26,7 +27,9 @@ function gameAssetsPlugin() {
           const p = dir + name;
           if (existsSync(p)) {
             res.setHeader("Content-Type", MIME[ext]);
-            res.setHeader("Cache-Control", "no-cache");
+            // game assets rarely change — let the browser cache them so reloads
+            // and panning don't re-download (hard-refresh to pick up edits)
+            res.setHeader("Cache-Control", "public, max-age=86400");
             return createReadStream(p).pipe(res);
           }
         }

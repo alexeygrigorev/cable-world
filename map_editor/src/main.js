@@ -9,14 +9,15 @@ new FontFace(LABEL_FONT, "url(/asset/LiberationSerif-BoldItalic.ttf)")
   .catch(() => {});
 
 const SQRT3 = Math.sqrt(3);
+// exact game palette (map_pipeline/compose_map.py + scripts/map_panel.gd)
 const COLORS = {
-  sea: "#bcd3e2",
-  plainDE: "#e7c98f",
-  plainOther: "#ded3c2",
-  forest: "#9bbf78",
-  mountain: "#bcae97",
-  edge: "rgba(255,255,255,0.40)",
-  outline: "#b8954e",
+  sea: "#315f6d",        // OCEAN
+  landDE: "#9da05a",     // GERMANY_LAND
+  landOther: "#8f9150",  // NEIGHBOR_LAND
+  edge: "rgba(40,33,18,0.22)",
+  outline: "#463c28",    // GERMANY_EDGE
+  labelFill: "#f6df9b",  // city label text in the game
+  labelStroke: "rgba(28,18,8,0.9)",
 };
 const ZOOM_LEVELS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -66,10 +67,9 @@ function hexPath(cx, cy, s) {
 }
 
 function cellColor(cell) {
+  // forests/mountains are glyphs on land, like the game — land color underneath
   if (cell.terrain === "sea") return COLORS.sea;
-  if (cell.terrain === "forest") return COLORS.forest;
-  if (cell.terrain === "mountain") return COLORS.mountain;
-  return cell.country === "DE" ? COLORS.plainDE : COLORS.plainOther;
+  return cell.country === "DE" ? COLORS.landDE : COLORS.landOther;
 }
 
 // ----- glyphs (save/restore so they never leak style into the grid) -----
@@ -109,15 +109,100 @@ function drawPeak(cx, cy, s) {
   ctx.restore();
 }
 
-// real game sprites, loaded on demand and cached
+// terrain glyph sets from the game (varied per hex by a stable hash)
+const FOREST_GLYPHS = ["forest_cluster_1.png", "forest_cluster_2.png", "forest_cluster_3.png",
+  "forest_cluster_4.png", "forest_cluster_5.png", "forest_cluster_6.png"];
+const MOUNTAIN_GLYPHS = ["alps_peak_1.png", "alps_peak_2.png", "alps_range_1.png", "alps_range_2.png"];
+
+function hashKey(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function variant(key, arr) { return arr[hashKey(key) % arr.length]; }
+
+// coalesce repaints (many image onloads -> one render per frame)
+let renderQueued = false;
+function requestRender() {
+  if (renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(() => { renderQueued = false; render(); });
+}
+
+// real game sprites, loaded on demand and cached (HTTP-cached too)
 const imgCache = new Map();
 function getImg(name) {
   if (imgCache.has(name)) return imgCache.get(name);
   const img = new Image();
-  img.onload = () => render();
+  img.decoding = "async";
+  img.onload = requestRender;
   img.src = `/asset/${name}`;
   imgCache.set(name, img);
   return img;
+}
+
+// which hexes a massif actually paints (sampling the image's alpha), so points
+// land only where there's real art — not on transparent edges of the bbox.
+const alphaData = new Map();   // image name -> ImageData
+const filledCache = new Map(); // feature id -> { bkey, keys }
+const SAMPLE = [[0, 0], [0.45, 0], [-0.45, 0], [0, 0.5], [0, -0.5], [0.35, 0.35], [-0.35, -0.35]];
+
+function massifFilledKeys(f) {
+  const img = getImg(f.image);
+  if (!img.complete || !img.naturalWidth) return null; // not loaded yet
+  const bkey = f.bounds_px.join(",");
+  const cached = filledCache.get(f.id);
+  if (cached && cached.bkey === bkey) return cached.keys;
+
+  let data = alphaData.get(f.image);
+  if (!data) {
+    const oc = document.createElement("canvas");
+    oc.width = img.naturalWidth;
+    oc.height = img.naturalHeight;
+    const octx = oc.getContext("2d", { willReadFrequently: true });
+    octx.drawImage(img, 0, 0);
+    data = octx.getImageData(0, 0, oc.width, oc.height);
+    alphaData.set(f.image, data);
+  }
+
+  const [x0, y0, x1, y1] = f.bounds_px;
+  const W = x1 - x0, H = y1 - y0, s = sizeW();
+  const keys = [];
+  for (const key in state.hexes) {
+    const [q, r] = key.split(",").map(Number);
+    const wx = s * SQRT3 * (q + r / 2), wy = s * 1.5 * r;
+    if (wx < x0 || wx > x1 || wy < y0 || wy > y1) continue; // outside the glyph box
+    let opaque = 0;
+    for (const [ox, oy] of SAMPLE) {
+      const ix = Math.round(((wx + ox * s - x0) / W) * data.width);
+      const iy = Math.round(((wy + oy * s - y0) / H) * data.height);
+      if (ix < 0 || iy < 0 || ix >= data.width || iy >= data.height) continue;
+      if (data.data[(iy * data.width + ix) * 4 + 3] > 50) opaque++;
+    }
+    if (opaque / SAMPLE.length >= 0.6) keys.push(key); // hex mostly covered by art
+  }
+  filledCache.set(f.id, { bkey, keys });
+  return keys;
+}
+
+// warm the cache for everything on the map so panning never pops in
+function preloadAssets() {
+  for (const f of state.features || []) {
+    if (f.glyph === "city" && f.icon) getImg(`city_${f.icon}.png`);
+    else if (f.glyph === "massif" && f.image) getImg(f.image);
+  }
+  for (const g of [...FOREST_GLYPHS]) getImg(g);
+}
+
+// draw a game sprite; baseAnchor=true sits its base on the hex, else centered.
+// returns false if the image isn't ready yet (caller draws a fallback).
+function drawSprite(name, cx, cy, s, h, baseAnchor) {
+  const img = getImg(name);
+  if (!img.complete || !img.naturalWidth) return false;
+  const w = h * (img.naturalWidth / img.naturalHeight);
+  const top = baseAnchor ? cy - h * 0.78 : cy - h / 2;
+  ctx.drawImage(img, cx - w / 2, top, w, h);
+  return true;
 }
 
 function drawCity(cx, cy, s, f, showLabel) {
@@ -129,8 +214,8 @@ function drawCity(cx, cy, s, f, showLabel) {
     // sprite footprint scaled to the hex; anchored so its base sits on the hex
     const h = s * (capital ? 5.0 : 4.0);
     const w = h * (img.naturalWidth / img.naturalHeight);
-    ctx.drawImage(img, cx - w / 2, cy - h * 0.82, w, h);
-    bottom = cy + h * 0.18;
+    ctx.drawImage(img, cx - w / 2, cy - h * 0.70, w, h); // anchor point sits higher in the sprite
+    bottom = cy + h * 0.30;
   } else {
     const r = s * (capital ? 0.5 : 0.38);
     ctx.beginPath();
@@ -148,10 +233,10 @@ function drawCity(cx, cy, s, f, showLabel) {
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.lineJoin = "round";
-    ctx.lineWidth = s * 0.2;
-    ctx.strokeStyle = "rgba(255,255,255,0.92)";
+    ctx.lineWidth = s * 0.22;
+    ctx.strokeStyle = COLORS.labelStroke;
     ctx.strokeText(f.label, cx, ly);
-    ctx.fillStyle = "#2c3540";
+    ctx.fillStyle = COLORS.labelFill;
     ctx.fillText(f.label, cx, ly);
   }
   ctx.restore();
@@ -218,69 +303,185 @@ function render() {
   const vx0 = -tx / sc - s, vy0 = -ty / sc - s;
   const vx1 = (cssW - tx) / sc + s, vy1 = (cssH - ty) / sc + s;
 
+  const onScreen = (x, y) => x >= vx0 && x <= vx1 && y >= vy0 && y <= vy1;
+
+  // 1. land/sea fill + forest glyphs
   for (const [key, cell] of Object.entries(state.hexes)) {
     const [q, r] = key.split(",").map(Number);
     const { x, y } = hexToContent(q, r);
-    if (x < vx0 || x > vx1 || y < vy0 || y > vy1) continue; // off-screen
+    if (!onScreen(x, y)) continue;
     hexPath(x, y, s);
     ctx.fillStyle = cellColor(cell);
     ctx.fill();
     ctx.strokeStyle = COLORS.edge;
     ctx.lineWidth = s * 0.03;
     ctx.stroke();
-    if (cell.terrain === "forest") drawTree(x, y, s);
-    else if (cell.terrain === "mountain") drawPeak(x, y, s);
+    if (cell.terrain === "forest") {
+      if (!drawSprite(variant(key, FOREST_GLYPHS), x, y, s, s * 1.9, false)) drawTree(x, y, s);
+    }
   }
 
+  // 2. country borders: edge between two land hexes of different countries
   ctx.strokeStyle = COLORS.outline;
-  ctx.lineWidth = s * 0.05;
-  for (const poly of state.reference_outline || []) {
-    ctx.beginPath();
-    poly.forEach(([wx, wy], i) => {
-      const x = wx - origin()[0], y = wy - origin()[1];
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
-    ctx.stroke();
+  ctx.lineWidth = s * 0.14;
+  ctx.lineCap = "round";
+  const apothem = (s * SQRT3) / 2;
+  for (const [key, cell] of Object.entries(state.hexes)) {
+    const [q, r] = key.split(",").map(Number);
+    const { x, y } = hexToContent(q, r);
+    if (!onScreen(x, y)) continue;
+    for (const [dq, dr] of NB) {
+      const ncell = state.hexes[`${q + dq},${r + dr}`];
+      if (!ncell || ncell.country === cell.country) continue;
+      if (`${q + dq},${r + dr}` < key) continue; // draw each border once
+      const n = hexToContent(q + dq, r + dr);
+      const ux = n.x - x, uy = n.y - y;
+      const len = Math.hypot(ux, uy) || 1;
+      const mx = x + (ux / len) * apothem, my = y + (uy / len) * apothem;
+      const px = -uy / len, py = ux / len;
+      ctx.beginPath();
+      ctx.moveTo(mx + px * (s / 2), my + py * (s / 2));
+      ctx.lineTo(mx - px * (s / 2), my - py * (s / 2));
+      ctx.stroke();
+    }
   }
 
-  // while dragging, highlight the target anchor hex under the cursor
-  if (dragging && dragPos) {
-    const { q, r } = contentToHex(dragPos.x, dragPos.y);
-    const c = hexToContent(q, r);
-    hexPath(c.x, c.y, s);
-    ctx.fillStyle = "rgba(30,136,229,0.28)";
-    ctx.fill();
-    ctx.strokeStyle = "#1e88e5";
-    ctx.lineWidth = s * 0.12;
-    ctx.stroke();
-    // exact anchor point at the hex center
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, s * 0.16, 0, Math.PI * 2);
-    ctx.fillStyle = "#1e88e5";
-    ctx.fill();
-    ctx.lineWidth = s * 0.05;
-    ctx.strokeStyle = "#fff";
-    ctx.stroke();
-  }
-
-  const showLabels = s * sc > 13; // only when zoomed in enough to read
+  // 3. multi-hex massif glyphs (each its own image, placed by geo_bounds)
   for (const f of state.features || []) {
+    if (f.glyph !== "massif" || !f.image) continue;
+    const img = getImg(f.image);
+    if (!img.complete || !img.naturalWidth) continue;
     const held = f === dragging?.feature;
-    const pos = held && dragPos ? dragPos : anchorContent(f);
-    if (pos.x < vx0 || pos.x > vx1 || pos.y < vy0 || pos.y > vy1) continue;
+    const d = held && dragging.delta ? hexDeltaWorld(dragging.delta.dq, dragging.delta.dr) : { x: 0, y: 0 };
+    const [x0, y0, x1, y1] = f.bounds_px;
+    ctx.globalAlpha = held ? 0.6 : 1;
+    ctx.drawImage(img, x0 - origin()[0] + d.x, y0 - origin()[1] + d.y, x1 - x0, y1 - y0);
+    ctx.globalAlpha = 1;
+  }
+
+  // 4. highlight the selected (or dragged) feature: a city shows one point,
+  //    a massif shows a few sampled points across the hexes it covers.
+  const hi = dragging && dragPos ? dragging.feature : selected;
+  if (hi) {
+    let keys;
+    if (hi.glyph === "massif") {
+      const d = dragging?.feature === hi && dragging.delta ? dragging.delta : { dq: 0, dr: 0 };
+      // points only where the glyph's art actually covers the hex (alpha-sampled)
+      let filled = massifFilledKeys(hi);
+      if (!filled || filled.length === 0) filled = [hi.anchor];
+      keys = filled.map((k) => shiftKey(k, d.dq, d.dr));
+    } else if (dragging?.feature === hi && dragPos) {
+      const { q, r } = contentToHex(dragPos.x, dragPos.y);
+      keys = [`${q},${r}`];
+    } else {
+      keys = [hi.anchor];
+    }
+    for (const k of keys) {
+      const [q, r] = k.split(",").map(Number);
+      const c = hexToContent(q, r);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, s * 0.2, 0, Math.PI * 2);
+      ctx.fillStyle = "#1e88e5";
+      ctx.fill();
+      ctx.lineWidth = s * 0.06;
+      ctx.strokeStyle = "#fff";
+      ctx.stroke();
+    }
+  }
+
+  // 5. cities on top, south-over-north
+  const showLabels = s * sc > 13;
+  const cities = (state.features || [])
+    .filter((f) => f.glyph === "city")
+    .map((f) => {
+      const held = f === dragging?.feature;
+      return { f, held, pos: held && dragPos ? dragPos : anchorContent(f) };
+    })
+    .sort((a, b) => a.pos.y - b.pos.y);
+  for (const { f, held, pos } of cities) {
+    if (!onScreen(pos.x, pos.y)) continue;
     if (held) ctx.globalAlpha = 0.5;
-    if (f.glyph === "city") drawCity(pos.x, pos.y, s, f, showLabels);
+    drawCity(pos.x, pos.y, s, f, showLabels);
     ctx.globalAlpha = 1;
   }
 }
+
+const NB = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, -1], [-1, 1]];
 
 function anchorContent(f) {
   const [q, r] = f.anchor.split(",").map(Number);
   return hexToContent(q, r);
 }
 
+function shiftKey(key, dq, dr) {
+  const [q, r] = key.split(",").map(Number);
+  return `${q + dq},${r + dr}`;
+}
+
+// a hex is "fully filled" by a massif when nearly all its neighbours are also
+// mountain; an edge hex where the glyph only just spills over is not
+function isFilledMountain(key) {
+  const [q, r] = key.split(",").map(Number);
+  let n = 0;
+  for (const [dq, dr] of NB) {
+    const c = state.hexes[`${q + dq},${r + dr}`];
+    if (c && c.terrain === "mountain") n++;
+  }
+  return n >= 5;
+}
+
+function hexDeltaWorld(dq, dr) {
+  const s = sizeW();
+  return { x: s * SQRT3 * (dq + dr / 2), y: s * 1.5 * dr };
+}
+
+// ----- selection + info panel -----
+let selected = null;
+const panelEl = document.getElementById("panel");
+const panelBody = document.getElementById("panelBody");
+document.getElementById("panelClose").addEventListener("click", deselect);
+
+function deselect() {
+  selected = null;
+  panelEl.hidden = true;
+  render();
+}
+
+function selectFeature(f) {
+  selected = f;
+  renderPanel(f);
+  panelEl.hidden = false;
+}
+
+function renderPanel(f) {
+  if (f.glyph === "city") {
+    panelBody.innerHTML = `
+      <h2>${f.label}</h2>
+      <div class="kind">${f.kind === "capital" ? "Столица" : "Город"}</div>
+      <dl>
+        <dt>Тип</dt><dd>город</dd>
+        <dt>id</dt><dd>${f.id}</dd>
+        <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
+        <dt>Гекс</dt><dd>${f.anchor}</dd>
+        <dt>Иконка</dt><dd>city_${f.icon}.png</dd>
+      </dl>`;
+  } else if (f.glyph === "massif") {
+    panelBody.innerHTML = `
+      <h2>${f.label}</h2>
+      <div class="kind">Горный массив</div>
+      <img class="thumb" src="/asset/${f.image}" alt="">
+      <dl>
+        <dt>Тип</dt><dd>массив (горы)</dd>
+        <dt>id</dt><dd>${f.id}</dd>
+        <dt>Занято гексов</dt><dd>${(f.cells || []).length}</dd>
+        <dt>Якорь</dt><dd>${f.anchor}</dd>
+        <dt>Картинка</dt><dd>${f.image}</dd>
+      </dl>`;
+  }
+}
+
 // ----- pointer: drag feature, or pan -----
-let dragging = null, dragPos = null, panning = null;
+let dragging = null, dragPos = null, panning = null, dragMoved = false;
 
 function eventToContent(e) {
   const rect = canvas.getBoundingClientRect();
@@ -289,11 +490,18 @@ function eventToContent(e) {
 }
 
 function featureAt(p) {
-  const s = sizeW();
-  for (let i = (state.features || []).length - 1; i >= 0; i--) {
-    const f = state.features[i];
+  const s = sizeW(), o = origin();
+  // cities first (small targets sitting on top)
+  for (const f of state.features || []) {
+    if (f.glyph !== "city") continue;
     const c = anchorContent(f);
     if (Math.hypot(p.x - c.x, p.y - c.y) < s * 0.9) return f;
+  }
+  // then massifs, by their footprint box
+  for (const f of state.features || []) {
+    if (f.glyph !== "massif" || !f.bounds_px) continue;
+    const [x0, y0, x1, y1] = f.bounds_px;
+    if (p.x >= x0 - o[0] && p.x <= x1 - o[0] && p.y >= y0 - o[1] && p.y <= y1 - o[1]) return f;
   }
   return null;
 }
@@ -302,18 +510,33 @@ canvas.addEventListener("pointerdown", (e) => {
   const p = eventToContent(e);
   const f = featureAt(p);
   if (f) {
-    pushUndo();
-    dragging = { feature: f };
+    dragging = { feature: f, start: { x: e.clientX, y: e.clientY } };
+    dragMoved = false;
     dragPos = p;
+    if (f.glyph === "massif") {
+      dragging.pickHex = contentToHex(p.x, p.y);
+      dragging.delta = { dq: 0, dr: 0 };
+    }
+    selectFeature(f); // click selects; a drag also moves it
+    render();
   } else {
     panning = { x: e.clientX, y: e.clientY, panX, panY };
+    if (selected) deselect();
   }
   canvas.setPointerCapture(e.pointerId);
 });
 
 canvas.addEventListener("pointermove", (e) => {
   if (dragging) {
+    if (!dragMoved && Math.hypot(e.clientX - dragging.start.x, e.clientY - dragging.start.y) > 4) {
+      pushUndo();
+      dragMoved = true;
+    }
     dragPos = eventToContent(e);
+    if (dragging.feature.glyph === "massif") {
+      const h = contentToHex(dragPos.x, dragPos.y);
+      dragging.delta = { dq: h.q - dragging.pickHex.q, dr: h.r - dragging.pickHex.r };
+    }
     render();
   } else if (panning) {
     panX = panning.panX + (e.clientX - panning.x);
@@ -324,13 +547,28 @@ canvas.addEventListener("pointermove", (e) => {
 
 canvas.addEventListener("pointerup", () => {
   if (dragging) {
-    const { q, r } = contentToHex(dragPos.x, dragPos.y);
-    dragging.feature.anchor = `${q},${r}`;
-    const cell = state.hexes[`${q},${r}`];
-    if (cell?.center) { dragging.feature.lon = cell.center[0]; dragging.feature.lat = cell.center[1]; }
+    const f = dragging.feature;
+    if (dragMoved) {
+      if (f.glyph === "massif") {
+        const { dq, dr } = dragging.delta || { dq: 0, dr: 0 };
+        if (dq || dr) {
+          f.anchor = shiftKey(f.anchor, dq, dr);
+          f.cells = (f.cells || []).map((k) => shiftKey(k, dq, dr));
+          const d = hexDeltaWorld(dq, dr);
+          f.bounds_px = [f.bounds_px[0] + d.x, f.bounds_px[1] + d.y,
+                         f.bounds_px[2] + d.x, f.bounds_px[3] + d.y];
+        }
+      } else {
+        const { q, r } = contentToHex(dragPos.x, dragPos.y);
+        f.anchor = `${q},${r}`;
+        const cell = state.hexes[`${q},${r}`];
+        if (cell?.center) { f.lon = cell.center[0]; f.lat = cell.center[1]; }
+      }
+      if (selected === f) renderPanel(f);
+      save();
+    }
     dragging = null; dragPos = null;
     render();
-    save();
   }
   panning = null;
 });
@@ -360,6 +598,8 @@ function pushUndo() {
 function undo() {
   if (!undoStack.length) return;
   state.features = JSON.parse(undoStack.pop());
+  selected = null;          // old reference is gone after restore
+  panelEl.hidden = true;
   render();
   save();
 }
@@ -382,6 +622,7 @@ function boot(data) {
   state = structuredClone(data);
   panX = 0; panY = 0;
   setupCanvas();
+  preloadAssets();
   render();
   const t = {};
   for (const c of Object.values(state.hexes)) t[c.terrain] = (t[c.terrain] || 0) + 1;
