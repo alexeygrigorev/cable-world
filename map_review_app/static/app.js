@@ -28,6 +28,13 @@ function formatBytes(value) {
   return `${Math.round(value / 1024)} KB`;
 }
 
+function formatDimensions(image) {
+  if (!image.width || !image.height) {
+    return formatBytes(image.sizeBytes);
+  }
+  return `${image.width}×${image.height} · ${formatBytes(image.sizeBytes)}`;
+}
+
 function renderTabs() {
   tabsElement.replaceChildren(
     ...tabs.map((tab, index) => {
@@ -129,7 +136,7 @@ function renderPanel() {
     const label = document.createElement("strong");
     label.textContent = image.label;
     const size = document.createElement("span");
-    size.textContent = formatBytes(image.sizeBytes);
+    size.textContent = formatDimensions(image);
     meta.append(label, size);
     card.append(button, meta);
     grid.append(card);
@@ -172,6 +179,8 @@ async function saveFeedback() {
       images: tab.images.map((image) => ({
         name: image.name,
         label: image.label,
+        width: image.width,
+        height: image.height,
       })),
       feedback: (feedbackByTab.get(tab.id) ?? "").trim(),
     }))

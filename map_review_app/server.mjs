@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, open, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -49,10 +49,13 @@ async function listPreviewImages(directory, urlPrefix) {
     }
     const filePath = path.join(directory, name);
     const fileStat = await stat(filePath);
+    const dimensions = await readPngDimensions(filePath);
     images.push({
       id: match[1],
       label: `${Number(match[1])}%`,
       name,
+      width: dimensions.width,
+      height: dimensions.height,
       sizeBytes: fileStat.size,
       updatedAt: fileStat.mtime.toISOString(),
       url: `${urlPrefix}/${name}?t=${Number(fileStat.mtimeMs).toFixed(0)}`,
@@ -60,6 +63,24 @@ async function listPreviewImages(directory, urlPrefix) {
   }
   images.sort((a, b) => Number(a.id) - Number(b.id));
   return images;
+}
+
+async function readPngDimensions(filePath) {
+  const file = await open(filePath, "r");
+  try {
+    const buffer = Buffer.alloc(24);
+    await file.read(buffer, 0, buffer.length, 0);
+    const pngSignature = "89504e470d0a1a0a";
+    if (buffer.subarray(0, 8).toString("hex") !== pngSignature) {
+      return { width: null, height: null };
+    }
+    return {
+      width: buffer.readUInt32BE(16),
+      height: buffer.readUInt32BE(20),
+    };
+  } finally {
+    await file.close();
+  }
 }
 
 async function readReviewManifest() {
