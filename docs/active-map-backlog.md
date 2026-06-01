@@ -111,7 +111,7 @@
 - [x] #99 List mode follow-up: привести экран списка к atlas-стилю стартовой карты; список не должен выглядеть как чужой UI после переключения с fullscreen-карты.
 - [x] #100 Map/list toggle follow-up: сделать нормальную icon-only пиктограмму переключения в стиле карты и парный return-to-map control в list mode.
 - [x] #98 UI review gate follow-up: карта-список должны проходить единый visual/runtime review со screenshots mobile/landscape и Godot-native checks.
-- [ ] #101 List mode follow-up: повторно проверить и довести список до того же atlas/map visual language, что fullscreen first screen; пользователь считает, что это отдельная задача, если текущий экран всё ещё выглядит чужеродно.
+- [x] #101 List mode follow-up: повторно проверить и довести список до того же atlas/map visual language, что fullscreen first screen; strict UI review после #102 подтвердил list style parity, runtime flow, mobile/landscape stability и русский UI без дополнительных code changes.
 - [x] #102 Map/list toggle follow-up: повторно проверить и отполировать pictogram controls для перехода карта/список и возврата на карту; strict UI reviewer ACCEPT после замены clipboard-like toggle на folded-map + ledger pictogram.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.
 - [ ] #65 Разобрать Godot headless shutdown warnings/RID leaks: сейчас `godot --headless --path . --quit-after 1` выходит с кодом 0, но печатает CanvasItem/ObjectDB/DummyTexture/ShapedText/Font leak warnings.

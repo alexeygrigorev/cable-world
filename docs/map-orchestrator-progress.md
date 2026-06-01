@@ -1916,3 +1916,17 @@ Verification on `main`:
 - `python3 -m unittest tests.test_app_shell_contract tests.test_ui_review_gate_contract`: PASS, 16 tests.
 - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 13 checks; known cleanup/leak diagnostics remain tracked in #65.
 - `git diff --check`: PASS.
+
+## Iteration 2026-06-01 #101 List Mode Review
+
+Closed #101 as verified without additional product code changes:
+
+- Reviewer evidence from the #102 UI gate explicitly checked `tmp/ui-review/mobile-390x844-list.png` and `tmp/ui-review/landscape-844x390-list.png`.
+- Verdict included `List style parity: PASS`, `Return state/control: PASS`, `Mobile readability: PASS`, `Landscape stability: PASS` and `Russian UI: PASS`.
+- The only UI blocker from the earlier #101/#102 review was the map/list toggle pictogram, fixed and accepted in #102.
+
+Verification reused from the accepted UI gate:
+
+- `python3 -m unittest tests.test_app_shell_contract tests.test_ui_review_gate_contract`: PASS.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS.
+- `xvfb-run -a godot --path . --script scripts/capture_ui_review_screenshots.gd`: PASS.
