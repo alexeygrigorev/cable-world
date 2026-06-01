@@ -65,12 +65,15 @@ class ObjectListContractTest(unittest.TestCase):
             "meta_label.text = _row_meta_text(object_data)",
             'open_hint.text = "›"',
             "const LIST_ICON_SIZE := Vector2i(44, 44)",
+            "const ROW_NUMBER_WIDTH := 42",
             "const ROW_NAME_MAX_CHARS := 34",
             "const ROW_TYPE_MAX_CHARS := 32",
             "const ROW_META_MAX_CHARS := 42",
-            "row.custom_minimum_size = Vector2(0, 82)",
+            "row.custom_minimum_size = Vector2(0, 76)",
+            'ledger_number.text = "№%02d" % (visible_index + 1)',
+            "ledger_rule.color = ATLAS_LEDGER_RULE_COLOR",
             "func _trim_for_row(text: String, max_chars: int) -> String:",
-            "func _sync_row_visual_state(name_label: Label, type_label: Label, meta_label: Label, open_hint: Label, selected: bool) -> void:",
+            "func _sync_row_visual_state(ledger_number: Label, type_label: Label, meta_label: Label, open_hint: Label, name_label: Label, selected: bool) -> void:",
             "func _empty_state_style() -> StyleBoxFlat:",
             "row.pressed.connect(func() -> void: _on_row_pressed(object_index))",
         ]:
@@ -128,10 +131,12 @@ class ObjectListContractTest(unittest.TestCase):
             "unique_name_in_owner = true",
             "size_flags_horizontal = 3",
             "theme_override_constants/margin_left = 12",
+            "theme_override_constants/margin_top = 14",
             "theme_override_constants/margin_right = 12",
+            "theme_override_constants/margin_bottom = 14",
         ]:
             self.assertIn(expected, list_safe_area_block)
-        self.assertIn("theme_override_constants/separation = 6", list_content_block)
+        self.assertIn("theme_override_constants/separation = 8", list_content_block)
         filters_block = scene_text.split('name="ФильтрыСписка" type="GridContainer"', 1)[1].split("[node ", 1)[0]
         title_block = scene_text.split('name="СписокЗаголовок" type="Label"', 1)[1].split("[node ", 1)[0]
         self.assertIn("columns = 1", filters_block)
@@ -155,6 +160,9 @@ class ObjectListContractTest(unittest.TestCase):
             "content_scroll.position.x = 0.0",
             "sections_container.position.x = 0.0",
             "section.position.x = 0.0",
+            "func _sync_list_ledger_width(content_width: float) -> void:",
+            "list_safe_area.size_flags_horizontal = Control.SIZE_SHRINK_CENTER",
+            "list_safe_area.custom_minimum_size.x = ledger_width",
         ]:
             self.assertIn(expected, script_text)
 

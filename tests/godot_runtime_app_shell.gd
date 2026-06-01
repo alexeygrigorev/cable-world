@@ -77,10 +77,12 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 
 	_expect(not screen.map_section.visible, "Map section must hide after pressing the map/list toggle.", failures)
 	_expect(screen.list_section.visible, "Map/list toggle must open the list section at runtime.", failures)
-	_expect(screen.navigation_area.visible, "List mode must restore the navigation area.", failures)
-	_expect(screen.app_title_label.visible, "List mode must restore the app title.", failures)
+	_expect(not screen.navigation_area.visible, "List mode must not duplicate map/list controls in the global navigation area.", failures)
+	_expect(not screen.app_title_label.visible, "List mode must hide the generic app title chrome.", failures)
 	_expect(not screen.map_list_toggle_button.visible, "Map/list toggle must hide outside the map.", failures)
 	_expect(screen.current_section_label.text == "Раздел: Список", "Current section label must track the runtime list transition.", failures)
+	_expect(screen.list_ledger_header != null, "List mode must create an atlas ledger header.", failures)
+	_expect(screen.list_safe_area != null and screen.list_safe_area.size_flags_horizontal == Control.SIZE_SHRINK_CENTER, "List ledger must be centered instead of stretching on desktop.", failures)
 	if screen.list_map_return_button != null:
 		_expect(screen.list_map_return_button.visible, "List mode must expose its return-to-map atlas button.", failures)
 		_expect(screen.list_map_return_button.text == "Карта", "List return button must be explicit at mobile size.", failures)

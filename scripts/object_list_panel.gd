@@ -23,9 +23,11 @@ const ATLAS_ICON_PLANNED_COLOR := Color("#a98237")
 const ATLAS_ICON_UNKNOWN_COLOR := Color("#7b725e")
 const ATLAS_ROW_BORDER_COLOR := Color(0.23, 0.16, 0.09, 0.34)
 const ATLAS_ROW_HOVER_COLOR := Color(0.94, 0.86, 0.61, 0.96)
+const ATLAS_LEDGER_RULE_COLOR := Color(0.47, 0.34, 0.18, 0.42)
 const ATLAS_LIST_RADIUS := 6
 const ATLAS_LIST_BORDER_WIDTH := 2
 const LIST_ICON_SIZE := Vector2i(44, 44)
+const ROW_NUMBER_WIDTH := 42
 const ROW_NAME_MAX_CHARS := 34
 const ROW_TYPE_MAX_CHARS := 32
 const ROW_META_MAX_CHARS := 42
@@ -145,7 +147,7 @@ func _add_row(object_data: Dictionary, object_index: int, visible_index: int) ->
 	row.focus_mode = Control.FOCUS_NONE
 	row.text = ""
 	row.tooltip_text = "Открыть объект: %s" % object_data.get("name", "Без названия")
-	row.custom_minimum_size = Vector2(0, 82)
+	row.custom_minimum_size = Vector2(0, 76)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_stylebox_override("normal", _row_style(visible_index, false))
 	row.add_theme_stylebox_override("hover", _row_style(visible_index, false, true))
@@ -161,8 +163,23 @@ func _add_row(object_data: Dictionary, object_index: int, visible_index: int) ->
 	row_content.offset_top = 8
 	row_content.offset_right = -10
 	row_content.offset_bottom = -8
-	row_content.add_theme_constant_override("separation", 12)
+	row_content.add_theme_constant_override("separation", 10)
 	row.add_child(row_content)
+
+	var ledger_number := Label.new()
+	ledger_number.text = "№%02d" % (visible_index + 1)
+	ledger_number.tooltip_text = "Номер строки в текущем реестре"
+	ledger_number.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ledger_number.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	ledger_number.custom_minimum_size = Vector2(ROW_NUMBER_WIDTH, 0)
+	ledger_number.add_theme_font_size_override("font_size", 13)
+	ledger_number.add_theme_color_override("font_color", ATLAS_TYPE_TEXT_COLOR)
+	row_content.add_child(ledger_number)
+
+	var ledger_rule := ColorRect.new()
+	ledger_rule.color = ATLAS_LEDGER_RULE_COLOR
+	ledger_rule.custom_minimum_size = Vector2(1, 0)
+	row_content.add_child(ledger_rule)
 
 	var icon := TextureRect.new()
 	icon.texture = _object_icon_texture(object_data)
@@ -213,7 +230,7 @@ func _add_row(object_data: Dictionary, object_index: int, visible_index: int) ->
 	open_hint.add_theme_color_override("font_color", ATLAS_TYPE_TEXT_COLOR)
 	row_content.add_child(open_hint)
 
-	row.toggled.connect(func(toggled_on: bool) -> void: _sync_row_visual_state(name_label, type_label, meta_label, open_hint, toggled_on))
+	row.toggled.connect(func(toggled_on: bool) -> void: _sync_row_visual_state(ledger_number, type_label, meta_label, open_hint, name_label, toggled_on))
 	row.pressed.connect(func() -> void: _on_row_pressed(object_index))
 
 func _panel_style() -> StyleBoxFlat:
@@ -260,7 +277,8 @@ func _empty_state_style() -> StyleBoxFlat:
 	style.set_corner_radius_all(5)
 	return style
 
-func _sync_row_visual_state(name_label: Label, type_label: Label, meta_label: Label, open_hint: Label, selected: bool) -> void:
+func _sync_row_visual_state(ledger_number: Label, type_label: Label, meta_label: Label, open_hint: Label, name_label: Label, selected: bool) -> void:
+	ledger_number.add_theme_color_override("font_color", ATLAS_SELECTED_META_TEXT_COLOR if selected else ATLAS_TYPE_TEXT_COLOR)
 	name_label.add_theme_color_override("font_color", ATLAS_SELECTED_TEXT_COLOR if selected else ATLAS_TEXT_COLOR)
 	type_label.add_theme_color_override("font_color", ATLAS_SELECTED_META_TEXT_COLOR if selected else ATLAS_TYPE_TEXT_COLOR)
 	meta_label.add_theme_color_override("font_color", ATLAS_SELECTED_META_TEXT_COLOR if selected else ATLAS_META_TEXT_COLOR)
