@@ -344,8 +344,9 @@ const MAP_MIN_HEIGHT := 360.0
 const MAP_VIEW_HEIGHT := 720.0
 const MAP_LANDSCAPE_MIN_HEIGHT := 320.0
 const MAP_PADDING := 24.0
-const MARKER_SPREAD_DISTANCE := 58.0
-const MARKER_SPREAD_STEP := 42.0
+const MARKER_SPREAD_DISTANCE := 64.0
+const MARKER_SPREAD_STEP := 64.0
+const MARKER_SPREAD_ATTEMPTS := 8
 const MARKER_LOCAL_CLUSTER_DISTANCE := 44.0
 const MARKER_LOCAL_CLUSTER_RADIUS := 28.0
 const OBJECT_CLUSTER_ZOOM_THRESHOLD := 1.45
@@ -640,7 +641,7 @@ func _position_markers() -> void:
 		return
 
 	var clusters := _marker_clusters(bounds)
-	var base_positions: Array[Vector2] = []
+	var placed_positions: Array[Vector2] = []
 	var reserved_rects: Array[Rect2] = []
 
 	for marker_number in marker_buttons.size():
@@ -690,13 +691,13 @@ func _position_markers() -> void:
 			if marker.visible:
 				reserved_rects.append(Rect2(marker.position, marker.size).grow(6.0))
 			continue
-		var local_position := _local_cluster_marker_position(base_position, base_positions)
+		var local_position := _spread_marker_position(base_position, placed_positions, map_size)
 		var clamped_position := Vector2(
 			clamp(local_position.x, MAP_PADDING, max(MAP_PADDING, map_size.x - MAP_PADDING)),
 			clamp(local_position.y, MAP_PADDING, max(MAP_PADDING, map_size.y - MAP_PADDING))
 		)
 		marker.position = _map_point_to_screen(clamped_position, marker_size)
-		base_positions.append(base_position)
+		placed_positions.append(clamped_position)
 		if marker.visible:
 			reserved_rects.append(Rect2(marker.position, marker.size).grow(6.0))
 	_update_reserved_label_rects(reserved_rects)
@@ -805,7 +806,7 @@ func _spread_marker_position(base_position: Vector2, placed_positions: Array[Vec
 		max(MAP_PADDING, map_size.x - MAP_PADDING),
 		max(MAP_PADDING, map_size.y - MAP_PADDING)
 	)
-	for attempt in 32:
+	for attempt in MARKER_SPREAD_ATTEMPTS:
 		var angle: float = TAU * float(attempt % 8) / 8.0
 		var ring: float = 1.0 + floor(float(attempt) / 8.0)
 		var candidate: Vector2 = base_position + Vector2(cos(angle), sin(angle)) * MARKER_SPREAD_STEP * ring
@@ -825,14 +826,7 @@ func _is_clear_marker_position(position: Vector2, placed_positions: Array[Vector
 	return true
 
 func _local_cluster_marker_position(base_position: Vector2, base_positions: Array[Vector2]) -> Vector2:
-	var nearby_count := 0
-	for placed_position in base_positions:
-		if base_position.distance_to(placed_position) < MARKER_LOCAL_CLUSTER_DISTANCE:
-			nearby_count += 1
-	if nearby_count == 0:
-		return base_position
-	var angle := TAU * float(nearby_count - 1) / 6.0
-	return base_position + Vector2(cos(angle), sin(angle)) * MARKER_LOCAL_CLUSTER_RADIUS
+	return _spread_marker_position(base_position, base_positions, Vector2(INF, INF))
 
 func _add_filter_button(parent: Container, title: String, filter_id: String) -> void:
 	var button := Button.new()
