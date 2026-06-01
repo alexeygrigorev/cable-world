@@ -1650,3 +1650,42 @@ Parent #52:
 
 - Commented on #52 that the direct map/object -> playable ride -> return context requirement is complete.
 - #52 remains open for #92 ride art/production polish.
+
+## Iteration 2026-06-01 04:32
+
+Integrated reviewed #64 Germany terrain accuracy audit:
+
+- Worker: `Lagrange`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-64-germany-terrain-audit`.
+- Worker branch: `issue-64-germany-terrain-audit`.
+- Worker commit: `f1513f6 Add Germany terrain accuracy audit contract`.
+- Integrated commit on `main`: `299e068 Add Germany terrain accuracy audit contract`.
+- Decision: `ACCEPT` for #64 non-render terrain audit scope; #64 closed.
+
+What landed:
+
+- Added `map_pipeline/data/germany_terrain_accuracy_audit.json`.
+- Added `docs/germany-terrain-accuracy-audit.md`.
+- Extended `map_pipeline.compose_map.audit_geography_layers()` with `audit_germany_terrain_accuracy_contract()`.
+- Added regression tests for North German Plain false relief, required named massif metadata, major water bodies and Rügen/island coverage.
+- Updated rubric/production direction/backlog to make clear this audit is a guardrail, not a 10/10 visual acceptance.
+
+Covered audit requirements:
+
+- North German Plain exclusion zones: Hamburg/Lower Elbe, Baltic-Mecklenburg lake plain, North Sea coastal plain reject large mountain/ridge/massif relief.
+- Required named massif metadata: Alps, Harz, Black Forest, Bavarian Forest, Erzgebirge, Saxon Switzerland, Eifel-Hunsrueck.
+- Major water expectations: Bodensee, Müritz, Chiemsee, Schweriner See, Plauer See, Schaalsee, Steinhuder Meer, Edersee, Ammersee, Starnberger See, Tegernsee, Berlin lakes/chains.
+- Rügen remains an audited island feature.
+- Final terrain accuracy still requires DEM/named-massif source backing and screenshot review.
+
+Verification on `main`:
+
+- `uv run python -m unittest tests.test_map_geography_audit`: PASS, 12 tests.
+- `python3 -m unittest discover -s tests`: PASS, 273 tests, 12 skipped because plain system Python lacks optional geography deps.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Remaining map work:
+
+- #62/#68/#69 still need actual source-backed terrain layer/art replacement. This #64 audit does not claim the map is 10/10.
