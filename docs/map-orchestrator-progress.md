@@ -1881,3 +1881,12 @@ Verification in the worktree:
 - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
 - `python3 -m unittest discover -s tests`: PASS, 278 tests, skipped=14.
 - `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+## Iteration 2026-06-01 UI Follow-up Intake
+
+Created follow-up issues from the latest user feedback:
+
+- #101: List mode follow-up: align object list visual style with atlas first screen.
+- #102: Map/list toggle follow-up: polished atlas-style pictogram controls.
+
+Reviewer subagent `Cicero` is running asynchronously against `docs/ui-review-gate.md` to decide whether the current `main` already passes or whether #101/#102 need a code worker. Any UI changes for these issues still require mobile/landscape screenshots, Godot runtime checks and strict reviewer `ACCEPT` before integration.
