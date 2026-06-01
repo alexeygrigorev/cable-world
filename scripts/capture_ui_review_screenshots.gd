@@ -55,9 +55,16 @@ func _capture_scenario(scenario: Dictionary) -> Error:
 	root.add_child(viewport)
 
 	var screen: MainScreen = MainScene.instantiate()
-	screen.size = Vector2(scenario["size"])
 	viewport.add_child(screen)
+	screen.set_anchors_preset(Control.PRESET_FULL_RECT)
+	screen.offset_left = 0.0
+	screen.offset_top = 0.0
+	screen.offset_right = 0.0
+	screen.offset_bottom = 0.0
+	screen.size = Vector2(scenario["size"])
+	screen.set_deferred("size", Vector2(scenario["size"]))
 
+	await process_frame
 	await process_frame
 	await process_frame
 

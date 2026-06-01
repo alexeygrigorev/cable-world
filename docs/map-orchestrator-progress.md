@@ -1,5 +1,14 @@
 # Map Orchestrator Progress
 
+## 2026-06-01 - #99 list mode UI gate follow-up
+
+- Working branch/worktree: `issue-99-list-atlas-followup` / `worktrees/issue-99-list-atlas-followup`.
+- Re-ran the new UI Review Gate from #98 for current list mode.
+- Found the first landscape screenshot was misleading because `scripts/capture_ui_review_screenshots.gd` captured a cropped large anchored `MainScreen` instead of fitting it to the requested `SubViewport`.
+- Fixed the screenshot helper to force the instantiated `MainScreen` to `Control.PRESET_FULL_RECT`, zero offsets and deferred scenario size before capture.
+- Added contract coverage in `tests/test_ui_review_gate_contract.py` so required screenshots keep using the fitted fullscreen control.
+- Fresh screenshots now show the atlas-style list correctly in both `390x844` and `844x390`; no product terrain/map art was changed.
+
 ## 2026-06-01 - #98 UI review gate
 
 - Working branch/worktree: `issue-98-ui-review-gate` / `worktrees/issue-98-ui-review-gate`.
