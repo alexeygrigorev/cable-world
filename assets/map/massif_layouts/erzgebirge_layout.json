@@ -1,0 +1,17 @@
+{
+  "id": "erzgebirge",
+  "kind": "border_mountain_range",
+  "label": "Erzgebirge",
+  "layout_bounds": [
+    11.95,
+    49.5625,
+    15.25,
+    52.0375
+  ],
+  "purpose": "image-reference layout for geographically guided massif glyph generation",
+  "size_px": [
+    1024,
+    768
+  ],
+  "source": "map_pipeline.compose_map RELIEF_REGIONS/ALPINE_MASSIF_SEGMENTS"
+}

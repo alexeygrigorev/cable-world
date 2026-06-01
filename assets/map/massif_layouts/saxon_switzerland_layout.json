@@ -1,0 +1,17 @@
+{
+  "id": "saxon_switzerland",
+  "kind": "sandstone_highland",
+  "label": "Saxon Switzerland / Elbe Sandstone",
+  "layout_bounds": [
+    13.3,
+    50.325,
+    15.1,
+    51.675
+  ],
+  "purpose": "image-reference layout for geographically guided massif glyph generation",
+  "size_px": [
+    1024,
+    768
+  ],
+  "source": "map_pipeline.compose_map RELIEF_REGIONS/ALPINE_MASSIF_SEGMENTS"
+}

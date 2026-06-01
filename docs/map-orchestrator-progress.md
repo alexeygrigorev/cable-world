@@ -2087,3 +2087,15 @@ Verification:
 
 - `uv run python -m map_pipeline.compose_map`: PASS.
 - `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract`: PASS, 30 tests.
+
+## Iteration 2026-06-01 Geo Layout Reference Masks
+
+Added the missing reproducible geometry step before the next art generation:
+
+- new script: `map_pipeline.render_massif_layouts`;
+- generated per-massif reference masks in `assets/map/massif_layouts/*_layout.png`;
+- generated sidecar metadata in `assets/map/massif_layouts/*_layout.json`;
+- generated combined sheet `assets/map/massif_layouts/massif_geo_layout_sheet.png`;
+- documented the command and artifact purpose in `docs/massif-glyph-pipeline.md`.
+
+Purpose: the next Alps/Harz/etc image generation should use these layouts as image references, so the art keeps the intended silhouette, ridge direction, size hierarchy and anchors instead of inventing random mountain shapes from text.

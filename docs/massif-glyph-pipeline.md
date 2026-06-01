@@ -41,6 +41,23 @@ Layout должен содержать:
 
 Точность не должна быть миллиметровой. Требуется правдоподобная форма, масштаб и место: Alps большие, Harz маленький, Schwarzwald вытянутый, Sächsische Schweiz скальная.
 
+Current reproducible command:
+
+```bash
+uv run python -m map_pipeline.render_massif_layouts
+```
+
+It writes per-massif reference layouts and a combined sheet:
+
+```text
+assets/map/massif_layouts/<massif>_layout.png
+assets/map/massif_layouts/<massif>_layout.json
+assets/map/massif_layouts/massif_geo_layout_sheet.png
+assets/map/massif_layouts/manifest.json
+```
+
+These files are image-reference inputs for generation, not runtime art. They intentionally show silhouette, ridge direction and anchor points without labels. The `.json` sidecars hold labels and bounds.
+
 ### 2. Reference Image Or Image-To-Image
 
 Preferred generation approach:
@@ -155,3 +172,13 @@ It contains:
 - `massif_eifel_hunsrueck_low`
 
 This sheet is only first pass. It is useful because it proves the visual distinction idea, but the next iteration should add geo-layout-guided generation, especially for Alps and Harz.
+
+## Current Geo Layout Sheet
+
+First generated layout source:
+
+```text
+assets/map/massif_layouts/massif_geo_layout_sheet.png
+```
+
+It is generated from `RELIEF_REGIONS` and `ALPINE_MASSIF_SEGMENTS`, so changing real anchors in `map_pipeline/compose_map.py` updates the reference geometry. The next production glyph generation should use this sheet or the individual `<massif>_layout.png` files as image references, then replace the first-pass `massif_*.png` art where it improves geographic recognition.

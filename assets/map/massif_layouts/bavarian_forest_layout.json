@@ -1,0 +1,17 @@
+{
+  "id": "bavarian_forest",
+  "kind": "forested_highland",
+  "label": "Bavarian Forest",
+  "layout_bounds": [
+    11.45,
+    48.29375,
+    14.2,
+    50.35625
+  ],
+  "purpose": "image-reference layout for geographically guided massif glyph generation",
+  "size_px": [
+    1024,
+    768
+  ],
+  "source": "map_pipeline.compose_map RELIEF_REGIONS/ALPINE_MASSIF_SEGMENTS"
+}

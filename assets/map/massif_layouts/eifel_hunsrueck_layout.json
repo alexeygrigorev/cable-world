@@ -1,0 +1,17 @@
+{
+  "id": "eifel_hunsrueck",
+  "kind": "low_highland",
+  "label": "Eifel Hunsrueck",
+  "layout_bounds": [
+    5.2,
+    49.0375,
+    8.1,
+    51.2125
+  ],
+  "purpose": "image-reference layout for geographically guided massif glyph generation",
+  "size_px": [
+    1024,
+    768
+  ],
+  "source": "map_pipeline.compose_map RELIEF_REGIONS/ALPINE_MASSIF_SEGMENTS"
+}

@@ -1,5 +1,6 @@
 import importlib.util
 import unittest
+from pathlib import Path
 
 
 @unittest.skipUnless(
@@ -272,6 +273,34 @@ class MapGeographyAuditTest(unittest.TestCase):
                 self.assertNotRegex(layer["placement_policy"], r"(random|decorative|full_map)")
                 self.assertTrue(layer["source_confidence"])
                 self.assertTrue(layer["replacement_status"])
+
+    def test_massif_geo_layout_reference_artifacts_are_generated(self) -> None:
+        import json
+
+        root = Path(__file__).resolve().parents[1]
+        layout_dir = root / "assets" / "map" / "massif_layouts"
+        manifest_path = layout_dir / "manifest.json"
+
+        self.assertTrue(manifest_path.exists())
+        with manifest_path.open("r", encoding="utf-8") as file:
+            manifest = json.load(file)
+
+        self.assertEqual("cable-world.massif-geo-layouts.v1", manifest["schema"])
+        expected_ids = {
+            "alps",
+            "harz",
+            "black_forest",
+            "bavarian_forest",
+            "erzgebirge",
+            "saxon_switzerland",
+            "eifel_hunsrueck",
+        }
+        self.assertEqual(expected_ids, {entry["id"] for entry in manifest["entries"]})
+        self.assertTrue((layout_dir / manifest["sheet"]).exists())
+        for massif_id in expected_ids:
+            with self.subTest(massif=massif_id):
+                self.assertTrue((layout_dir / f"{massif_id}_layout.png").exists())
+                self.assertTrue((layout_dir / f"{massif_id}_layout.json").exists())
 
 
 if __name__ == "__main__":

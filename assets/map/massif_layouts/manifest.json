@@ -1,0 +1,115 @@
+{
+  "cell_size_px": [
+    1024,
+    768
+  ],
+  "entries": [
+    {
+      "id": "black_forest",
+      "layout_bounds": [
+        6.21,
+        47.17,
+        9.29,
+        49.48
+      ],
+      "sheet_bbox_px": [
+        0,
+        0,
+        1024,
+        768
+      ]
+    },
+    {
+      "id": "alps",
+      "layout_bounds": [
+        5.6,
+        42.915,
+        16.6,
+        51.165
+      ],
+      "sheet_bbox_px": [
+        1024,
+        0,
+        2048,
+        768
+      ]
+    },
+    {
+      "id": "bavarian_forest",
+      "layout_bounds": [
+        11.45,
+        48.29375,
+        14.2,
+        50.35625
+      ],
+      "sheet_bbox_px": [
+        2048,
+        0,
+        3072,
+        768
+      ]
+    },
+    {
+      "id": "harz",
+      "layout_bounds": [
+        9.37,
+        50.8075,
+        11.83,
+        52.6525
+      ],
+      "sheet_bbox_px": [
+        3072,
+        0,
+        4096,
+        768
+      ]
+    },
+    {
+      "id": "erzgebirge",
+      "layout_bounds": [
+        11.95,
+        49.5625,
+        15.25,
+        52.0375
+      ],
+      "sheet_bbox_px": [
+        0,
+        768,
+        1024,
+        1536
+      ]
+    },
+    {
+      "id": "saxon_switzerland",
+      "layout_bounds": [
+        13.3,
+        50.325,
+        15.1,
+        51.675
+      ],
+      "sheet_bbox_px": [
+        1024,
+        768,
+        2048,
+        1536
+      ]
+    },
+    {
+      "id": "eifel_hunsrueck",
+      "layout_bounds": [
+        5.2,
+        49.0375,
+        8.1,
+        51.2125
+      ],
+      "sheet_bbox_px": [
+        2048,
+        768,
+        3072,
+        1536
+      ]
+    }
+  ],
+  "schema": "cable-world.massif-geo-layouts.v1",
+  "sheet": "massif_geo_layout_sheet.png"
+}

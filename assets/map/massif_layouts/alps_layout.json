@@ -1,0 +1,17 @@
+{
+  "id": "alps",
+  "kind": "cross_border_mountain",
+  "label": "Alps",
+  "layout_bounds": [
+    5.6,
+    42.915,
+    16.6,
+    51.165
+  ],
+  "purpose": "image-reference layout for geographically guided massif glyph generation",
+  "size_px": [
+    1024,
+    768
+  ],
+  "source": "map_pipeline.compose_map RELIEF_REGIONS/ALPINE_MASSIF_SEGMENTS"
+}

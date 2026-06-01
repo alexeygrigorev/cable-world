@@ -1,0 +1,17 @@
+{
+  "id": "black_forest",
+  "kind": "forested_highland",
+  "label": "Black Forest",
+  "layout_bounds": [
+    6.21,
+    47.17,
+    9.29,
+    49.48
+  ],
+  "purpose": "image-reference layout for geographically guided massif glyph generation",
+  "size_px": [
+    1024,
+    768
+  ],
+  "source": "map_pipeline.compose_map RELIEF_REGIONS/ALPINE_MASSIF_SEGMENTS"
+}
