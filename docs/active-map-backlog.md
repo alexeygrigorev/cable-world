@@ -75,7 +75,7 @@
 - [ ] #103 Map quality blocker: сделать Black Forest, Bavarian Forest, Erzgebirge и Saxon Switzerland визуально различимыми named massifs вместо layered patches.
 - [ ] #104 Map quality blocker: убрать rectangular/striped compositing artifacts и technical-looking route/detail noise вокруг Dresden/Erzgebirge.
 - [ ] #105 Map quality blocker: интегрировать Harz в terrain/forest/highland texture, чтобы он не читался как sticker/blob.
-- [ ] #106 Map quality blocker: убрать tiny background dust и pale patch noise, оставив читаемую land/water texture.
+- [x] #106 Map quality blocker: убрать tiny background dust и pale patch noise, оставив читаемую land/water texture. Accepted commit `609a20c`: отключены noisy base land patches, integrated land pattern, minor lake blobs, Natural Earth lake blobs, marsh patches и soft/ridge smear overlays; reviewer `ACCEPT`, `10/10` по touched scope.
 - [ ] #107 Map quality blocker: снизить Köln/Stuttgart marker/landmark/forest clutter без потери кликабельности и важной видимости объектов. Первая попытка `issue-107-marker-clutter` / `328f4d5e` отклонена строгим reviewer: `6/10`, Köln/Stuttgart всё ещё конфликтуют с forest/landmark/transport layers, не вливать.
 - [ ] #108 Map quality blocker: переделать Alps cross-border relief shape, чтобы это был реальный массив через Austria/Switzerland/northern Italy, а не bottom-edge band.
 - [ ] REGRESSION / #69/#64: Альпы сейчас географически неправильные и слишком условные. Следующий relief pass должен строиться от реальных elevation/relief maps/data, а не от декоративных anchors: Альпы должны быть сильнее и шире через Austria/Switzerland/northern Italy, а немецкая кромка должна быть частью настоящего массива, не отдельной наклейкой.
@@ -129,6 +129,6 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`; Web build отдает gzip и `Cache-Control: no-store`.
-- Последний map commit на момент обновления backlog: pending characteristic relief + initial focus pass.
+- Последний map commit на момент обновления backlog: `609a20c` / #106 accepted dust and pale patch noise cleanup.
 - Non-render checks now cover координаты, geography bounds, source-layer metadata, PNG dimensions/non-blank state, export payload contract and runtime draw contracts. Screenshots/manual review still required for contrast, clutter, visual hierarchy and "does this feel like a real atlas map".
-- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. Честная оценка после screenshots: около `6.9/10`, но нельзя оценивать ее как `8/10`: Alpine art still too generic, relief/lake recognizability and marker composition still need work.
+- Текущая карта технически рабочая и архитектурно движется в glyph-based direction. #106 поднял чистоту фона в своем scope до reviewer `10/10`, но глобальная карта всё ещё не `8/10`: Alpine art still too generic, relief/lake recognizability and marker composition still need work.

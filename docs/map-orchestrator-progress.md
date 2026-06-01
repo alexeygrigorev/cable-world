@@ -2013,3 +2013,22 @@ Created explicit child blocker issues from the #69 v4 reviewer rejection:
 - #108: fix Alps cross-border relief shape.
 
 These issues do not weaken the map reviewer gate: rejected visual changes still do not merge, and acceptance still requires fresh map-review screenshots.
+
+## Iteration 2026-06-01 #106 Dust And Pale Patch Noise
+
+Integrated reviewed #106:
+
+- Worker branch: `issue-106-map-dust-noise`.
+- Integrated commit on `main`: `609a20c Disable noisy land detail patches`.
+- Earlier attempts were rejected at `7/10` and `8/10` because pale/bluish oval patches remained around Hamburg/Rostock, Bremen/Kassel/Harz, Köln and Dresden.
+- Final pass removed the issue-specific noise sources: base land patch ellipses, integrated land pattern, minor named lake blobs, Natural Earth lake blobs, marsh patches, soft relief fill and ridge-band smear overlays.
+- Major water bodies remain in the source/audit data; minor lake rendering and higher-quality relief/terrain texture stay tracked by separate open map-quality issues instead of being solved with noisy background patches.
+- Reviewer `Kierkegaard`: `ACCEPT`, `10/10` for touched #106 scope.
+
+Verification:
+
+- `uv run python -m unittest discover -s tests`: PASS, 305 tests.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: PASS with existing #65 shutdown leak warnings.
+- Fresh map review bundle: `worktrees/issue-106-map-dust-noise/tmp/map-review/issue-106-20260601T045719Z`.
+- Screenshots checked by reviewer: mobile initial/150/200/click/drag and desktop initial/click/drag.
