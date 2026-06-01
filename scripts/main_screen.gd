@@ -13,6 +13,7 @@ const ATLAS_CONTROL_BORDER := Color("#3b2a18")
 const ATLAS_CONTROL_INK := Color("#27321f")
 const ATLAS_CONTROL_ACCENT := Color("#31544d")
 const ATLAS_CONTROL_SHADOW := Color(0.12, 0.08, 0.03, 0.42)
+const ATLAS_LIST_BACKDROP := preload("res://assets/map/germany_styled.png")
 const ATLAS_ICON_PARCHMENT := Color("#f2e5bd")
 const ATLAS_ICON_PARCHMENT_DARK := Color("#d7c06f")
 const ATLAS_ICON_GREEN := Color("#8fb18a")
@@ -96,6 +97,7 @@ var orientation_option_is_refreshing: bool = false
 var map_list_toggle_button: Button = null
 var map_ride_button: Button = null
 var list_map_return_button: Button = null
+var list_backdrop: TextureRect = null
 var list_ledger_header: HBoxContainer = null
 var list_ledger_title_stack: VBoxContainer = null
 var list_ledger_subtitle_label: Label = null
@@ -179,6 +181,7 @@ func _ready() -> void:
 	content_viewport.resized.connect(_sync_content_width)
 	_create_map_list_toggle()
 	_create_map_ride_button()
+	_create_list_backdrop()
 	_create_list_map_return_button()
 	_create_list_ledger_header()
 
@@ -736,6 +739,20 @@ func _create_list_map_return_button() -> void:
 	_apply_atlas_toggle_button_style(list_map_return_button, false)
 	list_map_return_button.pressed.connect(func() -> void: _show_section("map"))
 
+func _create_list_backdrop() -> void:
+	list_backdrop = TextureRect.new()
+	list_backdrop.name = "ListAtlasBackdrop"
+	list_backdrop.texture = ATLAS_LIST_BACKDROP
+	list_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	list_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	list_backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	list_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	list_backdrop.modulate = Color(0.86, 0.77, 0.56, 0.42)
+	list_backdrop.visible = false
+	list_backdrop.z_index = -20
+	add_child(list_backdrop)
+	move_child(list_backdrop, 0)
+
 func _create_list_ledger_header() -> void:
 	if list_content == null or list_title_label == null or list_map_return_button == null:
 		return
@@ -1004,6 +1021,8 @@ func _apply_map_focus_chrome(is_map: bool) -> void:
 	selected_object_label.visible = false
 	if map_list_toggle_button != null:
 		map_list_toggle_button.visible = is_map
+	if list_backdrop != null:
+		list_backdrop.visible = is_list
 	_update_map_ride_button()
 	if list_map_return_button != null:
 		list_map_return_button.visible = is_list
@@ -1020,8 +1039,8 @@ func _apply_map_focus_chrome(is_map: bool) -> void:
 		panel_style.bg_color = Color(1.0, 1.0, 1.0, 0.0)
 		panel_style.border_color = Color(1.0, 1.0, 1.0, 0.0)
 	elif is_list:
-		panel_style.bg_color = Color("#ead8a9")
-		panel_style.border_color = Color("#3b2a18")
+		panel_style.bg_color = Color(0.92, 0.82, 0.58, 0.66)
+		panel_style.border_color = Color(0.23, 0.16, 0.09, 0.0)
 	else:
 		panel_style.bg_color = Color("#f7f3e7")
 		panel_style.border_color = Color("#6f7d67")

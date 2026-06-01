@@ -20,6 +20,10 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 	_expect(not screen.app_title_label.visible, "Map-first chrome must hide the app title.", failures)
 	_expect(screen.map_list_toggle_button != null, "Map screen must create a compact map/list toggle button.", failures)
 	_expect(screen.list_map_return_button != null, "List mode must create a matching return-to-map button.", failures)
+	_expect(screen.list_backdrop != null, "List mode must create an atlas-map backdrop.", failures)
+	if screen.list_backdrop != null:
+		_expect(not screen.list_backdrop.visible, "List atlas backdrop must stay hidden on the fullscreen map.", failures)
+		_expect(screen.list_backdrop.texture != null, "List atlas backdrop must use the current map texture.", failures)
 	var selected_before := -1
 	var map_selected_before := -1
 	var pan_before := Vector2.ZERO
@@ -80,6 +84,8 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 	_expect(not screen.navigation_area.visible, "List mode must not duplicate map/list controls in the global navigation area.", failures)
 	_expect(not screen.app_title_label.visible, "List mode must hide the generic app title chrome.", failures)
 	_expect(not screen.map_list_toggle_button.visible, "Map/list toggle must hide outside the map.", failures)
+	if screen.list_backdrop != null:
+		_expect(screen.list_backdrop.visible, "List mode must show the muted atlas-map backdrop.", failures)
 	_expect(screen.current_section_label.text == "Раздел: Список", "Current section label must track the runtime list transition.", failures)
 	_expect(screen.list_ledger_header != null, "List mode must create an atlas ledger header.", failures)
 	_expect(screen.list_safe_area != null and screen.list_safe_area.size_flags_horizontal == Control.SIZE_SHRINK_CENTER, "List ledger must be centered instead of stretching on desktop.", failures)
@@ -93,6 +99,8 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 		_expect(screen.map_section.visible, "List return button must restore the fullscreen map.", failures)
 		_expect(not screen.list_section.visible, "List section must hide after returning to the map.", failures)
 		_expect(screen.map_list_toggle_button.visible, "Map/list toggle must reappear after returning to the map.", failures)
+		if screen.list_backdrop != null:
+			_expect(not screen.list_backdrop.visible, "List atlas backdrop must hide after returning to the fullscreen map.", failures)
 		_expect(screen.current_section_label.text == "Раздел: Карта", "Current section label must track the return to map.", failures)
 		_expect_vector_close(screen.map_panel.pan_offset, pan_before, "Map/list return must preserve the previous map pan offset.", failures)
 		_expect_float_close(screen.map_panel.zoom, zoom_before, "Map/list return must preserve the previous map zoom.", failures)
