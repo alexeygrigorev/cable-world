@@ -1,0 +1,138 @@
+{
+  "schema": "cable-world.germany-terrain-accuracy-audit.v1",
+  "review_status": "issue_64_non_render_guardrail",
+  "claim_policy": "audit_guardrail_not_visual_10_10",
+  "notes": [
+    "This contract audits the current Germany terrain underlay data without changing rendered art.",
+    "It makes user-visible terrain concerns actionable: no false large mountains in the North German Plain, named source metadata for real massif layers, required major lakes and Rügen/island coverage.",
+    "Passing this contract does not mean the map is visually 10/10; screenshot and DEM-backed render review remain required before high quality claims."
+  ],
+  "source_requirements": {
+    "required_before_final_relief": [
+      "copernicus_dem_glo_30",
+      "eu_dem",
+      "nasa_srtm_1_arc_second"
+    ],
+    "final_relief_policy": "final mountain art must come from DEM-derived elevation/ridge masks or documented named massif geometry, not decorative anchors"
+  },
+  "required_massifs": [
+    {
+      "id": "alps",
+      "terrain_layer_id": "alps",
+      "expectation": "strong cross-border Alpine wall with German Alpine edge connected to Austria, Switzerland and northern Italy",
+      "requires_ridge_bands": true,
+      "requires_rendered_relief": true,
+      "not_final_until_elevation_backed": true
+    },
+    {
+      "id": "harz",
+      "terrain_layer_id": "harz",
+      "expectation": "central isolated mountain region around Brocken, readable but not spread into northern lowlands",
+      "requires_ridge_bands": true,
+      "requires_rendered_relief": true
+    },
+    {
+      "id": "black_forest",
+      "terrain_layer_id": "black_forest",
+      "expectation": "southwest forested massif along the Upper Rhine, source-backed and distinct from Alps",
+      "requires_ridge_bands": true,
+      "requires_rendered_relief": true
+    },
+    {
+      "id": "bavarian_forest",
+      "terrain_layer_id": "bavarian_forest",
+      "expectation": "southeast forested border massif connected toward Czechia/Austria",
+      "requires_ridge_bands": true,
+      "requires_rendered_relief": true
+    },
+    {
+      "id": "erzgebirge",
+      "terrain_layer_id": "erzgebirge",
+      "expectation": "eastern border mountain range, not a generic decorative row",
+      "requires_ridge_bands": true,
+      "requires_rendered_relief": true
+    },
+    {
+      "id": "saxon_switzerland",
+      "terrain_layer_id": "saxon_switzerland",
+      "expectation": "small Elbe Sandstone/Saxon Switzerland highland near Dresden/Czech border",
+      "requires_ridge_bands": true,
+      "requires_rendered_relief": true
+    },
+    {
+      "id": "eifel_hunsrueck",
+      "terrain_layer_id": "eifel_hunsrueck",
+      "expectation": "western low highland source layer; should stay visually lower than Alps/Harz",
+      "requires_ridge_bands": true,
+      "requires_rendered_relief": true
+    }
+  ],
+  "north_german_plain_exclusions": [
+    {
+      "id": "hamburg_lower_elbe_plain",
+      "label": "Hamburg / Lower Elbe North German Plain",
+      "bbox": [7.0, 52.65, 11.4, 54.75],
+      "max_mountain_glyph_width_px": 90,
+      "forbidden_keys": [
+        "mountain_glyphs",
+        "ridge_bands",
+        "massif_segments",
+        "mountains"
+      ],
+      "reason": "Hamburg and the Lower Elbe are lowland/coastal terrain; visible large mountains here are false relief."
+    },
+    {
+      "id": "baltic_mecklenburg_lake_plain",
+      "label": "Baltic / Mecklenburg lake plain",
+      "bbox": [10.5, 52.65, 14.9, 54.85],
+      "max_mountain_glyph_width_px": 90,
+      "forbidden_keys": [
+        "mountain_glyphs",
+        "ridge_bands",
+        "massif_segments",
+        "mountains"
+      ],
+      "reason": "The northeast should read as coast, lakes, forests and lowland, not large mountain relief."
+    },
+    {
+      "id": "north_sea_coastal_plain",
+      "label": "North Sea coastal plain",
+      "bbox": [5.4, 53.0, 9.2, 55.1],
+      "max_mountain_glyph_width_px": 90,
+      "forbidden_keys": [
+        "mountain_glyphs",
+        "ridge_bands",
+        "massif_segments",
+        "mountains"
+      ],
+      "reason": "North Sea coast and islands may have dunes/coast marks, but not large mountain glyphs."
+    }
+  ],
+  "required_water_bodies": [
+    {"id": "bodensee", "min_outline_points": 5},
+    {"id": "mueritz", "min_outline_points": 5},
+    {"id": "chiemsee", "min_outline_points": 5},
+    {"id": "schweriner_see", "min_outline_points": 5},
+    {"id": "plauer_see", "min_outline_points": 5},
+    {"id": "schaalsee", "min_outline_points": 5},
+    {"id": "steinhuder_meer", "min_outline_points": 5},
+    {"id": "edersee", "min_outline_points": 5},
+    {"id": "ammersee", "min_outline_points": 5},
+    {"id": "starnberger_see", "min_outline_points": 5},
+    {"id": "tegernsee", "min_outline_points": 5},
+    {"id": "mueggelsee", "min_outline_points": 5},
+    {"id": "wannsee_havel", "min_outline_points": 5},
+    {"id": "tegeler_see", "min_outline_points": 5}
+  ],
+  "required_islands": [
+    {
+      "name": "Rügen",
+      "bbox": [12.9, 54.1, 13.9, 54.8],
+      "required_detail_ids": [
+        "ruegen_sail",
+        "ruegen_lighthouse"
+      ],
+      "expectation": "Rügen must remain an audited Baltic island feature, not a decorative label detached from the coast."
+    }
+  ]
+}

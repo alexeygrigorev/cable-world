@@ -27,6 +27,47 @@ class MapGeographyAuditTest(unittest.TestCase):
 
         self.assertEqual([], audit_terrain_massif_layer_contract())
 
+    def test_germany_terrain_accuracy_contract_passes_current_underlay(self) -> None:
+        from map_pipeline.compose_map import audit_germany_terrain_accuracy_contract
+
+        self.assertEqual([], audit_germany_terrain_accuracy_contract())
+
+    def test_germany_terrain_audit_rejects_large_lowland_mountains(self) -> None:
+        import map_pipeline.compose_map as compose_map
+
+        original_regions = [dict(region) for region in compose_map.RELIEF_REGIONS]
+        try:
+            compose_map.RELIEF_REGIONS = original_regions + [
+                {
+                    "id": "false_hamburg_mountains",
+                    "label": "False Hamburg Mountains",
+                    "points": [(9.2, 53.3), (10.1, 53.3), (10.1, 53.9), (9.2, 53.9)],
+                    "mountain_glyphs": [("highland_forest_1", 9.75, 53.55, 180)],
+                }
+            ]
+            errors = compose_map.audit_germany_terrain_accuracy_contract()
+            self.assertTrue(
+                any("hamburg_lower_elbe_plain" in error for error in errors),
+                "Large relief glyphs near Hamburg must fail the North German Plain exclusion audit.",
+            )
+        finally:
+            compose_map.RELIEF_REGIONS = original_regions
+
+    def test_germany_terrain_audit_requires_ruegen_and_major_water(self) -> None:
+        import map_pipeline.compose_map as compose_map
+
+        original_labels = [dict(label) for label in compose_map.MAP_LABELS]
+        original_water = [dict(water) for water in compose_map.NAMED_WATER_BODIES]
+        try:
+            compose_map.MAP_LABELS = [label for label in original_labels if label["name"] != "Rügen"]
+            compose_map.NAMED_WATER_BODIES = [water for water in original_water if water["id"] != "mueritz"]
+            errors = compose_map.audit_germany_terrain_accuracy_contract()
+            self.assertTrue(any("Rügen" in error for error in errors))
+            self.assertTrue(any("mueritz" in error for error in errors))
+        finally:
+            compose_map.MAP_LABELS = original_labels
+            compose_map.NAMED_WATER_BODIES = original_water
+
     def test_rostock_runtime_landmark_requires_landward_icon_offset(self) -> None:
         import map_pipeline.compose_map as compose_map
 

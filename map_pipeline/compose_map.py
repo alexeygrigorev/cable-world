@@ -18,6 +18,7 @@ MASSIF_DIR = os.path.join(MAP_DIR, "massifs")
 MASSIF_MANIFEST_PATH = os.path.join(MASSIF_DIR, "manifest.json")
 ALPINE_RELIEF_EXTENTS_PATH = os.path.join(PIPELINE_DATA_DIR, "alpine_relief_extents.json")
 TERRAIN_MASSIF_LAYERS_PATH = os.path.join(PIPELINE_DATA_DIR, "terrain_massif_layers.json")
+GERMANY_TERRAIN_AUDIT_PATH = os.path.join(PIPELINE_DATA_DIR, "germany_terrain_accuracy_audit.json")
 
 GERMANY_BOUNDS = (4.5, 43.2, 16.8, 55.8)
 # Match the Mercator aspect of GERMANY_BOUNDS and keep enough physical pixels
@@ -725,7 +726,122 @@ def audit_geography_layers():
             errors.append(f"land detail {glyph_name} is too small to read as terrain")
 
     errors.extend(audit_terrain_massif_layer_contract())
+    errors.extend(audit_germany_terrain_accuracy_contract())
     errors.extend(audit_runtime_landmark_placement(country_geometries=country_geometries))
+    return errors
+
+
+def audit_germany_terrain_accuracy_contract():
+    errors = []
+    if not os.path.exists(GERMANY_TERRAIN_AUDIT_PATH):
+        return [f"Germany terrain accuracy audit contract is missing: {GERMANY_TERRAIN_AUDIT_PATH}"]
+    with open(GERMANY_TERRAIN_AUDIT_PATH, "r", encoding="utf-8") as file:
+        contract = json.load(file)
+
+    if contract.get("schema") != "cable-world.germany-terrain-accuracy-audit.v1":
+        errors.append("Germany terrain accuracy audit contract has an unknown schema")
+
+    if contract.get("claim_policy") != "audit_guardrail_not_visual_10_10":
+        errors.append("Germany terrain accuracy audit must not claim full visual 10/10 readiness")
+
+    relief_regions = {region["id"]: region for region in RELIEF_REGIONS}
+    if "northern_lowlands" not in relief_regions:
+        errors.append("Germany terrain audit requires a northern_lowlands exclusion region")
+
+    with open(TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
+        terrain_contract = json.load(file)
+    source_layers = {layer.get("id"): layer for layer in terrain_contract.get("source_layers", [])}
+
+    for massif in contract.get("required_massifs", []):
+        massif_id = massif.get("id")
+        layer_id = massif.get("terrain_layer_id", massif_id)
+        region = relief_regions.get(layer_id)
+        layer = source_layers.get(layer_id)
+        if region is None:
+            errors.append(f"required Germany massif {massif_id} is missing relief region {layer_id}")
+            continue
+        if layer is None:
+            errors.append(f"required Germany massif {massif_id} is missing terrain source metadata {layer_id}")
+            continue
+        for required_key in ("source_extent_id", "source_type", "placement_policy", "source_confidence", "replacement_status"):
+            if not layer.get(required_key):
+                errors.append(f"required Germany massif {massif_id} lacks terrain source metadata {required_key}")
+        if massif.get("requires_ridge_bands") and not region.get("ridge_bands"):
+            errors.append(f"required Germany massif {massif_id} must have ridge bands")
+        if massif.get("requires_rendered_relief"):
+            has_rendered_relief = any(region.get(key) for key in ("ridge_bands", "massif_segments", "mountain_glyphs", "trees"))
+            if not has_rendered_relief:
+                errors.append(f"required Germany massif {massif_id} has no rendered relief anchors")
+        expected_source_confidence = massif.get("source_confidence_must_not_be")
+        if expected_source_confidence and layer.get("source_confidence") == expected_source_confidence:
+            errors.append(f"required Germany massif {massif_id} still has forbidden source confidence {expected_source_confidence}")
+        if massif.get("not_final_until_elevation_backed") and layer.get("replacement_status") == "production_approved":
+            errors.append(f"required Germany massif {massif_id} cannot be production approved before elevation-backed review")
+
+    for exclusion in contract.get("north_german_plain_exclusions", []):
+        exclusion_id = exclusion.get("id", "<missing>")
+        exclusion_box = box(*exclusion["bbox"])
+        max_large_width = float(exclusion.get("max_mountain_glyph_width_px", 0))
+        for region in RELIEF_REGIONS:
+            if region["id"] == "northern_lowlands":
+                for forbidden_key in exclusion.get("forbidden_keys", []):
+                    if region.get(forbidden_key):
+                        errors.append(f"lowland exclusion {exclusion_id} forbids northern_lowlands {forbidden_key}")
+            for glyph_name, lon, lat, width in region.get("mountain_glyphs", []):
+                if exclusion_box.covers(Point(lon, lat)) and width > max_large_width:
+                    errors.append(
+                        f"mountain glyph {region['id']}:{glyph_name} width {width} falls inside lowland exclusion {exclusion_id}"
+                    )
+            for ridge_band in region.get("ridge_bands", []):
+                for lon, lat in ridge_band.get("points", []):
+                    if exclusion_box.covers(Point(lon, lat)):
+                        errors.append(f"ridge band {region['id']}:{ridge_band['id']} falls inside lowland exclusion {exclusion_id}")
+            for segment in region.get("massif_segments", []):
+                for point_group in ("arc", "shadow"):
+                    for lon, lat in segment.get(point_group, []):
+                        if exclusion_box.covers(Point(lon, lat)):
+                            errors.append(f"massif {region['id']}:{segment['id']} {point_group} falls inside lowland exclusion {exclusion_id}")
+                for glyph_name, lon, lat, width, _y_offset in segment.get("glyphs", []):
+                    if exclusion_box.covers(Point(lon, lat)) and width > max_large_width:
+                        errors.append(f"massif glyph {region['id']}:{segment['id']}:{glyph_name} falls inside lowland exclusion {exclusion_id}")
+
+    water_ids = {water_body["id"] for water_body in NAMED_WATER_BODIES}
+    for expected_water in contract.get("required_water_bodies", []):
+        water_id = expected_water.get("id")
+        if water_id not in water_ids:
+            errors.append(f"required Germany water body is missing: {water_id}")
+            continue
+        water_body = next(water for water in NAMED_WATER_BODIES if water["id"] == water_id)
+        if len(water_body.get("points", [])) < int(expected_water.get("min_outline_points", 4)):
+            errors.append(f"required Germany water body {water_id} does not have enough outline points")
+
+    map_labels = {label["name"]: label for label in MAP_LABELS}
+    detail_ids = {detail["id"] for detail in ATLAS_DETAILS}
+    for island in contract.get("required_islands", []):
+        island_name = island.get("name")
+        label = map_labels.get(island_name)
+        if label is None or label.get("kind") != "island":
+            errors.append(f"required Germany island label is missing or not marked as island: {island_name}")
+            continue
+        if "bbox" in island and not box(*island["bbox"]).covers(Point(label["lon"], label["lat"])):
+            errors.append(f"required Germany island label {island_name} falls outside its audit bbox")
+        for detail_id in island.get("required_detail_ids", []):
+            if detail_id not in detail_ids:
+                errors.append(f"required Germany island detail is missing: {detail_id}")
+
+    required_sources = contract.get("source_requirements", {}).get("required_before_final_relief", [])
+    alpine_sources = set()
+    if os.path.exists(ALPINE_RELIEF_EXTENTS_PATH):
+        with open(ALPINE_RELIEF_EXTENTS_PATH, "r", encoding="utf-8") as file:
+            alpine_contract = json.load(file)
+        primary = alpine_contract.get("elevation_source_strategy", {}).get("primary", {})
+        fallbacks = alpine_contract.get("elevation_source_strategy", {}).get("fallbacks", [])
+        alpine_sources.add(primary.get("id"))
+        alpine_sources.update(source.get("id") for source in fallbacks)
+    for source_id in required_sources:
+        if source_id not in alpine_sources:
+            errors.append(f"Germany terrain audit requires source strategy {source_id}")
+
     return errors
 
 

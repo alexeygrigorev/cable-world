@@ -66,6 +66,8 @@ This is why continuing to polish a single generated Germany image is not real pr
    - no duplicate baked/runtime cities;
    - map remains expandable to France, Spain, Italy, Switzerland, Austria, neighbors, Scandinavia, Baltics, Russia/Belarus/Ukraine, and Turkey.
 
+For Germany terrain specifically, the non-render audit contract is `map_pipeline/data/germany_terrain_accuracy_audit.json` and the reviewer-facing checklist is `docs/germany-terrain-accuracy-audit.md`. Future terrain render passes must satisfy that contract before using screenshots to argue for higher map quality: no large relief in North German Plain exclusion boxes, named source metadata for every visible massif, explicit major water bodies and Rügen/island coverage, and no final accuracy claim before DEM or named-massif source backing.
+
 ## Europe Expansion Data Contract
 
 The Europe-wide planning contract for #63 lives in `map_pipeline/data/europe_expansion_regions.json`. It is non-render metadata: region records, required country groups, detail tiers, source strategy, cross-border relief rules and acceptance boundaries. It must stay separate from map images, glyph art and runtime UI changes.
