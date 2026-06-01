@@ -246,7 +246,7 @@ This is the quick review path for background/map-compositor changes. Runtime-onl
 Run the local feedback app on port `9010`:
 
 ```bash
-PORT=9010 node map_review_app/server.mjs
+scripts/map-review-start.sh
 ```
 
 The app discovers review sets from `assets/map/review`. PNGs directly in that directory become the `Full map` tab; PNGs in subdirectories become additional tabs. Each tab has one feedback box, and saving writes one combined feedback packet to `tmp/map-review-feedback/`.
