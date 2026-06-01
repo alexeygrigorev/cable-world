@@ -40,6 +40,7 @@ NAMED_WATER_SHALLOW = (71, 126, 129, 58)
 NAMED_WATER_SHORE = (66, 78, 47, 34)
 NAMED_WATER_OUTLINE = (39, 72, 72, 92)
 NAMED_WATER_HIGHLIGHT = (139, 184, 181, 54)
+MAJOR_NAMED_WATER_BODY_IDS = {"bodensee", "mueritz", "chiemsee"}
 FOREST_SPRITE_CACHE = {}
 GLYPH_CACHE = {}
 FONT_CACHE = {}
@@ -48,17 +49,26 @@ FOREST_MASS_MIN_WIDTH = 170
 FOREST_CLUSTER_MIN_SOURCE_WIDTH = 96
 RELIEF_TREE_CLUSTER_MIN_WIDTH = 146
 LAND_DETAIL_VISUAL_SCALE = 0.68
-LAND_DETAIL_ALPHA_SCALE = 0.36
+LAND_DETAIL_ALPHA_SCALE = 0.0
 LAND_DETAIL_TINT_STRENGTH = 0.34
 GROUND_TEXTURE_LON_STEP = 0.74
 GROUND_TEXTURE_LAT_STEP = 0.70
-INTEGRATED_LAND_PATTERN_LON_STEP = 0.92
-INTEGRATED_LAND_PATTERN_LAT_STEP = 0.84
-INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.20
-INTEGRATED_LAND_PATTERN_MIN_SIZE = 30
+INTEGRATED_LAND_PATTERN_LON_STEP = 1.10
+INTEGRATED_LAND_PATTERN_LAT_STEP = 1.00
+INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.14
+INTEGRATED_LAND_PATTERN_MIN_SIZE = 36
+RELIEF_SOFT_REGION_ALPHA_SCALE = 0.0
+RIDGE_BAND_ALPHA_SCALE = 0.0
 ATLAS_ROUTE_DOT_SPACING_SCALE = 1.75
 ATLAS_ROUTE_DOT_MIN_RADIUS = 4
 DEFAULT_ATLAS_ROUTES_ENABLED = False
+DEFAULT_BASE_LAND_PATCHES_ENABLED = False
+DEFAULT_INTEGRATED_LAND_PATTERN_ENABLED = False
+DEFAULT_LAND_DETAIL_PATCHES_ENABLED = False
+DEFAULT_MARSH_PATCHES_ENABLED = False
+DEFAULT_MINOR_NAMED_WATER_BODIES_ENABLED = False
+DEFAULT_NATURAL_EARTH_LAKES_ENABLED = False
+DEFAULT_RIDGE_BAND_OVERLAYS_ENABLED = False
 EXPORT_MASSIF_SOURCE_LAYERS = True
 MASSIF_SOURCE_MANIFEST = []
 
@@ -1326,35 +1336,36 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
     draw = ImageDraw.Draw(layer)
     width, height = canvas.size
 
-    for y in range(0, height, 96 * RENDER_SCALE):
-        for x in range(0, width, 112 * RENDER_SCALE):
-            seed = _stable_hash("land_patch", x // RENDER_SCALE, y // RENDER_SCALE)
-            patch_w = (74 + seed % 58) * RENDER_SCALE
-            patch_h = (30 + (seed >> 6) % 34) * RENDER_SCALE
-            jitter_x = ((seed >> 12) % 43 - 21) * RENDER_SCALE
-            jitter_y = ((seed >> 18) % 37 - 18) * RENDER_SCALE
-            if seed % 4 == 0:
-                color = (126, 142, 73, 12)
-            elif seed % 4 == 1:
-                color = (174, 160, 90, 8)
-            elif seed % 4 == 2:
-                color = (82, 123, 66, 9)
-            else:
-                color = (105, 93, 55, 7)
-            draw.ellipse(
-                (
-                    x + jitter_x - patch_w // 2,
-                    y + jitter_y - patch_h // 2,
-                    x + jitter_x + patch_w // 2,
-                    y + jitter_y + patch_h // 2,
-                ),
-                fill=color,
-            )
+    if DEFAULT_BASE_LAND_PATCHES_ENABLED:
+        for y in range(0, height, 96 * RENDER_SCALE):
+            for x in range(0, width, 112 * RENDER_SCALE):
+                seed = _stable_hash("land_patch", x // RENDER_SCALE, y // RENDER_SCALE)
+                patch_w = (74 + seed % 58) * RENDER_SCALE
+                patch_h = (30 + (seed >> 6) % 34) * RENDER_SCALE
+                jitter_x = ((seed >> 12) % 43 - 21) * RENDER_SCALE
+                jitter_y = ((seed >> 18) % 37 - 18) * RENDER_SCALE
+                if seed % 4 == 0:
+                    color = (126, 142, 73, 8)
+                elif seed % 4 == 1:
+                    color = (174, 160, 90, 5)
+                elif seed % 4 == 2:
+                    color = (82, 123, 66, 6)
+                else:
+                    color = (105, 93, 55, 4)
+                draw.ellipse(
+                    (
+                        x + jitter_x - patch_w // 2,
+                        y + jitter_y - patch_h // 2,
+                        x + jitter_x + patch_w // 2,
+                        y + jitter_y + patch_h // 2,
+                    ),
+                    fill=color,
+                )
 
     for y in range(0, height, 42 * RENDER_SCALE):
         for x in range(0, width, 46 * RENDER_SCALE):
             seed = _stable_hash("land_texture", x // RENDER_SCALE, y // RENDER_SCALE)
-            alpha = 4 + seed % 5
+            alpha = 3 + seed % 3
             if seed % 5 == 0:
                 color = (219, 203, 132, alpha)
             elif seed % 5 in (1, 2):
@@ -1400,7 +1411,7 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
                 (x, y, x + 30 * RENDER_SCALE, y + 11 * RENDER_SCALE),
                 195,
                 340,
-                fill=(73, 91, 52, 20),
+                fill=(73, 91, 52, 12),
                 width=max(1, RENDER_SCALE),
             )
 
@@ -1507,10 +1518,15 @@ def _draw_named_water_bodies(canvas, proj, germany_mask):
 
 
 def _draw_named_water_body(draw, proj, water_body):
+    if (
+        not DEFAULT_MINOR_NAMED_WATER_BODIES_ENABLED
+        and water_body.get("id") not in MAJOR_NAMED_WATER_BODY_IDS
+    ):
+        return
     pts = _smooth_closed_points([_project_point(proj, lon, lat) for lon, lat in water_body["points"]])
     if len(pts) < 3:
         return
-    alpha_scale = 0.58 if water_body.get("subtle", False) else 1.0
+    alpha_scale = _named_water_alpha_scale(water_body)
     shore = _scale_alpha(NAMED_WATER_SHORE, alpha_scale)
     fill = _scale_alpha(NAMED_WATER_FILL, alpha_scale)
     shallow = _scale_alpha(NAMED_WATER_SHALLOW, alpha_scale)
@@ -1543,6 +1559,14 @@ def _draw_named_water_body(draw, proj, water_body):
             fill=highlight,
             width=max(1, RENDER_SCALE),
         )
+
+
+def _named_water_alpha_scale(water_body):
+    if water_body.get("id") in MAJOR_NAMED_WATER_BODY_IDS:
+        return 1.0
+    if water_body.get("subtle", False):
+        return 0.12
+    return 0.18
 
 
 def _scale_alpha(color, scale):
@@ -1596,7 +1620,7 @@ def _draw_terrain(canvas, proj, land_mask):
             canvas,
             land_mask,
             [_project_point(proj, lon, lat) for lon, lat in region["points"]],
-            region["fill"],
+            _scale_alpha(region["fill"], RELIEF_SOFT_REGION_ALPHA_SCALE),
             blur=region["blur"],
         )
 
@@ -1610,12 +1634,13 @@ def _draw_terrain(canvas, proj, land_mask):
     if BAKED_TOWN_DETAILS_ENABLED:
         for lon, lat, size in BAKED_TOWN_DETAILS:
             _draw_town(draw, proj, lon, lat, size)
-    for lon, lat, size in [
-        (8.7, 53.4, 38), (11.6, 53.8, 34), (13.0, 54.0, 30),
-        (12.3, 53.3, 34), (9.8, 54.1, 28), (14.1, 52.0, 30),
-        (13.8, 51.85, 28),
-    ]:
-        _draw_marsh_patch(draw, proj, lon, lat, size)
+    if DEFAULT_MARSH_PATCHES_ENABLED:
+        for lon, lat, size in [
+            (8.7, 53.4, 38), (11.6, 53.8, 34), (13.0, 54.0, 30),
+            (12.3, 53.3, 34), (9.8, 54.1, 28), (14.1, 52.0, 30),
+            (13.8, 51.85, 28),
+        ]:
+            _draw_marsh_patch(draw, proj, lon, lat, size)
 
     canvas.alpha_composite(decor)
 
@@ -1726,14 +1751,14 @@ def _draw_ground_texture(canvas, proj, germany_mask, germany_geom):
                 x, y = _project_point(proj, point_lon, point_lat)
                 kind = seed % 9
                 if kind in (0, 1, 2):
-                    color = (76, 112, 62, 32) if point_lat < 52.0 else (91, 111, 66, 26)
-                    _draw_tuft(draw, x, y, 22 + seed % 11, color)
+                    color = (76, 112, 62, 22) if point_lat < 52.0 else (91, 111, 66, 18)
+                    _draw_tuft(draw, x, y, 26 + seed % 12, color)
                 elif kind in (3, 4, 5) and point_lat < 51.8:
-                    _draw_hill_mark(draw, x, y, 30 + seed % 15, (113, 100, 73, 30))
+                    _draw_hill_mark(draw, x, y, 34 + seed % 16, (113, 100, 73, 20))
                 elif kind == 6:
-                    _draw_hill_mark(draw, x, y, 26 + seed % 10, (70, 103, 77, 22))
+                    _draw_hill_mark(draw, x, y, 30 + seed % 11, (70, 103, 77, 14))
                 else:
-                    _draw_tuft(draw, x, y, 21 + seed % 9, (87, 110, 68, 20))
+                    _draw_tuft(draw, x, y, 25 + seed % 10, (87, 110, 68, 14))
             lat += GROUND_TEXTURE_LAT_STEP
             lat_index += 1
         lon += GROUND_TEXTURE_LON_STEP
@@ -1784,10 +1809,10 @@ def _draw_integrated_land_pattern(canvas, proj, germany_mask, germany_geom):
 def _draw_land_pattern_mark(draw, x, y, size, kind, seed):
     s = size * RENDER_SCALE
     line_width = max(1, RENDER_SCALE)
-    warm_grass = (88, 112, 63, 30)
-    dry_grass = (150, 136, 78, 22)
-    earth = (104, 91, 57, 22)
-    shadow_green = (61, 93, 55, 22)
+    warm_grass = (88, 112, 63, 22)
+    dry_grass = (150, 136, 78, 14)
+    earth = (104, 91, 57, 14)
+    shadow_green = (61, 93, 55, 14)
 
     if kind in (0, 1, 2):
         color = warm_grass if kind != 2 else shadow_green
@@ -1817,14 +1842,14 @@ def _draw_land_pattern_mark(draw, x, y, size, kind, seed):
                 (x - s // 2, y - s // 4, x + s // 2, y + s // 3),
                 205,
                 335,
-                fill=(76, 103, 61, 16),
+                fill=(76, 103, 61, 10),
                 width=line_width,
             )
     elif kind in (8, 9):
-        color = (92, 96, 64, 18)
+        color = (92, 96, 64, 12)
         draw.arc((x - s, y - s // 3, x + s, y + s // 2), 205, 335, fill=color, width=line_width)
     else:
-        color = (72, 105, 60, 20)
+        color = (72, 105, 60, 12)
         draw.line((x, y - s // 2, x - s // 2, y + s // 2), fill=color, width=line_width)
         draw.line((x, y - s // 2, x + s // 2, y + s // 2), fill=color, width=line_width)
 
@@ -1934,6 +1959,8 @@ def _relief_tree_cluster_width(radius):
 
 
 def _draw_alpine_ridge_band(canvas, proj, ridge_band):
+    if not DEFAULT_RIDGE_BAND_OVERLAYS_ENABLED:
+        return
     points = [_project_point(proj, lon, lat) for lon, lat in ridge_band["points"]]
     if len(points) < 2:
         return
@@ -1999,6 +2026,9 @@ def _draw_alpine_ridge_band(canvas, proj, ridge_band):
             draw.line([left, peak, right], fill=mark_color, width=max(1, RENDER_SCALE), joint="curve")
 
     ridge_layer = ridge_layer.filter(ImageFilter.GaussianBlur(0.30 * RENDER_SCALE))
+    alpha = ridge_layer.getchannel("A")
+    alpha = alpha.point(lambda value: int(value * RIDGE_BAND_ALPHA_SCALE))
+    ridge_layer.putalpha(alpha)
     canvas.alpha_composite(ridge_layer)
 
 
@@ -2614,10 +2644,13 @@ def main():
     _draw_terrain(canvas, proj, land_mask)
     _draw_neighbor_ground_texture(canvas, proj, neighbor_mask)
     _draw_ground_texture(canvas, proj, germany_mask, germany)
-    _draw_integrated_land_pattern(canvas, proj, germany_mask, germany)
-    _draw_lakes(canvas, proj, germany_mask)
+    if DEFAULT_INTEGRATED_LAND_PATTERN_ENABLED:
+        _draw_integrated_land_pattern(canvas, proj, germany_mask, germany)
+    if DEFAULT_NATURAL_EARTH_LAKES_ENABLED:
+        _draw_lakes(canvas, proj, germany_mask)
     _draw_named_water_bodies(canvas, proj, germany_mask)
-    _draw_atlas_land_detail_patches(canvas, proj, germany_mask)
+    if DEFAULT_LAND_DETAIL_PATCHES_ENABLED:
+        _draw_atlas_land_detail_patches(canvas, proj, germany_mask)
     _draw_atlas_forest_masses(canvas, proj, land_mask)
     if DEFAULT_ATLAS_ROUTES_ENABLED:
         _draw_atlas_routes(canvas, proj, germany_mask)

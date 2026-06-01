@@ -160,6 +160,13 @@ class MapGeographyAuditTest(unittest.TestCase):
             ATLAS_ROUTE_DOT_MIN_RADIUS,
             ATLAS_ROUTE_DOT_SPACING_SCALE,
             DEFAULT_ATLAS_ROUTES_ENABLED,
+            DEFAULT_BASE_LAND_PATCHES_ENABLED,
+            DEFAULT_INTEGRATED_LAND_PATTERN_ENABLED,
+            DEFAULT_LAND_DETAIL_PATCHES_ENABLED,
+            DEFAULT_MARSH_PATCHES_ENABLED,
+            DEFAULT_MINOR_NAMED_WATER_BODIES_ENABLED,
+            DEFAULT_NATURAL_EARTH_LAKES_ENABLED,
+            DEFAULT_RIDGE_BAND_OVERLAYS_ENABLED,
             DEFAULT_ATLAS_DETAIL_KINDS,
             FOREST_CLUSTER_MIN_SOURCE_WIDTH,
             FOREST_MASS_MIN_WIDTH,
@@ -171,9 +178,13 @@ class MapGeographyAuditTest(unittest.TestCase):
             INTEGRATED_LAND_PATTERN_LAT_STEP,
             INTEGRATED_LAND_PATTERN_LON_STEP,
             INTEGRATED_LAND_PATTERN_MIN_SIZE,
+            MAJOR_NAMED_WATER_BODY_IDS,
             MIN_ATLAS_DETAIL_WIDTH,
             RELIEF_REGIONS,
+            RELIEF_SOFT_REGION_ALPHA_SCALE,
             RELIEF_TREE_CLUSTER_MIN_WIDTH,
+            RIDGE_BAND_ALPHA_SCALE,
+            _named_water_alpha_scale,
             _relief_tree_cluster_width,
         )
 
@@ -188,12 +199,24 @@ class MapGeographyAuditTest(unittest.TestCase):
         self.assertGreaterEqual(GROUND_TEXTURE_LAT_STEP, 0.56)
         self.assertGreaterEqual(GROUND_TEXTURE_LON_STEP, 0.70)
         self.assertGreaterEqual(GROUND_TEXTURE_LAT_STEP, 0.66)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LON_STEP, 0.90)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LAT_STEP, 0.80)
-        self.assertLessEqual(INTEGRATED_LAND_PATTERN_ALPHA_SCALE, 0.22)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_MIN_SIZE, 30)
+        self.assertFalse(DEFAULT_BASE_LAND_PATCHES_ENABLED)
+        self.assertFalse(DEFAULT_INTEGRATED_LAND_PATTERN_ENABLED)
+        self.assertFalse(DEFAULT_LAND_DETAIL_PATCHES_ENABLED)
+        self.assertFalse(DEFAULT_MARSH_PATCHES_ENABLED)
+        self.assertFalse(DEFAULT_MINOR_NAMED_WATER_BODIES_ENABLED)
+        self.assertFalse(DEFAULT_NATURAL_EARTH_LAKES_ENABLED)
+        self.assertFalse(DEFAULT_RIDGE_BAND_OVERLAYS_ENABLED)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LON_STEP, 1.00)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LAT_STEP, 0.94)
+        self.assertLessEqual(INTEGRATED_LAND_PATTERN_ALPHA_SCALE, 0.16)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_MIN_SIZE, 36)
+        self.assertLessEqual(RELIEF_SOFT_REGION_ALPHA_SCALE, 0.0)
+        self.assertLessEqual(RIDGE_BAND_ALPHA_SCALE, 0.0)
         self.assertGreaterEqual(ATLAS_ROUTE_DOT_SPACING_SCALE, 1.50)
         self.assertGreaterEqual(ATLAS_ROUTE_DOT_MIN_RADIUS, 4)
+        self.assertEqual({"bodensee", "mueritz", "chiemsee"}, MAJOR_NAMED_WATER_BODY_IDS)
+        self.assertLessEqual(_named_water_alpha_scale({"id": "steinhuder_meer"}), 0.34)
+        self.assertLessEqual(_named_water_alpha_scale({"id": "mueggelsee", "subtle": True}), 0.24)
 
         for mass in ATLAS_FOREST_MASSES:
             for glyph_name, _lon, _lat, width in mass["clusters"]:

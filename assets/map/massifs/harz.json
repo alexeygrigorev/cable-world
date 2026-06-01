@@ -1,14 +1,14 @@
 {
   "cropped_size_px": [
-    443,
-    465
+    442,
+    441
   ],
   "extends_to": [],
   "geo_bounds": {
     "max_latitude": 52.25336,
     "max_longitude": 11.33439,
-    "min_latitude": 51.33834,
-    "min_longitude": 9.92422
+    "min_latitude": 51.38602,
+    "min_longitude": 9.92741
   },
   "glyphs": [
     {
@@ -31,10 +31,10 @@
   "kind": "isolated_mountain_range",
   "label": "Harz",
   "map_bbox_px": [
-    852.0,
+    852.5,
     949.5,
     1073.5,
-    1182.0
+    1170.0
   ],
   "massif_segments": [],
   "placement_policy": "named_region_polygon_and_brocken_spine",
@@ -65,10 +65,10 @@
     }
   ],
   "render_bbox_px": [
-    1704,
+    1705,
     1899,
     2147,
-    2364
+    2340
   ],
   "replacement_status": "readability_placeholder_needs_custom_harz_asset",
   "ridge_bands": [

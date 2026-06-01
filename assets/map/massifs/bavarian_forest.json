@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    476,
+    398,
     434
   ],
   "extends_to": [
@@ -11,7 +11,7 @@
     "max_latitude": 49.7451,
     "max_longitude": 13.63905,
     "min_latitude": 48.84453,
-    "min_longitude": 12.12384
+    "min_longitude": 12.37213
   },
   "glyphs": [
     {
@@ -27,7 +27,7 @@
   "kind": "forested_highland",
   "label": "Bavarian Forest",
   "map_bbox_px": [
-    1197.5,
+    1236.5,
     1576.0,
     1435.5,
     1793.0
@@ -57,7 +57,7 @@
     }
   ],
   "render_bbox_px": [
-    2395,
+    2473,
     3152,
     2871,
     3586

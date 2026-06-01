@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    585,
+    367,
     627
   ],
   "extends_to": [
@@ -11,7 +11,7 @@
     "max_latitude": 50.79849,
     "max_longitude": 7.79146,
     "min_latitude": 49.52046,
-    "min_longitude": 5.92927
+    "min_longitude": 6.62321
   },
   "glyphs": [],
   "id": "eifel_hunsrueck",
@@ -19,7 +19,7 @@
   "kind": "low_highland",
   "label": "Eifel Hunsrueck",
   "map_bbox_px": [
-    224.5,
+    333.5,
     1317.0,
     517.0,
     1630.5
@@ -49,7 +49,7 @@
     }
   ],
   "render_bbox_px": [
-    449,
+    667,
     2634,
     1034,
     3261

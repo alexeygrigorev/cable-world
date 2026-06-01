@@ -1,7 +1,7 @@
 {
   "cropped_size_px": [
     3208,
-    1199
+    1061
   ],
   "extends_to": [
     "France",
@@ -13,7 +13,7 @@
   "geo_bounds": {
     "max_latitude": 48.60314,
     "max_longitude": 16.03921,
-    "min_latitude": 46.01714,
+    "min_latitude": 46.32122,
     "min_longitude": 5.82741
   },
   "glyphs": [],
@@ -25,7 +25,7 @@
     208.5,
     1850.5,
     1812.5,
-    2450.0
+    2381.0
   ],
   "massif_segments": [
     "western_alps_massif",
@@ -93,7 +93,7 @@
     417,
     3701,
     3625,
-    4900
+    4762
   ],
   "replacement_status": "needs_elevation_derived_art",
   "ridge_bands": [
