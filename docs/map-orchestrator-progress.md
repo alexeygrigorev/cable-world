@@ -1800,3 +1800,26 @@ Visual self-review:
 
 - Temporary screenshot generated with `xvfb-run -a godot --path . --script tmp/capture_toggle_icon.gd`.
 - Reviewed `tmp/issue-94-list-icon.png` and `tmp/issue-94-map-toggle.png`; the toggle is visibly atlas-styled and does not visually merge with zoom controls.
+
+## Iteration 2026-06-01 03:02
+
+Working #93 list view polish in `worktrees/issue-93-list-first-screen-atlas-style`:
+
+- Restyled `ObjectListPanel` rows as atlas/parchment controls instead of generic list rows.
+- Enlarged object pictograms to 44px, increased row height, tightened row typography and kept name/type/location metadata as separate readable lines.
+- Restyled the list screen title, search field and filter controls in the same atlas control language as the map/list toggle.
+- Kept the explicit `Карта` return button with the atlas map pictogram.
+- Updated static and Godot runtime contracts to protect the row layout, pictogram size and open affordance.
+
+Visual self-review:
+
+- Temporary screenshot generated with `xvfb-run -a godot --path . --script tmp/capture_issue_93_list.gd`.
+- Reviewed `tmp/issue-93-list-screen.png` at 390x844. The list now reads as an atlas-style object ledger; pictograms are visible, controls are consistent with the first screen direction, and the earlier generic Godot-list look is removed.
+- This does not claim the map itself is 10/10; map quality remains governed by `docs/map-reviewer-gate.md`.
+
+Verification in the worktree:
+
+- `python3 -m unittest tests.test_app_shell_contract tests.test_object_list_contract tests.test_object_mode_ui_contract`: PASS, 22 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 278 tests, skipped=14.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.

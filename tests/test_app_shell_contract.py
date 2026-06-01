@@ -275,6 +275,21 @@ class AppShellContractTest(unittest.TestCase):
 
     def test_list_panel_uses_atlas_parchment_style(self) -> None:
         script_text = (ROOT / "scripts" / "object_list_panel.gd").read_text(encoding="utf-8")
+        main_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "_apply_atlas_list_screen_style()",
+            "func _apply_atlas_list_screen_style() -> void:",
+            "func _apply_atlas_search_style(line_edit: LineEdit) -> void:",
+            "func _apply_atlas_filter_style(option: OptionButton) -> void:",
+            "func _atlas_field_style(bg_color: Color, highlighted: bool = false) -> StyleBoxFlat:",
+            "func _atlas_list_header_style() -> StyleBoxFlat:",
+            "func _atlas_list_meta_style() -> StyleBoxFlat:",
+            'list_title.add_theme_stylebox_override("normal", _atlas_list_header_style())',
+            'line_edit.add_theme_stylebox_override("normal", _atlas_field_style(ATLAS_CONTROL_BG))',
+            'option.add_theme_stylebox_override("normal", _atlas_field_style(ATLAS_CONTROL_BG))',
+        ]:
+            self.assertIn(expected, main_text)
 
         for expected in [
             "const ATLAS_PARCHMENT_COLOR := Color(0.96, 0.90, 0.72, 0.94)",
@@ -283,7 +298,8 @@ class AppShellContractTest(unittest.TestCase):
             'const ATLAS_SELECTED_COLOR := Color("#31544d")',
             'const ATLAS_SELECTED_TEXT_COLOR := Color("#f7e4b0")',
             'const ATLAS_TYPE_TEXT_COLOR := Color("#6e5431")',
-            "const LIST_ICON_SIZE := Vector2i(36, 36)",
+            'const ATLAS_ROW_BORDER_COLOR := Color(0.23, 0.16, 0.09, 0.34)',
+            "const LIST_ICON_SIZE := Vector2i(44, 44)",
             "func _apply_atlas_list_style() -> void:",
             "func _apply_empty_state_style() -> void:",
             "_apply_atlas_list_style()",
@@ -296,6 +312,9 @@ class AppShellContractTest(unittest.TestCase):
             "var type_label := Label.new()",
             "var meta_label := Label.new()",
             "var open_hint := Label.new()",
+            'open_hint.text = "›"',
+            "row.custom_minimum_size = Vector2(0, 82)",
+            "row_content.add_theme_constant_override(\"separation\", 12)",
             "name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS",
             "type_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS",
             "meta_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS",

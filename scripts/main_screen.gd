@@ -152,6 +152,7 @@ func _ready() -> void:
 	visit_filter_option.item_selected.connect(_on_filter_changed)
 	country_filter_option.item_selected.connect(_on_filter_changed)
 	_apply_map_list_button_icons()
+	_apply_atlas_list_screen_style()
 	object_list.set_empty_state_label(list_empty_state_label)
 	object_list.set_objects(objects)
 	object_list.object_selected.connect(_on_object_selected)
@@ -796,6 +797,66 @@ func _atlas_toggle_style(bg_color: Color, content_margin: float) -> StyleBoxFlat
 	style.content_margin_top = content_margin
 	style.content_margin_right = content_margin
 	style.content_margin_bottom = content_margin
+	return style
+
+func _apply_atlas_list_screen_style() -> void:
+	map_title_label.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
+	var list_title := list_section.get_node_or_null("ListSafeArea/ListContent/СписокЗаголовок") as Label
+	if list_title != null:
+		list_title.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
+		list_title.add_theme_font_size_override("font_size", 20)
+		list_title.add_theme_stylebox_override("normal", _atlas_list_header_style())
+		list_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+	list_active_collection_filter_label.add_theme_color_override("font_color", Color("#6e5431"))
+	list_active_collection_filter_label.add_theme_font_size_override("font_size", 14)
+	list_active_collection_filter_label.add_theme_stylebox_override("normal", _atlas_list_meta_style())
+	_apply_atlas_search_style(search_line_edit)
+	for option in [country_filter_option, type_filter_option, visit_filter_option]:
+		_apply_atlas_filter_style(option)
+
+func _apply_atlas_search_style(line_edit: LineEdit) -> void:
+	line_edit.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
+	line_edit.add_theme_color_override("font_placeholder_color", Color(0.39, 0.30, 0.18, 0.76))
+	line_edit.add_theme_font_size_override("font_size", 16)
+	line_edit.add_theme_stylebox_override("normal", _atlas_field_style(ATLAS_CONTROL_BG))
+	line_edit.add_theme_stylebox_override("focus", _atlas_field_style(Color(0.99, 0.94, 0.78, 0.98), true))
+	line_edit.add_theme_stylebox_override("read_only", _atlas_field_style(Color(0.90, 0.84, 0.66, 0.90)))
+
+func _apply_atlas_filter_style(option: OptionButton) -> void:
+	option.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
+	option.add_theme_color_override("font_hover_color", Color("#11170e"))
+	option.add_theme_color_override("font_pressed_color", Color("#11170e"))
+	option.add_theme_font_size_override("font_size", 15)
+	option.add_theme_stylebox_override("normal", _atlas_field_style(ATLAS_CONTROL_BG))
+	option.add_theme_stylebox_override("hover", _atlas_field_style(Color(0.98, 0.92, 0.76, 0.98), true))
+	option.add_theme_stylebox_override("pressed", _atlas_field_style(Color(0.86, 0.76, 0.55, 0.98), true))
+	option.add_theme_stylebox_override("focus", _atlas_field_style(Color(0.98, 0.92, 0.76, 0.98), true))
+
+func _atlas_field_style(bg_color: Color, highlighted: bool = false) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_color = ATLAS_CONTROL_BORDER if highlighted else Color(0.23, 0.16, 0.09, 0.46)
+	style.shadow_color = Color(0.12, 0.08, 0.03, 0.18)
+	style.shadow_size = 2
+	style.content_margin_left = 12.0
+	style.content_margin_top = 8.0
+	style.content_margin_right = 12.0
+	style.content_margin_bottom = 8.0
+	style.set_border_width_all(2 if highlighted else 1)
+	style.set_corner_radius_all(5)
+	return style
+
+func _atlas_list_header_style() -> StyleBoxFlat:
+	var style := _atlas_field_style(Color(0.86, 0.76, 0.55, 0.96), true)
+	style.content_margin_top = 6.0
+	style.content_margin_bottom = 6.0
+	return style
+
+func _atlas_list_meta_style() -> StyleBoxFlat:
+	var style := _atlas_field_style(Color(0.99, 0.94, 0.78, 0.72))
+	style.content_margin_top = 6.0
+	style.content_margin_bottom = 6.0
 	return style
 
 func _make_map_list_icon(kind: String) -> Texture2D:

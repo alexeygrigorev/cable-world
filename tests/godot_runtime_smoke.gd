@@ -77,7 +77,7 @@ func test_object_list_rows_use_compact_control_layout() -> Array[String]:
 				_expect(row_content.get_child(2) is Label, "Object list row must expose a clear open affordance.", failures)
 				if row_content.get_child(2) is Label:
 					var open_hint := row_content.get_child(2) as Label
-					_expect(open_hint.text == ">", "Object list open affordance must be visible without relying on debug text.", failures)
+					_expect(open_hint.text == "›", "Object list open affordance must be visible without relying on debug text.", failures)
 				_expect(text_box.get_child_count() == 3, "Object list text stack must contain name, type, and metadata labels.", failures)
 				if text_box.get_child_count() == 3:
 					var name_label := text_box.get_child(0) as Label
