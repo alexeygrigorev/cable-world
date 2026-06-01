@@ -1941,3 +1941,24 @@ Updated the parent #63 contract after closing its child regional map-block contr
 - `map_pipeline/data/europe_expansion_regions.json` now records those child links as `closed` / `child_contract_complete`.
 
 This closes the non-render Europe expansion roadmap/design issue. Actual render/art quality remains open under #54/#62/#68/#69 and still requires map reviewer gate evidence before any high score.
+
+## Iteration 2026-06-01 #69 V4 Rejected
+
+Worker `Carver` prepared #69 v4 in `worktrees/issue-69-v4-map-quality`:
+
+- Commit: `7e8b6abe24041dd33d11581462b9a5206ee0d414`.
+- Bundle: `tmp/map-review/issue-69-v4-map-quality-20260601T033353Z`.
+- Technical checks passed, including compose, focused map tests, full unittest discovery, Godot import/runtime and web review bundle creation.
+
+Strict reviewer `Peirce`: `REJECT #69`, score `6/10`.
+
+Blockers to address before any integration:
+
+- Harz still reads as an isolated decorative sticker/blob in desktop screenshots.
+- Dresden/Erzgebirge still shows rectangular/striped compositing artifacts and technical-looking route/detail noise.
+- Black Forest, Bavarian Forest, Erzgebirge and Saxon Switzerland still do not read as distinct named massifs.
+- Alps are stronger but still behave like a southern overlay band rather than convincing cross-border Alpine relief.
+- Köln/Stuttgart clusters still have marker/landmark/forest clutter; selected/click state does not sufficiently improve hierarchy.
+- Tiny background marks and pale patches still read as dust/noise.
+
+Decision: do not merge #69 v4. Keep #69/#62/#68 open.
