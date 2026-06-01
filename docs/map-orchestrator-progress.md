@@ -1890,3 +1890,20 @@ Created follow-up issues from the latest user feedback:
 - #102: Map/list toggle follow-up: polished atlas-style pictogram controls.
 
 Reviewer subagent `Cicero` is running asynchronously against `docs/ui-review-gate.md` to decide whether the current `main` already passes or whether #101/#102 need a code worker. Any UI changes for these issues still require mobile/landscape screenshots, Godot runtime checks and strict reviewer `ACCEPT` before integration.
+
+## Iteration 2026-06-01 #102 Toggle Pictogram
+
+Integrated reviewed #102:
+
+- Initial reviewer `Cicero`: `REJECT`, because the map toggle still read as a generic clipboard/list icon.
+- Worker branch: `issue-102-toggle-pictogram`.
+- Integrated commit on `main`: `8c66741 Polish map list toggle pictogram`.
+- Change: replaced the clipboard-like list icon silhouette with a folded-map badge + ledger rows + transition chevron pictogram.
+- Reviewer `Nietzsche`: `ACCEPT #102` after mobile/landscape screenshots.
+- #102 closed.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_app_shell_contract tests.test_ui_review_gate_contract`: PASS, 16 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 13 checks; known cleanup/leak diagnostics remain tracked in #65.
+- `git diff --check`: PASS.
