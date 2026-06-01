@@ -34,6 +34,20 @@ Cross-border relief rule является обязательным data contract
 
 Acceptance для #76: `tests/test_france_spain_map_block_contract.py` должен проходить вместе с общим `tests/test_europe_expansion_regions_contract.py`; render assets, terrain glyph art, runtime UI and release files не меняются.
 
+## Nordics, Baltics And Northern Seas #77 Contract
+
+Дочерний non-render contract для Nordics/Baltics зафиксирован в `map_pipeline/data/nordics_baltics_map_block.json`.
+
+Главное правило #77: северная широта сама по себе не означает ни "горы", ни "равнина". Контракт поэтому разделяет:
+
+- Norway/Sweden mountain spine and fjord coast как DEM-backed relief;
+- Denmark как explicit lowland exclusion plus North Sea/Baltic island context;
+- Finland как low-relief lakeland context with Saimaa, Paijanne, Inari and Aland Islands, без копирования Scandinavian mountain glyphs;
+- Baltics как lowland/coast/island context with Saaremaa, Hiiumaa, Curonian Spit, Gulf of Riga and Gulf of Finland;
+- Iceland как broad volcanic highland context, отдельно от Scandinavia.
+
+Acceptance для #77: `tests/test_nordics_baltics_map_block_contract.py` должен проходить вместе с общим `tests/test_europe_expansion_regions_contract.py`; render assets, terrain glyph art, runtime UI and release files не меняются.
+
 ## Цель блока #75
 
 DACH + Northern Italy expansion должен подготовить основу для расширения карты Европы на юг от Германии без визуального render pass. Эта задача не должна "дорисовывать красивые Альпы" случайными anchors. Результат должен быть проверяемым контрактом данных, по которому следующий implementer сможет добавить новые bounds, relief layers, city landmarks и transport-object candidates.

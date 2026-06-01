@@ -1,5 +1,14 @@
 # Map Orchestrator Progress
 
+## 2026-06-01 - #77 Nordics/Baltics non-render contract
+
+- Working branch/worktree: `issue-77-nordics-baltics-contract` / `worktrees/issue-77-nordics-baltics-contract`.
+- Added `map_pipeline/data/nordics_baltics_map_block.json`.
+- Added `tests/test_nordics_baltics_map_block_contract.py`.
+- The contract explicitly distinguishes Scandinavian mountains from Denmark/Finland/Baltic lowland exclusions and records lakes, seas and islands before any render pass.
+- After reviewer REJECT, filled every referenced water/island context id with a source-backed `water_and_islands` entry and added a test that all region water refs resolve.
+- Scope deliberately excludes rendered underlay changes, terrain glyph art, runtime UI and release files.
+
 ## 2026-06-01 - #76 France/Spain non-render contract
 
 - Working branch/worktree: `issue-76-france-spain-contract` / `worktrees/issue-76-france-spain-contract`.

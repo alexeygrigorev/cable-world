@@ -1,0 +1,244 @@
+{
+  "schema": "cable-world.nordics-baltics-map-block.v1",
+  "issue": "#77",
+  "parent_issue": "#63",
+  "review_status": "planning_contract",
+  "scope": "non_render_nordics_baltics_metadata",
+  "notes": [
+    "This file is a non-render contract for Nordics, Finland, Baltics and northern seas expansion.",
+    "Northern latitude is not a relief rule: Norway/Sweden need source-backed mountains; Denmark, Finland and Baltics need explicit lowland/lake/coast context.",
+    "It must not be consumed as final map art placement."
+  ],
+  "regions": [
+    {
+      "id": "scandinavia_mountain_core",
+      "display_name": "Norway and Sweden mountain/coast core",
+      "countries": ["Norway", "Sweden"],
+      "bounds": [4.0, 55.0, 31.5, 71.4],
+      "detail_tier": "medium",
+      "required_relief_layers": ["scandinavian_mountains", "norwegian_fjords", "swedish_highlands"],
+      "required_water_island_context": ["norwegian_coast", "skagerrak", "kattegat", "gulf_of_bothnia", "lofoten_vesteralen"],
+      "review_status": "planned"
+    },
+    {
+      "id": "denmark_north_sea_baltic_connector",
+      "display_name": "Denmark, North Sea and Baltic connector",
+      "countries": ["Denmark"],
+      "bounds": [7.4, 54.4, 15.4, 58.2],
+      "detail_tier": "medium",
+      "required_relief_layers": ["denmark_lowland_exclusion"],
+      "required_water_island_context": ["north_sea", "skagerrak", "kattegat", "baltic_sea", "jutland", "zealand", "funen", "bornholm"],
+      "review_status": "planned"
+    },
+    {
+      "id": "finland_lakeland_low_relief",
+      "display_name": "Finland lakeland and low-relief context",
+      "countries": ["Finland"],
+      "bounds": [19.0, 59.5, 32.5, 70.2],
+      "detail_tier": "medium",
+      "required_relief_layers": ["finland_low_relief_context", "lapland_fells_context"],
+      "required_water_island_context": ["finnish_lakeland", "saimaa", "paijanne", "inari", "gulf_of_finland", "gulf_of_bothnia", "aland_islands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "baltics_lowland_coast",
+      "display_name": "Baltics lowland, coast and island context",
+      "countries": ["Estonia", "Latvia", "Lithuania"],
+      "bounds": [20.8, 53.8, 28.5, 59.8],
+      "detail_tier": "medium",
+      "required_relief_layers": ["baltic_lowland_exclusion", "baltic_upland_context"],
+      "required_water_island_context": ["baltic_sea", "gulf_of_riga", "gulf_of_finland", "curonian_lagoon", "saaremaa", "hiiumaa", "curonian_spit"],
+      "review_status": "planned"
+    },
+    {
+      "id": "iceland_context",
+      "display_name": "Iceland broad relief and coast context",
+      "countries": ["Iceland"],
+      "bounds": [-25.2, 63.0, -13.0, 66.8],
+      "detail_tier": "medium",
+      "required_relief_layers": ["iceland_volcanic_highlands"],
+      "required_water_island_context": ["north_atlantic", "iceland_coastline", "westfjords"],
+      "review_status": "planned"
+    }
+  ],
+  "relief_layers": [
+    {
+      "id": "scandinavian_mountains",
+      "display_name": "Scandinavian Mountains",
+      "countries": ["Norway", "Sweden"],
+      "region_ids": ["scandinavia_mountain_core"],
+      "bounds": [5.0, 58.0, 20.5, 71.2],
+      "source_rule": "DEM-derived ridge/elevation bands required; strongest relief follows Norway/Sweden mountain spine.",
+      "continuity_refs": ["europe_expansion_regions.scandinavian_mountains"],
+      "lowland_exclusions": ["Swedish east coast lowlands", "Finnish lowlands", "Denmark lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "norwegian_fjords",
+      "display_name": "Norwegian fjord relief/coast interaction",
+      "countries": ["Norway"],
+      "region_ids": ["scandinavia_mountain_core"],
+      "bounds": [4.0, 58.0, 8.8, 69.8],
+      "source_rule": "DEM-derived steep coastal relief plus coastline/fjord geometry required before art.",
+      "continuity_refs": ["scandinavian_mountains"],
+      "lowland_exclusions": ["Oslofjord lowland", "Trondheim lowland pocket"],
+      "review_status": "planned"
+    },
+    {
+      "id": "swedish_highlands",
+      "display_name": "Swedish highlands and upland context",
+      "countries": ["Sweden"],
+      "region_ids": ["scandinavia_mountain_core"],
+      "bounds": [11.0, 56.0, 18.8, 63.5],
+      "source_rule": "DEM-derived low-to-medium upland mask; not drawn as Alpine mountains.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Skane lowlands", "Stockholm/Malaren lowlands", "Gulf of Bothnia coast"],
+      "review_status": "planned"
+    },
+    {
+      "id": "denmark_lowland_exclusion",
+      "display_name": "Denmark lowland exclusion",
+      "countries": ["Denmark"],
+      "region_ids": ["denmark_north_sea_baltic_connector"],
+      "bounds": [7.4, 54.4, 15.4, 58.2],
+      "source_rule": "DEM-derived low-relief mask required; no mountain glyphs unless a later local landmark pass explicitly approves small hills.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Jutland", "Zealand", "Funen", "Bornholm"],
+      "review_status": "planned"
+    },
+    {
+      "id": "finland_low_relief_context",
+      "display_name": "Finland low-relief and lake context",
+      "countries": ["Finland"],
+      "region_ids": ["finland_lakeland_low_relief"],
+      "bounds": [19.0, 59.5, 32.5, 70.2],
+      "source_rule": "DEM-derived low-relief context and lake masks required; do not copy Scandinavian mountain glyphs into Finland.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Finnish Lakeland", "Gulf of Bothnia coast", "Gulf of Finland coast"],
+      "review_status": "planned"
+    },
+    {
+      "id": "lapland_fells_context",
+      "display_name": "Lapland fells context",
+      "countries": ["Finland", "Norway", "Sweden"],
+      "region_ids": ["finland_lakeland_low_relief", "scandinavia_mountain_core"],
+      "bounds": [19.0, 67.0, 30.0, 70.5],
+      "source_rule": "DEM-derived fell/upland context only; lower visual intensity than Norwegian/Swedish mountain spine.",
+      "continuity_refs": ["scandinavian_mountains"],
+      "lowland_exclusions": ["Inari lake lowland pockets"],
+      "review_status": "planned"
+    },
+    {
+      "id": "baltic_lowland_exclusion",
+      "display_name": "Baltic lowland exclusion",
+      "countries": ["Estonia", "Latvia", "Lithuania"],
+      "region_ids": ["baltics_lowland_coast"],
+      "bounds": [20.8, 53.8, 28.5, 59.8],
+      "source_rule": "DEM-derived low-relief mask required; no large mountain glyphs.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Estonian lowlands", "Latvian lowlands", "Lithuanian coastal/plain regions"],
+      "review_status": "planned"
+    },
+    {
+      "id": "baltic_upland_context",
+      "display_name": "Baltic upland context",
+      "countries": ["Estonia", "Latvia", "Lithuania"],
+      "region_ids": ["baltics_lowland_coast"],
+      "bounds": [22.0, 54.0, 28.0, 58.5],
+      "source_rule": "DEM-derived subtle upland context only; use low-intensity terrain marks, not mountains.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Curonian Lagoon coast", "Gulf of Riga coast", "Lake Peipus lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "iceland_volcanic_highlands",
+      "display_name": "Iceland volcanic highlands",
+      "countries": ["Iceland"],
+      "region_ids": ["iceland_context"],
+      "bounds": [-24.0, 63.3, -14.0, 66.5],
+      "source_rule": "DEM-derived broad volcanic highland relief and coastline mask required before art.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Iceland coastal settlements/lowlands"],
+      "review_status": "planned"
+    }
+  ],
+  "water_and_islands": [
+    {"id": "north_sea", "display_name": "North Sea", "countries": ["Denmark", "Norway"], "kind": "sea", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "skagerrak", "display_name": "Skagerrak", "countries": ["Norway", "Sweden", "Denmark"], "kind": "sea_strait", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "kattegat", "display_name": "Kattegat", "countries": ["Sweden", "Denmark"], "kind": "sea_strait", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "baltic_sea", "display_name": "Baltic Sea", "countries": ["Denmark", "Sweden", "Finland", "Estonia", "Latvia", "Lithuania"], "kind": "sea", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "gulf_of_bothnia", "display_name": "Gulf of Bothnia", "countries": ["Sweden", "Finland"], "kind": "sea_gulf", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "norwegian_coast", "display_name": "Norwegian coast and fjords", "countries": ["Norway"], "kind": "coast_fjord", "source_rule": "Natural Earth coastline plus OSM fjord/water relations before detailed render.", "review_status": "planned"},
+    {"id": "lofoten_vesteralen", "display_name": "Lofoten and Vesteralen", "countries": ["Norway"], "kind": "island_group", "source_rule": "Coastline geometry required; must not disappear in northern map crop.", "review_status": "planned"},
+    {"id": "finnish_lakeland", "display_name": "Finnish Lakeland", "countries": ["Finland"], "kind": "lake_region", "source_rule": "Lake polygons required before dense lake glyphs.", "review_status": "planned"},
+    {"id": "saimaa", "display_name": "Saimaa", "countries": ["Finland"], "kind": "named_lake", "source_rule": "Named lake outline required.", "review_status": "planned"},
+    {"id": "paijanne", "display_name": "Paijanne", "countries": ["Finland"], "kind": "named_lake", "source_rule": "Named lake outline required.", "review_status": "planned"},
+    {"id": "inari", "display_name": "Inari", "countries": ["Finland"], "kind": "named_lake", "source_rule": "Named lake outline required.", "review_status": "planned"},
+    {"id": "aland_islands", "display_name": "Aland Islands", "countries": ["Finland"], "kind": "island_group", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "saaremaa", "display_name": "Saaremaa", "countries": ["Estonia"], "kind": "island", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "hiiumaa", "display_name": "Hiiumaa", "countries": ["Estonia"], "kind": "island", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "curonian_lagoon", "display_name": "Curonian Lagoon", "countries": ["Lithuania", "Russia"], "kind": "lagoon", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "curonian_spit", "display_name": "Curonian Spit", "countries": ["Lithuania", "Russia"], "kind": "coastal_spit", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "jutland", "display_name": "Jutland", "countries": ["Denmark"], "kind": "peninsula", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "bornholm", "display_name": "Bornholm", "countries": ["Denmark"], "kind": "island", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "zealand", "display_name": "Zealand", "countries": ["Denmark"], "kind": "island", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "funen", "display_name": "Funen", "countries": ["Denmark"], "kind": "island", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "gulf_of_riga", "display_name": "Gulf of Riga", "countries": ["Latvia", "Estonia"], "kind": "sea_gulf", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "gulf_of_finland", "display_name": "Gulf of Finland", "countries": ["Finland", "Estonia", "Russia"], "kind": "sea_gulf", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "north_atlantic", "display_name": "North Atlantic", "countries": ["Iceland"], "kind": "sea", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "iceland_coastline", "display_name": "Iceland coastline", "countries": ["Iceland"], "kind": "coastline", "source_rule": "Coastline geometry required.", "review_status": "planned"},
+    {"id": "westfjords", "display_name": "Westfjords", "countries": ["Iceland"], "kind": "coastal_peninsula", "source_rule": "Coastline and DEM relief context required.", "review_status": "planned"}
+  ],
+  "city_landmarks": [
+    {"id": "oslo", "display_name": "Oslo", "country": "Norway", "lon": 10.7522, "lat": 59.9139, "priority": "major", "landmark_icon_id": "city_oslo", "review_status": "planned"},
+    {"id": "bergen", "display_name": "Bergen", "country": "Norway", "lon": 5.3221, "lat": 60.3929, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "tromso", "display_name": "Tromso", "country": "Norway", "lon": 18.9553, "lat": 69.6492, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "stockholm", "display_name": "Stockholm", "country": "Sweden", "lon": 18.0686, "lat": 59.3293, "priority": "major", "landmark_icon_id": "city_stockholm", "review_status": "planned"},
+    {"id": "gothenburg", "display_name": "Gothenburg", "country": "Sweden", "lon": 11.9746, "lat": 57.7089, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "malmo", "display_name": "Malmo", "country": "Sweden", "lon": 13.0038, "lat": 55.6050, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "copenhagen", "display_name": "Copenhagen", "country": "Denmark", "lon": 12.5683, "lat": 55.6761, "priority": "major", "landmark_icon_id": "city_copenhagen", "review_status": "planned"},
+    {"id": "aarhus", "display_name": "Aarhus", "country": "Denmark", "lon": 10.2039, "lat": 56.1629, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "helsinki", "display_name": "Helsinki", "country": "Finland", "lon": 24.9384, "lat": 60.1699, "priority": "major", "landmark_icon_id": "city_helsinki", "review_status": "planned"},
+    {"id": "tampere", "display_name": "Tampere", "country": "Finland", "lon": 23.7610, "lat": 61.4978, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "turku", "display_name": "Turku", "country": "Finland", "lon": 22.2666, "lat": 60.4518, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "tallinn", "display_name": "Tallinn", "country": "Estonia", "lon": 24.7536, "lat": 59.4370, "priority": "major", "landmark_icon_id": "city_tallinn", "review_status": "planned"},
+    {"id": "riga", "display_name": "Riga", "country": "Latvia", "lon": 24.1052, "lat": 56.9496, "priority": "major", "landmark_icon_id": "city_riga", "review_status": "planned"},
+    {"id": "vilnius", "display_name": "Vilnius", "country": "Lithuania", "lon": 25.2797, "lat": 54.6872, "priority": "major", "landmark_icon_id": "city_vilnius", "review_status": "planned"},
+    {"id": "reykjavik", "display_name": "Reykjavik", "country": "Iceland", "lon": -21.9426, "lat": 64.1466, "priority": "major", "landmark_icon_id": "city_reykjavik", "review_status": "planned"}
+  ],
+  "transport_candidate_buckets": [
+    {
+      "id": "norway_mountain_and_city_cableways",
+      "countries": ["Norway"],
+      "required_candidate_anchors": ["Bergen Floibanen funicular", "Bergen Ulriken cable car", "Tromso Fjellheisen", "Narvikfjellet cable car"],
+      "required_transport_types": ["funicular_classic", "cable_aerial_tram", "cable_tourist"],
+      "production_policy": "staging_review_only"
+    },
+    {
+      "id": "sweden_denmark_finland_urban_candidates",
+      "countries": ["Sweden", "Denmark", "Finland"],
+      "required_candidate_anchors": ["Stockholm Katarina elevator historic candidate", "Helsinki funicular/elevator candidates if source-backed", "Copenhagen urban transport candidates if source-backed"],
+      "required_transport_types": ["elevator", "special_transport_system", "funicular_classic"],
+      "production_policy": "staging_review_only"
+    },
+    {
+      "id": "baltics_candidates",
+      "countries": ["Estonia", "Latvia", "Lithuania"],
+      "required_candidate_anchors": ["Tallinn historic lift/funicular candidates if source-backed", "Vilnius/Riga special transport candidates if source-backed"],
+      "required_transport_types": ["elevator", "special_transport_system", "funicular_classic"],
+      "production_policy": "staging_review_only"
+    }
+  ],
+  "source_requirements": {
+    "admin_boundaries": ["Natural Earth Admin 0/1", "OpenStreetMap boundary relations"],
+    "coastline_water": ["Natural Earth coastline/water", "OpenStreetMap coastline/water/island relations for detailed passes"],
+    "relief": ["Copernicus DEM GLO-30", "EU-DEM", "NASA SRTM 1 Arc-Second Global"],
+    "candidate_seed": ["OpenStreetMap", "Wikidata"],
+    "required_metadata": ["source_url", "license_note", "download_date", "processing_command", "review_status"]
+  },
+  "acceptance_contract": {
+    "allowed_file_kinds": ["docs", "tests", "map_pipeline/data"],
+    "forbidden_outputs": ["map images/assets", "rendered underlay changes", "terrain glyph art", "runtime UI", "release files"],
+    "required_tests": ["tests/test_nordics_baltics_map_block_contract.py", "tests/test_europe_expansion_regions_contract.py", "python3 -m unittest discover -s tests", "git diff --check"]
+  }
+}
