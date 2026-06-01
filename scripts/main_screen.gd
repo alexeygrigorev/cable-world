@@ -928,28 +928,31 @@ func _make_map_list_icon(kind: String) -> Texture2D:
 	return ImageTexture.create_from_image(image)
 
 func _draw_map_icon(image: Image) -> void:
-	_fill_icon_rect(image, Rect2i(4, 8, 9, 24), ATLAS_ICON_PARCHMENT_DARK)
-	_fill_icon_rect(image, Rect2i(14, 6, 10, 24), ATLAS_ICON_GREEN)
-	_fill_icon_rect(image, Rect2i(25, 9, 9, 24), ATLAS_ICON_BLUE)
-	_draw_icon_line(image, Vector2i(13, 8), Vector2i(13, 32), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(24, 6), Vector2i(24, 31), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(7, 28), Vector2i(16, 20), ATLAS_CONTROL_ACCENT)
-	_draw_icon_line(image, Vector2i(16, 20), Vector2i(28, 24), ATLAS_CONTROL_ACCENT)
-	_draw_icon_pin(image, Vector2i(20, 16), Color("#7f3f2a"))
-	_draw_compass_arrow(image, Vector2i(30, 12))
+	_draw_folded_map_badge(image, Rect2i(4, 7, 28, 25))
+	_draw_icon_line(image, Vector2i(7, 28), Vector2i(15, 19), ATLAS_CONTROL_ACCENT)
+	_draw_icon_line(image, Vector2i(15, 19), Vector2i(27, 24), ATLAS_CONTROL_ACCENT)
+	_draw_icon_pin(image, Vector2i(18, 16), Color("#7f3f2a"))
+	_draw_compass_arrow(image, Vector2i(30, 11))
+	_draw_return_chevron(image, Vector2i(10, 34), true)
 
 func _draw_list_icon(image: Image) -> void:
-	_draw_folded_map_badge(image, Rect2i(4, 8, 17, 22))
-	_fill_icon_rect(image, Rect2i(18, 6, 17, 27), ATLAS_ICON_PARCHMENT_DARK)
-	_fill_icon_rect(image, Rect2i(21, 5, 15, 27), ATLAS_ICON_PARCHMENT)
-	_draw_icon_outline_rect(image, Rect2i(21, 5, 15, 27), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(23, 10), Vector2i(34, 10), Color("#b68b4a"))
+	_draw_folded_map_badge(image, Rect2i(4, 7, 15, 24))
+	_draw_ledger_icon(image, Rect2i(16, 5, 20, 29))
+
+func _draw_ledger_icon(image: Image, rect: Rect2i) -> void:
+	_fill_icon_rect(image, rect, ATLAS_ICON_PARCHMENT_DARK)
+	_fill_icon_rect(image, Rect2i(rect.position.x + 2, rect.position.y - 1, rect.size.x - 3, rect.size.y), ATLAS_ICON_PARCHMENT)
+	_draw_icon_outline_rect(image, Rect2i(rect.position.x + 2, rect.position.y - 1, rect.size.x - 3, rect.size.y), ATLAS_CONTROL_BORDER)
+	_fill_icon_rect(image, Rect2i(rect.position.x + 4, rect.position.y + 1, 2, rect.size.y - 4), Color("#9d7840"))
+	_draw_icon_line(image, rect.position + Vector2i(8, 5), rect.position + Vector2i(rect.size.x - 3, 5), Color("#b68b4a"))
 	for row in range(3):
-		var y := 15 + row * 6
-		_draw_object_row_icon(image, Vector2i(25, y), row)
-		_fill_icon_rect(image, Rect2i(29, y - 1, 5, 2), ATLAS_CONTROL_INK)
-		_fill_icon_rect(image, Rect2i(29, y + 2, 4, 1), Color("#6e5431"))
-	_draw_return_chevron(image, Vector2i(18, 32), false)
+		_draw_ledger_route_row(image, rect.position + Vector2i(9, 10 + row * 7), row)
+
+func _draw_ledger_route_row(image: Image, origin: Vector2i, row: int) -> void:
+	_draw_object_row_icon(image, origin, row)
+	_draw_icon_line(image, origin + Vector2i(4, 0), origin + Vector2i(12, 0), ATLAS_CONTROL_INK)
+	_draw_icon_line(image, origin + Vector2i(4, 3), origin + Vector2i(10, 3), Color("#6e5431"))
+	_fill_icon_rect(image, Rect2i(origin.x + 14, origin.y - 1, 2, 2), ATLAS_CONTROL_ACCENT)
 
 func _draw_folded_map_badge(image: Image, rect: Rect2i) -> void:
 	_fill_icon_rect(image, rect, ATLAS_ICON_PARCHMENT_DARK)
