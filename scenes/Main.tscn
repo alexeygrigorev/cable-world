@@ -230,18 +230,20 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 14
 
 [node name="ListContent" type="VBoxContainer" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
 [node name="СписокЗаголовок" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.152941, 0.196078, 0.121569, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "Атлас объектов"
 
 [node name="ListActiveCollectionFilterLabel" type="Label" parent="Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent"]

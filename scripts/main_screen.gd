@@ -24,6 +24,8 @@ const MAP_LIST_TOGGLE_MARGIN := Vector2(14.0, 14.0)
 const MAP_RIDE_BUTTON_SIZE := Vector2(152.0, 56.0)
 const MAP_RIDE_BUTTON_MARGIN := Vector2(14.0, 84.0)
 const LIST_MAP_RETURN_SIZE := Vector2(132.0, 52.0)
+const LIST_LEDGER_MAX_WIDTH := 920.0
+const LIST_LEDGER_MIN_WIDTH := 320.0
 
 @onready var object_list: ObjectListPanel = %ObjectList
 @onready var object_card: ObjectCardPanel = %ObjectCard
@@ -39,6 +41,9 @@ const LIST_MAP_RETURN_SIZE := Vector2(132.0, 52.0)
 @onready var orientation_option: OptionButton = %OrientationOption
 @onready var list_empty_state_label: Label = %ListEmptyStateLabel
 @onready var list_active_collection_filter_label: Label = %ListActiveCollectionFilterLabel
+@onready var list_content: VBoxContainer = $Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent
+@onready var list_safe_area: MarginContainer = %ListSafeArea
+@onready var list_title_label: Label = $Отступы/Оболочка/Содержимое/ContentViewport/ContentScroll/Секции/ListSection/ListSafeArea/ListContent/СписокЗаголовок
 @onready var journal_label: RichTextLabel = %JournalLabel
 @onready var selected_object_label: Label = %SelectedObjectLabel
 @onready var map_button: Button = %MapButton
@@ -91,6 +96,9 @@ var orientation_option_is_refreshing: bool = false
 var map_list_toggle_button: Button = null
 var map_ride_button: Button = null
 var list_map_return_button: Button = null
+var list_ledger_header: HBoxContainer = null
+var list_ledger_title_stack: VBoxContainer = null
+var list_ledger_subtitle_label: Label = null
 var active_section_name := ""
 var map_return_state: Dictionary = {}
 var ride_return_section_name := "card"
@@ -172,6 +180,7 @@ func _ready() -> void:
 	_create_map_list_toggle()
 	_create_map_ride_button()
 	_create_list_map_return_button()
+	_create_list_ledger_header()
 
 	_configure_orientation_setting()
 	_configure_list_filters()
@@ -726,8 +735,37 @@ func _create_list_map_return_button() -> void:
 	list_map_return_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	_apply_atlas_toggle_button_style(list_map_return_button, false)
 	list_map_return_button.pressed.connect(func() -> void: _show_section("map"))
-	list_section.add_child(list_map_return_button)
-	list_section.move_child(list_map_return_button, 0)
+
+func _create_list_ledger_header() -> void:
+	if list_content == null or list_title_label == null or list_map_return_button == null:
+		return
+
+	list_ledger_header = HBoxContainer.new()
+	list_ledger_header.name = "ListLedgerHeader"
+	list_ledger_header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	list_ledger_header.alignment = BoxContainer.ALIGNMENT_BEGIN
+	list_ledger_header.add_theme_constant_override("separation", 10)
+
+	list_ledger_title_stack = VBoxContainer.new()
+	list_ledger_title_stack.name = "ListLedgerTitleStack"
+	list_ledger_title_stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	list_ledger_title_stack.add_theme_constant_override("separation", 1)
+
+	list_ledger_subtitle_label = Label.new()
+	list_ledger_subtitle_label.name = "ListLedgerSubtitle"
+	list_ledger_subtitle_label.text = "Реестр маршрутов, станций и семейных отметок"
+	list_ledger_subtitle_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	list_ledger_subtitle_label.add_theme_color_override("font_color", Color("#6e5431"))
+	list_ledger_subtitle_label.add_theme_font_size_override("font_size", 13)
+
+	list_content.add_child(list_ledger_header)
+	list_content.move_child(list_ledger_header, 0)
+	list_ledger_header.add_child(list_map_return_button)
+	list_ledger_header.add_child(list_ledger_title_stack)
+
+	list_title_label.get_parent().remove_child(list_title_label)
+	list_ledger_title_stack.add_child(list_title_label)
+	list_ledger_title_stack.add_child(list_ledger_subtitle_label)
 
 func _update_map_ride_button() -> void:
 	if map_ride_button == null:
@@ -801,12 +839,16 @@ func _atlas_toggle_style(bg_color: Color, content_margin: float) -> StyleBoxFlat
 
 func _apply_atlas_list_screen_style() -> void:
 	map_title_label.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
-	var list_title := list_section.get_node_or_null("ListSafeArea/ListContent/СписокЗаголовок") as Label
-	if list_title != null:
-		list_title.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
-		list_title.add_theme_font_size_override("font_size", 20)
-		list_title.add_theme_stylebox_override("normal", _atlas_list_header_style())
-		list_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if list_safe_area != null:
+		list_safe_area.add_theme_constant_override("margin_left", 14)
+		list_safe_area.add_theme_constant_override("margin_top", 14)
+		list_safe_area.add_theme_constant_override("margin_right", 14)
+		list_safe_area.add_theme_constant_override("margin_bottom", 14)
+	if list_title_label != null:
+		list_title_label.add_theme_color_override("font_color", ATLAS_CONTROL_INK)
+		list_title_label.add_theme_font_size_override("font_size", 22)
+		list_title_label.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+		list_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
 	list_active_collection_filter_label.add_theme_color_override("font_color", Color("#6e5431"))
 	list_active_collection_filter_label.add_theme_font_size_override("font_size", 14)
@@ -942,9 +984,11 @@ func _draw_icon_line(image: Image, from_point: Vector2i, to_point: Vector2i, col
 		_fill_icon_rect(image, Rect2i(point.x, point.y, 2, 2), color)
 
 func _apply_map_focus_chrome(is_map: bool) -> void:
-	app_title_label.visible = not is_map
-	app_subtitle_label.visible = not is_map
-	navigation_area.visible = not is_map
+	var is_list := active_section_name == "list"
+	var hide_primary_chrome := is_map or is_list
+	app_title_label.visible = not hide_primary_chrome
+	app_subtitle_label.visible = not hide_primary_chrome
+	navigation_area.visible = not hide_primary_chrome
 	current_section_label.visible = false
 	map_title_label.visible = false
 	selected_object_label.visible = false
@@ -952,9 +996,9 @@ func _apply_map_focus_chrome(is_map: bool) -> void:
 		map_list_toggle_button.visible = is_map
 	_update_map_ride_button()
 	if list_map_return_button != null:
-		list_map_return_button.visible = not is_map
+		list_map_return_button.visible = is_list
 
-	var margin := 0 if is_map else 12
+	var margin := 0 if hide_primary_chrome else 12
 	root_margins.add_theme_constant_override("margin_left", margin)
 	root_margins.add_theme_constant_override("margin_top", margin)
 	root_margins.add_theme_constant_override("margin_right", margin)
@@ -962,10 +1006,17 @@ func _apply_map_focus_chrome(is_map: bool) -> void:
 	map_section.add_theme_constant_override("separation", 0 if is_map else 10)
 
 	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(1.0, 1.0, 1.0, 0.0) if is_map else Color("#f7f3e7")
-	panel_style.border_color = Color(1.0, 1.0, 1.0, 0.0) if is_map else Color("#6f7d67")
-	panel_style.set_border_width_all(0 if is_map else 2)
-	panel_style.set_corner_radius_all(0 if is_map else 8)
+	if is_map:
+		panel_style.bg_color = Color(1.0, 1.0, 1.0, 0.0)
+		panel_style.border_color = Color(1.0, 1.0, 1.0, 0.0)
+	elif is_list:
+		panel_style.bg_color = Color("#ead8a9")
+		panel_style.border_color = Color("#3b2a18")
+	else:
+		panel_style.bg_color = Color("#f7f3e7")
+		panel_style.border_color = Color("#6f7d67")
+	panel_style.set_border_width_all(0 if hide_primary_chrome else 2)
+	panel_style.set_corner_radius_all(0 if hide_primary_chrome else 8)
 	content_panel.add_theme_stylebox_override("panel", panel_style)
 
 func _sync_content_width() -> void:
@@ -977,6 +1028,16 @@ func _sync_content_width() -> void:
 	for key in sections:
 		var section: Control = sections[key]
 		section.custom_minimum_size.x = content_width
+	_sync_list_ledger_width(content_width)
+
+func _sync_list_ledger_width(content_width: float) -> void:
+	if list_safe_area == null:
+		return
+	var ledger_width: float = min(max(LIST_LEDGER_MIN_WIDTH, content_width), LIST_LEDGER_MAX_WIDTH)
+	list_safe_area.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	list_safe_area.custom_minimum_size.x = ledger_width
+	if list_content != null:
+		list_content.custom_minimum_size.x = max(0.0, ledger_width - 28.0)
 
 func _sync_content_width_after_layout() -> void:
 	call_deferred("_sync_content_width")

@@ -69,14 +69,16 @@ func test_object_list_rows_use_compact_control_layout() -> Array[String]:
 		if row.get_child_count() == 1:
 			var row_content := row.get_child(0)
 			_expect(row_content is HBoxContainer, "Object list row content must be horizontal icon/text layout.", failures)
-			_expect(row_content.get_child_count() == 3, "Object list row content must contain icon, text stack, and open affordance.", failures)
-			if row_content.get_child_count() == 3:
-				_expect(row_content.get_child(0) is TextureRect, "Object list row must render a pictogram texture.", failures)
-				var text_box := row_content.get_child(1)
+			_expect(row_content.get_child_count() == 5, "Object list row content must contain ledger number, divider, icon, text stack, and open affordance.", failures)
+			if row_content.get_child_count() == 5:
+				_expect(row_content.get_child(0) is Label, "Object list row must render a ledger row number.", failures)
+				_expect(row_content.get_child(1) is ColorRect, "Object list row must separate ledger number from object fields.", failures)
+				_expect(row_content.get_child(2) is TextureRect, "Object list row must render a pictogram texture.", failures)
+				var text_box := row_content.get_child(3)
 				_expect(text_box is VBoxContainer, "Object list text must be split into separate labels.", failures)
-				_expect(row_content.get_child(2) is Label, "Object list row must expose a clear open affordance.", failures)
-				if row_content.get_child(2) is Label:
-					var open_hint := row_content.get_child(2) as Label
+				_expect(row_content.get_child(4) is Label, "Object list row must expose a clear open affordance.", failures)
+				if row_content.get_child(4) is Label:
+					var open_hint := row_content.get_child(4) as Label
 					_expect(open_hint.text == "›", "Object list open affordance must be visible without relying on debug text.", failures)
 				_expect(text_box.get_child_count() == 3, "Object list text stack must contain name, type, and metadata labels.", failures)
 				if text_box.get_child_count() == 3:
