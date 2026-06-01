@@ -1,5 +1,25 @@
 # Map Orchestrator Progress
 
+## 2026-06-01 - #98 UI review gate
+
+- Working branch/worktree: `issue-98-ui-review-gate` / `worktrees/issue-98-ui-review-gate`.
+- Added `docs/ui-review-gate.md` for list mode, map/list toggle and map-first shell review.
+- Added `scripts/capture_ui_review_screenshots.gd` to generate required Godot-native screenshots:
+  - `tmp/ui-review/mobile-390x844-map.png`
+  - `tmp/ui-review/mobile-390x844-list.png`
+  - `tmp/ui-review/landscape-844x390-map.png`
+  - `tmp/ui-review/landscape-844x390-list.png`
+- Updated `docs/agent-operating-protocol.md` to point UI reviewers to `docs/ui-review-gate.md`.
+- Added `tests/test_ui_review_gate_contract.py` so the gate, screenshot matrix, runtime coverage and protocol references stay enforced.
+- After reviewer REJECT, added Godot-native drag/tap suppression coverage in `tests/godot_runtime_app_shell.gd` and routed `ObjectListPanel._on_row_pressed()` through `_selection_allowed_now()` so the runtime test checks the same selection gate.
+- Verification:
+  - `python3 -m unittest tests.test_ui_review_gate_contract`: PASS.
+  - `python3 -m unittest discover -s tests`: PASS, 283 tests, skipped=14.
+  - `godot --headless --path . --import --quit`: PASS.
+  - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 13 checks.
+  - `xvfb-run -a godot --path . --script scripts/capture_ui_review_screenshots.gd`: PASS, screenshots generated under `tmp/ui-review/`.
+  - `git diff --check`: PASS.
+- Known residual: `godot --headless --path . --quit-after 1` exits 0 but still prints tracked RID/font leak diagnostics from #65. This issue does not fix #65.
 Дата: 2026-05-31 10:41 CEST.
 
 ## WeChat Message

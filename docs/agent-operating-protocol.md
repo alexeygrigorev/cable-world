@@ -6,7 +6,7 @@
 
 - Главный агент выступает оркестратором: читает состояние репозитория, Issues, CI/CD и релизов; выбирает следующий маленький инкремент; интегрирует результаты; коммитит, тегирует и проверяет release assets.
 - Product/code tasks выполняют субагенты. Главный агент не должен вручную реализовывать продуктовые задачи, если пользователь явно не разрешил. Исключения: процессная документация, интеграционные правки, version bump, commit/tag/release, исправление стыков между агентами.
-- Для UI-задач отдельный reviewer-субагент обязан запускать приложение, делать скриншоты и выдавать строгий `ACCEPT` или `REJECT`.
+- Для UI-задач отдельный reviewer-субагент обязан запускать приложение, делать скриншоты и выдавать строгий `ACCEPT` или `REJECT`. Для изменений первого экрана, list mode и map/list toggle применять [UI Review Gate](ui-review-gate.md) (`docs/ui-review-gate.md`); для задач по карте дополнительно применять [Map Reviewer Gate](map-reviewer-gate.md).
 
 ## Ритм релизов
 
@@ -59,6 +59,14 @@ rg -n 'ERROR:|Parse Error|Failed to compile|Failed to load script|SCRIPT ERROR' 
 - `tmp/screenshots/landscape-844x390-*.png`
 - визуальную оценку читаемости, touch targets, скролла, карты, навигации и русских строк.
 
+Для list/toggle/map-first задач минимальный набор из [UI Review Gate](ui-review-gate.md):
+
+- `tmp/ui-review/mobile-390x844-map.png`
+- `tmp/ui-review/mobile-390x844-list.png`
+- `tmp/ui-review/landscape-844x390-map.png`
+- `tmp/ui-review/landscape-844x390-list.png`
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`
+
 Если reviewer пишет `REJECT`, главный агент не релизит. Нужно запустить fix-worker и повторить review.
 
 ## Версионирование и APK
@@ -100,6 +108,7 @@ gh release view vX.Y.Z --repo alexeygrigorev/cable-world --json url,assets --jq 
 - Карта должна быть похожа на карту или честную схему конкретного объекта, а не случайную сетку.
 - Настройки не должны занимать главный экран. Редкие настройки, например ориентация, должны быть в `Настройки`.
 - Любая новая UI-фича требует visual reviewer `ACCEPT`.
+- Изменения list mode, map/list toggle и map-first shell проходят [UI Review Gate](ui-review-gate.md) с mobile/landscape screenshots и Godot-native runtime checks.
 
 ## Работа с каталогом
 

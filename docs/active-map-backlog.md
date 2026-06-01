@@ -107,7 +107,7 @@
 - [ ] Перегенерировать/переразмерить glyph source assets под рабочий максимум `200%`, чтобы atlas details и terrain glyphs были четкими на максимальном приближении без лишней пиксельности.
 - [ ] #99 List mode follow-up: привести экран списка к atlas-стилю стартовой карты; список не должен выглядеть как чужой UI после переключения с fullscreen-карты.
 - [ ] #100 Map/list toggle follow-up: сделать нормальную icon-only пиктограмму переключения в стиле карты и парный return-to-map control в list mode.
-- [ ] #98 UI review gate follow-up: карта-список должны проходить единый visual/runtime review со screenshots mobile/landscape и Godot-native checks.
+- [x] #98 UI review gate follow-up: карта-список должны проходить единый visual/runtime review со screenshots mobile/landscape и Godot-native checks.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.
 - [ ] #65 Разобрать Godot headless shutdown warnings/RID leaks: сейчас `godot --headless --path . --quit-after 1` выходит с кодом 0, но печатает CanvasItem/ObjectDB/DummyTexture/ShapedText/Font leak warnings.
 - [ ] Обновлять GitHub issue #54 после каждой проверяемой итерации и регулярно коммитить.

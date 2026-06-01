@@ -492,7 +492,10 @@ func _on_row_pressed(object_index: int) -> void:
 	await get_tree().create_timer(TAP_SELECTION_DELAY_SEC).timeout
 	if request_token != selection_request_token:
 		return
-	if touch_is_dragging or Time.get_ticks_msec() < suppress_selection_until_msec:
+	if not _selection_allowed_now():
 		return
 
 	object_selected.emit(object_index)
+
+func _selection_allowed_now() -> bool:
+	return not touch_is_dragging and Time.get_ticks_msec() >= suppress_selection_until_msec

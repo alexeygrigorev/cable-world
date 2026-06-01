@@ -168,6 +168,64 @@ func test_object_list_filtering_and_selection_runtime() -> Array[String]:
 	return failures
 
 
+func test_object_list_drag_suppresses_tap_selection_runtime() -> Array[String]:
+	var failures: Array[String] = []
+	var panel: ObjectListPanel = ObjectListPanelScript.new()
+	var selected_indices: Array[int] = []
+	panel._ready()
+	panel.object_selected.connect(func(index: int) -> void: selected_indices.append(index))
+	panel.set_objects([
+		{
+			"id": "berlin-garden-cable",
+			"name": "Канатная дорога в садах мира Берлина",
+			"kind": "городская канатная дорога",
+			"city": "Берлин",
+			"country": "Германия",
+			"visit_status_id": "not_visited",
+			"operational_status": "active_seasonal",
+		},
+		{
+			"id": "wuppertal-schwebebahn",
+			"name": "Вуппертальская подвесная дорога",
+			"kind": "подвесной поезд",
+			"city": "Вупперталь",
+			"country": "Германия",
+			"visit_status_id": "not_visited",
+			"operational_status": "active",
+		},
+	])
+
+	var tap_start := InputEventScreenTouch.new()
+	tap_start.pressed = true
+	tap_start.position = Vector2(24.0, 24.0)
+	panel._gui_input(tap_start)
+	var tap_end := InputEventScreenTouch.new()
+	tap_end.pressed = false
+	tap_end.position = Vector2(25.0, 25.0)
+	panel._gui_input(tap_end)
+	_expect(panel._selection_allowed_now(), "A short tap without scroll movement must remain eligible for row selection.", failures)
+
+	var drag_start := InputEventScreenTouch.new()
+	drag_start.pressed = true
+	drag_start.position = Vector2(24.0, 24.0)
+	panel._gui_input(drag_start)
+	var drag_event := InputEventScreenDrag.new()
+	drag_event.position = Vector2(24.0, 72.0)
+	panel._gui_input(drag_event)
+	var drag_end := InputEventScreenTouch.new()
+	drag_end.pressed = false
+	drag_end.position = Vector2(24.0, 72.0)
+	panel._gui_input(drag_end)
+
+	_expect(not panel._selection_allowed_now(), "A list scroll drag must suppress row tap selection immediately after release.", failures)
+	_expect(panel.suppress_selection_until_msec > Time.get_ticks_msec(), "Drag suppression must remain active for the configured post-scroll window.", failures)
+	panel.select_object(0)
+	_expect_int_array(selected_indices, [0], "Programmatic selection must still emit when it is not a scroll gesture.", failures)
+
+	panel.free()
+	return failures
+
+
 func _expect(condition: bool, message: String, failures: Array[String]) -> void:
 	if not condition:
 		failures.append(message)
