@@ -1,11 +1,18 @@
 import { defineConfig } from "vite";
-import { writeFileSync, existsSync, createReadStream } from "node:fs";
+import { writeFileSync, existsSync, createReadStream, readdirSync, mkdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const DATA_PATH = fileURLToPath(new URL("./src/data/hex_map.json", import.meta.url));
+const MAPS_DIR = fileURLToPath(new URL("./maps/", import.meta.url));
+
+const readBody = (req) => new Promise((res) => {
+  let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => res(b));
+});
+const safeName = (n) => /^[\w -]+$/.test(n) ? n.replace(/\s+/g, "-") : null;
 
 // real game assets live in the repo, outside the editor folder
 const ASSET_DIRS = [
+  fileURLToPath(new URL("../assets/sprites/", import.meta.url)),
   fileURLToPath(new URL("../assets/sprites/city_landmark_clusters_hi_res/outlined/", import.meta.url)),
   fileURLToPath(new URL("../assets/sprites/city_landmarks/outlined/", import.meta.url)),
   fileURLToPath(new URL("../assets/map/glyphs/", import.meta.url)),
@@ -47,14 +54,14 @@ function saveDataPlugin() {
   return {
     name: "save-hex-map",
     configureServer(server) {
+      // live working file (auto-save on edits)
       server.middlewares.use("/__save", (req, res) => {
         if (req.method !== "POST") return res.end();
         let body = "";
         req.on("data", (c) => (body += c));
         req.on("end", () => {
           try {
-            const parsed = JSON.parse(body);
-            writeFileSync(DATA_PATH, JSON.stringify(parsed, null, 2) + "\n");
+            writeFileSync(DATA_PATH, JSON.stringify(JSON.parse(body), null, 2) + "\n");
             res.statusCode = 200;
             res.end("ok");
           } catch (e) {
@@ -62,6 +69,41 @@ function saveDataPlugin() {
             res.end(String(e));
           }
         });
+      });
+
+      // "Save As" to a named file under maps/ (won't touch the working file)
+      server.middlewares.use("/__saveas", async (req, res) => {
+        if (req.method !== "POST") return res.end();
+        const u = new URL(req.url, "http://x");
+        const name = safeName(u.searchParams.get("name") || "");
+        if (!name) { res.statusCode = 400; return res.end("bad name"); }
+        mkdirSync(MAPS_DIR, { recursive: true });
+        const file = MAPS_DIR + name + ".json";
+        if (existsSync(file) && u.searchParams.get("overwrite") !== "1") {
+          res.statusCode = 409; return res.end("exists");
+        }
+        try {
+          writeFileSync(file, JSON.stringify(JSON.parse(await readBody(req)), null, 2) + "\n");
+          res.statusCode = 200; res.end("ok");
+        } catch (e) { res.statusCode = 400; res.end(String(e)); }
+      });
+
+      // list saved maps
+      server.middlewares.use("/__maps", (req, res) => {
+        mkdirSync(MAPS_DIR, { recursive: true });
+        const files = readdirSync(MAPS_DIR).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify(files));
+      });
+
+      // load a saved map
+      server.middlewares.use("/__open", (req, res) => {
+        const u = new URL(req.url, "http://x");
+        const name = safeName(u.searchParams.get("name") || "");
+        const file = name && MAPS_DIR + name + ".json";
+        if (!file || !existsSync(file)) { res.statusCode = 404; return res.end("not found"); }
+        res.setHeader("Content-Type", "application/json");
+        res.end(readFileSync(file));
       });
     },
   };

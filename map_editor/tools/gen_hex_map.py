@@ -193,15 +193,20 @@ def main():
             hexes[f"{q},{r}"] = {"country": country_of(pt), "terrain": terrain,
                                  "center": [round(lon, 5), round(lat, 5)]}
 
-    for lon, lat in FOREST_POINTS:
+    # forests as multi-hex bundles: a patch of plain-land hexes, drawn as a
+    # cluster of forest glyphs and moved/selected as one object.
+    forests = []
+    for i, (lon, lat) in enumerate(FOREST_POINTS):
         wx, wy = merc(lon, lat)
         q0, r0 = world_to_hex(wx, wy, s)
-        for dq, dr in [(0, 0)] + NEIGHBORS:
-            cell = hexes.get(f"{q0 + dq},{r0 + dr}")
-            if cell and cell.get("terrain") == "plain":
-                cell["terrain"] = "forest"
+        cells = [f"{q0 + dq},{r0 + dr}" for dq, dr in [(0, 0)] + NEIGHBORS
+                 if hexes.get(f"{q0 + dq},{r0 + dr}", {}).get("terrain") == "plain"]
+        if cells:
+            anchor = f"{q0},{r0}" if f"{q0},{r0}" in cells else cells[0]
+            forests.append({"id": f"forest-{i}", "glyph": "forest", "label": "Лес",
+                            "cells": cells, "anchor": anchor, "home": anchor})
 
-    features = []
+    features = list(forests)
 
     # separate massif glyph pieces: Alps as its named segments, every other
     # massif as its own piece — each its own image, placed by real geo_bounds.
@@ -217,14 +222,14 @@ def main():
         features.append({"id": m["id"], "glyph": "massif", "image": m["image"],
                          "label": m["id"], "bounds_px": [round(x0, 1), round(y0, 1),
                          round(x1, 1), round(y1, 1)], "cells": cells,
-                         "anchor": f"{aq},{ar}"})
+                         "anchor": f"{aq},{ar}", "home": f"{aq},{ar}"})
 
     for name, lon, lat, kind, icon in CITIES:
         wx, wy = merc(lon, lat)
         q, r = world_to_hex(wx, wy, s)
         features.append({"id": icon, "glyph": "city", "kind": kind,
                          "label": name, "icon": icon, "lon": lon, "lat": lat,
-                         "anchor": f"{q},{r}"})
+                         "anchor": f"{q},{r}", "home": f"{q},{r}"})
 
     # view = world-px bbox of populated hexes (for the editor camera)
     pts = [hex_to_world(*map(int, k.split(",")), s) for k in hexes]

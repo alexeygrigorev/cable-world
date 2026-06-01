@@ -9,6 +9,8 @@
     <header id="bar">
       <strong>Мир Троссов — гекс-редактор</strong>
       <div id="tools">
+        <button id="saveBtn" title="Сохранить карту">💾 сохранить</button>
+        <button id="moveToggle" title="Разрешить менять базовую карту (города, массивы, леса)">🔒 базовая карта</button>
         <button id="undo" title="Отменить (Ctrl+Z)">↶ отмена</button>
         <span id="zoomctl">
           <button id="zoomOut">−</button>
@@ -18,12 +20,19 @@
       </div>
       <span id="status">Германия · 25 км</span>
     </header>
+    <aside id="palette">
+      <div class="palette-title">Палитра</div>
+      <div id="paletteItems"></div>
+      <div class="palette-hint">Перетащи на карту</div>
+    </aside>
     <main id="stage">
       <canvas id="map"></canvas>
     </main>
     <aside id="panel" hidden>
       <button id="panelClose" title="Закрыть">✕</button>
       <div id="panelBody"></div>
+      <button id="panelReset" hidden>↺ вернуть на место</button>
+      <button id="panelDelete" hidden>🗑 удалить объект</button>
     </aside>
     <script type="module" src="/src/main.js"></script>
   </body>
