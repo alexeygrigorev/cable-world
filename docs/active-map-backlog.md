@@ -105,7 +105,9 @@
 - [ ] #63 Позже разбить большую Europe pipeline issue на маленькие блоки по странам/регионам/слоям, но пока держать общий список в одной issue, чтобы ничего не потерять.
 - [x] #75 DACH + Northern Italy planning/data contract: `docs/europe-expansion-plan.md` разбивает работу на Switzerland, Austria, Northern Italy, Alpine relief source/elevation validation, city landmark coverage и cableway/funicular candidate data. Следующий pass должен добавлять только source-backed metadata/data, а render pass должен начинаться от реальных elevation sources, не от декоративных anchors.
 - [ ] Перегенерировать/переразмерить glyph source assets под рабочий максимум `200%`, чтобы atlas details и terrain glyphs были четкими на максимальном приближении без лишней пиксельности.
-- [ ] Оформить list mode отдельной задачей: список при переключении с карты должен соответствовать стилю карты, а не выглядеть как чужой UI.
+- [ ] #99 List mode follow-up: привести экран списка к atlas-стилю стартовой карты; список не должен выглядеть как чужой UI после переключения с fullscreen-карты.
+- [ ] #100 Map/list toggle follow-up: сделать нормальную icon-only пиктограмму переключения в стиле карты и парный return-to-map control в list mode.
+- [ ] #98 UI review gate follow-up: карта-список должны проходить единый visual/runtime review со screenshots mobile/landscape и Godot-native checks.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.
 - [ ] #65 Разобрать Godot headless shutdown warnings/RID leaks: сейчас `godot --headless --path . --quit-after 1` выходит с кодом 0, но печатает CanvasItem/ObjectDB/DummyTexture/ShapedText/Font leak warnings.
 - [ ] Обновлять GitHub issue #54 после каждой проверяемой итерации и регулярно коммитить.
