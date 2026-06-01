@@ -20,6 +20,20 @@
 
 Cross-border relief rule является обязательным data contract: Alps cannot stop at Germany; Po Valley, Vienna Basin и Swiss Plateau должны быть lowland exclusions; mountain placement должен идти от DEM-derived ridges, elevation bands или documented named massif geometry, а не от decorative anchors. Child issues #74/#76/#77 остаются открытыми и не закрываются этим контрактом.
 
+## France And Spain #76 Contract
+
+Дочерний non-render contract для France/Spain зафиксирован в `map_pipeline/data/france_spain_map_block.json`.
+
+Этот файл не является render manifest. Он нужен, чтобы будущий pass по Франции и Испании не рисовал рельеф и города наугад:
+
+- France mainland и Spain mainland/Balearic context получают явные bounds и high-detail статус;
+- relief layers разделены на Western Alps, French/Spanish Pyrenees, Massif Central, Vosges/Jura, Cantabrian Mountains, Sistema Central, Iberian System, Sierra Nevada, Corsica and Balearic context;
+- Pyrenees и Alps имеют cross-border continuity refs, а Ebro Basin, Aquitaine Basin, Rhone Valley, Rhine Plain and coastal plains зафиксированы как lowland exclusions;
+- city landmark coverage включает Paris, Lyon, Marseille, Toulouse, Bordeaux, Grenoble, Chamonix, Madrid, Barcelona, Valencia, Seville, Bilbao, Zaragoza and Granada;
+- transport candidate buckets остаются `staging_review_only`, без production import.
+
+Acceptance для #76: `tests/test_france_spain_map_block_contract.py` должен проходить вместе с общим `tests/test_europe_expansion_regions_contract.py`; render assets, terrain glyph art, runtime UI and release files не меняются.
+
 ## Цель блока #75
 
 DACH + Northern Italy expansion должен подготовить основу для расширения карты Европы на юг от Германии без визуального render pass. Эта задача не должна "дорисовывать красивые Альпы" случайными anchors. Результат должен быть проверяемым контрактом данных, по которому следующий implementer сможет добавить новые bounds, relief layers, city landmarks и transport-object candidates.

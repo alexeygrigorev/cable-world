@@ -1,0 +1,201 @@
+{
+  "schema": "cable-world.france-spain-map-block.v1",
+  "issue": "#76",
+  "parent_issue": "#63",
+  "review_status": "planning_contract",
+  "scope": "non_render_france_spain_metadata",
+  "notes": [
+    "This file is a non-render contract for France and Spain expansion.",
+    "It must not be consumed as final map art placement.",
+    "Relief art must be derived from DEM/elevation products or documented named massif geometry before rendering."
+  ],
+  "regions": [
+    {
+      "id": "france_mainland",
+      "display_name": "France mainland",
+      "countries": ["France", "Monaco"],
+      "bounds": [-5.2, 41.2, 9.9, 51.8],
+      "detail_tier": "high",
+      "required_relief_layers": ["western_alps_france", "pyrenees_france", "massif_central", "vosges_jura", "corsica_mountains"],
+      "required_water_context": ["atlantic_coast", "english_channel", "mediterranean_coast", "rhone_valley", "loire_valley"],
+      "review_status": "planned"
+    },
+    {
+      "id": "spain_mainland_balearic_context",
+      "display_name": "Spain mainland and Balearic context",
+      "countries": ["Spain", "Andorra"],
+      "bounds": [-9.6, 35.8, 4.4, 43.9],
+      "detail_tier": "high",
+      "required_relief_layers": ["pyrenees_spain_andorra", "cantabrian_mountains", "central_system", "iberian_system", "sierra_nevada", "balearic_context"],
+      "required_water_context": ["atlantic_coast", "bay_of_biscay", "mediterranean_coast", "ebro_delta", "balearic_islands_context"],
+      "review_status": "planned"
+    }
+  ],
+  "relief_layers": [
+    {
+      "id": "western_alps_france",
+      "display_name": "Western Alps in France",
+      "countries": ["France", "Italy", "Switzerland"],
+      "region_ids": ["france_mainland"],
+      "bounds": [5.6, 43.7, 7.9, 46.4],
+      "source_rule": "DEM-derived ridge/elevation bands required; must connect to alps_cross_border.",
+      "continuity_refs": ["alps_cross_border"],
+      "lowland_exclusions": ["Rhone Valley", "Provence coast lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "pyrenees_france",
+      "display_name": "French Pyrenees",
+      "countries": ["France", "Spain", "Andorra"],
+      "region_ids": ["france_mainland"],
+      "bounds": [-1.9, 42.4, 3.2, 43.4],
+      "source_rule": "DEM-derived ridge/elevation bands required; must share geometry with Spanish Pyrenees.",
+      "continuity_refs": ["pyrenees_spain_andorra"],
+      "lowland_exclusions": ["Aquitaine Basin", "Mediterranean coastal plain"],
+      "review_status": "planned"
+    },
+    {
+      "id": "pyrenees_spain_andorra",
+      "display_name": "Spanish and Andorran Pyrenees",
+      "countries": ["Spain", "France", "Andorra"],
+      "region_ids": ["spain_mainland_balearic_context"],
+      "bounds": [-1.9, 41.9, 3.4, 43.2],
+      "source_rule": "DEM-derived ridge/elevation bands required; must share geometry with French Pyrenees.",
+      "continuity_refs": ["pyrenees_france"],
+      "lowland_exclusions": ["Ebro Basin", "Catalan coastal plain"],
+      "review_status": "planned"
+    },
+    {
+      "id": "massif_central",
+      "display_name": "Massif Central",
+      "countries": ["France"],
+      "region_ids": ["france_mainland"],
+      "bounds": [1.4, 43.2, 4.9, 46.4],
+      "source_rule": "DEM-derived highland mask required; render as broad upland, not Alpine peaks.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Rhone Valley", "Loire Valley", "Garonne Basin"],
+      "review_status": "planned"
+    },
+    {
+      "id": "vosges_jura",
+      "display_name": "Vosges and Jura",
+      "countries": ["France", "Switzerland"],
+      "region_ids": ["france_mainland"],
+      "bounds": [5.7, 46.0, 7.8, 49.0],
+      "source_rule": "DEM-derived named-massif/highland mask required; keep separate from Alps.",
+      "continuity_refs": ["dach_alpine_core"],
+      "lowland_exclusions": ["Rhine Plain", "Swiss Plateau"],
+      "review_status": "planned"
+    },
+    {
+      "id": "cantabrian_mountains",
+      "display_name": "Cantabrian Mountains",
+      "countries": ["Spain"],
+      "region_ids": ["spain_mainland_balearic_context"],
+      "bounds": [-7.2, 42.6, -2.2, 43.5],
+      "source_rule": "DEM-derived ridge/highland mask required before art.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Castilian Plateau low-intensity areas", "Bay of Biscay coast"],
+      "review_status": "planned"
+    },
+    {
+      "id": "central_system",
+      "display_name": "Sistema Central",
+      "countries": ["Spain", "Portugal"],
+      "region_ids": ["spain_mainland_balearic_context"],
+      "bounds": [-7.0, 39.5, -2.5, 41.4],
+      "source_rule": "DEM-derived ridge/highland mask required before art.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Madrid Basin", "Tagus lowland"],
+      "review_status": "planned"
+    },
+    {
+      "id": "iberian_system",
+      "display_name": "Iberian System",
+      "countries": ["Spain"],
+      "region_ids": ["spain_mainland_balearic_context"],
+      "bounds": [-3.2, 39.6, 0.5, 42.8],
+      "source_rule": "DEM-derived ridge/highland mask required before art.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Ebro Basin", "Valencian coastal plain"],
+      "review_status": "planned"
+    },
+    {
+      "id": "sierra_nevada",
+      "display_name": "Sierra Nevada",
+      "countries": ["Spain"],
+      "region_ids": ["spain_mainland_balearic_context"],
+      "bounds": [-3.8, 36.7, -2.6, 37.3],
+      "source_rule": "DEM-derived high-relief mask required; small but visually important southern massif.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Andalusian coastal plain", "Guadalquivir Basin"],
+      "review_status": "planned"
+    },
+    {
+      "id": "corsica_mountains",
+      "display_name": "Corsica mountains",
+      "countries": ["France"],
+      "region_ids": ["france_mainland"],
+      "bounds": [8.5, 41.3, 9.6, 43.1],
+      "source_rule": "DEM-derived island relief context only until Corsica detail pass is approved.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Corsican coastal fringe"],
+      "review_status": "planned"
+    },
+    {
+      "id": "balearic_context",
+      "display_name": "Balearic Islands context",
+      "countries": ["Spain"],
+      "region_ids": ["spain_mainland_balearic_context"],
+      "bounds": [1.0, 38.5, 4.4, 40.2],
+      "source_rule": "DEM-derived island coastline and broad relief context only until a separate island detail pass.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Mallorca lowland plains"],
+      "review_status": "planned"
+    }
+  ],
+  "city_landmarks": [
+    {"id": "paris", "display_name": "Paris", "country": "France", "lon": 2.3522, "lat": 48.8566, "priority": "major", "landmark_icon_id": "city_paris", "review_status": "planned"},
+    {"id": "lyon", "display_name": "Lyon", "country": "France", "lon": 4.8357, "lat": 45.7640, "priority": "major", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "marseille", "display_name": "Marseille", "country": "France", "lon": 5.3698, "lat": 43.2965, "priority": "major", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "toulouse", "display_name": "Toulouse", "country": "France", "lon": 1.4442, "lat": 43.6047, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "bordeaux", "display_name": "Bordeaux", "country": "France", "lon": -0.5792, "lat": 44.8378, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "grenoble", "display_name": "Grenoble", "country": "France", "lon": 5.7245, "lat": 45.1885, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "chamonix", "display_name": "Chamonix", "country": "France", "lon": 6.8694, "lat": 45.9237, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "madrid", "display_name": "Madrid", "country": "Spain", "lon": -3.7038, "lat": 40.4168, "priority": "major", "landmark_icon_id": "city_madrid", "review_status": "planned"},
+    {"id": "barcelona", "display_name": "Barcelona", "country": "Spain", "lon": 2.1734, "lat": 41.3851, "priority": "major", "landmark_icon_id": "city_barcelona", "review_status": "planned"},
+    {"id": "valencia", "display_name": "Valencia", "country": "Spain", "lon": -0.3763, "lat": 39.4699, "priority": "major", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "seville", "display_name": "Seville", "country": "Spain", "lon": -5.9845, "lat": 37.3891, "priority": "major", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "bilbao", "display_name": "Bilbao", "country": "Spain", "lon": -2.9340, "lat": 43.2630, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "zaragoza", "display_name": "Zaragoza", "country": "Spain", "lon": -0.8891, "lat": 41.6488, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "granada", "display_name": "Granada", "country": "Spain", "lon": -3.5986, "lat": 37.1773, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"}
+  ],
+  "transport_candidate_buckets": [
+    {
+      "id": "france_urban_and_mountain",
+      "countries": ["France"],
+      "required_candidate_anchors": ["Grenoble-Bastille cable car", "Montmartre funicular", "Chamonix Aiguille du Midi", "Lyon Fourviere funiculars", "Pau funicular"],
+      "required_transport_types": ["cable_aerial_tram", "cable_tourist", "funicular_classic"],
+      "production_policy": "staging_review_only"
+    },
+    {
+      "id": "spain_urban_and_mountain",
+      "countries": ["Spain"],
+      "required_candidate_anchors": ["Barcelona Montjuic funicular", "Barcelona Port cable car", "Madrid cable car", "Bilbao Artxanda funicular", "Montserrat funiculars", "Fuente De cable car"],
+      "required_transport_types": ["cable_aerial_tram", "cable_urban", "cable_tourist", "funicular_classic"],
+      "production_policy": "staging_review_only"
+    }
+  ],
+  "source_requirements": {
+    "admin_boundaries": ["Natural Earth Admin 0/1", "OpenStreetMap boundary relations"],
+    "coastline_water": ["Natural Earth coastline/water", "OpenStreetMap water relations for detailed passes"],
+    "relief": ["Copernicus DEM GLO-30", "EU-DEM", "NASA SRTM 1 Arc-Second Global"],
+    "candidate_seed": ["OpenStreetMap", "Wikidata"],
+    "required_metadata": ["source_url", "license_note", "download_date", "processing_command", "review_status"]
+  },
+  "acceptance_contract": {
+    "allowed_file_kinds": ["docs", "tests", "map_pipeline/data"],
+    "forbidden_outputs": ["map images/assets", "rendered underlay changes", "terrain glyph art", "runtime UI", "release files"],
+    "required_tests": ["tests/test_france_spain_map_block_contract.py", "tests/test_europe_expansion_regions_contract.py", "python3 -m unittest discover -s tests", "git diff --check"]
+  }
+}

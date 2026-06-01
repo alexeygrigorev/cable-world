@@ -1,5 +1,13 @@
 # Map Orchestrator Progress
 
+## 2026-06-01 - #76 France/Spain non-render contract
+
+- Working branch/worktree: `issue-76-france-spain-contract` / `worktrees/issue-76-france-spain-contract`.
+- Added `map_pipeline/data/france_spain_map_block.json` as a non-render contract for France and Spain expansion.
+- Added `tests/test_france_spain_map_block_contract.py`.
+- Updated `docs/europe-expansion-plan.md` and `docs/active-map-backlog.md`.
+- Scope deliberately excludes rendered underlay changes, terrain glyph art, runtime UI and release files.
+
 ## 2026-06-01 - #100 map/list toggle pictogram review
 
 - Worktree: `worktrees/issue-100-toggle-pictogram-followup`.
