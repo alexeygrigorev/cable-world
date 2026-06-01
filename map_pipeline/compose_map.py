@@ -47,15 +47,15 @@ FOREST_MASS_VISUAL_SCALE = 1.90
 FOREST_MASS_MIN_WIDTH = 170
 FOREST_CLUSTER_MIN_SOURCE_WIDTH = 96
 RELIEF_TREE_CLUSTER_MIN_WIDTH = 146
-LAND_DETAIL_VISUAL_SCALE = 0.74
-LAND_DETAIL_ALPHA_SCALE = 0.48
-LAND_DETAIL_TINT_STRENGTH = 0.28
-GROUND_TEXTURE_LON_STEP = 0.62
-GROUND_TEXTURE_LAT_STEP = 0.58
-INTEGRATED_LAND_PATTERN_LON_STEP = 0.72
-INTEGRATED_LAND_PATTERN_LAT_STEP = 0.66
-INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.30
-INTEGRATED_LAND_PATTERN_MIN_SIZE = 22
+LAND_DETAIL_VISUAL_SCALE = 0.68
+LAND_DETAIL_ALPHA_SCALE = 0.36
+LAND_DETAIL_TINT_STRENGTH = 0.34
+GROUND_TEXTURE_LON_STEP = 0.74
+GROUND_TEXTURE_LAT_STEP = 0.70
+INTEGRATED_LAND_PATTERN_LON_STEP = 0.92
+INTEGRATED_LAND_PATTERN_LAT_STEP = 0.84
+INTEGRATED_LAND_PATTERN_ALPHA_SCALE = 0.20
+INTEGRATED_LAND_PATTERN_MIN_SIZE = 30
 ATLAS_ROUTE_DOT_SPACING_SCALE = 1.75
 ATLAS_ROUTE_DOT_MIN_RADIUS = 4
 DEFAULT_ATLAS_ROUTES_ENABLED = False
@@ -1334,13 +1334,13 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
             jitter_x = ((seed >> 12) % 43 - 21) * RENDER_SCALE
             jitter_y = ((seed >> 18) % 37 - 18) * RENDER_SCALE
             if seed % 4 == 0:
-                color = (126, 142, 73, 18)
+                color = (126, 142, 73, 12)
             elif seed % 4 == 1:
-                color = (186, 171, 96, 14)
+                color = (174, 160, 90, 8)
             elif seed % 4 == 2:
-                color = (82, 123, 66, 13)
+                color = (82, 123, 66, 9)
             else:
-                color = (105, 93, 55, 10)
+                color = (105, 93, 55, 7)
             draw.ellipse(
                 (
                     x + jitter_x - patch_w // 2,
@@ -1354,7 +1354,7 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
     for y in range(0, height, 42 * RENDER_SCALE):
         for x in range(0, width, 46 * RENDER_SCALE):
             seed = _stable_hash("land_texture", x // RENDER_SCALE, y // RENDER_SCALE)
-            alpha = 8 + seed % 10
+            alpha = 4 + seed % 5
             if seed % 5 == 0:
                 color = (219, 203, 132, alpha)
             elif seed % 5 in (1, 2):
@@ -1364,8 +1364,8 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
             jitter_x = ((seed >> 8) % 17 - 8) * RENDER_SCALE
             jitter_y = ((seed >> 16) % 17 - 8) * RENDER_SCALE
             if seed % 3 == 0:
-                patch_w = (18 + (seed >> 21) % 13) * RENDER_SCALE
-                patch_h = (8 + (seed >> 25) % 7) * RENDER_SCALE
+                patch_w = (24 + (seed >> 21) % 12) * RENDER_SCALE
+                patch_h = (10 + (seed >> 25) % 6) * RENDER_SCALE
                 draw.arc(
                     (
                         x + jitter_x - patch_w,
@@ -1379,8 +1379,19 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
                     width=max(1, RENDER_SCALE),
                 )
             else:
-                rr = (3 + seed % 5) * RENDER_SCALE
-                draw.ellipse((x + jitter_x - rr, y + jitter_y - rr, x + jitter_x + rr, y + jitter_y + rr), fill=color)
+                rr = (6 + seed % 5) * RENDER_SCALE
+                draw.arc(
+                    (
+                        x + jitter_x - rr,
+                        y + jitter_y - rr // 2,
+                        x + jitter_x + rr,
+                        y + jitter_y + rr // 2,
+                    ),
+                    205,
+                    330,
+                    fill=color,
+                    width=max(1, RENDER_SCALE),
+                )
 
     for y in range(0, height, 72 * RENDER_SCALE):
         x_offset = ((y // (72 * RENDER_SCALE)) % 2) * 36 * RENDER_SCALE
@@ -1389,7 +1400,7 @@ def _draw_base_land_texture(canvas, land_mask, germany_mask):
                 (x, y, x + 30 * RENDER_SCALE, y + 11 * RENDER_SCALE),
                 195,
                 340,
-                fill=(73, 91, 52, 34),
+                fill=(73, 91, 52, 20),
                 width=max(1, RENDER_SCALE),
             )
 
@@ -1715,14 +1726,14 @@ def _draw_ground_texture(canvas, proj, germany_mask, germany_geom):
                 x, y = _project_point(proj, point_lon, point_lat)
                 kind = seed % 9
                 if kind in (0, 1, 2):
-                    color = (76, 112, 62, 46) if point_lat < 52.0 else (91, 111, 66, 38)
-                    _draw_tuft(draw, x, y, 17 + seed % 10, color)
+                    color = (76, 112, 62, 32) if point_lat < 52.0 else (91, 111, 66, 26)
+                    _draw_tuft(draw, x, y, 22 + seed % 11, color)
                 elif kind in (3, 4, 5) and point_lat < 51.8:
-                    _draw_hill_mark(draw, x, y, 24 + seed % 14, (113, 100, 73, 46))
+                    _draw_hill_mark(draw, x, y, 30 + seed % 15, (113, 100, 73, 30))
                 elif kind == 6:
-                    _draw_hill_mark(draw, x, y, 19 + seed % 10, (70, 103, 77, 32))
+                    _draw_hill_mark(draw, x, y, 26 + seed % 10, (70, 103, 77, 22))
                 else:
-                    _draw_tuft(draw, x, y, 15 + seed % 9, (87, 110, 68, 30))
+                    _draw_tuft(draw, x, y, 21 + seed % 9, (87, 110, 68, 20))
             lat += GROUND_TEXTURE_LAT_STEP
             lat_index += 1
         lon += GROUND_TEXTURE_LON_STEP
@@ -1751,7 +1762,7 @@ def _draw_integrated_land_pattern(canvas, proj, germany_mask, germany_geom):
             if germany_geom.contains(Point(point_lon, point_lat)):
                 x, y = _project_point(proj, point_lon, point_lat)
                 kind = seed % 12
-                size = INTEGRATED_LAND_PATTERN_MIN_SIZE + ((seed >> 16) % 11)
+                size = INTEGRATED_LAND_PATTERN_MIN_SIZE + ((seed >> 16) % 15)
                 if point_lat > 52.2 and kind in (3, 4, 8):
                     kind = 1
                 if point_lat < 48.7 and kind in (0, 1, 2):
@@ -1773,10 +1784,10 @@ def _draw_integrated_land_pattern(canvas, proj, germany_mask, germany_geom):
 def _draw_land_pattern_mark(draw, x, y, size, kind, seed):
     s = size * RENDER_SCALE
     line_width = max(1, RENDER_SCALE)
-    warm_grass = (88, 112, 63, 36)
-    dry_grass = (166, 150, 82, 32)
-    earth = (104, 91, 57, 30)
-    shadow_green = (61, 93, 55, 28)
+    warm_grass = (88, 112, 63, 30)
+    dry_grass = (150, 136, 78, 22)
+    earth = (104, 91, 57, 22)
+    shadow_green = (61, 93, 55, 22)
 
     if kind in (0, 1, 2):
         color = warm_grass if kind != 2 else shadow_green
@@ -1806,14 +1817,14 @@ def _draw_land_pattern_mark(draw, x, y, size, kind, seed):
                 (x - s // 2, y - s // 4, x + s // 2, y + s // 3),
                 205,
                 335,
-                fill=(76, 103, 61, 24),
+                fill=(76, 103, 61, 16),
                 width=line_width,
             )
     elif kind in (8, 9):
-        color = (92, 96, 64, 26)
+        color = (92, 96, 64, 18)
         draw.arc((x - s, y - s // 3, x + s, y + s // 2), 205, 335, fill=color, width=line_width)
     else:
-        color = (72, 105, 60, 28)
+        color = (72, 105, 60, 20)
         draw.line((x, y - s // 2, x - s // 2, y + s // 2), fill=color, width=line_width)
         draw.line((x, y - s // 2, x + s // 2, y + s // 2), fill=color, width=line_width)
 

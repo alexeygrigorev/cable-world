@@ -186,10 +186,12 @@ class MapGeographyAuditTest(unittest.TestCase):
 
         self.assertGreaterEqual(GROUND_TEXTURE_LON_STEP, 0.60)
         self.assertGreaterEqual(GROUND_TEXTURE_LAT_STEP, 0.56)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LON_STEP, 0.70)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LAT_STEP, 0.64)
-        self.assertLessEqual(INTEGRATED_LAND_PATTERN_ALPHA_SCALE, 0.32)
-        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_MIN_SIZE, 22)
+        self.assertGreaterEqual(GROUND_TEXTURE_LON_STEP, 0.70)
+        self.assertGreaterEqual(GROUND_TEXTURE_LAT_STEP, 0.66)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LON_STEP, 0.90)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_LAT_STEP, 0.80)
+        self.assertLessEqual(INTEGRATED_LAND_PATTERN_ALPHA_SCALE, 0.22)
+        self.assertGreaterEqual(INTEGRATED_LAND_PATTERN_MIN_SIZE, 30)
         self.assertGreaterEqual(ATLAS_ROUTE_DOT_SPACING_SCALE, 1.50)
         self.assertGreaterEqual(ATLAS_ROUTE_DOT_MIN_RADIUS, 4)
 
