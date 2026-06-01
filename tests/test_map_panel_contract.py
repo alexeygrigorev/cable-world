@@ -857,6 +857,45 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"res://assets/sprites/outlined/%s.png"', script_text)
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
 
+    def test_multi_symbol_city_cluster_pipeline_is_documented(self) -> None:
+        cluster_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks.py").read_text(encoding="utf-8")
+        docs_text = (ROOT / "docs" / "map-generation-handoff.md").read_text(encoding="utf-8")
+
+        for expected in [
+            "ICON_SIZE = 512",
+            "GRID_COLUMNS = 4",
+            "GRID_ROWS = 2",
+            "CITY_CLUSTER_ICON_NAMES",
+            "assets/sprites/city_landmark_clusters",
+            "def _remove_tiny_alpha_islands",
+            "narrow_edge_fragment",
+            "Slice a 4x2 multi-symbol city landmark sprite sheet.",
+        ]:
+            self.assertIn(expected, cluster_text)
+
+        for city in [
+            '"berlin"',
+            '"hamburg"',
+            '"rostock"',
+            '"munich"',
+            '"cologne"',
+            '"frankfurt"',
+            '"stuttgart"',
+            '"dresden"',
+        ]:
+            self.assertIn(city, cluster_text)
+
+        for expected in [
+            "Multi-symbol city cluster workflow",
+            "2-4 recognizable city elements",
+            "user zoom `200%` is our source-quality target",
+            "2048x1024 image, 4 columns x 2 rows",
+            "one-symbol-only cities",
+            "scripts/map-review-capture-godot.sh",
+            "do not swap `scripts/map_panel.gd` to the cluster directory until the 8-city sheet passes",
+        ]:
+            self.assertIn(expected, docs_text)
+
     def test_map_panel_initially_focuses_germany_when_present(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
 

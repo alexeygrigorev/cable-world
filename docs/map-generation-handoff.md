@@ -206,6 +206,86 @@ uv run python -m map_pipeline.outline_sprites \
 
 The app loads `assets/sprites/city_landmarks/outlined/city_*.png`. Major city landmarks remain visible at the default zoom. Smaller town labels are intentionally hidden until zoom `1.20` to avoid the “too busy” failure mode.
 
+## Multi-symbol city cluster workflow
+
+User feedback 2026-06-01: one-symbol city pictograms make city weight inconsistent. Berlin with only the TV tower reads smaller than München with a broader gate/building shape. The next city pass must use small landmark clusters: 2-4 recognizable city elements per icon, balanced to similar visual mass.
+
+Start with the first 8 high-impact cities before replacing the full 64-icon set:
+
+- Berlin: Fernsehturm, Brandenburger Tor, Reichstag dome or compact skyline mass.
+- Hamburg: Speicherstadt warehouse, harbor crane, church spire or ship.
+- Rostock: Hanseatic brick gate, harbor/ship, church spire.
+- München: Frauenkirche towers, Rathaus/Marienplatz or city gate element.
+- Köln: cathedral, Rhine bridge or river element.
+- Frankfurt: skyline cluster, Römer/old town element.
+- Stuttgart: Fernsehturm, Schlossplatz/industrial hill form.
+- Dresden: Frauenkirche dome, Elbe bridge, old town silhouette.
+
+Source quality rule: user zoom `200%` is our source-quality target. Generate cluster sheets with enough resolution that the `200%` in-app view still looks like the native asset, not a magnified low-res sprite. The first cluster sheet uses 4 columns x 2 rows at `2048x1024`, then slices each city to a `512x512` transparent source icon.
+
+First generated source:
+
+```text
+/home/alexey/.codex/generated_images/019e7af1-437a-70f1-9164-d2f7b34a9c81/ig_0a51518699bf0fba016a1d5706b5288191b554444218cf4757.png
+```
+
+Current review tab:
+
+```text
+http://127.0.0.1:9010/ -> city_cluster_glyphs
+```
+
+Important slicer behavior: `map_pipeline.slice_city_cluster_landmarks` removes tiny edge-connected alpha islands before fitting each icon. This is required because generated sheets can place small fragments of the neighboring cell near cell boundaries.
+
+Prompt:
+
+```text
+Use case: stylized-concept
+Asset type: 2048x1024 sprite sheet for a Godot 16-bit RPG atlas map UI
+Primary request: Create one consistent sprite sheet of multi-symbol city landmark cluster pictograms for a European cableways/funiculars map. Each icon must be a compact cluster of 2-4 recognizable city elements, balanced so each city has similar visual weight. The icons must feel like native landmarks on a hand-painted 16-bit adventure atlas, not modern app icons.
+Canvas/layout: 2048x1024 image, 4 columns x 2 rows, one centered city cluster per cell with generous padding. No text, no labels, no numbers, no grid lines, no borders between cells.
+Icons in order, left to right, top row then bottom row:
+Berlin cluster with Fernsehturm, Brandenburg Gate, and Reichstag dome/skyline mass;
+Hamburg cluster with Speicherstadt warehouse, harbor crane, church spire/ship;
+Rostock cluster with Hanseatic brick gate, harbor ship, church spire;
+Munich cluster with Frauenkirche twin towers, Rathaus/Marienplatz or city gate;
+Cologne cluster with Cologne Cathedral, Rhine bridge/river element;
+Frankfurt cluster with skyline towers and Römer/old town element;
+Stuttgart cluster with TV tower, Schlossplatz/industrial hill form;
+Dresden cluster with Frauenkirche dome, Elbe bridge, old town silhouette.
+Style: polished pixel-art / painterly-pixel hybrid, isometric 2.5D atlas landmark miniatures, warm European adventure-map palette, crisp dark outline, readable on a detailed map, consistent camera angle and lighting. Make clusters compact and iconic, not crowded.
+Background: perfectly flat solid #ff00ff chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #ff00ff anywhere in the icons.
+Avoid: text, letters, city names, flags, watermark, photorealism, modern flat vector UI, mixed styles, large drop shadows, cropped icons, map background behind icons, decorative frames, one-symbol-only cities.
+```
+
+Post-processing:
+
+```bash
+mkdir -p tmp/city-cluster-source
+cp /path/to/generated/city_cluster_sheet.png tmp/city-cluster-source/city_cluster_sheet_source.png
+uv run python "${CODEX_HOME:-$HOME/.codex}/skills/.system/imagegen/scripts/remove_chroma_key.py" \
+  --input tmp/city-cluster-source/city_cluster_sheet_source.png \
+  --out tmp/city-cluster-source/city_cluster_sheet_alpha.png \
+  --auto-key border \
+  --soft-matte \
+  --transparent-threshold 12 \
+  --opaque-threshold 220 \
+  --despill
+uv run python -m map_pipeline.slice_city_cluster_landmarks \
+  --sheet tmp/city-cluster-source/city_cluster_sheet_alpha.png \
+  --out-dir assets/sprites/city_landmark_clusters
+uv run python -m map_pipeline.outline_sprites \
+  --source-dir assets/sprites/city_landmark_clusters \
+  --out-dir assets/sprites/city_landmark_clusters/outlined \
+  --prefix city_ \
+  --radius 4 \
+  --color '#25180fe0'
+godot --headless --path . --import --quit
+scripts/map-review-capture-godot.sh
+```
+
+Review rule: do not swap `scripts/map_panel.gd` to the cluster directory until the 8-city sheet passes the Godot-native review captures at `50%`, `100%`, `150%` and `200%`. The review should specifically compare Berlin/Hamburg/Rostock/München visual weight and reject if any city reads as a tiny single-object icon.
+
 ## Terrain and forest glyph generation workflow
 
 User feedback 2026-05-31: trees and land texture must move toward the stronger generated donor map language, but the production map must remain glyph-based and expandable. The first new terrain sheet was generated as one 4x4 sheet, then sliced into reusable map glyphs.
