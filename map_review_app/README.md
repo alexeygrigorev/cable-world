@@ -22,8 +22,10 @@ That command:
 
 1. clears old review images from `assets/map/review/`;
 2. rebuilds the current `city_cluster_glyphs` source sheet preview;
-3. captures current Godot runtime map scenes at `50%`, `100%`, `150%`, and `200%`;
-4. starts the review app if `9010` is not reachable.
+3. rebuilds `city_cluster_glyphs_hi_res` when tracked hi-res assets exist;
+4. rebuilds temporary variant tabs from `tmp/city-cluster-hi-res-v*/outlined`;
+5. captures current Godot runtime map scenes at `50%`, `100%`, `150%`, and `200%`;
+6. starts the review app if `9010` is not reachable.
 
 Open:
 
@@ -48,6 +50,14 @@ Each directory contains:
 - `review.yml`
 
 `review.yml` is intentionally written as JSON-compatible YAML, so the app can read it without extra dependencies. Keep it beside the images. If the images are removed, the feedback target disappears with them and stale context cannot pollute the next review.
+
+Temporary comparison variants should live under:
+
+```text
+tmp/city-cluster-hi-res-vN/outlined/
+```
+
+`map_review_app/scripts/capture-godot.sh` will turn each matching folder into its own review tab. These variant tabs are for feedback only; they do not replace tracked runtime assets.
 
 The app also reads `assets/map/review/manifest.json` when present for tab ordering and names.
 

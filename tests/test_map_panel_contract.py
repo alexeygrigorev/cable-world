@@ -955,6 +955,7 @@ class MapPanelContractTest(unittest.TestCase):
             ROOT / "map_review_app" / "scripts" / "clean.sh",
             ROOT / "map_review_app" / "scripts" / "capture-godot.sh",
             ROOT / "map_review_app" / "scripts" / "build-city-cluster-review.sh",
+            ROOT / "map_review_app" / "scripts" / "build-city-cluster-variant-reviews.sh",
             ROOT / "map_review_app" / "capture_map_review_scenes.gd",
         ]:
             self.assertTrue(path.exists(), f"Missing map review app file: {path}")
@@ -962,11 +963,18 @@ class MapPanelContractTest(unittest.TestCase):
         for expected in [
             "map_review_app/scripts/capture-godot.sh",
             "clears old review images",
+            "tmp/city-cluster-hi-res-vN/outlined/",
             "review.yml",
             "The saved JSON and Markdown include the tab metadata",
             "New work should put review-app logic inside `map_review_app/`",
         ]:
             self.assertIn(expected, readme_text)
+
+        capture_script = (ROOT / "map_review_app" / "scripts" / "capture-godot.sh").read_text(encoding="utf-8")
+        variant_script = (ROOT / "map_review_app" / "scripts" / "build-city-cluster-variant-reviews.sh").read_text(encoding="utf-8")
+        self.assertIn("build-city-cluster-variant-reviews.sh", capture_script)
+        self.assertIn("tmp/city-cluster-hi-res-v*/outlined", variant_script)
+        self.assertIn("--feedback-target", variant_script)
 
         for expected in [
             "async function readReviewSetMetadata(directory)",
