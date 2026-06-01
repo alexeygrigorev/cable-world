@@ -1743,3 +1743,44 @@ Visual self-review:
 - Screenshot generated with `xvfb-run -a godot --path . --script scripts/capture_ride_art_screenshot.gd`.
 - Result is a clear improvement over the debug drawing and acceptable for the #92 scoped ride-art MVP.
 - This does not change or accept the map; map remains below the 10/10 target and stays governed by the map reviewer gate.
+
+Integrated ride scope:
+
+- Integrated commit on `main`: `b2d7328 Polish ride art with reusable sprite sheet`.
+- Follow-up UID commit: `41eb363 Track ride screenshot helper uid`.
+- #92 closed.
+- Parent #52 re-audited and closed because #87, #91 and #92 now cover the playable ride MVP.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_ride_mode_contract tests.test_app_shell_contract`: PASS, 18 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `xvfb-run -a godot --path . --script scripts/capture_ride_art_screenshot.gd`: PASS, generated `tmp/ride-art-issue-92.png`.
+
+## Iteration 2026-06-01 05:47
+
+Integrated reviewed terrain guardrail slice for #69/#62:
+
+- Worker: `Turing`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-69-62-massif-metadata`.
+- Worker branch: `issue-69-62-massif-metadata`.
+- Worker commit: `24d8045 Tighten massif source layer metadata contract`.
+- Integrated commit on `main`: `f50829f Tighten massif source layer metadata contract`.
+- Decision: `ACCEPT` as contract/validation guardrail only; #69 and #62 remain open for actual visual terrain replacement.
+
+What landed:
+
+- Added production asset metadata to `map_pipeline/data/terrain_massif_layers.json`.
+- Strengthened `audit_massif_source_manifest()` to require per-layer source/bbox metadata, reject monolithic image names, check sidecar drift and validate render/map bbox scale consistency.
+- Strengthened terrain massif contract tests with negative cases for monolithic/unscaled/missing production metadata.
+- Updated `docs/terrain-glyph-layer-inventory.md`.
+
+Verification on `main`:
+
+- `uv run python -m unittest tests.test_map_geography_audit`: PASS, 14 tests.
+- `python3 -m unittest tests.test_map_geography_audit`: PASS, skipped=14 because plain system Python lacks optional geography deps.
+- `python3 -m unittest discover -s tests`: PASS, 278 tests, skipped=14.
+- `uv run python -m unittest discover -s tests`: PASS, 278 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+
+No render changes were made. This protects the direction toward separate massif glyph/source layers, but it does not improve the map visually by itself.
