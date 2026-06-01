@@ -1,5 +1,14 @@
 # Map Orchestrator Progress
 
+## 2026-06-01 - #74 Eastern Europe/Turkey non-render contract
+
+- Working branch/worktree: `issue-74-eastern-europe-turkey-contract` / `worktrees/issue-74-eastern-europe-turkey-contract`.
+- Added `map_pipeline/data/eastern_europe_turkey_map_block.json`.
+- Added `tests/test_eastern_europe_turkey_map_block_contract.py`.
+- The contract covers Central/Eastern neighbors, Romania/Balkans, Belarus/Ukraine to Ukrainian mountain cutoff, western Russia lower-detail context and Turkey bridge region.
+- Relief layers require DEM-backed Carpathians, Balkans, Caucasus/Turkey context and explicit lowland exclusions before any render pass.
+- Scope deliberately excludes rendered underlay changes, terrain glyph art, runtime UI and release files.
+
 ## 2026-06-01 - #77 Nordics/Baltics non-render contract
 
 - Working branch/worktree: `issue-77-nordics-baltics-contract` / `worktrees/issue-77-nordics-baltics-contract`.

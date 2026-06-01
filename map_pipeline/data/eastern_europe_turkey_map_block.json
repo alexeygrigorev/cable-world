@@ -1,0 +1,378 @@
+{
+  "schema": "cable-world.eastern-europe-turkey-map-block.v1",
+  "issue": "#74",
+  "parent_issue": "#63",
+  "review_status": "planning_contract",
+  "scope": "non_render_eastern_europe_turkey_metadata",
+  "notes": [
+    "This file is a non-render contract for Eastern Europe, Balkans, western Russia context and Turkey expansion.",
+    "It must not be consumed as final map art placement.",
+    "Relief art must be derived from DEM/elevation products or documented named massif geometry before rendering.",
+    "Ukraine coverage stops at the Ukrainian mountain cutoff defined by Ukrainian Carpathians and Crimean Mountains context; deeper east/south-east production detail needs a separate pass."
+  ],
+  "regions": [
+    {
+      "id": "central_eastern_neighbors",
+      "display_name": "Central/Eastern Germany neighbors",
+      "countries": ["Poland", "Czechia", "Slovakia", "Hungary"],
+      "bounds": [12.0, 45.6, 24.4, 55.1],
+      "detail_tier": "high",
+      "required_relief_layers": ["sudetes", "western_carpathians", "pannonian_basin_lowland_exclusion", "north_european_plain_lowland_exclusion"],
+      "required_water_island_context": ["baltic_coast", "danube_context", "vistula_context"],
+      "review_status": "planned"
+    },
+    {
+      "id": "romania_balkans",
+      "display_name": "Romania and Balkans",
+      "countries": ["Romania", "Bulgaria", "Serbia", "Croatia", "Bosnia and Herzegovina", "Slovenia", "North Macedonia", "Albania", "Montenegro", "Kosovo"],
+      "bounds": [13.3, 39.5, 29.9, 48.6],
+      "detail_tier": "medium",
+      "required_relief_layers": ["eastern_carpathians", "southern_carpathians", "dinaric_alps", "balkan_mountains_stara_planina", "rhodope_pindus_context", "danube_lowlands_exclusion"],
+      "required_water_island_context": ["adriatic_coast_context", "black_sea_west_coast", "danube_delta", "danube_context"],
+      "review_status": "planned"
+    },
+    {
+      "id": "belarus_ukraine_mountain_cutoff",
+      "display_name": "Belarus and Ukraine to Ukrainian mountain cutoff",
+      "countries": ["Belarus", "Ukraine", "Moldova"],
+      "bounds": [21.5, 44.0, 40.3, 56.3],
+      "detail_tier": "medium",
+      "required_relief_layers": ["ukrainian_carpathians_cutoff", "crimean_mountains", "ukrainian_steppe_lowland_exclusion", "belarus_lowlands_exclusion"],
+      "required_water_island_context": ["black_sea_north_coast", "sea_of_azov", "dnieper_context", "dniester_context"],
+      "review_status": "planned"
+    },
+    {
+      "id": "western_russia_context",
+      "display_name": "Western Russia lower-detail context",
+      "countries": ["Russia"],
+      "bounds": [27.0, 53.0, 41.5, 61.5],
+      "detail_tier": "low",
+      "required_relief_layers": ["russian_plain_lowland_exclusion"],
+      "required_water_island_context": ["gulf_of_finland_context", "volga_upper_context"],
+      "review_status": "planned"
+    },
+    {
+      "id": "turkey_bridge_region",
+      "display_name": "Turkey bridge region",
+      "countries": ["Turkey"],
+      "bounds": [25.6, 35.7, 44.9, 42.4],
+      "detail_tier": "medium",
+      "required_relief_layers": ["pontic_mountains", "taurus_mountains", "anatolian_plateau", "caucasus_armenian_highlands_context", "anatolian_central_basins_lowland_exclusion"],
+      "required_water_island_context": ["bosporus_marmara", "black_sea_turkey_coast", "aegean_turkey_coast", "mediterranean_turkey_coast", "lake_van_context", "lake_tuz_context"],
+      "review_status": "planned"
+    }
+  ],
+  "relief_layers": [
+    {
+      "id": "sudetes",
+      "display_name": "Sudetes",
+      "countries": ["Poland", "Czechia"],
+      "region_ids": ["central_eastern_neighbors"],
+      "bounds": [14.5, 49.6, 17.8, 51.3],
+      "source_rule": "DEM-derived named-massif/highland mask required; keep separate from the Carpathians.",
+      "continuity_refs": ["europe_expansion_regions.bohemian_massif"],
+      "lowland_exclusions": ["North European Plain", "Silesian Lowlands", "Elbe lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "western_carpathians",
+      "display_name": "Western Carpathians",
+      "countries": ["Poland", "Czechia", "Slovakia", "Hungary"],
+      "region_ids": ["central_eastern_neighbors"],
+      "bounds": [17.0, 47.5, 22.8, 50.4],
+      "source_rule": "DEM-derived ridge/elevation bands required; must connect to Eastern Carpathians.",
+      "continuity_refs": ["eastern_carpathians", "ukrainian_carpathians_cutoff"],
+      "lowland_exclusions": ["Pannonian Basin", "North European Plain", "Danube lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "eastern_carpathians",
+      "display_name": "Eastern Carpathians",
+      "countries": ["Romania", "Ukraine", "Poland", "Slovakia"],
+      "region_ids": ["romania_balkans", "belarus_ukraine_mountain_cutoff"],
+      "bounds": [22.0, 45.6, 26.8, 49.4],
+      "source_rule": "DEM-derived ridge/elevation bands required; must share geometry with Ukrainian Carpathians cutoff.",
+      "continuity_refs": ["western_carpathians", "southern_carpathians", "ukrainian_carpathians_cutoff"],
+      "lowland_exclusions": ["Transylvanian Basin", "Moldavian Plateau low-relief areas", "Ukrainian steppe"],
+      "review_status": "planned"
+    },
+    {
+      "id": "southern_carpathians",
+      "display_name": "Southern Carpathians",
+      "countries": ["Romania"],
+      "region_ids": ["romania_balkans"],
+      "bounds": [22.2, 44.8, 26.6, 46.5],
+      "source_rule": "DEM-derived ridge/elevation bands required; visually distinct from Balkan Mountains south of the Danube.",
+      "continuity_refs": ["eastern_carpathians"],
+      "lowland_exclusions": ["Wallachian Plain", "Danube lowlands", "Transylvanian Basin"],
+      "review_status": "planned"
+    },
+    {
+      "id": "dinaric_alps",
+      "display_name": "Dinaric Alps",
+      "countries": ["Slovenia", "Croatia", "Bosnia and Herzegovina", "Serbia", "Montenegro", "Albania"],
+      "region_ids": ["romania_balkans"],
+      "bounds": [13.5, 41.2, 20.7, 46.8],
+      "source_rule": "DEM-derived Dinaric ridge/highland mask required; follow Adriatic-parallel mountain spine.",
+      "continuity_refs": ["europe_expansion_regions.dinaric_edge"],
+      "lowland_exclusions": ["Pannonian Basin", "Adriatic coastal fringe", "Sava lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "balkan_mountains_stara_planina",
+      "display_name": "Balkan Mountains / Stara Planina",
+      "countries": ["Bulgaria", "Serbia"],
+      "region_ids": ["romania_balkans"],
+      "bounds": [22.0, 42.5, 28.8, 43.9],
+      "source_rule": "DEM-derived ridge/elevation bands required; do not merge with Southern Carpathians across the Danube lowlands.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Danube lowlands", "Thracian Plain", "Sofia Basin"],
+      "review_status": "planned"
+    },
+    {
+      "id": "rhodope_pindus_context",
+      "display_name": "Rhodope and Pindus context",
+      "countries": ["Bulgaria", "Greece", "North Macedonia", "Albania"],
+      "region_ids": ["romania_balkans"],
+      "bounds": [19.5, 39.5, 26.5, 42.8],
+      "source_rule": "DEM-derived highland context for southern Balkan edge; lower detail unless Greece receives a separate block.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Thracian Plain", "Aegean coastal lowlands", "Albanian coastal plain"],
+      "review_status": "planned"
+    },
+    {
+      "id": "ukrainian_carpathians_cutoff",
+      "display_name": "Ukrainian Carpathians cutoff",
+      "countries": ["Ukraine", "Romania", "Slovakia", "Poland"],
+      "region_ids": ["belarus_ukraine_mountain_cutoff", "central_eastern_neighbors"],
+      "bounds": [22.0, 47.6, 25.2, 49.5],
+      "source_rule": "DEM-derived cutoff layer required; this is the explicit eastern/southern high-detail boundary for Ukraine in issue #74.",
+      "continuity_refs": ["western_carpathians", "eastern_carpathians"],
+      "lowland_exclusions": ["Ukrainian steppe", "Dniester lowlands", "Pannonian Basin"],
+      "review_status": "planned"
+    },
+    {
+      "id": "crimean_mountains",
+      "display_name": "Crimean Mountains",
+      "countries": ["Ukraine"],
+      "region_ids": ["belarus_ukraine_mountain_cutoff"],
+      "bounds": [32.4, 44.3, 36.7, 45.0],
+      "source_rule": "DEM-derived narrow coastal mountain mask required; keep separate from Ukrainian steppe and Sea of Azov lowlands.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Ukrainian steppe", "Crimean steppe", "Sea of Azov lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "pontic_mountains",
+      "display_name": "Pontic Mountains",
+      "countries": ["Turkey"],
+      "region_ids": ["turkey_bridge_region"],
+      "bounds": [30.0, 40.0, 42.8, 41.8],
+      "source_rule": "DEM-derived Black Sea-parallel ridge/elevation bands required before art.",
+      "continuity_refs": ["caucasus_armenian_highlands_context"],
+      "lowland_exclusions": ["Black Sea coastal pockets", "Anatolian central basins", "Marmara lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "taurus_mountains",
+      "display_name": "Taurus Mountains",
+      "countries": ["Turkey"],
+      "region_ids": ["turkey_bridge_region"],
+      "bounds": [29.0, 36.0, 38.7, 38.6],
+      "source_rule": "DEM-derived southern Turkey ridge/elevation bands required; follow Mediterranean-facing Taurus arc.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Mediterranean Turkey coastal plain", "Cukurova lowland", "Anatolian central basins"],
+      "review_status": "planned"
+    },
+    {
+      "id": "anatolian_plateau",
+      "display_name": "Anatolian Plateau",
+      "countries": ["Turkey"],
+      "region_ids": ["turkey_bridge_region"],
+      "bounds": [29.0, 37.0, 41.0, 40.6],
+      "source_rule": "DEM-derived broad upland mask required; render as plateau/upland, not continuous Alpine peaks.",
+      "continuity_refs": ["caucasus_armenian_highlands_context"],
+      "lowland_exclusions": ["Anatolian central basins", "Marmara lowlands", "Aegean coastal plain"],
+      "review_status": "planned"
+    },
+    {
+      "id": "caucasus_armenian_highlands_context",
+      "display_name": "Caucasus and Armenian Highlands context",
+      "countries": ["Turkey", "Georgia", "Armenia", "Azerbaijan"],
+      "region_ids": ["turkey_bridge_region"],
+      "bounds": [39.0, 39.0, 44.9, 42.4],
+      "source_rule": "DEM-derived eastern-edge context only for Turkey continuity; not a production Caucasus render contract.",
+      "continuity_refs": ["pontic_mountains", "anatolian_plateau"],
+      "lowland_exclusions": ["Kura-Aras lowlands", "Lake Van basin pockets"],
+      "review_status": "planned"
+    },
+    {
+      "id": "north_european_plain_lowland_exclusion",
+      "display_name": "North European Plain lowland exclusion",
+      "countries": ["Poland", "Germany", "Belarus"],
+      "region_ids": ["central_eastern_neighbors"],
+      "bounds": [12.0, 50.0, 24.5, 55.1],
+      "source_rule": "DEM-derived low-relief mask required; no mountain glyphs across Polish/German/Belarus plain.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["North European Plain", "Baltic coastal lowlands", "Mazovian Lowland"],
+      "review_status": "planned"
+    },
+    {
+      "id": "pannonian_basin_lowland_exclusion",
+      "display_name": "Pannonian Basin lowland exclusion",
+      "countries": ["Hungary", "Serbia", "Croatia", "Romania", "Slovakia"],
+      "region_ids": ["central_eastern_neighbors", "romania_balkans"],
+      "bounds": [16.0, 44.5, 23.5, 48.6],
+      "source_rule": "DEM-derived basin/lowland mask required; separate Carpathian and Dinaric/Balkan relief around the basin.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Pannonian Basin", "Tisza Plain", "Sava lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "danube_lowlands_exclusion",
+      "display_name": "Danube lowlands exclusion",
+      "countries": ["Slovakia", "Hungary", "Serbia", "Romania", "Bulgaria"],
+      "region_ids": ["central_eastern_neighbors", "romania_balkans"],
+      "bounds": [16.8, 43.5, 29.5, 48.3],
+      "source_rule": "DEM-derived Danube corridor lowland mask required; do not bridge Carpathians and Balkan Mountains with mountain glyphs.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Danube lowlands", "Wallachian Plain", "Great Hungarian Plain"],
+      "review_status": "planned"
+    },
+    {
+      "id": "ukrainian_steppe_lowland_exclusion",
+      "display_name": "Ukrainian steppe lowland exclusion",
+      "countries": ["Ukraine", "Moldova"],
+      "region_ids": ["belarus_ukraine_mountain_cutoff"],
+      "bounds": [24.0, 44.0, 40.3, 49.5],
+      "source_rule": "DEM-derived low-relief mask required; no broad mountain glyphs outside Ukrainian Carpathians and Crimean Mountains cutoff.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Ukrainian steppe", "Black Sea lowlands", "Dnieper lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "belarus_lowlands_exclusion",
+      "display_name": "Belarus lowlands exclusion",
+      "countries": ["Belarus"],
+      "region_ids": ["belarus_ukraine_mountain_cutoff"],
+      "bounds": [23.0, 51.2, 33.8, 56.3],
+      "source_rule": "DEM-derived low-relief/wetland mask required; no mountain glyphs in Belarus lowlands.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Belarus lowlands", "Polesie wetlands", "Pripyat lowlands"],
+      "review_status": "planned"
+    },
+    {
+      "id": "russian_plain_lowland_exclusion",
+      "display_name": "Russian Plain lowland exclusion",
+      "countries": ["Russia"],
+      "region_ids": ["western_russia_context"],
+      "bounds": [27.0, 53.0, 41.5, 61.5],
+      "source_rule": "DEM-derived low-relief context required; western Russia is lower-detail plain context in this issue.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Russian Plain", "Volga upper lowlands", "Moscow basin low-relief areas"],
+      "review_status": "planned"
+    },
+    {
+      "id": "anatolian_central_basins_lowland_exclusion",
+      "display_name": "Anatolian central basins lowland exclusion",
+      "countries": ["Turkey"],
+      "region_ids": ["turkey_bridge_region"],
+      "bounds": [29.5, 37.4, 36.5, 40.2],
+      "source_rule": "DEM-derived basin mask required; plateau context must not become dense mountain glyphs across central basins.",
+      "continuity_refs": [],
+      "lowland_exclusions": ["Anatolian central basins", "Konya Plain", "Lake Tuz basin"],
+      "review_status": "planned"
+    }
+  ],
+  "water_and_islands": [
+    {"id": "baltic_coast", "display_name": "Baltic coast", "countries": ["Poland", "Russia"], "kind": "coastline", "source_rule": "Natural Earth coastline plus OSM coastline/water relations before detailed render.", "review_status": "planned"},
+    {"id": "danube_context", "display_name": "Danube river context", "countries": ["Slovakia", "Hungary", "Croatia", "Serbia", "Romania", "Bulgaria"], "kind": "major_river", "source_rule": "River corridor/water mask required for lowland separation.", "review_status": "planned"},
+    {"id": "vistula_context", "display_name": "Vistula river context", "countries": ["Poland"], "kind": "major_river", "source_rule": "River/water mask required for Polish lowland context.", "review_status": "planned"},
+    {"id": "adriatic_coast_context", "display_name": "Adriatic coast context", "countries": ["Slovenia", "Croatia", "Bosnia and Herzegovina", "Montenegro", "Albania"], "kind": "coastline", "source_rule": "Coastline/island mask required before Balkan coast render.", "review_status": "planned"},
+    {"id": "black_sea_west_coast", "display_name": "Western Black Sea coast", "countries": ["Romania", "Bulgaria"], "kind": "coastline", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "danube_delta", "display_name": "Danube Delta", "countries": ["Romania", "Ukraine"], "kind": "delta", "source_rule": "Delta water/wetland polygons required before detailed render.", "review_status": "planned"},
+    {"id": "black_sea_north_coast", "display_name": "Northern Black Sea coast", "countries": ["Ukraine"], "kind": "coastline", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "sea_of_azov", "display_name": "Sea of Azov", "countries": ["Ukraine", "Russia"], "kind": "sea", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "dnieper_context", "display_name": "Dnieper river context", "countries": ["Ukraine", "Belarus", "Russia"], "kind": "major_river", "source_rule": "River/water mask required for Ukraine/Belarus context.", "review_status": "planned"},
+    {"id": "dniester_context", "display_name": "Dniester river context", "countries": ["Ukraine", "Moldova"], "kind": "major_river", "source_rule": "River/water mask required for Ukrainian Carpathian cutoff and lowlands.", "review_status": "planned"},
+    {"id": "gulf_of_finland_context", "display_name": "Gulf of Finland context", "countries": ["Russia", "Estonia", "Finland"], "kind": "sea_gulf", "source_rule": "Coastline/water mask required for St Petersburg lower-detail context.", "review_status": "planned"},
+    {"id": "volga_upper_context", "display_name": "Upper Volga context", "countries": ["Russia"], "kind": "major_river", "source_rule": "River/water mask required for western Russia low-detail context.", "review_status": "planned"},
+    {"id": "bosporus_marmara", "display_name": "Bosporus and Sea of Marmara", "countries": ["Turkey"], "kind": "strait_sea", "source_rule": "Coastline/water mask required; Istanbul bridge context must resolve before render.", "review_status": "planned"},
+    {"id": "black_sea_turkey_coast", "display_name": "Turkey Black Sea coast", "countries": ["Turkey"], "kind": "coastline", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "aegean_turkey_coast", "display_name": "Aegean Turkey coast", "countries": ["Turkey"], "kind": "coastline", "source_rule": "Coastline/island context required before detailed render.", "review_status": "planned"},
+    {"id": "mediterranean_turkey_coast", "display_name": "Mediterranean Turkey coast", "countries": ["Turkey"], "kind": "coastline", "source_rule": "Coastline/water mask required.", "review_status": "planned"},
+    {"id": "lake_van_context", "display_name": "Lake Van context", "countries": ["Turkey"], "kind": "named_lake", "source_rule": "Named lake outline required before eastern Turkey render.", "review_status": "planned"},
+    {"id": "lake_tuz_context", "display_name": "Lake Tuz context", "countries": ["Turkey"], "kind": "named_lake", "source_rule": "Named lake/salt lake outline required for central basin exclusion.", "review_status": "planned"}
+  ],
+  "city_landmarks": [
+    {"id": "warsaw", "display_name": "Warsaw", "country": "Poland", "lon": 21.0122, "lat": 52.2297, "priority": "major", "landmark_icon_id": "city_warsaw", "review_status": "planned"},
+    {"id": "krakow", "display_name": "Krakow", "country": "Poland", "lon": 19.9450, "lat": 50.0647, "priority": "regional", "landmark_icon_id": "city_krakow", "review_status": "planned"},
+    {"id": "prague", "display_name": "Prague", "country": "Czechia", "lon": 14.4378, "lat": 50.0755, "priority": "major", "landmark_icon_id": "city_prague", "review_status": "planned"},
+    {"id": "brno", "display_name": "Brno", "country": "Czechia", "lon": 16.6068, "lat": 49.1951, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "bratislava", "display_name": "Bratislava", "country": "Slovakia", "lon": 17.1077, "lat": 48.1486, "priority": "major", "landmark_icon_id": "city_bratislava", "review_status": "planned"},
+    {"id": "budapest", "display_name": "Budapest", "country": "Hungary", "lon": 19.0402, "lat": 47.4979, "priority": "major", "landmark_icon_id": "city_budapest", "review_status": "planned"},
+    {"id": "bucharest", "display_name": "Bucharest", "country": "Romania", "lon": 26.1025, "lat": 44.4268, "priority": "major", "landmark_icon_id": "city_bucharest", "review_status": "planned"},
+    {"id": "cluj_napoca", "display_name": "Cluj-Napoca", "country": "Romania", "lon": 23.5899, "lat": 46.7712, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "sofia", "display_name": "Sofia", "country": "Bulgaria", "lon": 23.3219, "lat": 42.6977, "priority": "major", "landmark_icon_id": "city_sofia", "review_status": "planned"},
+    {"id": "belgrade", "display_name": "Belgrade", "country": "Serbia", "lon": 20.4489, "lat": 44.7866, "priority": "major", "landmark_icon_id": "city_belgrade", "review_status": "planned"},
+    {"id": "zagreb", "display_name": "Zagreb", "country": "Croatia", "lon": 15.9819, "lat": 45.8150, "priority": "major", "landmark_icon_id": "city_zagreb", "review_status": "planned"},
+    {"id": "sarajevo", "display_name": "Sarajevo", "country": "Bosnia and Herzegovina", "lon": 18.4131, "lat": 43.8563, "priority": "regional", "landmark_icon_id": "city_sarajevo", "review_status": "planned"},
+    {"id": "ljubljana", "display_name": "Ljubljana", "country": "Slovenia", "lon": 14.5058, "lat": 46.0569, "priority": "regional", "landmark_icon_id": "city_ljubljana", "review_status": "planned"},
+    {"id": "skopje", "display_name": "Skopje", "country": "North Macedonia", "lon": 21.4316, "lat": 41.9973, "priority": "regional", "landmark_icon_id": "city_skopje", "review_status": "planned"},
+    {"id": "tirana", "display_name": "Tirana", "country": "Albania", "lon": 19.8189, "lat": 41.3275, "priority": "regional", "landmark_icon_id": "city_tirana", "review_status": "planned"},
+    {"id": "kyiv", "display_name": "Kyiv", "country": "Ukraine", "lon": 30.5234, "lat": 50.4501, "priority": "major", "landmark_icon_id": "city_kyiv", "review_status": "planned"},
+    {"id": "lviv", "display_name": "Lviv", "country": "Ukraine", "lon": 24.0311, "lat": 49.8397, "priority": "regional", "landmark_icon_id": "city_lviv", "review_status": "planned"},
+    {"id": "odesa", "display_name": "Odesa", "country": "Ukraine", "lon": 30.7233, "lat": 46.4825, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "minsk", "display_name": "Minsk", "country": "Belarus", "lon": 27.5615, "lat": 53.9045, "priority": "major", "landmark_icon_id": "city_minsk", "review_status": "planned"},
+    {"id": "moscow", "display_name": "Moscow", "country": "Russia", "lon": 37.6173, "lat": 55.7558, "priority": "context", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "st_petersburg", "display_name": "St Petersburg", "country": "Russia", "lon": 30.3351, "lat": 59.9343, "priority": "context", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "istanbul", "display_name": "Istanbul", "country": "Turkey", "lon": 28.9784, "lat": 41.0082, "priority": "major", "landmark_icon_id": "city_istanbul", "review_status": "planned"},
+    {"id": "ankara", "display_name": "Ankara", "country": "Turkey", "lon": 32.8597, "lat": 39.9334, "priority": "major", "landmark_icon_id": "city_ankara", "review_status": "planned"},
+    {"id": "izmir", "display_name": "Izmir", "country": "Turkey", "lon": 27.1428, "lat": 38.4237, "priority": "regional", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "antalya", "display_name": "Antalya", "country": "Turkey", "lon": 30.7133, "lat": 36.8969, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "bursa", "display_name": "Bursa", "country": "Turkey", "lon": 29.0601, "lat": 40.1885, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"},
+    {"id": "trabzon", "display_name": "Trabzon", "country": "Turkey", "lon": 39.7168, "lat": 41.0027, "priority": "cableway_anchor", "landmark_icon_id": "missing_landmark_icon", "review_status": "planned"}
+  ],
+  "transport_candidate_buckets": [
+    {
+      "id": "central_eastern_urban_and_mountain_candidates",
+      "countries": ["Poland", "Czechia", "Slovakia", "Hungary"],
+      "required_candidate_anchors": ["Prague Petrin funicular", "Budapest Castle Hill funicular", "Zakopane Kasprowy Wierch cable car", "Krakow/Wieliczka source-backed special transport candidates", "Tatranska Lomnica cableways"],
+      "required_transport_types": ["funicular_classic", "cable_aerial_tram", "cable_gondola", "cable_tourist"],
+      "production_policy": "staging_review_only"
+    },
+    {
+      "id": "romania_balkans_candidates",
+      "countries": ["Romania", "Bulgaria", "Serbia", "Croatia", "Bosnia and Herzegovina", "Slovenia", "North Macedonia", "Albania"],
+      "required_candidate_anchors": ["Sinaia cable car", "Balea/Bucegi cableway candidates", "Sofia Vitosha lifts", "Dubrovnik cable car", "Sarajevo Trebevic cable car", "Ljubljana Castle funicular"],
+      "required_transport_types": ["funicular_classic", "cable_aerial_tram", "cable_gondola", "cable_tourist"],
+      "production_policy": "staging_review_only"
+    },
+    {
+      "id": "belarus_ukraine_western_russia_candidates",
+      "countries": ["Belarus", "Ukraine", "Russia"],
+      "required_candidate_anchors": ["Kyiv funicular", "Odesa cable car candidates if source-backed", "Moscow Sparrow Hills cable car", "St Petersburg historic lift/funicular candidates if source-backed"],
+      "required_transport_types": ["funicular_classic", "cable_urban", "cable_aerial_tram", "special_transport_system"],
+      "production_policy": "staging_review_only"
+    },
+    {
+      "id": "turkey_bridge_candidates",
+      "countries": ["Turkey"],
+      "required_candidate_anchors": ["Istanbul Eyup-Pierre Loti cable car", "Bursa Uludag cable car", "Ankara Yenimahalle cable car", "Izmir Balcova cable car", "Antalya Tunektepe cable car", "Trabzon Besikduzu cable car"],
+      "required_transport_types": ["cable_urban", "cable_aerial_tram", "cable_gondola", "cable_tourist", "funicular_classic"],
+      "production_policy": "staging_review_only"
+    }
+  ],
+  "source_requirements": {
+    "admin_boundaries": ["Natural Earth Admin 0/1", "OpenStreetMap boundary relations"],
+    "coastline_water": ["Natural Earth coastline/water", "OpenStreetMap coastline/water/island/river relations for detailed passes"],
+    "relief": ["Copernicus DEM GLO-30", "EU-DEM", "NASA SRTM 1 Arc-Second Global"],
+    "candidate_seed": ["OpenStreetMap", "Wikidata"],
+    "required_metadata": ["source_url", "license_note", "download_date", "processing_command", "review_status"]
+  },
+  "acceptance_contract": {
+    "allowed_file_kinds": ["docs", "tests", "map_pipeline/data"],
+    "forbidden_outputs": ["map images/assets", "rendered underlay changes", "terrain glyph art", "runtime UI", "release files"],
+    "required_tests": ["tests/test_eastern_europe_turkey_map_block_contract.py", "tests/test_europe_expansion_regions_contract.py", "python3 -m unittest discover -s tests", "git diff --check"]
+  }
+}

@@ -48,6 +48,20 @@ Acceptance для #76: `tests/test_france_spain_map_block_contract.py` долж�
 
 Acceptance для #77: `tests/test_nordics_baltics_map_block_contract.py` должен проходить вместе с общим `tests/test_europe_expansion_regions_contract.py`; render assets, terrain glyph art, runtime UI and release files не меняются.
 
+## Eastern Europe, Balkans And Turkey #74 Contract
+
+Дочерний non-render contract для Eastern Europe/Balkans/Turkey зафиксирован в `map_pipeline/data/eastern_europe_turkey_map_block.json`.
+
+Контракт покрывает Poland/Czechia/Slovakia/Hungary, Romania/Balkans, Belarus/Ukraine до Ukrainian mountain cutoff, western Russia lower-detail context и Turkey bridge region. Основные guardrails:
+
+- Carpathians разделены на Western, Eastern, Southern and Ukrainian cutoff layers; Sudetes, Dinaric Alps, Balkan Mountains/Stara Planina, Rhodope/Pindus context, Crimean Mountains, Pontic/Taurus Mountains, Anatolian Plateau and Caucasus/Armenian Highlands context требуют DEM-backed geometry;
+- North European Plain, Pannonian Basin, Danube lowlands, Ukrainian steppe, Belarus lowlands, Russian Plain and Anatolian central basins зафиксированы как lowland exclusions, чтобы будущий render pass не ставил mountain glyphs на равнины;
+- water context включает Baltic coast, Black Sea, Sea of Azov, Danube Delta, Dnieper/Dniester, Bosporus/Marmara, Turkey Aegean/Mediterranean coasts, Lake Van and Lake Tuz;
+- city landmark coverage включает Warsaw, Krakow, Prague, Brno, Bratislava, Budapest, Bucharest, Cluj-Napoca, Sofia, Belgrade, Zagreb, Sarajevo, Ljubljana, Skopje, Tirana, Kyiv, Lviv, Odesa, Minsk, Moscow/St Petersburg as lower-detail context, Istanbul, Ankara, Izmir, Antalya, Bursa and Trabzon;
+- transport candidate buckets остаются `staging_review_only`, без production import.
+
+Acceptance для #74: `tests/test_eastern_europe_turkey_map_block_contract.py` должен проходить вместе с общим `tests/test_europe_expansion_regions_contract.py`; render assets, terrain glyph art, runtime UI and release files не меняются.
+
 ## Цель блока #75
 
 DACH + Northern Italy expansion должен подготовить основу для расширения карты Европы на юг от Германии без визуального render pass. Эта задача не должна "дорисовывать красивые Альпы" случайными anchors. Результат должен быть проверяемым контрактом данных, по которому следующий implementer сможет добавить новые bounds, relief layers, city landmarks и transport-object candidates.
