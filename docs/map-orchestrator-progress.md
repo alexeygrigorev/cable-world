@@ -2051,3 +2051,19 @@ Verification:
 - `godot --headless --path . --quit-after 1`: PASS with existing #65 shutdown leak warnings.
 - Fresh map review bundle: `worktrees/issue-104-dresden-artifacts/tmp/map-review/issue-104-dresden-artifacts-v7-20260601T053538Z`.
 - Screenshots checked by reviewer: mobile initial/150/200/click/drag and desktop initial/click/drag.
+
+## Iteration 2026-06-01 Massif Glyph Pipeline Reset
+
+User corrected the direction after rejected #105 work: infrastructure, metadata and server work are not enough if screenshots do not visibly improve. The next visible work must build a reusable massif glyph pipeline instead of one-off weak procedural patches.
+
+Recorded in `docs/active-map-backlog.md`:
+
+- do not integrate rejected Harz candidates as progress;
+- build a general massif glyph system, not a Harz-only workaround;
+- generate one or more consistent raster glyph sheets/outputs for current mountain families;
+- make each massif visually distinct and geographically recognizable: Harz, Schwarzwald/Black Forest, Sächsische Schweiz, Alps, Bavarian Forest, Erzgebirge, Eifel/Hunsrück;
+- keep approximate real hierarchy and placement: Alps large, Harz small but readable, Black Forest/Bavarian Forest medium;
+- document the repeatable pipeline for prompt style, slicing, alpha cleanup, metadata, anchors, display sizes and reviewer screenshots;
+- after proving the massif pipeline, reuse it for Alps and later Switzerland/Austria/Italy/other country work.
+
+Current instruction: stop spending time on invisible micro-polish; first produce a screenshot-level mountain glyph improvement that can be reused.
