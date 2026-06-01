@@ -322,7 +322,7 @@ class MapPanelContractTest(unittest.TestCase):
 
         self.assertIn("if texture == null:", city_icon_rect_body)
         self.assertIn("return Rect2()", city_icon_rect_body)
-        self.assertIn("clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0)", city_icon_rect_body)
+        self.assertIn("var icon_size: float = _city_icon_size(icon_id)", city_icon_rect_body)
         self.assertNotIn("_clamp_landmark_rect", city_icon_rect_body)
         self.assertNotIn("clamp(position.x", centered_label_body)
         self.assertIn("draw_texture_rect(texture, icon_rect, false)", city_icon_draw_body)
@@ -337,7 +337,12 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn("draw_circle", city_icon_rect_body)
         self.assertNotIn("draw_rect", city_icon_rect_body)
         self.assertIn("func _landmark_visual_scale() -> float:", script_text)
-        self.assertIn("clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0)", script_text)
+        self.assertIn("func _city_icon_size(icon_id: String) -> float:", script_text)
+        self.assertIn("const CITY_CLUSTER_ICON_IDS := {", script_text)
+        self.assertIn('"res://assets/sprites/city_landmark_clusters/outlined/city_%s.png"', script_text)
+        self.assertIn("if CITY_CLUSTER_ICON_IDS.has(icon_id) and ResourceLoader.exists(cluster_path):", script_text)
+        self.assertIn("return round(clamp(48.0 * scale, 42.0, 76.0))", script_text)
+        self.assertIn("clamp(62.0 * scale, 54.0, 94.0)", script_text)
         self.assertIn("const CITY_ICON_LABEL_BASELINE_OVERLAP := 9.0", script_text)
         self.assertIn("icon_rect.position.y + icon_rect.size.y - CITY_ICON_LABEL_BASELINE_OVERLAP * zoom", script_text)
         self.assertIn("var reserved_label_rects: Array[Rect2] = []", script_text)
@@ -856,6 +861,7 @@ class MapPanelContractTest(unittest.TestCase):
 
         self.assertIn('"res://assets/sprites/outlined/%s.png"', script_text)
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
+        self.assertIn("city_landmark_clusters/outlined/city_%s.png", script_text)
 
     def test_multi_symbol_city_cluster_pipeline_is_documented(self) -> None:
         cluster_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks.py").read_text(encoding="utf-8")
@@ -891,10 +897,60 @@ class MapPanelContractTest(unittest.TestCase):
             "user zoom `200%` is our source-quality target",
             "2048x1024 image, 4 columns x 2 rows",
             "one-symbol-only cities",
-            "scripts/map-review-capture-godot.sh",
+            "map_review_app/scripts/capture-godot.sh",
             "do not swap `scripts/map_panel.gd` to the cluster directory until the 8-city sheet passes",
         ]:
             self.assertIn(expected, docs_text)
+
+    def test_map_review_app_owns_its_scripts_and_metadata_contract(self) -> None:
+        readme_text = (ROOT / "map_review_app" / "README.md").read_text(encoding="utf-8")
+        server_text = (ROOT / "map_review_app" / "server.mjs").read_text(encoding="utf-8")
+        capture_text = (ROOT / "map_review_app" / "capture_map_review_scenes.gd").read_text(encoding="utf-8")
+        wrapper_text = (ROOT / "scripts" / "map-review-capture-godot.sh").read_text(encoding="utf-8")
+
+        for path in [
+            ROOT / "map_review_app" / "scripts" / "start.sh",
+            ROOT / "map_review_app" / "scripts" / "stop.sh",
+            ROOT / "map_review_app" / "scripts" / "status.sh",
+            ROOT / "map_review_app" / "scripts" / "clean.sh",
+            ROOT / "map_review_app" / "scripts" / "capture-godot.sh",
+            ROOT / "map_review_app" / "scripts" / "build-city-cluster-review.sh",
+            ROOT / "map_review_app" / "capture_map_review_scenes.gd",
+        ]:
+            self.assertTrue(path.exists(), f"Missing map review app file: {path}")
+
+        for expected in [
+            "map_review_app/scripts/capture-godot.sh",
+            "clears old review images",
+            "review.yml",
+            "The saved JSON and Markdown include the tab metadata",
+            "New work should put review-app logic inside `map_review_app/`",
+        ]:
+            self.assertIn(expected, readme_text)
+
+        for expected in [
+            "async function readReviewSetMetadata(directory)",
+            'for (const name of ["review.yml", "review.json"])',
+            "review.title ?? metadata.title",
+            "review: tab.review && typeof tab.review === \"object\" ? tab.review : {}",
+            "JSON.stringify(tab.review, null, 2)",
+        ]:
+            self.assertIn(expected, server_text)
+
+        for expected in [
+            '"id": "godot_berlin_cluster"',
+            '"id": "godot_north_cities"',
+            '"id": "godot_rhine_main_cities"',
+            '"id": "godot_munich_stuttgart"',
+            "func _write_manifest() -> void:",
+            "func _write_review_metadata(scene_dir: String, scene_data: Dictionary) -> void:",
+            '"schema": "cable-world.map-review-set.v1"',
+            '"feedbackTarget": scene_data.get("feedback_target"',
+        ]:
+            self.assertIn(expected, capture_text)
+
+        self.assertIn("map_review_app/scripts/capture-godot.sh", wrapper_text)
+        self.assertNotIn("--script scripts/capture_map_review_scenes.gd", wrapper_text)
 
     def test_map_panel_initially_focuses_germany_when_present(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")

@@ -103,7 +103,8 @@ function renderPanel() {
   const title = document.createElement("h2");
   title.textContent = tab.title;
   const description = document.createElement("p");
-  description.textContent = tab.description;
+  const feedbackTarget = tab.review?.feedbackTarget ? ` Target: ${tab.review.feedbackTarget}` : "";
+  description.textContent = `${tab.description}${feedbackTarget}`;
   titleBlock.append(title, description);
   const count = document.createElement("p");
   count.textContent = `${tab.images.length} images`;
@@ -167,6 +168,7 @@ async function saveFeedback() {
     .map((tab) => ({
       id: tab.id,
       title: tab.title,
+      review: tab.review ?? {},
       images: tab.images.map((image) => ({
         name: image.name,
         label: image.label,

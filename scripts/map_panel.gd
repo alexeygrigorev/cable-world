@@ -27,6 +27,16 @@ class OfflineMapLayer:
 	const LANDMARK_VIEWPORT_SCALE_MIN := 0.92
 	const LANDMARK_VIEWPORT_SCALE_MAX := 1.30
 	const CITY_ICON_LABEL_BASELINE_OVERLAP := 9.0
+	const CITY_CLUSTER_ICON_IDS := {
+		"berlin": true,
+		"hamburg": true,
+		"rostock": true,
+		"munich": true,
+		"cologne": true,
+		"frankfurt": true,
+		"stuttgart": true,
+		"dresden": true,
+	}
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
 		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
@@ -167,12 +177,18 @@ class OfflineMapLayer:
 		var texture: Texture2D = _city_icon_texture(icon_id)
 		if texture == null:
 			return Rect2()
-		var icon_size: float = round(clamp(48.0 * _landmark_visual_scale(), 42.0, 76.0))
+		var icon_size: float = _city_icon_size(icon_id)
 		var icon_rect := Rect2(
 			_pixel_snap(position + Vector2(-icon_size * 0.5, -icon_size - 9.0 * zoom) + _city_icon_offset(label_data)),
 			Vector2(icon_size, icon_size)
 		)
 		return icon_rect
+
+	func _city_icon_size(icon_id: String) -> float:
+		var scale := _landmark_visual_scale()
+		if CITY_CLUSTER_ICON_IDS.has(icon_id):
+			return round(clamp(62.0 * scale, 54.0, 94.0))
+		return round(clamp(48.0 * scale, 42.0, 76.0))
 
 	func _city_label_has_icon(label_data: Dictionary) -> bool:
 		var icon_id := str(label_data.get("icon", ""))
@@ -188,8 +204,12 @@ class OfflineMapLayer:
 
 	func _city_icon_texture(icon_id: String) -> Texture2D:
 		if not _city_icon_textures.has(icon_id):
-			var path := "res://assets/sprites/city_landmarks/outlined/city_%s.png" % icon_id
-			_city_icon_textures[icon_id] = load(path) if ResourceLoader.exists(path) else null
+			var cluster_path := "res://assets/sprites/city_landmark_clusters/outlined/city_%s.png" % icon_id
+			var fallback_path := "res://assets/sprites/city_landmarks/outlined/city_%s.png" % icon_id
+			if CITY_CLUSTER_ICON_IDS.has(icon_id) and ResourceLoader.exists(cluster_path):
+				_city_icon_textures[icon_id] = load(cluster_path)
+			else:
+				_city_icon_textures[icon_id] = load(fallback_path) if ResourceLoader.exists(fallback_path) else null
 		return _city_icon_textures.get(icon_id, null)
 
 	func _draw_terrain_label(font: Font, label_data: Dictionary, occupied_rects: Array[Rect2]) -> void:

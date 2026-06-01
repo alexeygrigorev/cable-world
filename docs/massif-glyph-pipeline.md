@@ -250,7 +250,7 @@ Important quality rule: the user-facing `200%` review level is the target inspec
 Run the local feedback app on port `9010`:
 
 ```bash
-scripts/map-review-start.sh
+map_review_app/scripts/start.sh
 ```
 
-The app discovers review sets from `assets/map/review`. PNGs directly in that directory become the `Full map` tab; PNGs in subdirectories become additional tabs. Each tab has one feedback box, and saving writes one combined feedback packet to `tmp/map-review-feedback/`.
+The app discovers review sets from `assets/map/review`. PNGs in subdirectories become tabs, and each active review set should carry a sibling `review.yml` metadata file so saved feedback can be traced to the right iteration. Each tab has one feedback box, and saving writes one combined feedback packet to `tmp/map-review-feedback/`.

@@ -76,6 +76,21 @@ async function readReviewManifest() {
   }
 }
 
+async function readReviewSetMetadata(directory) {
+  for (const name of ["review.yml", "review.json"]) {
+    try {
+      const text = await readFile(path.join(directory, name), "utf8");
+      return JSON.parse(text);
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        continue;
+      }
+      throw error;
+    }
+  }
+  return {};
+}
+
 async function listReviewTabs() {
   const tabs = [];
   const manifestTabs = await readReviewManifest();
@@ -101,11 +116,13 @@ async function listReviewTabs() {
     if (images.length === 0) {
       continue;
     }
+    const review = await readReviewSetMetadata(directory);
     const metadata = manifestTabs.get(id) ?? {};
     tabs.push({
       id,
-      title: metadata.title ?? entry.name.replaceAll("_", " "),
-      description: metadata.description ?? `Review set: ${entry.name}`,
+      title: review.title ?? metadata.title ?? entry.name.replaceAll("_", " "),
+      description: review.description ?? metadata.description ?? `Review set: ${entry.name}`,
+      review,
       images,
     });
   }
@@ -126,6 +143,7 @@ async function saveFeedback(payload) {
       title: String(tab.title ?? ""),
       feedback: String(tab.feedback ?? "").trim(),
       images: Array.isArray(tab.images) ? tab.images : [],
+      review: tab.review && typeof tab.review === "object" ? tab.review : {},
     }))
     .filter((tab) => tab.feedback.length > 0);
   if (filledTabs.length === 0) {
@@ -137,7 +155,11 @@ async function saveFeedback(payload) {
   };
   const markdown = ["# Map Review Feedback", "", `Created: ${data.createdAt}`, ""];
   for (const tab of data.tabs) {
-    markdown.push(`## ${tab.title || tab.id || "Untitled"}`, "", tab.feedback || "_No feedback text._", "");
+    markdown.push(`## ${tab.title || tab.id || "Untitled"}`);
+    if (Object.keys(tab.review).length > 0) {
+      markdown.push("", "```json", JSON.stringify(tab.review, null, 2), "```");
+    }
+    markdown.push("", tab.feedback || "_No feedback text._", "");
   }
   await writeFile(jsonPath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
   await writeFile(markdownPath, `${markdown.join("\n")}\n`, "utf8");

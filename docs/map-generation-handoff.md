@@ -281,7 +281,7 @@ uv run python -m map_pipeline.outline_sprites \
   --radius 4 \
   --color '#25180fe0'
 godot --headless --path . --import --quit
-scripts/map-review-capture-godot.sh
+map_review_app/scripts/capture-godot.sh
 ```
 
 Review rule: do not swap `scripts/map_panel.gd` to the cluster directory until the 8-city sheet passes the Godot-native review captures at `50%`, `100%`, `150%` and `200%`. The review should specifically compare Berlin/Hamburg/Rostock/München visual weight and reject if any city reads as a tiny single-object icon.
