@@ -75,6 +75,12 @@ class RideModeContractTest(unittest.TestCase):
         for expected in [
             "class_name RideGameView",
             "signal ride_state_changed(state: Dictionary)",
+            'preload("res://assets/sprites/ride/ride_sprite_sheet.png")',
+            "const SPRITE_CABIN_RED := Rect2",
+            "const SPRITE_LOWER_STATION := Rect2",
+            "const SPRITE_UPPER_STATION := Rect2",
+            "const SPRITE_TOWER_TALL := Rect2",
+            "const SPRITE_TOWER_SHORT := Rect2",
             "func setup_route(object_data: Dictionary, direction: Dictionary, segments: Array, segment_index: int) -> void:",
             '_station_for_segment_end("from_station_id")',
             '_station_for_segment_end("to_station_id")',
@@ -86,6 +92,9 @@ class RideModeContractTest(unittest.TestCase):
             "passengers_onboard",
             "delivered_passengers",
             "smoothness_score",
+            "func _draw_sprite(source: Rect2, destination: Rect2) -> void:",
+            "draw_texture_rect_region(RIDE_SPRITE_SHEET, destination, source)",
+            "func _support_points(lower_point: Vector2, upper_point: Vector2) -> Array[Vector2]:",
         ]:
             self.assertIn(expected, game_text)
 
@@ -158,6 +167,48 @@ class RideModeContractTest(unittest.TestCase):
             "Станция 3",
         ]:
             self.assertNotIn(forbidden, combined_script_text)
+
+    def test_ride_art_is_reusable_and_documented(self) -> None:
+        game_text = (ROOT / "scripts" / "ride_game_view.gd").read_text(encoding="utf-8")
+        docs_text = (ROOT / "docs" / "ride-art-assets.md").read_text(encoding="utf-8")
+
+        for asset_path in [
+            ROOT / "assets" / "sprites" / "ride" / "ride_sprite_sheet.png",
+            ROOT / "asset_sources" / "ride" / "ride_sprite_sheet_source_chroma.png",
+        ]:
+            self.assertTrue(asset_path.is_file(), f"Missing ride asset: {asset_path}")
+            self.assertGreater(asset_path.stat().st_size, 100_000, f"Ride asset looks too small: {asset_path}")
+        self.assertTrue((ROOT / "asset_sources" / "ride" / ".gdignore").is_file())
+
+        for expected in [
+            "cabin_point - grip_offset",
+            "lower_point.lerp(upper_point, 0.36)",
+            "lower_point.lerp(upper_point, 0.66)",
+            "anchor - sheave_offset",
+            "_draw_supports(support_points)",
+            "return Vector2(rect.size.x * LOWER_STATION_RATIO, rect.size.y * 0.50)",
+            "label_panel := Rect2",
+        ]:
+            self.assertIn(expected, game_text)
+
+        for expected in [
+            "Generation mode: built-in `image_gen` tool",
+            "Chroma-key removal:",
+            "scripts/capture_ride_art_screenshot.gd",
+            "Cableway physics must be plausible",
+            "Cabin sprite must include a top grip",
+            "Do not bake route-specific station names",
+        ]:
+            self.assertIn(expected, docs_text)
+        self.assertTrue((ROOT / "scripts" / "capture_ride_art_screenshot.gd").is_file())
+
+        for forbidden in [
+            "var width := 68.0",
+            "draw_circle(trunk_bottom",
+            "draw_rect(body, Color",
+            "body.position + Vector2(7, 7)",
+        ]:
+            self.assertNotIn(forbidden, game_text)
 
     def test_ride_mode_has_russian_empty_state_and_actions(self) -> None:
         script_text = (ROOT / "scripts" / "ride_panel.gd").read_text(encoding="utf-8")

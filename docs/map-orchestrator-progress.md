@@ -1725,3 +1725,21 @@ Verification on `main`:
 - `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
 
 No screenshots were required because this slice added static contracts/docs and did not change coordinates, rendering, terrain or assets. Full visual Map Reviewer Gate still applies to future map quality claims.
+
+## Iteration 2026-06-01 05:28
+
+Working #92 ride art polish in `worktrees/issue-92-ride-art-polish`:
+
+- Generated one reusable ride sprite sheet with the built-in `image_gen` tool.
+- Saved the runtime transparent sheet at `assets/sprites/ride/ride_sprite_sheet.png`.
+- Saved the repeatable chroma source under `asset_sources/ride/` with `.gdignore`.
+- Documented the prompt, source path and chroma-key command in `docs/ride-art-assets.md`.
+- Updated `RideGameView` to use sprite atlas regions for cabins, stations, cable supports, forests, mountains and ground detail.
+- Kept cableway geometry plausible: cabin grip rides on the cable point, cabin hangs below it, support sheaves align to the cable, stations align around cable entry points.
+- Added `tests/test_ride_mode_contract.py` coverage for reusable art assets, source documentation and basic geometry contracts.
+
+Visual self-review:
+
+- Screenshot generated with `xvfb-run -a godot --path . --script scripts/capture_ride_art_screenshot.gd`.
+- Result is a clear improvement over the debug drawing and acceptable for the #92 scoped ride-art MVP.
+- This does not change or accept the map; map remains below the 10/10 target and stays governed by the map reviewer gate.
