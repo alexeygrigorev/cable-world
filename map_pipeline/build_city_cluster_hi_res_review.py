@@ -50,6 +50,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Build static review previews for hi-res city cluster glyphs.")
     parser.add_argument("--source-dir", type=Path, default=DEFAULT_SOURCE_DIR)
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
+    parser.add_argument("--id", default="city_cluster_glyphs_hi_res")
+    parser.add_argument("--title", default="Hi-res City Cluster Glyphs")
+    parser.add_argument(
+        "--description",
+        default="Separate per-city 1024px source glyphs for the first 8 German city clusters.",
+    )
+    parser.add_argument(
+        "--feedback-target",
+        default="Compare this against city_cluster_glyphs and check whether 200% still pixelates.",
+    )
     args = parser.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
@@ -58,16 +68,16 @@ def main() -> int:
         size = (round(contact.width * scale), round(contact.height * scale))
         resampling = Image.Resampling.NEAREST if scale >= 1 else Image.Resampling.LANCZOS
         out = contact.resize(size, resampling)
-        out_path = args.out_dir / (PREVIEW_FILE_TEMPLATE % suffix)
+        out_path = args.out_dir / f"{args.id}_preview_{suffix}.png"
         out.save(out_path, "PNG", optimize=True)
         print(f"Wrote {out_path}")
 
     metadata = {
         "schema": "cable-world.map-review-set.v1",
-        "id": "city_cluster_glyphs_hi_res",
-        "title": "Hi-res City Cluster Glyphs",
-        "description": "Separate per-city 1024px source glyphs for the first 8 German city clusters.",
-        "feedbackTarget": "Compare this against city_cluster_glyphs and check whether 200% still pixelates.",
+        "id": args.id,
+        "title": args.title,
+        "description": args.description,
+        "feedbackTarget": args.feedback_target,
         "source": str(args.source_dir),
         "order": sorted(PREVIEW_SCALES),
         "runtime_integrated": False,

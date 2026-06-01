@@ -923,6 +923,9 @@ class MapPanelContractTest(unittest.TestCase):
         for expected in [
             "city_cluster_glyphs_hi_res",
             "PREVIEW_FILE_TEMPLATE = \"city_cluster_glyphs_hi_res_preview_%s.png\"",
+            'parser.add_argument("--id", default="city_cluster_glyphs_hi_res")',
+            'parser.add_argument("--title", default="Hi-res City Cluster Glyphs")',
+            '"--feedback-target",',
             "runtime_integrated",
             "False",
         ]:

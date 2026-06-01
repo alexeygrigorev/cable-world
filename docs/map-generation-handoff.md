@@ -337,6 +337,17 @@ uv run python -m map_pipeline.build_city_cluster_hi_res_review \
   --out-dir assets/map/review/city_cluster_glyphs_hi_res
 ```
 
+For temporary comparison candidates, keep runtime untouched and write a separate review tab:
+
+```bash
+uv run python -m map_pipeline.build_city_cluster_hi_res_review \
+  --source-dir tmp/city-cluster-hi-res-v2/outlined \
+  --out-dir assets/map/review/city_cluster_glyphs_hi_res_v2 \
+  --id city_cluster_glyphs_hi_res_v2 \
+  --title "Hi-res City Cluster Glyphs V2" \
+  --feedback-target "Compare against hi_res v1 before replacing tracked runtime assets."
+```
+
 Outputs:
 
 - `assets/sprites/city_landmark_clusters_hi_res/city_*.png`
