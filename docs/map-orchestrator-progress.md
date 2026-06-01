@@ -1689,3 +1689,39 @@ Verification on `main`:
 Remaining map work:
 
 - #62/#68/#69 still need actual source-backed terrain layer/art replacement. This #64 audit does not claim the map is 10/10.
+
+## Iteration 2026-06-01 04:46
+
+Integrated reviewed #55 city landmark coordinate calibration contract:
+
+- Worker: `Faraday`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-55-city-coordinate-calibration`.
+- Worker branch: `issue-55-city-coordinate-calibration`.
+- Worker commit: `60ee2a5 Protect city landmark coordinate calibration`.
+- Integrated commit on `main`: `cd6fe48 Protect city landmark coordinate calibration`.
+- Decision: `ACCEPT` for #55 static city calibration contract scope; #55 closed.
+
+What landed:
+
+- Added `docs/map-city-landmark-calibration.md`.
+- Extended `tests/test_map_panel_contract.py` to protect exact city coordinates, city kinds, pictogram ids, hidden bare-label behavior and label attachment to icon rectangles.
+
+Covered requirements:
+
+- Exact coordinate contracts cover Hamburg, Berlin, Dresden, Köln, Stuttgart, München, Bremen, Hannover, Leipzig, Nürnberg, plus existing Rostock handling.
+- Default-visible major city labels must have pictogram icons.
+- Major towns without pictograms, including Bremen/Hannover/Leipzig/Nürnberg, stay hidden at default zoom so they are not bare labels.
+- Label attachment is protected by a contract tied to `icon_rect`.
+- Geographic ordering checks guard broad north/south/east/west drift.
+- Rostock manual `Vector2(0.0, 52.0)` visual offset is documented.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_map_panel_contract`: PASS, 16 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 275 tests, 12 skipped because plain system Python lacks optional geography deps.
+- `stylint docs/map-city-landmark-calibration.md`: PASS.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+No screenshots were required because this slice added static contracts/docs and did not change coordinates, rendering, terrain or assets. Full visual Map Reviewer Gate still applies to future map quality claims.
