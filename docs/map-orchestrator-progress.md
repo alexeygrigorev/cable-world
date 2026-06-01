@@ -2157,3 +2157,18 @@ User clarified that "bald" means visible empty gaps between Alpine segments and 
 - added `map_pipeline.render_map_previews` for fast full-map review images at 50%, 100%, 150% and 200% without Godot export or web rebuild.
 
 Verification target for this pass: Alps should look like many large mountains in one connected system, with no strange bald seams between sectors.
+
+## Iteration 2026-06-01 Touch Pan Regression Fix
+
+User repeated that touch panning on `:9000` still felt too sensitive: a small finger move moved the map much farther than the finger. Current `main` had regressed `TOUCH_PAN_DRAG_SCALE` back to `1.0` while the accepted backlog rule said touch drag should be damped.
+
+Change:
+
+- restored `TOUCH_PAN_DRAG_SCALE := 0.34`;
+- kept mouse drag at `PAN_DRAG_SCALE := 1.0`;
+- updated Godot runtime coverage so mouse pan remains 1:1 but touch pan is explicitly calmer.
+
+Verification:
+
+- `uv run python -m unittest tests.test_map_panel_contract tests.test_godot_runtime_runner_contract`: PASS, 21 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 13 runtime checks. Existing Godot shutdown RID leak warnings remain tracked separately under #65.

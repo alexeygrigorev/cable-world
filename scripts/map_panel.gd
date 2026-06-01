@@ -432,7 +432,7 @@ const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
 const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
 const PAN_DRAG_SCALE := 1.0
-const TOUCH_PAN_DRAG_SCALE := 1.0
+const TOUCH_PAN_DRAG_SCALE := 0.34
 const DRAG_TAP_SUPPRESS_DISTANCE := 10.0
 
 var objects: Array[Dictionary] = []

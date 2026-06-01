@@ -19,7 +19,7 @@ func test_mouse_drag_moves_map_one_to_one() -> Array[String]:
 	return failures
 
 
-func test_touch_drag_moves_map_one_to_one() -> Array[String]:
+func test_touch_drag_is_calmer_than_mouse_drag() -> Array[String]:
 	var failures: Array[String] = []
 	var panel: Variant = MapPanelScript.new()
 	panel.pan_offset = Vector2(-12.0, 8.0)
@@ -36,7 +36,7 @@ func test_touch_drag_moves_map_one_to_one() -> Array[String]:
 	drag.relative = Vector2(36.0, -22.0)
 	panel._handle_screen_drag(drag)
 
-	_expect_vector_close(panel.pan_offset, Vector2(24.0, -14.0), "Touch drag must pan the map 1:1.", failures)
+	_expect_vector_close(panel.pan_offset, Vector2(0.24, 0.52), "Touch drag must be damped so finger movement does not outrun the map.", failures)
 	panel.free()
 	return failures
 
