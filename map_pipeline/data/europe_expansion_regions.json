@@ -6,23 +6,23 @@
   "notes": [
     "This file makes the Europe expansion roadmap testable before any render pass.",
     "It is not a render manifest and must not be consumed as final map art placement.",
-    "Child issues #74, #76 and #77 remain open implementation/research work and are not closed by this contract."
+    "Child issues #74, #76 and #77 are complete as non-render regional map block contracts; render/art implementation remains governed by the terrain quality issues."
   ],
   "child_issue_links": [
     {
       "issue": "#74",
-      "status": "open",
-      "relationship": "child_work_not_closed"
+      "status": "closed",
+      "relationship": "child_contract_complete"
     },
     {
       "issue": "#76",
-      "status": "open",
-      "relationship": "child_work_not_closed"
+      "status": "closed",
+      "relationship": "child_contract_complete"
     },
     {
       "issue": "#77",
-      "status": "open",
-      "relationship": "child_work_not_closed"
+      "status": "closed",
+      "relationship": "child_contract_complete"
     }
   ],
   "source_strategy": {

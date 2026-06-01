@@ -1930,3 +1930,14 @@ Verification reused from the accepted UI gate:
 - `python3 -m unittest tests.test_app_shell_contract tests.test_ui_review_gate_contract`: PASS.
 - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS.
 - `xvfb-run -a godot --path . --script scripts/capture_ui_review_screenshots.gd`: PASS.
+
+## Iteration 2026-06-01 #63 Europe Pipeline Parent Closure
+
+Updated the parent #63 contract after closing its child regional map-block contracts:
+
+- #76 France/Spain contract is complete.
+- #77 Nordics/Baltics/Northern Seas contract is complete.
+- #74 Eastern Europe/Turkey contract is complete.
+- `map_pipeline/data/europe_expansion_regions.json` now records those child links as `closed` / `child_contract_complete`.
+
+This closes the non-render Europe expansion roadmap/design issue. Actual render/art quality remains open under #54/#62/#68/#69 and still requires map reviewer gate evidence before any high score.

@@ -36,13 +36,13 @@ class EuropeExpansionRegionsContractTest(unittest.TestCase):
             with self.subTest(forbidden=forbidden):
                 self.assertIn(forbidden, self.contract["acceptance_contract"]["forbidden_outputs"])
 
-    def test_child_issues_remain_open_and_not_closed_by_contract(self) -> None:
+    def test_child_issue_contract_blocks_are_complete(self) -> None:
         child_issues = {entry["issue"]: entry for entry in self.contract["child_issue_links"]}
         self.assertEqual(set(child_issues), {"#74", "#76", "#77"})
         for issue, entry in child_issues.items():
             with self.subTest(issue=issue):
-                self.assertEqual(entry["status"], "open")
-                self.assertEqual(entry["relationship"], "child_work_not_closed")
+                self.assertEqual(entry["status"], "closed")
+                self.assertEqual(entry["relationship"], "child_contract_complete")
 
     def test_required_issue_63_country_groups_are_represented(self) -> None:
         expected_groups = {
