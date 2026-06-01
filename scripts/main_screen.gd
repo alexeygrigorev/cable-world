@@ -16,6 +16,8 @@ const ATLAS_CONTROL_SHADOW := Color(0.12, 0.08, 0.03, 0.42)
 const MAP_LIST_ICON_SIZE := Vector2i(40, 40)
 const MAP_LIST_TOGGLE_SIZE := Vector2(60.0, 60.0)
 const MAP_LIST_TOGGLE_MARGIN := Vector2(14.0, 14.0)
+const MAP_RIDE_BUTTON_SIZE := Vector2(152.0, 56.0)
+const MAP_RIDE_BUTTON_MARGIN := Vector2(14.0, 84.0)
 const LIST_MAP_RETURN_SIZE := Vector2(132.0, 52.0)
 
 @onready var object_list: ObjectListPanel = %ObjectList
@@ -82,9 +84,11 @@ var collection_stats_script: Resource = null
 var achievements_script: Resource = null
 var orientation_option_is_refreshing: bool = false
 var map_list_toggle_button: Button = null
+var map_ride_button: Button = null
 var list_map_return_button: Button = null
 var active_section_name := ""
 var map_return_state: Dictionary = {}
+var ride_return_section_name := "card"
 
 func _ready() -> void:
 	collection_stats_script = load(COLLECTION_STATS_SCRIPT_PATH) if ResourceLoader.exists(COLLECTION_STATS_SCRIPT_PATH) else null
@@ -133,7 +137,7 @@ func _ready() -> void:
 	object_mode_button.pressed.connect(func() -> void: _show_section("object_mode"))
 	observer_button.pressed.connect(func() -> void: _show_section("observer"))
 	memory_button.pressed.connect(func() -> void: _show_section("memory"))
-	ride_button.pressed.connect(func() -> void: _show_section("ride"))
+	ride_button.pressed.connect(func() -> void: _open_ride_from_context(active_section_name))
 	collection_button.pressed.connect(func() -> void: _show_section("collection"))
 	journal_button.pressed.connect(func() -> void: _show_section("journal"))
 	settings_button.pressed.connect(func() -> void: _show_section("settings"))
@@ -153,13 +157,14 @@ func _ready() -> void:
 	object_card.observer_requested.connect(func() -> void: _show_section("observer"))
 	memory_panel.back_requested.connect(func() -> void: _show_section("card"))
 	object_mode_panel.card_requested.connect(func() -> void: _show_section("card"))
-	object_mode_panel.ride_requested.connect(func() -> void: _show_section("ride"))
+	object_mode_panel.ride_requested.connect(func() -> void: _open_ride_from_context("object_mode"))
 	observer_panel.back_requested.connect(func() -> void: _show_section("card"))
-	ride_panel.card_requested.connect(func() -> void: _show_section("card"))
+	ride_panel.back_requested.connect(_on_ride_back_requested)
 	map_panel.set_objects(objects)
 	map_panel.object_selected.connect(_on_map_object_selected)
 	content_viewport.resized.connect(_sync_content_width)
 	_create_map_list_toggle()
+	_create_map_ride_button()
 	_create_list_map_return_button()
 
 	_configure_orientation_setting()
@@ -610,8 +615,21 @@ func _select_object(index: int, open_card: bool) -> void:
 	ride_panel.show_object(objects[index])
 	map_panel.select_object(index)
 	_update_map_selection(objects[index])
+	_update_map_ride_button()
 	if open_card:
 		_show_section("card")
+
+func _open_ride_from_context(return_section_name: String) -> void:
+	if return_section_name.is_empty() or return_section_name == "ride":
+		return_section_name = "card"
+	if return_section_name == "map":
+		_capture_map_return_state()
+	ride_return_section_name = return_section_name
+	ride_panel.set_back_button_text(_ride_back_button_text(return_section_name))
+	_show_section("ride")
+
+func _on_ride_back_requested() -> void:
+	_show_section(ride_return_section_name)
 
 func _show_section(section_name: String) -> void:
 	if active_section_name == "map" and section_name != "map":
@@ -672,6 +690,25 @@ func _create_map_list_toggle() -> void:
 	map_list_toggle_button.pressed.connect(func() -> void: _show_section("list"))
 	add_child(map_list_toggle_button)
 
+func _create_map_ride_button() -> void:
+	map_ride_button = Button.new()
+	map_ride_button.name = "MapRideButton"
+	map_ride_button.text = "Поездка"
+	map_ride_button.tooltip_text = "Открыть поездку для выбранного объекта"
+	map_ride_button.custom_minimum_size = MAP_RIDE_BUTTON_SIZE
+	map_ride_button.size = MAP_RIDE_BUTTON_SIZE
+	map_ride_button.anchor_left = 0.0
+	map_ride_button.anchor_right = 0.0
+	map_ride_button.offset_left = MAP_RIDE_BUTTON_MARGIN.x
+	map_ride_button.offset_right = MAP_RIDE_BUTTON_MARGIN.x + MAP_RIDE_BUTTON_SIZE.x
+	map_ride_button.offset_top = MAP_RIDE_BUTTON_MARGIN.y
+	map_ride_button.offset_bottom = MAP_RIDE_BUTTON_MARGIN.y + MAP_RIDE_BUTTON_SIZE.y
+	map_ride_button.z_index = 90
+	_apply_atlas_toggle_button_style(map_ride_button, false)
+	map_ride_button.pressed.connect(func() -> void: _open_ride_from_context("map"))
+	add_child(map_ride_button)
+	_update_map_ride_button()
+
 func _create_list_map_return_button() -> void:
 	list_map_return_button = Button.new()
 	list_map_return_button.name = "ListMapReturn"
@@ -685,6 +722,41 @@ func _create_list_map_return_button() -> void:
 	list_map_return_button.pressed.connect(func() -> void: _show_section("map"))
 	list_section.add_child(list_map_return_button)
 	list_section.move_child(list_map_return_button, 0)
+
+func _update_map_ride_button() -> void:
+	if map_ride_button == null:
+		return
+	map_ride_button.visible = active_section_name == "map" and selected_index >= 0
+	if selected_index < 0 or selected_index >= objects.size():
+		map_ride_button.disabled = true
+		map_ride_button.tooltip_text = "Выберите объект на карте"
+		return
+	var object_data := objects[selected_index]
+	var has_route := _object_has_playable_route(object_data)
+	map_ride_button.disabled = false
+	map_ride_button.tooltip_text = "Открыть поездку" if has_route else "Открыть пустое состояние поездки: маршрут пока не добавлен"
+
+func _object_has_playable_route(object_data: Dictionary) -> bool:
+	if not object_data.has("route_directions") or not (object_data.get("route_directions") is Array):
+		return false
+	var directions: Array = object_data.get("route_directions")
+	var route_segments_by_direction: Dictionary = object_data.get("route_segments_by_direction", {})
+	for direction in directions:
+		if not (direction is Dictionary):
+			continue
+		var direction_id := str(direction.get("id", ""))
+		if route_segments_by_direction.has(direction_id) and route_segments_by_direction[direction_id] is Array:
+			var segments: Array = route_segments_by_direction[direction_id]
+			if not segments.is_empty():
+				return true
+	return false
+
+func _ride_back_button_text(return_section_name: String) -> String:
+	if return_section_name == "map":
+		return "К карте"
+	if return_section_name == "object_mode":
+		return "К объекту"
+	return "К карточке"
 
 func _apply_map_list_button_icons() -> void:
 	map_button.icon = _make_map_list_icon("map")
@@ -786,6 +858,7 @@ func _apply_map_focus_chrome(is_map: bool) -> void:
 	selected_object_label.visible = false
 	if map_list_toggle_button != null:
 		map_list_toggle_button.visible = is_map
+	_update_map_ride_button()
 	if list_map_return_button != null:
 		list_map_return_button.visible = not is_map
 

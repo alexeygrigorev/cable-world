@@ -13,6 +13,7 @@ class RideModeContractTest(unittest.TestCase):
         for expected in [
             "class_name RidePanel",
             "signal card_requested",
+            "signal back_requested",
             "var direction_option: OptionButton",
             "var ride_game_view: RideGameView",
             "var route_view: RideRouteView",
@@ -26,6 +27,7 @@ class RideModeContractTest(unittest.TestCase):
             "var previous_button: Button",
             "var next_button: Button",
             "func show_object(object_data: Dictionary) -> void:",
+            "func set_back_button_text(text: String) -> void:",
             "card_button.custom_minimum_size = Vector2(0, 56)",
             "direction_option.custom_minimum_size = Vector2(0, 52)",
             "previous_button.custom_minimum_size = Vector2(0, 56)",
@@ -111,8 +113,12 @@ class RideModeContractTest(unittest.TestCase):
             "@onready var ride_section: VBoxContainer = %RideSection",
             '"ride": ride_section',
             '"ride": ride_button',
-            'ride_button.pressed.connect(func() -> void: _show_section("ride"))',
-            'ride_panel.card_requested.connect(func() -> void: _show_section("card"))',
+            'ride_button.pressed.connect(func() -> void: _open_ride_from_context(active_section_name))',
+            'object_mode_panel.ride_requested.connect(func() -> void: _open_ride_from_context("object_mode"))',
+            "ride_panel.back_requested.connect(_on_ride_back_requested)",
+            "var ride_return_section_name := \"card\"",
+            "func _open_ride_from_context(return_section_name: String) -> void:",
+            "func _on_ride_back_requested() -> void:",
             "ride_panel.show_object(objects[index])",
             "storage.list_object_stations(object_id)",
             "storage.list_route_directions(object_id)",
@@ -181,6 +187,29 @@ class RideModeContractTest(unittest.TestCase):
 
         for forbidden in ["RouteDirection", "RouteSegment", "ObjectStation", "SQLite", "res://", "user://", "MVP"]:
             self.assertNotIn(forbidden, script_text)
+
+    def test_map_object_flow_can_open_ride_and_return_to_map_context(self) -> None:
+        script_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "var map_ride_button: Button = null",
+            "const MAP_RIDE_BUTTON_SIZE := Vector2(152.0, 56.0)",
+            "const MAP_RIDE_BUTTON_MARGIN := Vector2(14.0, 84.0)",
+            '_create_map_ride_button()',
+            'map_ride_button.name = "MapRideButton"',
+            'map_ride_button.text = "Поездка"',
+            'map_ride_button.pressed.connect(func() -> void: _open_ride_from_context("map"))',
+            'map_ride_button.visible = active_section_name == "map" and selected_index >= 0',
+            '"Открыть пустое состояние поездки: маршрут пока не добавлен"',
+            'if return_section_name == "map":',
+            "_capture_map_return_state()",
+            'return "К карте"',
+            "_show_section(ride_return_section_name)",
+            "func _object_has_playable_route(object_data: Dictionary) -> bool:",
+            'object_data.get("route_directions") is Array',
+            'object_data.get("route_segments_by_direction", {})',
+        ]:
+            self.assertIn(expected, script_text)
 
     def test_ride_mode_keeps_main_navigation_mobile_touch_targets(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")

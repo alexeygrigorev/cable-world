@@ -2,6 +2,7 @@ extends PanelContainer
 class_name RidePanel
 
 signal card_requested
+signal back_requested
 
 var current_object: Dictionary = {}
 var selected_direction_index: int = 0
@@ -45,7 +46,7 @@ func _ready() -> void:
 	card_button.text = "К карточке"
 	card_button.custom_minimum_size = Vector2(0, 56)
 	card_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	card_button.pressed.connect(func() -> void: card_requested.emit())
+	card_button.pressed.connect(func() -> void: back_requested.emit())
 	rows.add_child(card_button)
 
 	var title_label := Label.new()
@@ -161,6 +162,12 @@ func show_empty_state() -> void:
 	previous_button.disabled = true
 	next_button.disabled = true
 	card_button.disabled = true
+
+
+func set_back_button_text(text: String) -> void:
+	if card_button == null:
+		return
+	card_button.text = _value_text(text, "Назад")
 
 
 func show_object(object_data: Dictionary) -> void:

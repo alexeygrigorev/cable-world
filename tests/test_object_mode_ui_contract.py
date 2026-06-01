@@ -45,7 +45,7 @@ class ObjectModeUiContractTest(unittest.TestCase):
             'object_mode_button.pressed.connect(func() -> void: _show_section("object_mode"))',
             'object_card.object_mode_requested.connect(func() -> void: _show_section("object_mode"))',
             'object_mode_panel.card_requested.connect(func() -> void: _show_section("card"))',
-            'object_mode_panel.ride_requested.connect(func() -> void: _show_section("ride"))',
+            'object_mode_panel.ride_requested.connect(func() -> void: _open_ride_from_context("object_mode"))',
             "object_mode_panel.show_object(objects[index])",
             "_ensure_route_details(index)",
             "storage.list_object_stations(object_id)",

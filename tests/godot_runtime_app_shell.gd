@@ -36,13 +36,42 @@ func test_main_scene_map_list_toggle_runtime() -> Array[String]:
 			var toggle_rect: Rect2 = screen.map_list_toggle_button.get_global_rect().grow(8.0)
 			var zoom_rect: Rect2 = screen.map_panel.zoom_controls.get_global_rect().grow(8.0)
 			_expect(not toggle_rect.intersects(zoom_rect, true), "Map/list toggle must not visually merge with zoom controls.", failures)
-		screen._select_object(0, false)
+		var routed_index := _first_routed_object_index(screen)
+		_expect(routed_index >= 0, "Runtime catalog must include at least one ride-capable object.", failures)
+		screen._select_object(max(0, routed_index), false)
 		screen.map_panel.pan_offset = Vector2(37.0, -24.0)
 		screen.map_panel.zoom = 1.5
 		selected_before = screen.selected_index
 		map_selected_before = screen.map_panel.selected_index
 		pan_before = screen.map_panel.pan_offset
 		zoom_before = screen.map_panel.zoom
+		_expect(screen.map_ride_button != null, "Map selection must create a direct ride button.", failures)
+		if screen.map_ride_button != null:
+			_expect(screen.map_ride_button.visible, "Map ride button must appear after selecting an object on the map.", failures)
+			_expect(not screen.map_ride_button.disabled, "Ride-capable map selection must allow opening the ride.", failures)
+			screen.map_ride_button.emit_signal("pressed")
+			_expect(screen.ride_section.visible, "Map ride button must open the ride section directly.", failures)
+			_expect(screen.ride_panel.card_button.text == "К карте", "Ride back button must reflect the map return context.", failures)
+			_expect(screen.ride_panel.speed_slider.editable, "Ride-capable map flow must open playable controls.", failures)
+			screen.ride_panel.back_requested.emit()
+			_expect(screen.map_section.visible, "Returning from a map-started ride must restore the map.", failures)
+			_expect_vector_close(screen.map_panel.pan_offset, pan_before, "Ride return must preserve the previous map pan offset.", failures)
+			_expect_float_close(screen.map_panel.zoom, zoom_before, "Ride return must preserve the previous map zoom.", failures)
+			_expect(screen.selected_index == selected_before, "Ride return must preserve the app shell selected object.", failures)
+			_expect(screen.map_panel.selected_index == map_selected_before, "Ride return must preserve the selected map marker.", failures)
+
+		var empty_ride_index := _first_unrouted_object_index(screen)
+		if empty_ride_index >= 0 and screen.map_ride_button != null:
+			screen._select_object(empty_ride_index, false)
+			screen.map_ride_button.emit_signal("pressed")
+			_expect(screen.ride_section.visible, "Map ride button must still open the ride section for objects without route data.", failures)
+			_expect(screen.ride_panel.empty_state_label.visible, "Unrouted objects must show a clear ride empty state.", failures)
+			_expect(screen.ride_panel.speed_slider.editable == false, "Unrouted ride state must disable playable controls.", failures)
+			screen.ride_panel.back_requested.emit()
+			selected_before = screen.selected_index
+			map_selected_before = screen.map_panel.selected_index
+			pan_before = screen.map_panel.pan_offset
+			zoom_before = screen.map_panel.zoom
 		screen.map_list_toggle_button.emit_signal("pressed")
 
 	_expect(not screen.map_section.visible, "Map section must hide after pressing the map/list toggle.", failures)
@@ -138,6 +167,22 @@ func test_object_list_filtering_and_selection_runtime() -> Array[String]:
 func _expect(condition: bool, message: String, failures: Array[String]) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _first_routed_object_index(screen: MainScreen) -> int:
+	for index in screen.objects.size():
+		screen._ensure_route_details(index)
+		if screen._object_has_playable_route(screen.objects[index]):
+			return index
+	return -1
+
+
+func _first_unrouted_object_index(screen: MainScreen) -> int:
+	for index in screen.objects.size():
+		screen._ensure_route_details(index)
+		if not screen._object_has_playable_route(screen.objects[index]):
+			return index
+	return -1
 
 
 func _free_screen(screen: MainScreen) -> void:
