@@ -120,6 +120,23 @@ func test_marker_label_and_map_layers_share_transform() -> Array[String]:
 	return failures
 
 
+func test_marker_spread_keeps_dense_markers_apart_without_jitter() -> Array[String]:
+	var failures: Array[String] = []
+	var panel: Variant = MapPanelScript.new()
+	var map_size := Vector2(600.0, 600.0)
+	var placed: Array[Vector2] = [Vector2(300.0, 300.0)]
+
+	var first: Vector2 = panel._spread_marker_position(Vector2(308.0, 304.0), placed, map_size)
+	var second: Vector2 = panel._spread_marker_position(Vector2(308.0, 304.0), placed, map_size)
+
+	_expect_vector_close(first, second, "Marker spread must be deterministic so pan/zoom does not jitter markers.", failures)
+	_expect(first.distance_to(placed[0]) >= 64.0, "Dense marker spread must keep marker centers at least the anti-clutter distance apart.", failures)
+	_expect(first.x >= 24.0 and first.x <= 576.0, "Spread marker must stay inside horizontal map padding.", failures)
+	_expect(first.y >= 24.0 and first.y <= 576.0, "Spread marker must stay inside vertical map padding.", failures)
+	panel.free()
+	return failures
+
+
 func _ready_map_panel() -> Variant:
 	var panel: Variant = MapPanelScript.new()
 	panel.map_layer = MapPanelScript.OfflineMapLayer.new()
