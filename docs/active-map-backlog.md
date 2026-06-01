@@ -73,7 +73,7 @@
 - [ ] #69 Follow-up: заменить текущий Alpine art на более узнаваемые отдельные massif glyphs/segments. Текущая правка убирает дубль, но еще не делает Альпы качеством `8/10`.
 - [ ] #69 v4 rejected 2026-06-01: score `6/10`; не интегрировать `7e8b6abe`. Blockers: Harz still sticker/blob, Dresden/Erzgebirge rectangular/striped artifacts, Black Forest/Bavarian Forest/Erzgebirge/Saxon Switzerland not distinct, Alps still southern overlay band, Köln/Stuttgart marker clutter, tiny background noise/dust.
 - [ ] #103 Map quality blocker: сделать Black Forest, Bavarian Forest, Erzgebirge и Saxon Switzerland визуально различимыми named massifs вместо layered patches.
-- [ ] #104 Map quality blocker: убрать rectangular/striped compositing artifacts и technical-looking route/detail noise вокруг Dresden/Erzgebirge.
+- [x] #104 Map quality blocker: убрать rectangular/striped compositing artifacts и technical-looking route/detail noise вокруг Dresden/Erzgebirge. Accepted commit `2a46e71`: border overlay отключён как источник technical route/seam near Dresden, базовый контур Германии сделан тоньше, initial focus сдвинут так, чтобы Dresden не резался на mobile initial; reviewer `ACCEPT`, `10/10` по touched scope.
 - [ ] #105 Map quality blocker: интегрировать Harz в terrain/forest/highland texture, чтобы он не читался как sticker/blob.
 - [x] #106 Map quality blocker: убрать tiny background dust и pale patch noise, оставив читаемую land/water texture. Accepted commit `609a20c`: отключены noisy base land patches, integrated land pattern, minor lake blobs, Natural Earth lake blobs, marsh patches и soft/ridge smear overlays; reviewer `ACCEPT`, `10/10` по touched scope.
 - [ ] #107 Map quality blocker: снизить Köln/Stuttgart marker/landmark/forest clutter без потери кликабельности и важной видимости объектов. Первая попытка `issue-107-marker-clutter` / `328f4d5e` отклонена строгим reviewer: `6/10`, Köln/Stuttgart всё ещё конфликтуют с forest/landmark/transport layers, не вливать.
@@ -129,6 +129,6 @@
 ## Current Known State
 
 - Карта на `http://127.0.0.1:9000/` пересобрана из `main`; Web build отдает gzip и `Cache-Control: no-store`.
-- Последний map commit на момент обновления backlog: `609a20c` / #106 accepted dust and pale patch noise cleanup.
+- Последний map commit на момент обновления backlog: `2a46e71` / #104 accepted Dresden/Erzgebirge artifact cleanup.
 - Non-render checks now cover координаты, geography bounds, source-layer metadata, PNG dimensions/non-blank state, export payload contract and runtime draw contracts. Screenshots/manual review still required for contrast, clutter, visual hierarchy and "does this feel like a real atlas map".
 - Текущая карта технически рабочая и архитектурно движется в glyph-based direction. #106 поднял чистоту фона в своем scope до reviewer `10/10`, но глобальная карта всё ещё не `8/10`: Alpine art still too generic, relief/lake recognizability and marker composition still need work.

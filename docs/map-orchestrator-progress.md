@@ -2032,3 +2032,22 @@ Verification:
 - `godot --headless --path . --quit-after 1`: PASS with existing #65 shutdown leak warnings.
 - Fresh map review bundle: `worktrees/issue-106-map-dust-noise/tmp/map-review/issue-106-20260601T045719Z`.
 - Screenshots checked by reviewer: mobile initial/150/200/click/drag and desktop initial/click/drag.
+
+## Iteration 2026-06-01 #104 Dresden / Erzgebirge Artifacts
+
+Integrated reviewed #104:
+
+- Worker branch: `issue-104-dresden-artifacts`.
+- Integrated commit on `main`: `2a46e71 Soften Dresden border artifacts`.
+- Initial reviewer `Carson`: `REJECT`, `7/10`, because current `main` still had technical-looking bright loop/border fragments around Dresden/Saxon Switzerland after #106.
+- First candidate `0ff81e6` was rejected at `8/10`: rectangular artifacts were improved, but Dresden still clipped on mobile initial and a hard dark border kink still read as technical seam/route line.
+- Final pass made the country outline less intrusive for this area: the extra border overlay is inert, the base Germany/neighbour border widths are thinner, and the Germany initial focus moved to `Vector2(11.10, 51.70)` so Dresden is not clipped on the mobile initial map.
+- Reviewer `Maxwell`: `ACCEPT`, `10/10` for touched #104 scope.
+
+Verification:
+
+- `uv run python -m unittest discover -s tests`: PASS, 305 tests.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: PASS with existing #65 shutdown leak warnings.
+- Fresh map review bundle: `worktrees/issue-104-dresden-artifacts/tmp/map-review/issue-104-dresden-artifacts-v7-20260601T053538Z`.
+- Screenshots checked by reviewer: mobile initial/150/200/click/drag and desktop initial/click/drag.
