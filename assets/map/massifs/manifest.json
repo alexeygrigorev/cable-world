@@ -129,52 +129,52 @@
         }
       ],
       "cropped_size_px": [
-        1068,
-        795
+        1460,
+        861
       ],
       "geo_bounds": {
-        "max_latitude": 47.13907,
-        "max_longitude": 8.67958,
-        "min_latitude": 45.39051,
-        "min_longitude": 5.27989
+        "max_latitude": 47.16503,
+        "max_longitude": 9.27484,
+        "min_latitude": 45.26971,
+        "min_longitude": 4.62733
       },
       "glyphs": [
         {
           "glyph": "massif_alps_western_arc",
-          "latitude": 45.92,
-          "longitude": 6.28,
-          "width": 330,
+          "latitude": 45.88,
+          "longitude": 6.2,
+          "width": 520,
           "y_offset": 0.0
         },
         {
-          "glyph": "massif_alps_foothill_connector",
-          "latitude": 46.08,
-          "longitude": 7.1,
-          "width": 260,
-          "y_offset": 0.02
+          "glyph": "massif_alps_central_high",
+          "latitude": 46.1,
+          "longitude": 7.08,
+          "width": 500,
+          "y_offset": 0.01
         },
         {
           "glyph": "massif_alps_western_arc",
-          "latitude": 46.34,
-          "longitude": 7.82,
-          "width": 270,
-          "y_offset": 0.04
+          "latitude": 46.28,
+          "longitude": 7.78,
+          "width": 470,
+          "y_offset": 0.02
         }
       ],
       "id": "western_alps_massif",
       "image": "western_alps_massif.png",
       "label": "Western Alps",
       "map_bbox_px": [
-        122.5,
-        2193.5,
-        656.5,
-        2591.0
+        20.0,
+        2187.5,
+        750.0,
+        2618.0
       ],
       "render_bbox_px": [
-        245,
-        4387,
-        1313,
-        5182
+        40,
+        4375,
+        1500,
+        5236
       ],
       "required_country_overlap": "",
       "shadow": [
@@ -234,52 +234,52 @@
         }
       ],
       "cropped_size_px": [
-        1179,
-        664
+        1610,
+        948
       ],
       "geo_bounds": {
-        "max_latitude": 47.21261,
-        "max_longitude": 10.94286,
-        "min_latitude": 45.758,
-        "min_longitude": 7.18983
+        "max_latitude": 47.60452,
+        "max_longitude": 11.59224,
+        "min_latitude": 45.53111,
+        "min_longitude": 6.46724
       },
       "glyphs": [
         {
           "glyph": "massif_alps_central_high",
-          "latitude": 46.3,
-          "longitude": 8.35,
-          "width": 355,
+          "latitude": 46.26,
+          "longitude": 8.25,
+          "width": 560,
           "y_offset": 0.0
         },
         {
           "glyph": "massif_alps_central_high",
-          "latitude": 46.48,
-          "longitude": 9.32,
-          "width": 350,
-          "y_offset": 0.02
+          "latitude": 46.42,
+          "longitude": 9.2,
+          "width": 560,
+          "y_offset": 0.01
         },
         {
           "glyph": "massif_alps_tyrol_wall",
-          "latitude": 46.64,
-          "longitude": 10.08,
-          "width": 285,
-          "y_offset": 0.04
+          "latitude": 46.58,
+          "longitude": 10.0,
+          "width": 500,
+          "y_offset": 0.02
         }
       ],
       "id": "swiss_alps_massif",
       "image": "swiss_alps_massif.png",
       "label": "Swiss Alps",
       "map_bbox_px": [
-        422.5,
-        2176.5,
-        1012.0,
-        2508.5
+        309.0,
+        2085.5,
+        1114.0,
+        2559.5
       ],
       "render_bbox_px": [
-        845,
-        4353,
-        2024,
-        5017
+        618,
+        4171,
+        2228,
+        5119
       ],
       "required_country_overlap": "",
       "shadow": [
@@ -339,52 +339,52 @@
         }
       ],
       "cropped_size_px": [
-        1282,
-        721
+        1594,
+        819
       ],
       "geo_bounds": {
-        "max_latitude": 47.80152,
-        "max_longitude": 13.54356,
-        "min_latitude": 46.23766,
-        "min_longitude": 9.46266
+        "max_latitude": 47.92747,
+        "max_longitude": 13.8778,
+        "min_latitude": 46.15176,
+        "min_longitude": 8.80373
       },
       "glyphs": [
         {
           "glyph": "massif_alps_tyrol_wall",
-          "latitude": 46.82,
-          "longitude": 10.5,
-          "width": 340,
+          "latitude": 46.76,
+          "longitude": 10.42,
+          "width": 530,
           "y_offset": 0.0
         },
         {
           "glyph": "massif_alps_tyrol_wall",
-          "latitude": 47.02,
-          "longitude": 11.55,
-          "width": 350,
-          "y_offset": 0.02
+          "latitude": 46.92,
+          "longitude": 11.42,
+          "width": 540,
+          "y_offset": 0.01
         },
         {
           "glyph": "massif_alps_eastern_arc",
-          "latitude": 47.22,
-          "longitude": 12.58,
-          "width": 315,
-          "y_offset": 0.04
+          "latitude": 47.08,
+          "longitude": 12.36,
+          "width": 500,
+          "y_offset": 0.02
         }
       ],
       "id": "bavarian_tyrol_alps_massif",
       "image": "bavarian_tyrol_alps_massif.png",
       "label": "Bavarian and Tyrol Alps",
       "map_bbox_px": [
-        779.5,
-        2039.5,
-        1420.5,
-        2400.0
+        676.0,
+        2010.0,
+        1473.0,
+        2419.5
       ],
       "render_bbox_px": [
-        1559,
-        4079,
-        2841,
-        4800
+        1352,
+        4020,
+        2946,
+        4839
       ],
       "required_country_overlap": "",
       "shadow": [
@@ -440,35 +440,35 @@
         }
       ],
       "cropped_size_px": [
-        1153,
-        376
+        1241,
+        423
       ],
       "geo_bounds": {
-        "max_latitude": 48.102,
-        "max_longitude": 13.43851,
-        "min_latitude": 47.29683,
-        "min_longitude": 9.76825
+        "max_latitude": 48.19966,
+        "max_longitude": 13.48307,
+        "min_latitude": 47.29468,
+        "min_longitude": 9.53269
       },
       "glyphs": [
         {
           "glyph": "massif_alps_northern_edge",
           "latitude": 47.58,
-          "longitude": 10.65,
-          "width": 230,
+          "longitude": 10.62,
+          "width": 360,
           "y_offset": -0.02
         },
         {
           "glyph": "massif_alps_northern_edge",
-          "latitude": 47.66,
-          "longitude": 11.62,
-          "width": 235,
+          "latitude": 47.64,
+          "longitude": 11.55,
+          "width": 365,
           "y_offset": -0.01
         },
         {
           "glyph": "massif_alps_foothill_connector",
-          "latitude": 47.78,
-          "longitude": 12.58,
-          "width": 210,
+          "latitude": 47.72,
+          "longitude": 12.44,
+          "width": 340,
           "y_offset": 0.0
         }
       ],
@@ -476,16 +476,16 @@
       "image": "german_alpine_edge_massif.png",
       "label": "German Alpine Edge",
       "map_bbox_px": [
-        827.5,
-        1969.0,
-        1404.0,
-        2157.0
+        790.5,
+        1946.0,
+        1411.0,
+        2157.5
       ],
       "render_bbox_px": [
-        1655,
-        3938,
-        2808,
-        4314
+        1581,
+        3892,
+        2822,
+        4315
       ],
       "required_country_overlap": "Germany",
       "shadow": [
@@ -541,51 +541,51 @@
         }
       ],
       "cropped_size_px": [
-        1374,
-        620
+        1575,
+        700
       ],
       "geo_bounds": {
-        "max_latitude": 47.83998,
-        "max_longitude": 16.37345,
+        "max_latitude": 48.01055,
+        "max_longitude": 16.37981,
         "min_latitude": 46.49893,
-        "min_longitude": 11.99969
+        "min_longitude": 11.36623
       },
       "glyphs": [
         {
           "glyph": "massif_alps_eastern_arc",
-          "latitude": 47.18,
-          "longitude": 13.05,
-          "width": 330,
+          "latitude": 47.14,
+          "longitude": 13.02,
+          "width": 520,
           "y_offset": 0.0
         },
         {
           "glyph": "massif_alps_eastern_arc",
-          "latitude": 47.2,
-          "longitude": 14.12,
-          "width": 330,
-          "y_offset": 0.02
+          "latitude": 47.16,
+          "longitude": 14.08,
+          "width": 520,
+          "y_offset": 0.01
         },
         {
           "glyph": "massif_alps_foothill_connector",
-          "latitude": 47.04,
-          "longitude": 15.18,
-          "width": 300,
-          "y_offset": 0.04
+          "latitude": 47.02,
+          "longitude": 15.06,
+          "width": 430,
+          "y_offset": 0.02
         }
       ],
       "id": "austrian_alps_massif",
       "image": "austrian_alps_massif.png",
       "label": "Austrian Alps",
       "map_bbox_px": [
-        1178.0,
-        2030.5,
-        1865.0,
+        1078.5,
+        1990.5,
+        1866.0,
         2340.5
       ],
       "render_bbox_px": [
-        2356,
-        4061,
-        3730,
+        2157,
+        3981,
+        3732,
         4681
       ],
       "required_country_overlap": "",
@@ -624,8 +624,8 @@
     },
     {
       "cropped_size_px": [
-        3485,
-        1481
+        3692,
+        1535
       ],
       "extends_to": [
         "France",
@@ -636,9 +636,9 @@
       ],
       "geo_bounds": {
         "max_latitude": 48.60314,
-        "max_longitude": 16.37345,
-        "min_latitude": 45.39051,
-        "min_longitude": 5.27989
+        "max_longitude": 16.37981,
+        "min_latitude": 45.26971,
+        "min_longitude": 4.62733
       },
       "glyphs": [],
       "id": "alps",
@@ -646,10 +646,10 @@
       "kind": "cross_border_mountain",
       "label": "Alps",
       "map_bbox_px": [
-        122.5,
+        20.0,
         1850.5,
-        1865.0,
-        2591.0
+        1866.0,
+        2618.0
       ],
       "massif_segments": [
         "western_alps_massif",
@@ -718,10 +718,10 @@
         }
       ],
       "render_bbox_px": [
-        245,
+        40,
         3701,
-        3730,
-        5182
+        3732,
+        5236
       ],
       "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
       "ridge_bands": [

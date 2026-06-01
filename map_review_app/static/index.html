@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Map Review</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Map Review</h1>
+        <p>Open a tab, inspect the generated map previews, write feedback, then save.</p>
+      </div>
+      <button id="saveButton" type="button">Save feedback</button>
+    </header>
+
+    <main>
+      <nav id="tabs" class="tabs" aria-label="Review tabs"></nav>
+      <section id="panel" class="panel"></section>
+      <p id="status" class="status" role="status"></p>
+    </main>
+
+    <dialog id="lightbox" class="lightbox">
+      <form method="dialog">
+        <button class="closeButton" aria-label="Close" type="submit">x</button>
+      </form>
+      <img id="lightboxImage" alt="">
+    </dialog>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

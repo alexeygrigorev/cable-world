@@ -213,3 +213,40 @@ It produces:
 - `massif_alps_foothill_connector`
 
 These are still generated art, but they are a better production step than repeating two generic wall glyphs across the whole Alpine arc.
+
+## Alpine Density Rule
+
+The Alps must read as one large high mountain system, not as scattered island glyphs. The review target is:
+
+- preserve the approximate Alpine outline and east-west arc;
+- make the western and central Alps visibly taller and snowier than lower German ranges;
+- overlap segment glyphs enough that there are no bald or empty gaps inside the massif;
+- prioritize recognizable size hierarchy over exact peak count;
+- treat country borders only as context, never as the shape source.
+
+If a generated sector sheet produces gaps after placement, fix the anchors and widths first. Regenerate only when the actual mountain art is wrong.
+
+## Fast Map Preview
+
+Use this when reviewing visual iterations without Godot export, browser startup or web rebuild:
+
+```bash
+uv run python -m map_pipeline.render_map_previews
+```
+
+It renders full-map PNGs from the same `assets/map/germany_styled.png` texture used by the app:
+
+- `assets/map/review/germany_styled_preview_050.png`
+- `assets/map/review/germany_styled_preview_100.png`
+- `assets/map/review/germany_styled_preview_150.png`
+- `assets/map/review/germany_styled_preview_200.png`
+
+This is the quick review path for background/map-compositor changes. Runtime-only overlays still need a Godot/browser screenshot check.
+
+Run the local feedback app on port `9010`:
+
+```bash
+PORT=9010 node map_review_app/server.mjs
+```
+
+The app discovers review sets from `assets/map/review`. PNGs directly in that directory become the `Full map` tab; PNGs in subdirectories become additional tabs. Each tab has one feedback box, and saving writes one combined feedback packet to `tmp/map-review-feedback/`.

@@ -18,52 +18,52 @@
     }
   ],
   "cropped_size_px": [
-    1068,
-    795
+    1460,
+    861
   ],
   "geo_bounds": {
-    "max_latitude": 47.13907,
-    "max_longitude": 8.67958,
-    "min_latitude": 45.39051,
-    "min_longitude": 5.27989
+    "max_latitude": 47.16503,
+    "max_longitude": 9.27484,
+    "min_latitude": 45.26971,
+    "min_longitude": 4.62733
   },
   "glyphs": [
     {
       "glyph": "massif_alps_western_arc",
-      "latitude": 45.92,
-      "longitude": 6.28,
-      "width": 330,
+      "latitude": 45.88,
+      "longitude": 6.2,
+      "width": 520,
       "y_offset": 0.0
     },
     {
-      "glyph": "massif_alps_foothill_connector",
-      "latitude": 46.08,
-      "longitude": 7.1,
-      "width": 260,
-      "y_offset": 0.02
+      "glyph": "massif_alps_central_high",
+      "latitude": 46.1,
+      "longitude": 7.08,
+      "width": 500,
+      "y_offset": 0.01
     },
     {
       "glyph": "massif_alps_western_arc",
-      "latitude": 46.34,
-      "longitude": 7.82,
-      "width": 270,
-      "y_offset": 0.04
+      "latitude": 46.28,
+      "longitude": 7.78,
+      "width": 470,
+      "y_offset": 0.02
     }
   ],
   "id": "western_alps_massif",
   "image": "western_alps_massif.png",
   "label": "Western Alps",
   "map_bbox_px": [
-    122.5,
-    2193.5,
-    656.5,
-    2591.0
+    20.0,
+    2187.5,
+    750.0,
+    2618.0
   ],
   "render_bbox_px": [
-    245,
-    4387,
-    1313,
-    5182
+    40,
+    4375,
+    1500,
+    5236
   ],
   "required_country_overlap": "",
   "shadow": [

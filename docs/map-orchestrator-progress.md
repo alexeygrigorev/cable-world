@@ -2145,3 +2145,15 @@ New glyphs:
 - `massif_alps_foothill_connector`
 
 These are integrated into `ALPINE_MASSIF_SEGMENTS` by massif sector so the map no longer tiles the same two Alpine glyphs across the whole arc.
+
+## Iteration 2026-06-01 Dense Alpine Wall Pass
+
+User clarified that "bald" means visible empty gaps between Alpine segments and weak stitching, not only missing snow. Updated the Alpine pass accordingly:
+
+- replaced the first Alpine sector sheet with taller, snowier, denser glyphs;
+- increased Alpine segment widths and overlap so the range reads as a continuous high massif;
+- kept the shape mountain-driven: approximate Alpine arc and massif hierarchy matter more than exact peak count;
+- documented the density rule in `docs/massif-glyph-pipeline.md`;
+- added `map_pipeline.render_map_previews` for fast full-map review images at 50%, 100%, 150% and 200% without Godot export or web rebuild.
+
+Verification target for this pass: Alps should look like many large mountains in one connected system, with no strange bald seams between sectors.
