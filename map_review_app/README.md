@@ -21,10 +21,9 @@ map_review_app/scripts/capture-godot.sh
 That command:
 
 1. clears old review images from `assets/map/review/`;
-2. rebuilds `city_cluster_glyphs_hi_res` when tracked hi-res assets exist;
-3. rebuilds temporary variant tabs from `tmp/city-cluster-hi-res-v*/outlined`;
-4. captures current Godot runtime map scenes at `50%`, `100%`, `150%`, and `200%`;
-5. starts the review app if `9010` is not reachable.
+2. rebuilds temporary variant tabs from `tmp/city-cluster-hi-res-v*/outlined`;
+3. captures current Godot runtime map scenes at `50%`, `100%`, `150%`, and `200%`;
+4. starts the review app if `9010` is not reachable.
 
 Open:
 
@@ -48,6 +47,8 @@ Each directory contains:
 `review.yml` is intentionally written as JSON-compatible YAML, so the app can read it without extra dependencies. Keep it beside the images. If the images are removed, the feedback target disappears with them and stale context cannot pollute the next review.
 
 Use zoom series (`050`, `100`, `150`, `200`) only for runtime map captures where the camera actually changes. Static glyph contact sheets should normally expose only `200`, because downscaled copies do not answer a different review question.
+
+The tracked hi-res city glyph source sheet is not shown as a default review tab anymore. City glyph scale and label attachment must be reviewed through the Godot runtime tabs, because those are the only previews where zoom, map texture scaling, labels, and coastal placement are all active together.
 
 Temporary comparison variants should live under:
 

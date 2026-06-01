@@ -924,6 +924,7 @@ class MapPanelContractTest(unittest.TestCase):
             "map_review_app/scripts/capture-godot.sh",
             "clears old review images",
             "tmp/city-cluster-hi-res-vN/outlined/",
+            "City glyph scale and label attachment must be reviewed through the Godot runtime tabs",
             "review.yml",
             "The saved JSON and Markdown include the tab metadata",
             "New work should put review-app logic inside `map_review_app/`",
@@ -933,6 +934,8 @@ class MapPanelContractTest(unittest.TestCase):
         capture_script = (ROOT / "map_review_app" / "scripts" / "capture-godot.sh").read_text(encoding="utf-8")
         variant_script = (ROOT / "map_review_app" / "scripts" / "build-city-cluster-variant-reviews.sh").read_text(encoding="utf-8")
         self.assertIn("build-city-cluster-variant-reviews.sh", capture_script)
+        self.assertNotIn("build_city_cluster_hi_res_review", capture_script)
+        self.assertNotIn("city_cluster_glyphs_hi_res", capture_script)
         self.assertIn("tmp/city-cluster-hi-res-v*/outlined", variant_script)
         self.assertIn("--feedback-target", variant_script)
 
