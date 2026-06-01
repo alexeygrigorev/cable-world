@@ -902,6 +902,43 @@ class MapPanelContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, docs_text)
 
+    def test_high_res_city_cluster_pipeline_is_separate_from_runtime(self) -> None:
+        hi_res_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks_hi_res.py").read_text(encoding="utf-8")
+        review_text = (ROOT / "map_pipeline" / "build_city_cluster_hi_res_review.py").read_text(encoding="utf-8")
+        docs_text = (ROOT / "docs" / "map-generation-handoff.md").read_text(encoding="utf-8")
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+
+        for expected in [
+            "ICON_SIZE = 1024",
+            "PADDING = 96",
+            "GRID_COLUMNS = 4",
+            "GRID_ROWS = 2",
+            "assets/sprites/city_landmark_clusters_hi_res",
+            "--source-dir",
+            "--sheet",
+            "Build 1024px high-res city landmark cluster sprites",
+        ]:
+            self.assertIn(expected, hi_res_text)
+
+        for expected in [
+            "city_cluster_glyphs_hi_res",
+            "PREVIEW_FILE_TEMPLATE = \"city_cluster_glyphs_hi_res_preview_%s.png\"",
+            "runtime_integrated",
+            "False",
+        ]:
+            self.assertIn(expected, review_text)
+
+        for expected in [
+            "High-res city cluster workflow",
+            "separate directory",
+            "1254x1254",
+            "`1024x1024` transparent city sprites",
+            "do not load `assets/sprites/city_landmark_clusters_hi_res` from `scripts/map_panel.gd`",
+        ]:
+            self.assertIn(expected, docs_text)
+
+        self.assertNotIn("city_landmark_clusters_hi_res", script_text)
+
     def test_map_review_app_owns_its_scripts_and_metadata_contract(self) -> None:
         readme_text = (ROOT / "map_review_app" / "README.md").read_text(encoding="utf-8")
         server_text = (ROOT / "map_review_app" / "server.mjs").read_text(encoding="utf-8")

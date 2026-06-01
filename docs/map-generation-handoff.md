@@ -286,6 +286,68 @@ map_review_app/scripts/capture-godot.sh
 
 Review rule: do not swap `scripts/map_panel.gd` to the cluster directory until the 8-city sheet passes the Godot-native review captures at `50%`, `100%`, `150%` and `200%`. The review should specifically compare Berlin/Hamburg/Rostock/München visual weight and reject if any city reads as a tiny single-object icon.
 
+## High-res city cluster workflow
+
+User feedback 2026-06-01: the first `512x512` cluster output still pixelates during `200%` review. Keep the runtime path unchanged for now and generate the higher-resolution candidate into a separate directory.
+
+The attempted single-sheet high-res prompt asked for `4096x2048`, but the built-in image generator returned only `1774x887`, which is lower source density than the existing `2048x1024` sheet. Do not use that sheet as a high-res source. The current high-res candidate instead uses one per-city source image, each `1254x1254`, then normalizes to `1024x1024` transparent city sprites.
+
+Generated per-city source copies:
+
+```text
+tmp/city-cluster-hi-res-source/raw/city_berlin.png
+tmp/city-cluster-hi-res-source/raw/city_hamburg.png
+tmp/city-cluster-hi-res-source/raw/city_rostock.png
+tmp/city-cluster-hi-res-source/raw/city_munich.png
+tmp/city-cluster-hi-res-source/raw/city_cologne.png
+tmp/city-cluster-hi-res-source/raw/city_frankfurt.png
+tmp/city-cluster-hi-res-source/raw/city_stuttgart.png
+tmp/city-cluster-hi-res-source/raw/city_dresden.png
+```
+
+Post-processing:
+
+```bash
+mkdir -p tmp/city-cluster-hi-res-source/alpha
+for input in tmp/city-cluster-hi-res-source/raw/city_*.png; do
+  name=$(basename "$input")
+  uv run python "${CODEX_HOME:-$HOME/.codex}/skills/.system/imagegen/scripts/remove_chroma_key.py" \
+    --input "$input" \
+    --out "tmp/city-cluster-hi-res-source/alpha/$name" \
+    --auto-key border \
+    --soft-matte \
+    --transparent-threshold 12 \
+    --opaque-threshold 220 \
+    --despill
+done
+
+uv run python -m map_pipeline.slice_city_cluster_landmarks_hi_res \
+  --source-dir tmp/city-cluster-hi-res-source/alpha \
+  --out-dir assets/sprites/city_landmark_clusters_hi_res
+
+uv run python -m map_pipeline.outline_sprites \
+  --source-dir assets/sprites/city_landmark_clusters_hi_res \
+  --out-dir assets/sprites/city_landmark_clusters_hi_res/outlined \
+  --prefix city_ \
+  --radius 6 \
+  --color '#25180fe0'
+
+uv run python -m map_pipeline.build_city_cluster_hi_res_review \
+  --source-dir assets/sprites/city_landmark_clusters_hi_res/outlined \
+  --out-dir assets/map/review/city_cluster_glyphs_hi_res
+```
+
+Outputs:
+
+- `assets/sprites/city_landmark_clusters_hi_res/city_*.png`
+- `assets/sprites/city_landmark_clusters_hi_res/outlined/city_*.png`
+- `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_050.png`
+- `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_100.png`
+- `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_150.png`
+- `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_200.png`
+
+Runtime note: do not load `assets/sprites/city_landmark_clusters_hi_res` from `scripts/map_panel.gd` until this candidate passes review and a separate runtime integration task explicitly swaps the path.
+
 ## Terrain and forest glyph generation workflow
 
 User feedback 2026-05-31: trees and land texture must move toward the stronger generated donor map language, but the production map must remain glyph-based and expandable. The first new terrain sheet was generated as one 4x4 sheet, then sliced into reusable map glyphs.
