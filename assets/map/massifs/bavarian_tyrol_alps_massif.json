@@ -18,35 +18,35 @@
     }
   ],
   "cropped_size_px": [
-    1286,
-    731
+    1282,
+    721
   ],
   "geo_bounds": {
-    "max_latitude": 47.82289,
-    "max_longitude": 13.56584,
+    "max_latitude": 47.80152,
+    "max_longitude": 13.54356,
     "min_latitude": 46.23766,
-    "min_longitude": 9.4722
+    "min_longitude": 9.46266
   },
   "glyphs": [
     {
-      "glyph": "massif_alps_wall_1",
+      "glyph": "massif_alps_tyrol_wall",
       "latitude": 46.82,
       "longitude": 10.5,
       "width": 340,
       "y_offset": 0.0
     },
     {
-      "glyph": "massif_alps_wall_2",
+      "glyph": "massif_alps_tyrol_wall",
       "latitude": 47.02,
       "longitude": 11.55,
       "width": 350,
       "y_offset": 0.02
     },
     {
-      "glyph": "massif_alps_wall_1",
+      "glyph": "massif_alps_eastern_arc",
       "latitude": 47.22,
       "longitude": 12.58,
-      "width": 310,
+      "width": 315,
       "y_offset": 0.04
     }
   ],
@@ -54,15 +54,15 @@
   "image": "bavarian_tyrol_alps_massif.png",
   "label": "Bavarian and Tyrol Alps",
   "map_bbox_px": [
-    781.0,
-    2034.5,
-    1424.0,
+    779.5,
+    2039.5,
+    1420.5,
     2400.0
   ],
   "render_bbox_px": [
-    1562,
-    4069,
-    2848,
+    1559,
+    4079,
+    2841,
     4800
   ],
   "required_country_overlap": "",

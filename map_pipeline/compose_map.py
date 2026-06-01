@@ -212,9 +212,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(5.95, 45.70), (6.70, 45.95), (7.45, 46.18), (8.05, 46.38)],
         "shadow": [(5.75, 45.45), (6.55, 45.58), (7.55, 45.90), (8.35, 46.20), (8.55, 46.90), (7.30, 47.08), (6.15, 46.78), (5.70, 46.12)],
         "glyphs": [
-            ("massif_alps_wall_1", 6.28, 45.92, 315, 0.00),
-            ("massif_alps_wall_2", 7.18, 46.16, 325, 0.02),
-            ("massif_alps_wall_1", 7.92, 46.38, 265, 0.04),
+            ("massif_alps_western_arc", 6.28, 45.92, 330, 0.00),
+            ("massif_alps_foothill_connector", 7.10, 46.08, 260, 0.02),
+            ("massif_alps_western_arc", 7.82, 46.34, 270, 0.04),
         ],
     },
     {
@@ -226,9 +226,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(7.65, 46.12), (8.65, 46.22), (9.55, 46.40), (10.25, 46.58)],
         "shadow": [(7.28, 45.82), (8.55, 45.92), (9.78, 46.24), (10.60, 46.48), (10.58, 47.10), (9.35, 47.15), (8.05, 46.95), (7.40, 46.62)],
         "glyphs": [
-            ("massif_alps_wall_2", 8.22, 46.28, 350, 0.00),
-            ("massif_alps_wall_1", 9.32, 46.45, 350, 0.02),
-            ("massif_alps_wall_2", 10.10, 46.62, 270, 0.04),
+            ("massif_alps_central_high", 8.35, 46.30, 355, 0.00),
+            ("massif_alps_central_high", 9.32, 46.48, 350, 0.02),
+            ("massif_alps_tyrol_wall", 10.08, 46.64, 285, 0.04),
         ],
     },
     {
@@ -240,9 +240,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(10.05, 46.55), (11.10, 46.76), (12.30, 46.98), (13.05, 47.18)],
         "shadow": [(9.78, 46.30), (11.10, 46.40), (12.62, 46.72), (13.30, 47.00), (13.18, 47.72), (11.45, 47.74), (10.10, 47.42)],
         "glyphs": [
-            ("massif_alps_wall_1", 10.50, 46.82, 340, 0.00),
-            ("massif_alps_wall_2", 11.55, 47.02, 350, 0.02),
-            ("massif_alps_wall_1", 12.58, 47.22, 310, 0.04),
+            ("massif_alps_tyrol_wall", 10.50, 46.82, 340, 0.00),
+            ("massif_alps_tyrol_wall", 11.55, 47.02, 350, 0.02),
+            ("massif_alps_eastern_arc", 12.58, 47.22, 315, 0.04),
         ],
     },
     {
@@ -255,9 +255,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(10.15, 47.55), (11.10, 47.55), (12.25, 47.62), (13.05, 47.70)],
         "shadow": [(9.85, 47.48), (10.95, 47.36), (12.45, 47.46), (13.35, 47.70), (13.20, 48.04), (11.45, 47.98), (10.00, 47.86)],
         "glyphs": [
-            ("massif_alps_wall_2", 10.65, 47.58, 225, -0.02),
-            ("massif_alps_wall_1", 11.62, 47.66, 235, -0.01),
-            ("massif_alps_wall_2", 12.58, 47.78, 210, 0.00),
+            ("massif_alps_northern_edge", 10.65, 47.58, 230, -0.02),
+            ("massif_alps_northern_edge", 11.62, 47.66, 235, -0.01),
+            ("massif_alps_foothill_connector", 12.58, 47.78, 210, 0.00),
         ],
     },
     {
@@ -269,9 +269,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(12.40, 46.95), (13.55, 47.08), (14.72, 47.10), (15.85, 46.92)],
         "shadow": [(12.15, 46.70), (13.62, 46.78), (15.00, 46.76), (16.18, 46.56), (16.28, 47.36), (14.42, 47.78), (12.55, 47.62)],
         "glyphs": [
-            ("massif_alps_wall_1", 13.05, 47.18, 330, 0.00),
-            ("massif_alps_wall_2", 14.12, 47.20, 330, 0.02),
-            ("massif_alps_wall_1", 15.18, 47.04, 300, 0.04),
+            ("massif_alps_eastern_arc", 13.05, 47.18, 330, 0.00),
+            ("massif_alps_eastern_arc", 14.12, 47.20, 330, 0.02),
+            ("massif_alps_foothill_connector", 15.18, 47.04, 300, 0.04),
         ],
     },
 ]
@@ -2061,7 +2061,7 @@ def _render_alpine_massif_segment_layer(size, proj, segment):
         massif_layer.alpha_composite(shadow_layer)
 
     arc_points = [_project_point(proj, lon, lat) for lon, lat in segment.get("arc", [])]
-    if len(arc_points) >= 2:
+    if len(arc_points) >= 2 and segment.get("draw_arc_guide", False):
         line_layer = Image.new("RGBA", size, (0, 0, 0, 0))
         line_draw = ImageDraw.Draw(line_layer)
         line_draw.line(arc_points, fill=(43, 59, 40, 82), width=8 * RENDER_SCALE, joint="curve")

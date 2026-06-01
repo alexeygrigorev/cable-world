@@ -188,3 +188,28 @@ assets/map/massif_layouts/massif_geo_layout_sheet.png
 ```
 
 It is generated from `RELIEF_REGIONS` and `ALPINE_MASSIF_SEGMENTS`, so changing real anchors in `map_pipeline/compose_map.py` updates the reference geometry. The next production glyph generation should use this sheet or the individual `<massif>_layout.png` files as image references, then replace the first-pass `massif_*.png` art where it improves geographic recognition.
+
+## Current Alpine Sector Sheet
+
+Generated source:
+
+```text
+assets/map/glyphs/massif_alps_sector_sheet.png
+```
+
+Slice with:
+
+```bash
+uv run python -m map_pipeline.slice_alps_sector_glyphs
+```
+
+It produces:
+
+- `massif_alps_western_arc`
+- `massif_alps_central_high`
+- `massif_alps_eastern_arc`
+- `massif_alps_tyrol_wall`
+- `massif_alps_northern_edge`
+- `massif_alps_foothill_connector`
+
+These are still generated art, but they are a better production step than repeating two generic wall glyphs across the whole Alpine arc.

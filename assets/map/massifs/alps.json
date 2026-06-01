@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    3470,
+    3485,
     1481
   ],
   "extends_to": [
@@ -14,7 +14,7 @@
     "max_latitude": 48.60314,
     "max_longitude": 16.37345,
     "min_latitude": 45.39051,
-    "min_longitude": 5.32764
+    "min_longitude": 5.27989
   },
   "glyphs": [],
   "id": "alps",
@@ -22,7 +22,7 @@
   "kind": "cross_border_mountain",
   "label": "Alps",
   "map_bbox_px": [
-    130.0,
+    122.5,
     1850.5,
     1865.0,
     2591.0
@@ -94,7 +94,7 @@
     }
   ],
   "render_bbox_px": [
-    260,
+    245,
     3701,
     3730,
     5182

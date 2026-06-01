@@ -18,35 +18,35 @@
     }
   ],
   "cropped_size_px": [
-    1210,
+    1179,
     664
   ],
   "geo_bounds": {
     "max_latitude": 47.21261,
-    "max_longitude": 10.95877,
+    "max_longitude": 10.94286,
     "min_latitude": 45.758,
-    "min_longitude": 7.10707
+    "min_longitude": 7.18983
   },
   "glyphs": [
     {
-      "glyph": "massif_alps_wall_2",
-      "latitude": 46.28,
-      "longitude": 8.22,
-      "width": 350,
+      "glyph": "massif_alps_central_high",
+      "latitude": 46.3,
+      "longitude": 8.35,
+      "width": 355,
       "y_offset": 0.0
     },
     {
-      "glyph": "massif_alps_wall_1",
-      "latitude": 46.45,
+      "glyph": "massif_alps_central_high",
+      "latitude": 46.48,
       "longitude": 9.32,
       "width": 350,
       "y_offset": 0.02
     },
     {
-      "glyph": "massif_alps_wall_2",
-      "latitude": 46.62,
-      "longitude": 10.1,
-      "width": 270,
+      "glyph": "massif_alps_tyrol_wall",
+      "latitude": 46.64,
+      "longitude": 10.08,
+      "width": 285,
       "y_offset": 0.04
     }
   ],
@@ -54,15 +54,15 @@
   "image": "swiss_alps_massif.png",
   "label": "Swiss Alps",
   "map_bbox_px": [
-    409.5,
+    422.5,
     2176.5,
-    1014.5,
+    1012.0,
     2508.5
   ],
   "render_bbox_px": [
-    819,
+    845,
     4353,
-    2029,
+    2024,
     5017
   ],
   "required_country_overlap": "",

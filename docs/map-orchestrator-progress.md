@@ -2122,3 +2122,26 @@ Verification:
 - `uv run python -m map_pipeline.render_massif_layouts`: PASS.
 - `uv run python -m map_pipeline.compose_map`: PASS.
 - `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract`: PASS, 31 tests.
+
+## Iteration 2026-06-01 Alpine Sector Glyph Sheet
+
+Generated a new six-glyph Alpine sector sheet instead of reusing only `massif_alps_wall_1/2` everywhere.
+
+New source:
+
+- `assets/map/glyphs/massif_alps_sector_sheet.png`
+
+New slicer:
+
+- `map_pipeline.slice_alps_sector_glyphs`
+
+New glyphs:
+
+- `massif_alps_western_arc`
+- `massif_alps_central_high`
+- `massif_alps_eastern_arc`
+- `massif_alps_tyrol_wall`
+- `massif_alps_northern_edge`
+- `massif_alps_foothill_connector`
+
+These are integrated into `ALPINE_MASSIF_SEGMENTS` by massif sector so the map no longer tiles the same two Alpine glyphs across the whole arc.
