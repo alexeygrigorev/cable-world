@@ -25,6 +25,19 @@
   - `xvfb-run -a godot --path . --script scripts/capture_ui_review_screenshots.gd`: PASS.
   - Reviewer inspected `tmp/ui-review/mobile-390x844-map.png`, `mobile-390x844-list.png`, `landscape-844x390-map.png`, `landscape-844x390-list.png`.
 
+## 2026-06-01 - #110 map/list toggle pictogram accepted
+
+- Working branch/worktree: `issue-110-toggle-pictogram` / `worktrees/issue-110-toggle-pictogram`.
+- Merged accepted commit: `c4942b1 Polish map list toggle pictogram`.
+- Replaced the map/list toggle icon with a compact atlas folded-map + ledger pictogram, so it reads as a map/list mode switch instead of a generic list button.
+- The list return control stays paired through the same icon generator and remains explicit with text in list mode.
+- Reviewer `Curie` returned `ACCEPT #110`, score `9/10`.
+- Evidence:
+  - `python3 -m unittest tests.test_app_shell_contract tests.test_ui_review_gate_contract`: PASS.
+  - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, known #65 shutdown diagnostics only.
+  - `xvfb-run -a godot --path . --script scripts/capture_ui_review_screenshots.gd`: PASS in reviewer worktree.
+  - Reviewer inspected the required mobile/landscape map/list screenshots.
+
 ## 2026-06-01 - #74 Eastern Europe/Turkey non-render contract
 
 - Working branch/worktree: `issue-74-eastern-europe-turkey-contract` / `worktrees/issue-74-eastern-europe-turkey-contract`.
