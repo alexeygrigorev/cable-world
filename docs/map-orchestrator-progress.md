@@ -1962,3 +1962,16 @@ Blockers to address before any integration:
 - Tiny background marks and pale patches still read as dust/noise.
 
 Decision: do not merge #69 v4. Keep #69/#62/#68 open.
+
+## Iteration 2026-06-01 #69 Blocker Split
+
+Created explicit child blocker issues from the #69 v4 reviewer rejection:
+
+- #103: make Black Forest, Bavarian Forest, Erzgebirge and Saxon Switzerland visually distinct named massifs.
+- #104: remove Dresden/Erzgebirge rectangular/striped compositing artifacts and technical-looking route/detail noise.
+- #105: integrate Harz as terrain instead of sticker/blob.
+- #106: remove tiny background dust and pale patch noise.
+- #107: reduce Köln/Stuttgart marker and terrain clutter.
+- #108: fix Alps cross-border relief shape.
+
+These issues do not weaken the map reviewer gate: rejected visual changes still do not merge, and acceptance still requires fresh map-review screenshots.
