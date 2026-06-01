@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Cable World — редактор карты</title>
+  </head>
+  <body>
+    <header id="bar">
+      <strong>Мир Троссов — гекс-редактор</strong>
+      <div id="tools">
+        <button id="undo" title="Отменить (Ctrl+Z)">↶ отмена</button>
+        <span id="zoomctl">
+          <button id="zoomOut">−</button>
+          <span id="zoomVal">100%</span>
+          <button id="zoomIn">+</button>
+        </span>
+      </div>
+      <span id="status">Германия · 25 км</span>
+    </header>
+    <main id="stage">
+      <canvas id="map"></canvas>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
