@@ -1618,3 +1618,35 @@ Parallel work started:
 - `Kepler`: #91 ride navigation UX from selected map/object flow into playable ride and back, without touching ride art or map assets.
 - `Lagrange`: #64 Germany terrain accuracy audit/contract, focused on source-backed terrain checks and documentation, not a visual art pass.
 - `Faraday`: #55 city landmark coordinate calibration/contract, focused on city positions, pictogram coverage and label attachment without changing terrain art.
+
+## Iteration 2026-06-01 04:16
+
+Integrated reviewed #91 ride navigation UX:
+
+- Worker: `Kepler`.
+- Worktree: `/home/alexey/git/cable-world/worktrees/issue-91-ride-map-object-flow`.
+- Worker branch: `issue-91-ride-map-object-flow`.
+- Worker commit: `982f29d Open ride directly from map selection`.
+- Integrated commit on `main`: `c90f1a5 Open ride directly from map selection`.
+- Decision: `ACCEPT` for #91 scope; #91 closed.
+
+What landed:
+
+- Added direct `Поездка` action on the map after selecting an object.
+- Ride opens from map context and returns to the map with selected object, pan, zoom and marker selection preserved.
+- Ride back button is context-aware for map/object/card contexts.
+- Objects without route data still open ride empty state with playable controls disabled.
+- Runtime coverage checks map/object -> ride -> return and keeps #89 map return behavior covered.
+
+Verification on `main`:
+
+- `python3 -m unittest tests.test_ride_mode_contract tests.test_app_shell_contract`: PASS, 17 tests.
+- `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
+- `python3 -m unittest discover -s tests`: PASS, 270 tests, 9 skipped.
+- `godot --headless --path . --import --quit`: PASS.
+- `godot --headless --path . --quit-after 1`: exit 0 with documented Godot headless teardown diagnostics.
+
+Parent #52:
+
+- Commented on #52 that the direct map/object -> playable ride -> return context requirement is complete.
+- #52 remains open for #92 ride art/production polish.
