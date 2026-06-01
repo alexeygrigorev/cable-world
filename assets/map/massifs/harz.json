@@ -1,28 +1,21 @@
 {
   "cropped_size_px": [
-    442,
+    487,
     441
   ],
   "extends_to": [],
   "geo_bounds": {
     "max_latitude": 52.25336,
-    "max_longitude": 11.33439,
+    "max_longitude": 11.37578,
     "min_latitude": 51.38602,
-    "min_longitude": 9.92741
+    "min_longitude": 9.82554
   },
   "glyphs": [
     {
-      "glyph": "highland_forest_1",
+      "glyph": "massif_harz_brocken",
       "latitude": 51.78,
-      "longitude": 10.5,
-      "width": 188,
-      "y_offset": 0.0
-    },
-    {
-      "glyph": "highland_forest_2",
-      "latitude": 51.55,
-      "longitude": 10.92,
-      "width": 138,
+      "longitude": 10.62,
+      "width": 250,
       "y_offset": 0.0
     }
   ],
@@ -31,9 +24,9 @@
   "kind": "isolated_mountain_range",
   "label": "Harz",
   "map_bbox_px": [
-    852.5,
+    836.5,
     949.5,
-    1073.5,
+    1080.0,
     1170.0
   ],
   "massif_segments": [],
@@ -65,12 +58,12 @@
     }
   ],
   "render_bbox_px": [
-    1705,
+    1673,
     1899,
-    2147,
+    2160,
     2340
   ],
-  "replacement_status": "readability_placeholder_needs_custom_harz_asset",
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
   "ridge_bands": [
     {
       "height": 52,

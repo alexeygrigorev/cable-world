@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    367,
+    550,
     627
   ],
   "extends_to": [
@@ -11,15 +11,23 @@
     "max_latitude": 50.79849,
     "max_longitude": 7.79146,
     "min_latitude": 49.52046,
-    "min_longitude": 6.62321
+    "min_longitude": 6.04068
   },
-  "glyphs": [],
+  "glyphs": [
+    {
+      "glyph": "massif_eifel_hunsrueck_low",
+      "latitude": 50.18,
+      "longitude": 6.72,
+      "width": 225,
+      "y_offset": 0.0
+    }
+  ],
   "id": "eifel_hunsrueck",
   "image": "eifel_hunsrueck.png",
   "kind": "low_highland",
   "label": "Eifel Hunsrueck",
   "map_bbox_px": [
-    333.5,
+    242.0,
     1317.0,
     517.0,
     1630.5
@@ -49,12 +57,12 @@
     }
   ],
   "render_bbox_px": [
-    667,
+    484,
     2634,
     1034,
     3261
   ],
-  "replacement_status": "needs_custom_low_highland_asset",
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
   "ridge_bands": [
     {
       "height": 30,

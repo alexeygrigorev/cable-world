@@ -210,9 +210,8 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(6.20, 46.78), (7.10, 46.55), (8.05, 46.45)],
         "shadow": [(6.00, 46.95), (7.05, 46.66), (8.35, 46.58), (8.55, 47.18), (7.25, 47.30), (6.10, 47.22)],
         "glyphs": [
-            ("alps_range_3", 6.75, 46.78, 300, 0.00),
-            ("alps_peak_1", 7.45, 46.58, 150, -0.03),
-            ("alps_range_1", 7.92, 46.72, 255, 0.04),
+            ("massif_alps_wall_1", 6.95, 46.74, 320, 0.00),
+            ("massif_alps_wall_2", 7.82, 46.66, 292, 0.03),
         ],
     },
     {
@@ -222,9 +221,8 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(8.05, 46.48), (9.10, 46.46), (10.20, 46.58)],
         "shadow": [(7.75, 46.70), (9.05, 46.46), (10.45, 46.62), (10.65, 47.28), (9.25, 47.28), (7.80, 47.14)],
         "glyphs": [
-            ("alps_range_1", 8.60, 46.72, 330, 0.00),
-            ("alps_peak_2", 9.35, 46.52, 170, -0.05),
-            ("alps_range_3", 10.00, 46.82, 300, 0.03),
+            ("massif_alps_wall_2", 8.58, 46.68, 360, 0.00),
+            ("massif_alps_wall_1", 9.70, 46.76, 340, 0.03),
         ],
     },
     {
@@ -234,10 +232,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(10.20, 46.60), (11.30, 46.82), (12.45, 47.05)],
         "shadow": [(9.95, 46.84), (11.25, 46.74), (12.75, 47.06), (12.95, 47.78), (11.25, 47.78), (10.05, 47.46)],
         "glyphs": [
-            ("alps_range_2", 10.55, 46.96, 330, 0.00),
-            ("alps_range_1", 11.42, 47.12, 320, -0.01),
-            ("alps_peak_1", 12.05, 46.95, 160, -0.06),
-            ("alps_range_3", 12.45, 47.24, 275, 0.03),
+            ("massif_alps_wall_1", 10.55, 47.02, 350, 0.00),
+            ("massif_alps_wall_2", 11.62, 47.18, 340, 0.02),
+            ("massif_alps_wall_1", 12.52, 47.34, 285, 0.04),
         ],
     },
     {
@@ -248,10 +245,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(10.15, 47.55), (11.10, 47.55), (12.25, 47.62), (13.05, 47.70)],
         "shadow": [(9.85, 47.48), (10.95, 47.36), (12.45, 47.46), (13.35, 47.70), (13.20, 48.04), (11.45, 47.98), (10.00, 47.86)],
         "glyphs": [
-            ("alps_range_2", 10.55, 47.57, 185, -0.02),
-            ("alps_peak_1", 10.98, 47.45, 125, -0.08),
-            ("alps_range_1", 11.65, 47.64, 195, -0.01),
-            ("alps_range_3", 12.55, 47.74, 175, 0.00),
+            ("massif_alps_wall_2", 10.65, 47.58, 225, -0.02),
+            ("massif_alps_wall_1", 11.62, 47.66, 235, -0.01),
+            ("massif_alps_wall_2", 12.58, 47.78, 210, 0.00),
         ],
     },
     {
@@ -261,10 +257,9 @@ ALPINE_MASSIF_SEGMENTS = [
         "arc": [(12.45, 47.05), (13.70, 47.28), (15.25, 47.62)],
         "shadow": [(12.20, 47.26), (13.75, 47.18), (15.75, 47.60), (15.95, 48.18), (14.05, 48.15), (12.35, 47.82)],
         "glyphs": [
-            ("alps_range_1", 13.05, 47.34, 300, 0.00),
-            ("alps_peak_2", 13.82, 47.24, 145, -0.04),
-            ("alps_range_3", 14.45, 47.56, 290, 0.02),
-            ("alps_range_2", 15.20, 47.78, 245, 0.04),
+            ("massif_alps_wall_1", 13.05, 47.40, 330, 0.00),
+            ("massif_alps_wall_2", 14.18, 47.58, 330, 0.02),
+            ("massif_alps_wall_1", 15.15, 47.78, 270, 0.04),
         ],
     },
 ]
@@ -288,7 +283,7 @@ RELIEF_REGIONS = [
                 "step": 34,
             },
         ],
-        "mountain_glyphs": [("highland_forest_2", 8.00, 48.18, 150)],
+        "mountain_glyphs": [("massif_black_forest_spine", 8.02, 48.23, 235)],
         "mountains": [],
     },
     {
@@ -343,7 +338,7 @@ RELIEF_REGIONS = [
                 "step": 34,
             },
         ],
-        "mountain_glyphs": [("highland_forest_3", 12.95, 49.20, 150)],
+        "mountain_glyphs": [("massif_bavarian_forest", 12.95, 49.20, 210)],
         "mountains": [],
     },
     {
@@ -371,7 +366,7 @@ RELIEF_REGIONS = [
                 "step": 28,
             },
         ],
-        "mountain_glyphs": [("highland_forest_1", 10.50, 51.78, 188), ("highland_forest_2", 10.92, 51.55, 138)],
+        "mountain_glyphs": [("massif_harz_brocken", 10.62, 51.78, 250)],
         "mountains": [],
     },
     {
@@ -393,7 +388,7 @@ RELIEF_REGIONS = [
                 "step": 32,
             },
         ],
-        "mountain_glyphs": [("border_highland_1", 13.10, 50.66, 145), ("border_highland_2", 14.05, 50.75, 125)],
+        "mountain_glyphs": [("massif_erzgebirge_ridge", 13.55, 50.72, 245)],
         "mountains": [],
     },
     {
@@ -415,7 +410,7 @@ RELIEF_REGIONS = [
                 "step": 28,
             },
         ],
-        "mountain_glyphs": [("border_highland_2", 14.18, 50.95, 108)],
+        "mountain_glyphs": [("massif_saxon_switzerland_sandstone", 14.18, 50.96, 170)],
         "mountains": [],
     },
     {
@@ -437,6 +432,7 @@ RELIEF_REGIONS = [
                 "step": 34,
             },
         ],
+        "mountain_glyphs": [("massif_eifel_hunsrueck_low", 6.72, 50.18, 225)],
         "mountains": [],
     },
     {

@@ -14,58 +14,51 @@
     }
   ],
   "cropped_size_px": [
-    1177,
-    589
+    1236,
+    613
   ],
   "geo_bounds": {
-    "max_latitude": 47.84425,
-    "max_longitude": 13.29526,
+    "max_latitude": 47.89548,
+    "max_longitude": 13.42578,
     "min_latitude": 46.57116,
-    "min_longitude": 9.5486
+    "min_longitude": 9.4913
   },
   "glyphs": [
     {
-      "glyph": "alps_range_2",
-      "latitude": 46.96,
+      "glyph": "massif_alps_wall_1",
+      "latitude": 47.02,
       "longitude": 10.55,
-      "width": 330,
+      "width": 350,
       "y_offset": 0.0
     },
     {
-      "glyph": "alps_range_1",
-      "latitude": 47.12,
-      "longitude": 11.42,
-      "width": 320,
-      "y_offset": -0.01
+      "glyph": "massif_alps_wall_2",
+      "latitude": 47.18,
+      "longitude": 11.62,
+      "width": 340,
+      "y_offset": 0.02
     },
     {
-      "glyph": "alps_peak_1",
-      "latitude": 46.95,
-      "longitude": 12.05,
-      "width": 160,
-      "y_offset": -0.06
-    },
-    {
-      "glyph": "alps_range_3",
-      "latitude": 47.24,
-      "longitude": 12.45,
-      "width": 275,
-      "y_offset": 0.03
+      "glyph": "massif_alps_wall_1",
+      "latitude": 47.34,
+      "longitude": 12.52,
+      "width": 285,
+      "y_offset": 0.04
     }
   ],
   "id": "bavarian_tyrol_alps_massif",
   "image": "bavarian_tyrol_alps_massif.png",
   "label": "Bavarian and Tyrol Alps",
   "map_bbox_px": [
-    793.0,
-    2029.5,
-    1381.5,
+    784.0,
+    2017.5,
+    1402.0,
     2324.0
   ],
   "render_bbox_px": [
-    1586,
-    4059,
-    2763,
+    1568,
+    4035,
+    2804,
     4648
   ],
   "required_country_overlap": "",

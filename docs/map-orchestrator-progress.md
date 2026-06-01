@@ -2067,3 +2067,23 @@ Recorded in `docs/active-map-backlog.md`:
 - after proving the massif pipeline, reuse it for Alps and later Switzerland/Austria/Italy/other country work.
 
 Current instruction: stop spending time on invisible micro-polish; first produce a screenshot-level mountain glyph improvement that can be reused.
+
+## Iteration 2026-06-01 First Massif Glyph Sheet Integration
+
+Implemented the first visible proof of the reusable massif glyph pipeline on `main`:
+
+- generated one consistent raster sheet for current mountain families;
+- sliced it into transparent `assets/map/glyphs/massif_*.png` assets with `map_pipeline/slice_massif_glyphs.py`;
+- replaced active generic placements with named massif glyphs for Alps, Harz, Black Forest, Bavarian Forest, Erzgebirge, Saxon Switzerland and Eifel/Hunsrück;
+- regenerated `assets/map/germany_styled.png` and all `assets/map/massifs/*.png/*.json` source layers;
+- documented the production direction in `docs/massif-glyph-pipeline.md`: geo-layout/elevation mask first, then image-reference/image-to-image generation, then slicing, anchoring and screenshot review.
+
+Self-audit:
+
+- This is visible progress and fixes the "all mountains are generic/random" problem.
+- This is still a first pass, not 10/10: the Alps need elevation-layout guided segment shapes, and the base land texture still needs more atlas-like detail.
+
+Verification:
+
+- `uv run python -m map_pipeline.compose_map`: PASS.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract`: PASS, 30 tests.

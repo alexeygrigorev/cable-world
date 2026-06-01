@@ -85,9 +85,10 @@
         "austrian_alps_massif"
       ],
       "allowed_glyph_prefixes": [
-        "alps_"
+        "alps_",
+        "massif_alps_"
       ],
-      "replacement_status": "needs_elevation_derived_art"
+      "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review"
     },
     {
       "id": "harz",
@@ -104,10 +105,9 @@
         "harz_south_spur"
       ],
       "allowed_glyphs": [
-        "highland_forest_1",
-        "highland_forest_2"
+        "massif_harz_brocken"
       ],
-      "replacement_status": "readability_placeholder_needs_custom_harz_asset"
+      "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review"
     },
     {
       "id": "black_forest",
@@ -123,9 +123,9 @@
         "black_forest_spine"
       ],
       "allowed_glyphs": [
-        "highland_forest_2"
+        "massif_black_forest_spine"
       ],
-      "replacement_status": "needs_custom_forest_highland_asset"
+      "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review"
     },
     {
       "id": "bavarian_forest",
@@ -141,9 +141,9 @@
         "bavarian_forest_spine"
       ],
       "allowed_glyphs": [
-        "highland_forest_3"
+        "massif_bavarian_forest"
       ],
-      "replacement_status": "needs_custom_forest_highland_asset"
+      "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review"
     },
     {
       "id": "erzgebirge",
@@ -159,10 +159,9 @@
         "erzgebirge_border_spine"
       ],
       "allowed_glyphs": [
-        "border_highland_1",
-        "border_highland_2"
+        "massif_erzgebirge_ridge"
       ],
-      "replacement_status": "needs_custom_erzgebirge_asset"
+      "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review"
     },
     {
       "id": "saxon_switzerland",
@@ -178,9 +177,9 @@
         "elbe_sandstone_rim"
       ],
       "allowed_glyphs": [
-        "border_highland_2"
+        "massif_saxon_switzerland_sandstone"
       ],
-      "replacement_status": "needs_custom_sandstone_asset"
+      "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review"
     },
     {
       "id": "eifel_hunsrueck",
@@ -195,8 +194,10 @@
       "required_ridge_bands": [
         "eifel_hunsrueck_low_spine"
       ],
-      "allowed_glyphs": [],
-      "replacement_status": "needs_custom_low_highland_asset"
+      "allowed_glyphs": [
+        "massif_eifel_hunsrueck_low"
+      ],
+      "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review"
     }
   ]
 }

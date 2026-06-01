@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    274,
+    324,
     265
   ],
   "extends_to": [
@@ -8,16 +8,16 @@
   ],
   "geo_bounds": {
     "max_latitude": 51.2926,
-    "max_longitude": 14.61949,
+    "max_longitude": 14.69589,
     "min_latitude": 50.76228,
-    "min_longitude": 13.74728
+    "min_longitude": 13.66452
   },
   "glyphs": [
     {
-      "glyph": "border_highland_2",
-      "latitude": 50.95,
+      "glyph": "massif_saxon_switzerland_sandstone",
+      "latitude": 50.96,
       "longitude": 14.18,
-      "width": 108,
+      "width": 170,
       "y_offset": 0.0
     }
   ],
@@ -26,9 +26,9 @@
   "kind": "sandstone_highland",
   "label": "Saxon Switzerland / Elbe Sandstone",
   "map_bbox_px": [
-    1452.5,
+    1439.5,
     1193.5,
-    1589.5,
+    1601.5,
     1326.0
   ],
   "massif_segments": [],
@@ -60,12 +60,12 @@
     }
   ],
   "render_bbox_px": [
-    2905,
+    2879,
     2387,
-    3179,
+    3203,
     2652
   ],
-  "replacement_status": "needs_custom_sandstone_asset",
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
   "ridge_bands": [
     {
       "height": 28,

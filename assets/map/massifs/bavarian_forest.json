@@ -1,6 +1,6 @@
 {
   "cropped_size_px": [
-    398,
+    415,
     434
   ],
   "extends_to": [
@@ -11,14 +11,14 @@
     "max_latitude": 49.7451,
     "max_longitude": 13.63905,
     "min_latitude": 48.84453,
-    "min_longitude": 12.37213
+    "min_longitude": 12.31801
   },
   "glyphs": [
     {
-      "glyph": "highland_forest_3",
+      "glyph": "massif_bavarian_forest",
       "latitude": 49.2,
       "longitude": 12.95,
-      "width": 150,
+      "width": 210,
       "y_offset": 0.0
     }
   ],
@@ -27,7 +27,7 @@
   "kind": "forested_highland",
   "label": "Bavarian Forest",
   "map_bbox_px": [
-    1236.5,
+    1228.0,
     1576.0,
     1435.5,
     1793.0
@@ -57,12 +57,12 @@
     }
   ],
   "render_bbox_px": [
-    2473,
+    2456,
     3152,
     2871,
     3586
   ],
-  "replacement_status": "needs_custom_forest_highland_asset",
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
   "ridge_bands": [
     {
       "height": 36,

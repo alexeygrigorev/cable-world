@@ -1,7 +1,7 @@
 {
   "cropped_size_px": [
-    3208,
-    1061
+    3180,
+    1079
   ],
   "extends_to": [
     "France",
@@ -13,8 +13,8 @@
   "geo_bounds": {
     "max_latitude": 48.60314,
     "max_longitude": 16.03921,
-    "min_latitude": 46.32122,
-    "min_longitude": 5.82741
+    "min_latitude": 46.28166,
+    "min_longitude": 5.91654
   },
   "glyphs": [],
   "id": "alps",
@@ -22,10 +22,10 @@
   "kind": "cross_border_mountain",
   "label": "Alps",
   "map_bbox_px": [
-    208.5,
+    222.5,
     1850.5,
     1812.5,
-    2381.0
+    2390.0
   ],
   "massif_segments": [
     "western_alps_massif",
@@ -90,12 +90,12 @@
     }
   ],
   "render_bbox_px": [
-    417,
+    445,
     3701,
     3625,
-    4762
+    4780
   ],
-  "replacement_status": "needs_elevation_derived_art",
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
   "ridge_bands": [
     {
       "height": 82,

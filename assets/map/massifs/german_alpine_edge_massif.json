@@ -19,41 +19,34 @@
   ],
   "cropped_size_px": [
     1153,
-    376
+    403
   ],
   "geo_bounds": {
-    "max_latitude": 48.102,
+    "max_latitude": 48.15934,
     "max_longitude": 13.43851,
     "min_latitude": 47.29683,
     "min_longitude": 9.76825
   },
   "glyphs": [
     {
-      "glyph": "alps_range_2",
-      "latitude": 47.57,
-      "longitude": 10.55,
-      "width": 185,
+      "glyph": "massif_alps_wall_2",
+      "latitude": 47.58,
+      "longitude": 10.65,
+      "width": 225,
       "y_offset": -0.02
     },
     {
-      "glyph": "alps_peak_1",
-      "latitude": 47.45,
-      "longitude": 10.98,
-      "width": 125,
-      "y_offset": -0.08
-    },
-    {
-      "glyph": "alps_range_1",
-      "latitude": 47.64,
-      "longitude": 11.65,
-      "width": 195,
+      "glyph": "massif_alps_wall_1",
+      "latitude": 47.66,
+      "longitude": 11.62,
+      "width": 235,
       "y_offset": -0.01
     },
     {
-      "glyph": "alps_range_3",
-      "latitude": 47.74,
-      "longitude": 12.55,
-      "width": 175,
+      "glyph": "massif_alps_wall_2",
+      "latitude": 47.78,
+      "longitude": 12.58,
+      "width": 210,
       "y_offset": 0.0
     }
   ],
@@ -62,13 +55,13 @@
   "label": "German Alpine Edge",
   "map_bbox_px": [
     827.5,
-    1969.0,
+    1955.5,
     1404.0,
     2157.0
   ],
   "render_bbox_px": [
     1655,
-    3938,
+    3911,
     2808,
     4314
   ],

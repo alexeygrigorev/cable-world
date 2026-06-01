@@ -1,30 +1,23 @@
 {
   "cropped_size_px": [
-    555,
-    296
+    478,
+    291
   ],
   "extends_to": [
     "Czechia"
   ],
   "geo_bounds": {
     "max_latitude": 51.16906,
-    "max_longitude": 14.42531,
-    "min_latitude": 50.57472,
-    "min_longitude": 12.65862
+    "max_longitude": 14.29161,
+    "min_latitude": 50.58483,
+    "min_longitude": 12.77003
   },
   "glyphs": [
     {
-      "glyph": "border_highland_1",
-      "latitude": 50.66,
-      "longitude": 13.1,
-      "width": 145,
-      "y_offset": 0.0
-    },
-    {
-      "glyph": "border_highland_2",
-      "latitude": 50.75,
-      "longitude": 14.05,
-      "width": 125,
+      "glyph": "massif_erzgebirge_ridge",
+      "latitude": 50.72,
+      "longitude": 13.55,
+      "width": 245,
       "y_offset": 0.0
     }
   ],
@@ -33,10 +26,10 @@
   "kind": "border_mountain_range",
   "label": "Erzgebirge",
   "map_bbox_px": [
-    1281.5,
+    1299.0,
     1224.5,
-    1559.0,
-    1372.5
+    1538.0,
+    1370.0
   ],
   "massif_segments": [],
   "placement_policy": "named_border_region_polygon_and_spine",
@@ -63,12 +56,12 @@
     }
   ],
   "render_bbox_px": [
-    2563,
+    2598,
     2449,
-    3118,
-    2745
+    3076,
+    2740
   ],
-  "replacement_status": "needs_custom_erzgebirge_asset",
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
   "ridge_bands": [
     {
       "height": 36,
