@@ -358,7 +358,7 @@ const MAP_FILTER_VISITED := "visited"
 const MAP_FILTER_NOT_VISITED := "not_visited"
 const MAP_SCOPE_GERMANY := "germany"
 const MAP_SCOPE_ALL := "all"
-const GERMANY_INITIAL_FOCUS_COORDINATES := Vector2(10.70, 52.00)
+const GERMANY_INITIAL_FOCUS_COORDINATES := Vector2(11.10, 51.70)
 const TRANSPORT_TYPE_ICON := {
 	"cable_gondola": "icon_cable_gondola",
 	"cable_aerial_tram": "icon_aerial_tram",

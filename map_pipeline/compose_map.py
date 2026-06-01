@@ -31,6 +31,8 @@ NEIGHBOR_LAND = "#8f9150"
 GERMANY_LAND = "#9da05a"
 GERMANY_EDGE = "#463c28"
 BORDER = "#5a5037"
+COUNTRY_NEIGHBOR_BORDER_WIDTH = 1
+COUNTRY_GERMANY_EDGE_WIDTH = 2
 LAKE = "#2d7285"
 RIVER = "#3b8fa3"
 ROUTE = "#d8c17a"
@@ -1315,10 +1317,10 @@ def _draw_country_layer(canvas, proj):
 
     for _, row in countries.iterrows():
         if row["ADMIN"] != "Germany":
-            _draw_geometry(draw, row.geometry, proj, NEIGHBOR_LAND, BORDER, 2 * RENDER_SCALE)
+            _draw_geometry(draw, row.geometry, proj, NEIGHBOR_LAND, BORDER, COUNTRY_NEIGHBOR_BORDER_WIDTH * RENDER_SCALE)
 
     germany = countries[countries["ADMIN"] == "Germany"].iloc[0].geometry
-    _draw_geometry(draw, germany, proj, GERMANY_LAND, GERMANY_EDGE, 5 * RENDER_SCALE)
+    _draw_geometry(draw, germany, proj, GERMANY_LAND, GERMANY_EDGE, COUNTRY_GERMANY_EDGE_WIDTH * RENDER_SCALE)
 
     mask = Image.new("L", canvas.size, 0)
     mask_draw = ImageDraw.Draw(mask)
@@ -1446,10 +1448,9 @@ def _draw_base_water_texture(canvas, water_mask):
 
 
 def _draw_country_border_overlay(canvas, proj, germany_geom):
-    draw = ImageDraw.Draw(canvas)
-    _draw_geometry(draw, germany_geom, proj, None, (230, 201, 119, 150), 7 * RENDER_SCALE)
-    _draw_geometry(draw, germany_geom, proj, None, GERMANY_EDGE, 4 * RENDER_SCALE)
-    _draw_geometry(draw, germany_geom, proj, None, (49, 39, 25, 230), 2 * RENDER_SCALE)
+    # The base country layer already outlines Germany. A second overlay reads as
+    # a technical route stroke near Dresden/Erzgebirge, so keep this pass inert.
+    return
 
 
 def _draw_ocean_texture(canvas):
@@ -2657,7 +2658,6 @@ def main():
     _draw_atlas_details(canvas, proj)
     _draw_neighbor_country_labels(canvas, proj, neighbor_mask)
     _draw_map_labels(canvas, proj, germany_mask)
-    _draw_country_border_overlay(canvas, proj, germany)
     _write_massif_source_manifest()
 
     print("Step 3: Finish clean interactive map underlay")
