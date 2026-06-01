@@ -1784,3 +1784,19 @@ Verification on `main`:
 - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 11 checks.
 
 No render changes were made. This protects the direction toward separate massif glyph/source layers, but it does not improve the map visually by itself.
+
+## Iteration 2026-06-01 06:12
+
+Working #94 map/list switch pictogram in `worktrees/issue-94-map-list-switch-pictogram`:
+
+- Reworked the generated in-code map/list icons in `scripts/main_screen.gd`.
+- The map icon now reads as a folded atlas map with route, pin and compass arrow.
+- The list icon now reads as an atlas object ledger with rows, small object pictograms and a switch chevron instead of a generic paper/list glyph.
+- Preserved the fullscreen map-first layout, icon-only map toggle, explicit `Карта` return button and existing touch-target sizes.
+- Added static contract coverage in `tests/test_app_shell_contract.py`.
+- Added Godot runtime checks that both toggle/return icons are the dedicated 40px pictograms.
+
+Visual self-review:
+
+- Temporary screenshot generated with `xvfb-run -a godot --path . --script tmp/capture_toggle_icon.gd`.
+- Reviewed `tmp/issue-94-list-icon.png` and `tmp/issue-94-map-toggle.png`; the toggle is visibly atlas-styled and does not visually merge with zoom controls.

@@ -13,6 +13,11 @@ const ATLAS_CONTROL_BORDER := Color("#3b2a18")
 const ATLAS_CONTROL_INK := Color("#27321f")
 const ATLAS_CONTROL_ACCENT := Color("#31544d")
 const ATLAS_CONTROL_SHADOW := Color(0.12, 0.08, 0.03, 0.42)
+const ATLAS_ICON_PARCHMENT := Color("#f2e5bd")
+const ATLAS_ICON_PARCHMENT_DARK := Color("#d7c06f")
+const ATLAS_ICON_GREEN := Color("#8fb18a")
+const ATLAS_ICON_BLUE := Color("#c7d6da")
+const ATLAS_ICON_RED := Color("#c46335")
 const MAP_LIST_ICON_SIZE := Vector2i(40, 40)
 const MAP_LIST_TOGGLE_SIZE := Vector2(60.0, 60.0)
 const MAP_LIST_TOGGLE_MARGIN := Vector2(14.0, 14.0)
@@ -803,28 +808,54 @@ func _make_map_list_icon(kind: String) -> Texture2D:
 	return ImageTexture.create_from_image(image)
 
 func _draw_map_icon(image: Image) -> void:
-	_fill_icon_rect(image, Rect2i(4, 8, 9, 24), Color("#d7c06f"))
-	_fill_icon_rect(image, Rect2i(14, 6, 10, 24), Color("#8fb18a"))
-	_fill_icon_rect(image, Rect2i(25, 9, 9, 24), Color("#c7d6da"))
+	_fill_icon_rect(image, Rect2i(4, 8, 9, 24), ATLAS_ICON_PARCHMENT_DARK)
+	_fill_icon_rect(image, Rect2i(14, 6, 10, 24), ATLAS_ICON_GREEN)
+	_fill_icon_rect(image, Rect2i(25, 9, 9, 24), ATLAS_ICON_BLUE)
 	_draw_icon_line(image, Vector2i(13, 8), Vector2i(13, 32), ATLAS_CONTROL_BORDER)
 	_draw_icon_line(image, Vector2i(24, 6), Vector2i(24, 31), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(8, 25), Vector2i(17, 18), ATLAS_CONTROL_ACCENT)
-	_draw_icon_line(image, Vector2i(17, 18), Vector2i(29, 22), ATLAS_CONTROL_ACCENT)
+	_draw_icon_line(image, Vector2i(7, 28), Vector2i(16, 20), ATLAS_CONTROL_ACCENT)
+	_draw_icon_line(image, Vector2i(16, 20), Vector2i(28, 24), ATLAS_CONTROL_ACCENT)
 	_draw_icon_pin(image, Vector2i(20, 16), Color("#7f3f2a"))
+	_draw_compass_arrow(image, Vector2i(30, 12))
 
 func _draw_list_icon(image: Image) -> void:
-	_fill_icon_rect(image, Rect2i(7, 4, 24, 30), Color("#e7d59b"))
-	_fill_icon_rect(image, Rect2i(10, 7, 24, 29), Color("#f2e5bd"))
-	_draw_icon_line(image, Vector2i(10, 7), Vector2i(33, 7), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(33, 7), Vector2i(33, 35), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(10, 35), Vector2i(33, 35), ATLAS_CONTROL_BORDER)
-	_draw_icon_line(image, Vector2i(10, 7), Vector2i(10, 35), ATLAS_CONTROL_BORDER)
-	_fill_icon_rect(image, Rect2i(13, 3, 12, 5), Color("#c46335"))
+	_fill_icon_rect(image, Rect2i(7, 5, 24, 30), ATLAS_ICON_PARCHMENT_DARK)
+	_fill_icon_rect(image, Rect2i(10, 4, 24, 30), ATLAS_ICON_PARCHMENT)
+	_draw_icon_outline_rect(image, Rect2i(10, 4, 24, 30), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, Vector2i(12, 9), Vector2i(31, 9), Color("#b68b4a"))
+	_fill_icon_rect(image, Rect2i(14, 1, 10, 6), ATLAS_ICON_RED)
+	_draw_icon_outline_rect(image, Rect2i(14, 1, 10, 6), ATLAS_CONTROL_BORDER)
 	for row in range(3):
-		var y := 12 + row * 7
-		_draw_icon_pin(image, Vector2i(15, y + 1), ATLAS_CONTROL_ACCENT)
-		_fill_icon_rect(image, Rect2i(21, y, 9, 2), ATLAS_CONTROL_INK)
-		_fill_icon_rect(image, Rect2i(21, y + 3, 7, 2), Color("#6e5431"))
+		var y := 13 + row * 6
+		_draw_object_row_icon(image, Vector2i(15, y), row)
+		_fill_icon_rect(image, Rect2i(21, y - 1, 9, 2), ATLAS_CONTROL_INK)
+		_fill_icon_rect(image, Rect2i(21, y + 2, 7, 2), Color("#6e5431"))
+	_draw_return_chevron(image, Vector2i(31, 30), false)
+
+func _draw_object_row_icon(image: Image, center: Vector2i, row: int) -> void:
+	var color := ATLAS_CONTROL_ACCENT
+	if row == 1:
+		color = Color("#7f3f2a")
+	elif row == 2:
+		color = Color("#5e6c88")
+	_fill_icon_rect(image, Rect2i(center.x - 2, center.y - 2, 5, 5), color)
+	_fill_icon_rect(image, Rect2i(center.x - 1, center.y - 1, 3, 3), ATLAS_ICON_PARCHMENT)
+
+func _draw_compass_arrow(image: Image, center: Vector2i) -> void:
+	_draw_icon_line(image, center + Vector2i(-4, 4), center + Vector2i(3, -4), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, center + Vector2i(3, -4), center + Vector2i(2, 2), ATLAS_CONTROL_BORDER)
+	_fill_icon_rect(image, Rect2i(center.x + 1, center.y - 6, 3, 3), ATLAS_ICON_RED)
+
+func _draw_return_chevron(image: Image, center: Vector2i, points_left: bool) -> void:
+	var direction := -1 if points_left else 1
+	_draw_icon_line(image, center + Vector2i(-direction * 4, -4), center + Vector2i(direction * 3, 0), ATLAS_CONTROL_BORDER)
+	_draw_icon_line(image, center + Vector2i(direction * 3, 0), center + Vector2i(-direction * 4, 4), ATLAS_CONTROL_BORDER)
+
+func _draw_icon_outline_rect(image: Image, rect: Rect2i, color: Color) -> void:
+	_draw_icon_line(image, rect.position, rect.position + Vector2i(rect.size.x - 1, 0), color)
+	_draw_icon_line(image, rect.position + Vector2i(rect.size.x - 1, 0), rect.position + rect.size - Vector2i(1, 1), color)
+	_draw_icon_line(image, rect.position + rect.size - Vector2i(1, 1), rect.position + Vector2i(0, rect.size.y - 1), color)
+	_draw_icon_line(image, rect.position + Vector2i(0, rect.size.y - 1), rect.position, color)
 
 func _draw_icon_pin(image: Image, center: Vector2i, color: Color) -> void:
 	_fill_icon_rect(image, Rect2i(center.x - 2, center.y - 2, 5, 5), color)
