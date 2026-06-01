@@ -12,6 +12,19 @@
   - #109 `List mode follow-up: align list screen with current atlas map style`.
   - #110 `Map/list toggle follow-up: replace toggle with polished atlas pictogram`.
 
+## 2026-06-01 - #109 list atlas style accepted
+
+- Working branch/worktree: `issue-109-list-atlas-style` / `worktrees/issue-109-list-atlas-style`.
+- Merged accepted commit: `4a3f51d Add atlas backdrop to list mode`.
+- Added `ListAtlasBackdrop`: muted current atlas map texture behind list mode, hidden on the fullscreen map and hidden again after return-to-map.
+- Runtime coverage now asserts the backdrop exists, uses the current map texture, appears only in list mode, and does not break map/list return state.
+- Reviewer `Popper` returned `ACCEPT #109`, score `9/10`.
+- Evidence:
+  - `python3 -m unittest tests.test_app_shell_contract tests.test_ui_review_gate_contract`: PASS.
+  - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, known #65 shutdown diagnostics only.
+  - `xvfb-run -a godot --path . --script scripts/capture_ui_review_screenshots.gd`: PASS.
+  - Reviewer inspected `tmp/ui-review/mobile-390x844-map.png`, `mobile-390x844-list.png`, `landscape-844x390-map.png`, `landscape-844x390-list.png`.
+
 ## 2026-06-01 - #74 Eastern Europe/Turkey non-render contract
 
 - Working branch/worktree: `issue-74-eastern-europe-turkey-contract` / `worktrees/issue-74-eastern-europe-turkey-contract`.
