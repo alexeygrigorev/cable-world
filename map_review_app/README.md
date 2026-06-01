@@ -21,11 +21,10 @@ map_review_app/scripts/capture-godot.sh
 That command:
 
 1. clears old review images from `assets/map/review/`;
-2. rebuilds the current `city_cluster_glyphs` source sheet preview;
-3. rebuilds `city_cluster_glyphs_hi_res` when tracked hi-res assets exist;
-4. rebuilds temporary variant tabs from `tmp/city-cluster-hi-res-v*/outlined`;
-5. captures current Godot runtime map scenes at `50%`, `100%`, `150%`, and `200%`;
-6. starts the review app if `9010` is not reachable.
+2. rebuilds `city_cluster_glyphs_hi_res` when tracked hi-res assets exist;
+3. rebuilds temporary variant tabs from `tmp/city-cluster-hi-res-v*/outlined`;
+4. captures current Godot runtime map scenes at `50%`, `100%`, `150%`, and `200%`;
+5. starts the review app if `9010` is not reachable.
 
 Open:
 
@@ -58,6 +57,14 @@ tmp/city-cluster-hi-res-vN/outlined/
 ```
 
 `map_review_app/scripts/capture-godot.sh` will turn each matching folder into its own review tab. These variant tabs are for feedback only; they do not replace tracked runtime assets.
+
+The legacy low-resolution city cluster sheet can still be rebuilt manually with:
+
+```bash
+map_review_app/scripts/build-city-cluster-review.sh
+```
+
+Do not include it in the default review packet unless it is the thing being reviewed; old tabs make it harder to judge the current high-resolution candidates.
 
 The app also reads `assets/map/review/manifest.json` when present for tab ordering and names.
 
