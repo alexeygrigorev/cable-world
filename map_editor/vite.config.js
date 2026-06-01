@@ -1,8 +1,41 @@
 import { defineConfig } from "vite";
-import { writeFileSync } from "node:fs";
+import { writeFileSync, existsSync, createReadStream } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const DATA_PATH = fileURLToPath(new URL("./src/data/hex_map.json", import.meta.url));
+
+// real game assets live in the repo, outside the editor folder
+const ASSET_DIRS = [
+  fileURLToPath(new URL("../assets/sprites/city_landmark_clusters_hi_res/outlined/", import.meta.url)),
+  fileURLToPath(new URL("../assets/sprites/city_landmarks/outlined/", import.meta.url)),
+  fileURLToPath(new URL("../assets/map/glyphs/", import.meta.url)),
+  fileURLToPath(new URL("../assets/fonts/", import.meta.url)),
+];
+const MIME = { png: "image/png", ttf: "font/ttf", otf: "font/otf", woff2: "font/woff2" };
+
+// serve /asset/<file> from the game asset dirs (first match wins)
+function gameAssetsPlugin() {
+  return {
+    name: "game-assets",
+    configureServer(server) {
+      server.middlewares.use("/asset/", (req, res) => {
+        const name = decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, "");
+        const ext = name.split(".").pop();
+        if (!/^[\w.-]+$/.test(name) || !MIME[ext]) { res.statusCode = 400; return res.end(); }
+        for (const dir of ASSET_DIRS) {
+          const p = dir + name;
+          if (existsSync(p)) {
+            res.setHeader("Content-Type", MIME[ext]);
+            res.setHeader("Cache-Control", "no-cache");
+            return createReadStream(p).pipe(res);
+          }
+        }
+        res.statusCode = 404;
+        res.end();
+      });
+    },
+  };
+}
 
 // Dev middleware: lets the browser persist edits back to hex_map.json.
 // Writing the file triggers Vite HMR, so any edit (drag in browser, or me
@@ -32,7 +65,7 @@ function saveDataPlugin() {
 }
 
 export default defineConfig({
-  plugins: [saveDataPlugin()],
+  plugins: [saveDataPlugin(), gameAssetsPlugin()],
   server: { host: "0.0.0.0", port: 9050, strictPort: true },
   preview: { host: "0.0.0.0", port: 9050, strictPort: true },
 });

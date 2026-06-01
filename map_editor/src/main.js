@@ -1,6 +1,13 @@
 import "./style.css";
 import initialData from "./data/hex_map.json";
 
+// the game's label font (scripts/map_panel.gd loads the same TTF)
+const LABEL_FONT = "MapLabel";
+new FontFace(LABEL_FONT, "url(/asset/LiberationSerif-BoldItalic.ttf)")
+  .load()
+  .then((ff) => { document.fonts.add(ff); render(); })
+  .catch(() => {});
+
 const SQRT3 = Math.sqrt(3);
 const COLORS = {
   sea: "#bcd3e2",
@@ -102,26 +109,50 @@ function drawPeak(cx, cy, s) {
   ctx.restore();
 }
 
+// real game sprites, loaded on demand and cached
+const imgCache = new Map();
+function getImg(name) {
+  if (imgCache.has(name)) return imgCache.get(name);
+  const img = new Image();
+  img.onload = () => render();
+  img.src = `/asset/${name}`;
+  imgCache.set(name, img);
+  return img;
+}
+
 function drawCity(cx, cy, s, f, showLabel) {
   ctx.save();
   const capital = f.kind === "capital";
-  const rOuter = s * (capital ? 0.5 : 0.38);
-  ctx.beginPath();
-  ctx.arc(cx, cy, rOuter, 0, Math.PI * 2);
-  ctx.fillStyle = capital ? "#c0392b" : "#34495e";
-  ctx.fill();
-  ctx.lineWidth = s * 0.06;
-  ctx.strokeStyle = "#fff";
-  ctx.stroke();
+  const img = f.icon ? getImg(`city_${f.icon}.png`) : null;
+  let bottom = cy;
+  if (img && img.complete && img.naturalWidth) {
+    // sprite footprint scaled to the hex; anchored so its base sits on the hex
+    const h = s * (capital ? 5.0 : 4.0);
+    const w = h * (img.naturalWidth / img.naturalHeight);
+    ctx.drawImage(img, cx - w / 2, cy - h * 0.82, w, h);
+    bottom = cy + h * 0.18;
+  } else {
+    const r = s * (capital ? 0.5 : 0.38);
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = capital ? "#c0392b" : "#34495e";
+    ctx.fill();
+    ctx.lineWidth = s * 0.06;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+    bottom = cy + r;
+  }
   if (f.label && showLabel) {
-    ctx.font = `${(s * 0.9).toFixed(1)}px system-ui, sans-serif`;
-    ctx.textBaseline = "middle";
+    const ly = bottom - s * 0.55; // tucked closer under the city
+    ctx.font = `${(s * 0.95).toFixed(1)}px "${LABEL_FONT}", serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
     ctx.lineJoin = "round";
-    ctx.lineWidth = s * 0.18;
-    ctx.strokeStyle = "rgba(255,255,255,0.9)";
-    ctx.strokeText(f.label, cx + rOuter + 3, cy);
+    ctx.lineWidth = s * 0.2;
+    ctx.strokeStyle = "rgba(255,255,255,0.92)";
+    ctx.strokeText(f.label, cx, ly);
     ctx.fillStyle = "#2c3540";
-    ctx.fillText(f.label, cx + rOuter + 3, cy);
+    ctx.fillText(f.label, cx, ly);
   }
   ctx.restore();
 }
@@ -212,11 +243,34 @@ function render() {
     ctx.stroke();
   }
 
+  // while dragging, highlight the target anchor hex under the cursor
+  if (dragging && dragPos) {
+    const { q, r } = contentToHex(dragPos.x, dragPos.y);
+    const c = hexToContent(q, r);
+    hexPath(c.x, c.y, s);
+    ctx.fillStyle = "rgba(30,136,229,0.28)";
+    ctx.fill();
+    ctx.strokeStyle = "#1e88e5";
+    ctx.lineWidth = s * 0.12;
+    ctx.stroke();
+    // exact anchor point at the hex center
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, s * 0.16, 0, Math.PI * 2);
+    ctx.fillStyle = "#1e88e5";
+    ctx.fill();
+    ctx.lineWidth = s * 0.05;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+  }
+
   const showLabels = s * sc > 13; // only when zoomed in enough to read
   for (const f of state.features || []) {
-    const pos = f === dragging?.feature && dragPos ? dragPos : anchorContent(f);
+    const held = f === dragging?.feature;
+    const pos = held && dragPos ? dragPos : anchorContent(f);
     if (pos.x < vx0 || pos.x > vx1 || pos.y < vy0 || pos.y > vy1) continue;
+    if (held) ctx.globalAlpha = 0.5;
     if (f.glyph === "city") drawCity(pos.x, pos.y, s, f, showLabels);
+    ctx.globalAlpha = 1;
   }
 }
 

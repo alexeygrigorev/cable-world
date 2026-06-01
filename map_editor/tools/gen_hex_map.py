@@ -36,20 +36,33 @@ REGION_BOUNDS = (4.5, 46.5, 15.5, 55.5)
 # Europe = wider land context you can pan around (land only; sea is background)
 EUROPE_BOUNDS = (-12.0, 34.0, 45.0, 62.0)
 
+# name, lon, lat, kind, icon-id (matches the game's city_<icon>.png sprite)
 CITIES = [
-    ("Hamburg", 9.9937, 53.5511, "city"), ("Berlin", 13.4050, 52.5200, "capital"),
-    ("Rostock", 12.0991, 54.0924, "city"), ("Köln", 6.9603, 50.9375, "city"),
-    ("München", 11.5820, 48.1351, "city"), ("Dresden", 13.7373, 51.0504, "city"),
-    ("Stuttgart", 9.1829, 48.7758, "city"), ("Hannover", 9.7320, 52.3759, "town"),
-    ("Bremen", 8.8017, 53.0793, "town"), ("Kiel", 10.1228, 54.3233, "town"),
-    ("Lübeck", 10.6866, 53.8655, "town"), ("Düsseldorf", 6.7735, 51.2277, "town"),
-    ("Dortmund", 7.4653, 51.5136, "town"), ("Essen", 7.0116, 51.4556, "town"),
-    ("Frankfurt", 8.6821, 50.1109, "town"), ("Leipzig", 12.3731, 51.3397, "town"),
-    ("Magdeburg", 11.6276, 52.1205, "town"), ("Wolfsburg", 10.7865, 52.4227, "town"),
-    ("Kassel", 9.4797, 51.3127, "town"), ("Erfurt", 11.0299, 50.9848, "town"),
-    ("Nürnberg", 11.0767, 49.4521, "town"), ("Regensburg", 12.1016, 49.0134, "town"),
-    ("Augsburg", 10.8978, 48.3705, "town"), ("Freiburg", 7.8421, 47.9990, "town"),
-    ("Saarbrücken", 6.9969, 49.2402, "town"),
+    ("Hamburg", 9.9937, 53.5511, "city", "hamburg"),
+    ("Berlin", 13.4050, 52.5200, "capital", "berlin"),
+    ("Rostock", 12.0991, 54.0924, "city", "rostock"),
+    ("Köln", 6.9603, 50.9375, "city", "cologne"),
+    ("München", 11.5820, 48.1351, "city", "munich"),
+    ("Dresden", 13.7373, 51.0504, "city", "dresden"),
+    ("Stuttgart", 9.1829, 48.7758, "city", "stuttgart"),
+    ("Hannover", 9.7320, 52.3759, "town", "hannover"),
+    ("Bremen", 8.8017, 53.0793, "town", "bremen"),
+    ("Kiel", 10.1228, 54.3233, "town", "kiel"),
+    ("Lübeck", 10.6866, 53.8655, "town", "luebeck"),
+    ("Düsseldorf", 6.7735, 51.2277, "town", "duesseldorf"),
+    ("Dortmund", 7.4653, 51.5136, "town", "dortmund"),
+    ("Essen", 7.0116, 51.4556, "town", "essen"),
+    ("Frankfurt", 8.6821, 50.1109, "town", "frankfurt"),
+    ("Leipzig", 12.3731, 51.3397, "town", "leipzig"),
+    ("Magdeburg", 11.6276, 52.1205, "town", "magdeburg"),
+    ("Wolfsburg", 10.7865, 52.4227, "town", "wolfsburg"),
+    ("Kassel", 9.4797, 51.3127, "town", "kassel"),
+    ("Erfurt", 11.0299, 50.9848, "town", "erfurt"),
+    ("Nürnberg", 11.0767, 49.4521, "town", "nuremberg"),
+    ("Regensburg", 12.1016, 49.0134, "town", "regensburg"),
+    ("Augsburg", 10.8978, 48.3705, "town", "augsburg"),
+    ("Freiburg", 7.8421, 47.9990, "town", "freiburg"),
+    ("Saarbrücken", 6.9969, 49.2402, "town", "saarbruecken"),
 ]
 
 FOREST_POINTS = [
@@ -167,11 +180,11 @@ def main():
                 cell["terrain"] = "forest"
 
     features = []
-    for name, lon, lat, kind in CITIES:
+    for name, lon, lat, kind, icon in CITIES:
         wx, wy = merc(lon, lat)
         q, r = world_to_hex(wx, wy, s)
-        features.append({"id": name.lower().replace(" ", "-"), "glyph": "city",
-                         "kind": kind, "label": name, "lon": lon, "lat": lat,
+        features.append({"id": icon, "glyph": "city", "kind": kind,
+                         "label": name, "icon": icon, "lon": lon, "lat": lat,
                          "anchor": f"{q},{r}"})
 
     # view = world-px bbox of populated hexes (for the editor camera)
