@@ -6,6 +6,27 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _city_label_entries(script_text: str) -> dict[str, dict[str, str]]:
+    city_labels_block = script_text.split("const CITY_LABELS := [", 1)[1].split("]", 1)[0]
+    entries = {}
+    for entry in re.findall(r'\{"name": "[^"]+"[^}]+\}', city_labels_block):
+        name = re.search(r'"name": "([^"]+)"', entry).group(1)
+        lon, lat = re.search(r'"coordinates": Vector2\(([-0-9.]+), ([-0-9.]+)\)', entry).groups()
+        kind = re.search(r'"kind": "([^"]+)"', entry).group(1)
+        icon = re.search(r'"icon": "([^"]*)"', entry).group(1)
+        icon_offset_match = re.search(r'"icon_offset": (Vector2\([^)]+\))', entry)
+        entries[name] = {
+            "coordinates": f"Vector2({lon}, {lat})",
+            "lon": lon,
+            "lat": lat,
+            "kind": kind,
+            "icon": icon,
+            "icon_offset": icon_offset_match.group(1) if icon_offset_match else "",
+            "entry": entry,
+        }
+    return entries
+
+
 class MapPanelContractTest(unittest.TestCase):
     def test_map_panel_declares_local_object_marker_api(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
@@ -332,8 +353,7 @@ class MapPanelContractTest(unittest.TestCase):
 
     def test_default_city_labels_have_pictograms_or_stay_hidden(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
-        city_labels_block = script_text.split("const CITY_LABELS := [", 1)[1].split("]", 1)[0]
-        city_entries = re.findall(r'\{"name": "([^"]+)".*?"kind": "([^"]+)".*?"icon": "([^"]*)"', city_labels_block)
+        city_entries = _city_label_entries(script_text)
 
         self.assertGreaterEqual(len(city_entries), 20)
         self.assertIn("const BARE_CITY_LABEL_ZOOM := 1.55", script_text)
@@ -346,7 +366,23 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertNotIn('"Munchen"', script_text)
         self.assertNotIn('"Dusseldorf"', script_text)
 
-        for name, kind, icon_id in city_entries:
+        issue_55_major_cities = {
+            "Hamburg",
+            "Berlin",
+            "Dresden",
+            "Köln",
+            "Stuttgart",
+            "München",
+            "Bremen",
+            "Hannover",
+            "Leipzig",
+            "Nürnberg",
+        }
+        self.assertLessEqual(issue_55_major_cities, set(city_entries))
+
+        for name, city_data in city_entries.items():
+            kind = city_data["kind"]
+            icon_id = city_data["icon"]
             if kind in {"capital", "city"}:
                 self.assertTrue(icon_id, f"{name} is visible at default zoom but has no city pictogram")
                 self.assertTrue(
@@ -354,13 +390,35 @@ class MapPanelContractTest(unittest.TestCase):
                     f"{name} references a missing outlined city pictogram: {icon_id}",
                 )
 
-        no_icon_labels = [name for name, _kind, icon_id in city_entries if not icon_id]
+        no_icon_labels = [name for name, city_data in city_entries.items() if not city_data["icon"]]
+        visible_major_city_icons = {
+            name: city_entries[name]["icon"]
+            for name in issue_55_major_cities
+            if city_entries[name]["kind"] in {"capital", "city"}
+        }
+        self.assertEqual(
+            {
+                "Berlin": "berlin",
+                "Dresden": "dresden",
+                "Hamburg": "hamburg",
+                "Köln": "cologne",
+                "München": "munich",
+                "Stuttgart": "stuttgart",
+            },
+            visible_major_city_icons,
+        )
+        self.assertEqual("town", city_entries["Bremen"]["kind"])
+        self.assertEqual("town", city_entries["Hannover"]["kind"])
         self.assertIn("Leipzig", no_icon_labels)
         self.assertIn("Nürnberg", no_icon_labels)
+        for name in ["Bremen", "Hannover", "Leipzig", "Nürnberg"]:
+            with self.subTest(hidden_bare_major_city=name):
+                self.assertEqual("town", city_entries[name]["kind"])
+                self.assertEqual("", city_entries[name]["icon"])
 
     def test_primary_city_landmark_coordinates_stay_geographic(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
-        city_labels_block = script_text.split("const CITY_LABELS := [", 1)[1].split("]", 1)[0]
+        city_entries = _city_label_entries(script_text)
 
         protected_landmarks = {
             "Hamburg": {
@@ -387,20 +445,95 @@ class MapPanelContractTest(unittest.TestCase):
                 "icon": "dresden",
                 "icon_offset": None,
             },
+            "Köln": {
+                "coordinates": "Vector2(6.9603, 50.9375)",
+                "kind": "city",
+                "icon": "cologne",
+                "icon_offset": None,
+            },
+            "Stuttgart": {
+                "coordinates": "Vector2(9.1829, 48.7758)",
+                "kind": "city",
+                "icon": "stuttgart",
+                "icon_offset": None,
+            },
+            "München": {
+                "coordinates": "Vector2(11.5820, 48.1351)",
+                "kind": "city",
+                "icon": "munich",
+                "icon_offset": None,
+            },
+            "Bremen": {
+                "coordinates": "Vector2(8.8017, 53.0793)",
+                "kind": "town",
+                "icon": "",
+                "icon_offset": None,
+            },
+            "Hannover": {
+                "coordinates": "Vector2(9.7320, 52.3759)",
+                "kind": "town",
+                "icon": "",
+                "icon_offset": None,
+            },
+            "Leipzig": {
+                "coordinates": "Vector2(12.3731, 51.3397)",
+                "kind": "town",
+                "icon": "",
+                "icon_offset": None,
+            },
+            "Nürnberg": {
+                "coordinates": "Vector2(11.0767, 49.4521)",
+                "kind": "town",
+                "icon": "",
+                "icon_offset": None,
+            },
         }
 
         for name, expected in protected_landmarks.items():
             with self.subTest(city=name):
-                entry_match = re.search(r'\{"name": "%s"[^}]+\}' % re.escape(name), city_labels_block)
-                self.assertIsNotNone(entry_match)
-                entry = entry_match.group(0)
-                self.assertIn(f'"coordinates": {expected["coordinates"]}', entry)
-                self.assertIn(f'"kind": "{expected["kind"]}"', entry)
-                self.assertIn(f'"icon": "{expected["icon"]}"', entry)
+                self.assertIn(name, city_entries)
+                city_data = city_entries[name]
+                entry = city_data["entry"]
+                self.assertEqual(expected["coordinates"], city_data["coordinates"])
+                self.assertEqual(expected["kind"], city_data["kind"])
+                self.assertEqual(expected["icon"], city_data["icon"])
                 if expected["icon_offset"] is None:
                     self.assertNotIn('"icon_offset"', entry)
                 else:
-                    self.assertIn(f'"icon_offset": {expected["icon_offset"]}', entry)
+                    self.assertEqual(expected["icon_offset"], city_data["icon_offset"])
+
+    def test_protected_city_coordinates_keep_geographic_order(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+        city_entries = _city_label_entries(script_text)
+
+        lon = {name: float(city_data["lon"]) for name, city_data in city_entries.items()}
+        lat = {name: float(city_data["lat"]) for name, city_data in city_entries.items()}
+
+        self.assertGreater(lat["Rostock"], lat["Hamburg"])
+        self.assertGreater(lat["Hamburg"], lat["Berlin"])
+        self.assertGreater(lat["Berlin"], lat["Dresden"])
+        self.assertGreater(lat["Dresden"], lat["Nürnberg"])
+        self.assertGreater(lat["Nürnberg"], lat["München"])
+
+        self.assertLess(lon["Köln"], lon["Stuttgart"])
+        self.assertLess(lon["Bremen"], lon["Hannover"])
+        self.assertLess(lon["Hannover"], lon["Berlin"])
+        self.assertLess(lon["Berlin"], lon["Dresden"])
+        self.assertLess(lon["München"], lon["Leipzig"])
+
+    def test_city_label_attachment_uses_icon_rect_for_pictogram_cities(self) -> None:
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
+        city_label_body = script_text.split("func _draw_city_label", 1)[1].split("func _city_icon_rect", 1)[0]
+
+        self.assertIn("var icon_rect := _city_icon_rect(label_data, position)", city_label_body)
+        self.assertIn("if icon_rect.size != Vector2.ZERO:", city_label_body)
+        self.assertIn("icon_rect.position.y + icon_rect.size.y - CITY_ICON_LABEL_BASELINE_OVERLAP * zoom", city_label_body)
+        self.assertIn("icon_rect.get_center().x", city_label_body)
+        self.assertIn("var occupied_rect := label_rect if icon_rect.size == Vector2.ZERO else icon_rect.merge(label_rect)", city_label_body)
+        self.assertLess(
+            city_label_body.index("var icon_rect := _city_icon_rect(label_data, position)"),
+            city_label_body.index("label_rect = _centered_label_rect(font, str(label_data[\"name\"]), icon_rect.get_center().x"),
+        )
 
     def test_map_pipeline_uses_named_relief_layers(self) -> None:
         pipeline_text = (ROOT / "map_pipeline" / "compose_map.py").read_text(encoding="utf-8")
