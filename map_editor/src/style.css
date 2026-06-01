@@ -69,6 +69,30 @@ html, body {
 #panel dt { opacity: 0.6; }
 #panel dd { margin: 0; word-break: break-word; }
 #panel img.thumb { width: 100%; margin: 10px 0; border-radius: 6px; background: #0003; }
+.panel-count { font-size: 12px; opacity: 0.6; margin-bottom: 10px; }
+.obj-card {
+  border: 1px solid #ffffff14;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #ffffff08;
+  cursor: pointer;
+}
+.obj-card.sel { border-color: #1e88e5; background: #1e88e51f; }
+.obj-card h2 { margin: 0 0 2px; font-size: 16px; }
+.card-act {
+  margin-top: 10px;
+  width: 100%;
+  padding: 7px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #fff;
+}
+.card-act.del { background: #7a2f2f; border: 1px solid #a14a4a; }
+.card-act.del:hover { background: #8f3838; }
+.card-act.reset { background: #3c4756; border: 1px solid #556173; }
+.card-act.reset:hover { background: #475264; }
 #panelDelete {
   margin-top: 16px;
   width: 100%;
@@ -99,6 +123,8 @@ html, body {
   position: absolute;
   inset: 48px 156px 0 0;
 }
+body.palette-hidden #palette { display: none; }
+body.palette-hidden #stage { right: 0; }
 
 #palette {
   position: absolute;

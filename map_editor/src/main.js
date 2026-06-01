@@ -194,15 +194,18 @@ function preloadAssets() {
   for (const g of [...FOREST_GLYPHS]) getImg(g);
 }
 
-function drawTransport(cx, cy, s, f, showLabel) {
+function drawTransport(cx, cy, s, f) {
   ctx.save();
   const img = f.icon ? getImg(`icon_${f.icon}.png`) : null;
-  let bottom;
   if (img && img.complete && img.naturalWidth) {
     const h = s * 2.0;
     const w = h * (img.naturalWidth / img.naturalHeight);
+    // soft dark glow so the icon reads over busy terrain, without a flashy halo
+    ctx.shadowColor = "rgba(20,16,10,0.5)";
+    ctx.shadowBlur = s * 0.32;
     ctx.drawImage(img, cx - w / 2, cy - h * 0.72, w, h);
-    bottom = cy + h * 0.28;
+    ctx.shadowBlur = 0;
+    ctx.drawImage(img, cx - w / 2, cy - h * 0.72, w, h); // crisp on top
   } else {
     ctx.beginPath();
     ctx.arc(cx, cy, s * 0.4, 0, Math.PI * 2);
@@ -211,19 +214,6 @@ function drawTransport(cx, cy, s, f, showLabel) {
     ctx.lineWidth = s * 0.06;
     ctx.strokeStyle = "#fff";
     ctx.stroke();
-    bottom = cy + s * 0.4;
-  }
-  if (f.label && showLabel) {
-    const ly = bottom - s * 0.4;
-    ctx.font = `${(s * 0.85).toFixed(1)}px "${LABEL_FONT}", serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top";
-    ctx.lineJoin = "round";
-    ctx.lineWidth = s * 0.2;
-    ctx.strokeStyle = COLORS.labelStroke;
-    ctx.strokeText(f.label, cx, ly);
-    ctx.fillStyle = COLORS.labelFill;
-    ctx.fillText(f.label, cx, ly);
   }
   ctx.restore();
 }
@@ -248,7 +238,8 @@ function drawCity(cx, cy, s, f, showLabel) {
     // sprite footprint scaled to the hex; anchored so its base sits on the hex
     const h = s * (capital ? 5.0 : 4.0);
     const w = h * (img.naturalWidth / img.naturalHeight);
-    ctx.drawImage(img, cx - w / 2, cy - h * 0.70, w, h); // anchor point sits higher in the sprite
+    const tx = cx - w / 2, ty = cy - h * 0.70; // anchor point sits higher in the sprite
+    ctx.drawImage(img, tx, ty, w, h);
     bottom = cy + h * 0.30;
   } else {
     const r = s * (capital ? 0.5 : 0.38);
@@ -425,7 +416,7 @@ function render() {
   // 5b. occupied-hex points of the selected (or dragged) feature, drawn on top
   //     so they're visible even under a city/transport sprite
   const hi = dragging && dragPos ? dragging.feature : selected;
-  if (hi) {
+  if (hi && hi.glyph !== "city") { // cities aren't highlighted
     let keys;
     const d = dragging?.feature === hi && dragging.delta ? dragging.delta : { dq: 0, dr: 0 };
     if (hi.glyph === "massif") {
@@ -507,46 +498,64 @@ let selected = null;
 let moveEnabled = false; // objects are locked by default; toggle to drag them
 const panelEl = document.getElementById("panel");
 const panelBody = document.getElementById("panelBody");
-const panelDeleteBtn = document.getElementById("panelDelete");
-const panelResetBtn = document.getElementById("panelReset");
+let selectedHex = null;
 document.getElementById("panelClose").addEventListener("click", deselect);
-panelDeleteBtn.addEventListener("click", deleteSelected);
-panelResetBtn.addEventListener("click", resetSelected);
 
 function deselect() {
   selected = null;
+  selectedHex = null;
   panelEl.hidden = true;
   render();
 }
 
-function updatePanelButtons(f) {
-  panelDeleteBtn.hidden = !f.user; // user objects: delete
-  // reset only for a system GEOGRAPHIC object (city/massif) moved off its home;
-  // forests aren't tied to real coords, so position doesn't matter for them
-  const geographic = f.glyph === "city" || f.glyph === "massif";
-  panelResetBtn.hidden = !(!f.user && geographic && f.home && f.anchor !== f.home);
+// ordering in the panel: transport objects first, then cities, then the rest
+const featureRank = (f) => (f.glyph === "transport" ? 0 : f.glyph === "city" ? 1 : 2);
+
+function featuresAtHex(key) {
+  return (state.features || [])
+    .filter((f) => (f.glyph === "city" || f.glyph === "transport")
+      ? f.anchor === key : (f.cells || []).includes(key))
+    .sort((a, b) => featureRank(a) - featureRank(b));
 }
 
-function selectFeature(f) {
-  selected = f;
-  renderPanel(f);
+function canReset(f) {
+  return !f.user && f.glyph !== "forest" && f.home && f.anchor !== f.home;
+}
+
+// select everything sitting on the clicked hex; show all in the panel
+function selectAt(p) {
+  const { q, r } = contentToHex(p.x, p.y);
+  const key = `${q},${r}`;
+  let list = featuresAtHex(key);
+  const top = featureAt(p);
+  if (top && !list.includes(top)) list = [top, ...list];
+  if (!list.length) { deselect(); return; }
+  selected = top && list.includes(top) ? top : list[0];
+  selectedHex = key;
+  renderPanelList(list);
   panelEl.hidden = false;
-  updatePanelButtons(f);
-  render(); // show the occupied-hex points right away
+  render();
 }
 
-function deleteSelected() {
-  if (!selected || !selected.user) return; // system objects are protected
+function refreshPanel() {
+  if (!selectedHex) return;
+  const list = featuresAtHex(selectedHex);
+  if (list.length) renderPanelList(list); else deselect();
+}
+
+function deleteFeature(f) {
+  if (!f.user) return;
   pushUndo();
-  state.features = state.features.filter((x) => x !== selected);
-  deselect();
+  state.features = state.features.filter((x) => x !== f);
+  if (selected === f) selected = featuresAtHex(selectedHex).find((x) => x !== f) || null;
+  refreshPanel();
   save();
+  render();
 }
 
 // snap a system object back to its original (real-world-derived) position
-function resetSelected() {
-  const f = selected;
-  if (!f || f.user || !f.home) return;
+function resetFeature(f) {
+  if (f.user || !f.home) return;
   const [hq, hr] = f.home.split(",").map(Number);
   const [aq, ar] = f.anchor.split(",").map(Number);
   const dq = hq - aq, dr = hr - ar;
@@ -560,56 +569,62 @@ function resetSelected() {
     }
     save();
   }
-  renderPanel(f);
-  updatePanelButtons(f);
+  refreshPanel();
   render();
 }
 
-function renderPanel(f) {
+function cardHtml(f) {
   if (f.glyph === "city") {
-    panelBody.innerHTML = `
-      <h2>${f.label}</h2>
-      <div class="kind">${f.kind === "capital" ? "Столица" : "Город"}</div>
-      <dl>
-        <dt>Тип</dt><dd>город</dd>
-        <dt>id</dt><dd>${f.id}</dd>
-        <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
-        <dt>Гекс</dt><dd>${f.anchor}</dd>
-        <dt>Иконка</dt><dd>city_${f.icon}.png</dd>
-      </dl>`;
-  } else if (f.glyph === "massif") {
-    panelBody.innerHTML = `
-      <h2>${f.label}</h2>
-      <div class="kind">Горный массив</div>
-      <img class="thumb" src="/asset/${f.image}" alt="">
-      <dl>
-        <dt>Тип</dt><dd>массив (горы)</dd>
-        <dt>id</dt><dd>${f.id}</dd>
-        <dt>Занято гексов</dt><dd>${(f.cells || []).length}</dd>
-        <dt>Якорь</dt><dd>${f.anchor}</dd>
-        <dt>Картинка</dt><dd>${f.image}</dd>
-      </dl>`;
-  } else if (f.glyph === "forest") {
-    panelBody.innerHTML = `
-      <h2>Лес</h2>
-      <div class="kind">Лесной массив</div>
-      <dl>
-        <dt>Тип</dt><dd>лес (пучок)</dd>
-        <dt>id</dt><dd>${f.id}</dd>
-        <dt>Гексов</dt><dd>${(f.cells || []).length}</dd>
-        <dt>Якорь</dt><dd>${f.anchor}</dd>
-      </dl>`;
-  } else if (f.glyph === "transport") {
-    panelBody.innerHTML = `
-      <h2>${f.label || "Объект"}</h2>
-      <div class="kind">Транспортный объект</div>
+    return `<h2>${f.label}</h2><div class="kind">${f.kind === "capital" ? "Столица" : "Город"}</div>
+      <dl><dt>Тип</dt><dd>город</dd><dt>id</dt><dd>${f.id}</dd>
+      <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
+      <dt>Гекс</dt><dd>${f.anchor}</dd></dl>`;
+  }
+  if (f.glyph === "transport") {
+    return `<h2>${f.label || "Объект"}</h2><div class="kind">Транспортный объект</div>
       <img class="thumb" src="/asset/icon_${f.icon}.png" alt="">
-      <dl>
-        <dt>Тип</dt><dd>${TRANSPORT_LABELS[f.icon] || f.icon}</dd>
-        <dt>id</dt><dd>${f.id}</dd>
-        <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
-        <dt>Гекс</dt><dd>${f.anchor}</dd>
-      </dl>`;
+      <dl><dt>Тип</dt><dd>${TRANSPORT_LABELS[f.icon] || f.icon}</dd><dt>id</dt><dd>${f.id}</dd>
+      <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
+      <dt>Гекс</dt><dd>${f.anchor}</dd></dl>`;
+  }
+  if (f.glyph === "massif") {
+    return `<h2>${f.label}</h2><div class="kind">Горный массив</div>
+      <img class="thumb" src="/asset/${f.image}" alt="">
+      <dl><dt>id</dt><dd>${f.id}</dd><dt>Гексов</dt><dd>${(f.cells || []).length}</dd>
+      <dt>Якорь</dt><dd>${f.anchor}</dd></dl>`;
+  }
+  return `<h2>Лес</h2><div class="kind">Лесной массив</div>
+    <dl><dt>id</dt><dd>${f.id}</dd><dt>Гексов</dt><dd>${(f.cells || []).length}</dd>
+    <dt>Якорь</dt><dd>${f.anchor}</dd></dl>`;
+}
+
+function renderPanelList(list) {
+  panelBody.innerHTML = "";
+  if (list.length > 1) {
+    const h = document.createElement("div");
+    h.className = "panel-count";
+    h.textContent = `Объектов на гексе: ${list.length}`;
+    panelBody.appendChild(h);
+  }
+  for (const f of list) {
+    const card = document.createElement("div");
+    card.className = "obj-card" + (f === selected ? " sel" : "");
+    card.innerHTML = cardHtml(f);
+    card.addEventListener("click", () => { selected = f; render(); refreshPanel(); });
+    if (f.user) {
+      const b = document.createElement("button");
+      b.className = "card-act del";
+      b.textContent = "🗑 удалить";
+      b.addEventListener("click", (e) => { e.stopPropagation(); deleteFeature(f); });
+      card.appendChild(b);
+    } else if (canReset(f)) {
+      const b = document.createElement("button");
+      b.className = "card-act reset";
+      b.textContent = "↺ вернуть на место";
+      b.addEventListener("click", (e) => { e.stopPropagation(); resetFeature(f); });
+      card.appendChild(b);
+    }
+    panelBody.appendChild(card);
   }
 }
 
@@ -661,12 +676,10 @@ canvas.addEventListener("pointerdown", (e) => {
       dragging.pickHex = contentToHex(p.x, p.y);
       dragging.delta = { dq: 0, dr: 0 };
     }
-    selectFeature(f);
-    render();
+    selectAt(p);
   } else {
     // locked (default): click selects, the object stays put; drag pans the map
-    if (f) selectFeature(f);
-    else if (selected) deselect();
+    selectAt(p);
     panning = { x: e.clientX, y: e.clientY, panX, panY };
   }
   canvas.setPointerCapture(e.pointerId);
@@ -716,7 +729,7 @@ canvas.addEventListener("pointerup", () => {
           if (cell?.center) { f.lon = cell.center[0]; f.lat = cell.center[1]; }
         }
       }
-      if (selected === f) { renderPanel(f); updatePanelButtons(f); }
+      if (selected === f) { selectedHex = f.anchor; refreshPanel(); }
       save();
     }
     dragging = null; dragPos = null;
@@ -751,6 +764,7 @@ function undo() {
   if (!undoStack.length) return;
   state.features = JSON.parse(undoStack.pop());
   selected = null;          // old reference is gone after restore
+  selectedHex = null;
   panelEl.hidden = true;
   render();
   save();
@@ -758,7 +772,7 @@ function undo() {
 document.getElementById("undo").addEventListener("click", undo);
 window.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
-  else if ((e.key === "Delete" || e.key === "Backspace") && selected?.user) { e.preventDefault(); deleteSelected(); }
+  else if ((e.key === "Delete" || e.key === "Backspace") && selected?.user) { e.preventDefault(); deleteFeature(selected); }
 });
 
 // ----- move toggle (objects locked by default) -----
@@ -767,7 +781,14 @@ moveBtn.addEventListener("click", () => {
   moveEnabled = !moveEnabled;
   moveBtn.textContent = moveEnabled ? "🔓 базовая карта" : "🔒 базовая карта";
   moveBtn.classList.toggle("on", moveEnabled);
-  if (selected) updatePanelButtons(selected);
+  refreshPanel();
+});
+
+// ----- palette show/hide -----
+document.getElementById("paletteToggle").addEventListener("click", () => {
+  document.body.classList.toggle("palette-hidden");
+  setupCanvas();
+  render();
 });
 
 // ----- palette + drag-to-place -----
@@ -781,14 +802,8 @@ const TRANSPORT_LABELS = {
   suspended_monorail: "Подвесной монорельс",
 };
 const PALETTE = [
-  { kind: "forest", label: "Лес", emoji: "🌲" },
-  { kind: "transport", icon: "cable_gondola", label: "Канатка" },
-  { kind: "transport", icon: "aerial_tram", label: "Маятниковая" },
-  { kind: "transport", icon: "funicular", label: "Фуникулёр" },
-  { kind: "transport", icon: "cog_railway", label: "Зубчатая ж/д" },
-  { kind: "transport", icon: "chairlift", label: "Кресельная" },
-  { kind: "transport", icon: "elevator", label: "Лифт" },
-  { kind: "transport", icon: "suspended_monorail", label: "Монорельс" },
+  { kind: "forest", size: 1, label: "Лес (малый)", emoji: "🌲" },
+  { kind: "forest", size: 7, label: "Лес (пучок)", emoji: "🌳" },
 ];
 
 let placing = null, placeGhost = null, nextId = 1;
@@ -831,13 +846,18 @@ function placeFeature(p, hex) {
   pushUndo();
   let f;
   if (p.kind === "forest") {
-    f = { id: `forest-new-${nextId++}`, glyph: "forest", label: "Лес", cells: [key], anchor: key, user: true };
+    const cells = [key];
+    if (p.size === 7) for (const [dq, dr] of NB) cells.push(shiftKey(key, dq, dr));
+    f = { id: `forest-new-${nextId++}`, glyph: "forest", label: "Лес", cells, anchor: key, user: true };
   } else {
     f = { id: `${p.icon}-${nextId++}`, glyph: "transport", icon: p.icon, label: p.label,
           anchor: key, lon: cell?.center?.[0], lat: cell?.center?.[1], user: true };
   }
   state.features.push(f);
-  selectFeature(f);
+  selected = f;
+  selectedHex = key;
+  renderPanelList(featuresAtHex(key));
+  panelEl.hidden = false;
   render();
   save();
 }

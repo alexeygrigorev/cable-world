@@ -12,6 +12,7 @@ import glob
 import json
 import math
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "map_pipeline"))
@@ -73,6 +74,36 @@ FOREST_POINTS = [
     (10.55, 49.45), (9.58, 48.62), (11.34, 48.02), (12.15, 48.10),
 ]
 NEIGHBORS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
+
+CATALOG = os.path.join(ROOT, "scripts", "demo_catalog.gd")
+# transport_type_id -> icon suffix (scripts/map_panel.gd TRANSPORT_TYPE_ICON)
+TYPE_ICON = {
+    "cable_gondola": "cable_gondola", "cable_urban": "cable_gondola",
+    "cable_tourist": "cable_gondola", "cable_aerial_tram": "aerial_tram",
+    "funicular_classic": "funicular", "funicular_water": "funicular",
+    "funicular_modern": "funicular", "rail_cog": "cog_railway",
+    "rail_mountain": "cog_railway", "rail_suspended": "suspended_monorail",
+    "elevator_vertical": "elevator", "elevator_inclined": "elevator",
+    "elevator_panoramic": "elevator", "suspended_train": "suspended_monorail",
+    "monorail": "suspended_monorail", "suspended_ferry": "suspended_monorail",
+    "escalator_unusual": "station", "special_transport_system": "station",
+    "unique_engineering_object": "station",
+}
+
+
+def load_catalog_objects():
+    """Parse the in-game demo catalog for transport objects with coordinates."""
+    text = open(CATALOG, encoding="utf-8").read()
+    pat = re.compile(
+        r'"id":\s*"([\w-]+)"[\s\S]*?"name":\s*"([^"]+)"[\s\S]*?'
+        r'"transport_type_id":\s*"(\w+)"[\s\S]*?'
+        r'"latitude":\s*([\-\d.]+),\s*"longitude":\s*([\-\d.]+)')
+    out = []
+    for m in pat.finditer(text):
+        oid, name, tid, lat, lon = m.group(1), m.group(2), m.group(3), float(m.group(4)), float(m.group(5))
+        out.append({"id": oid, "name": name, "icon": TYPE_ICON.get(tid, "station"),
+                    "type_id": tid, "lon": lon, "lat": lat})
+    return out
 
 
 # --- global Web Mercator world pixels ---
@@ -229,6 +260,16 @@ def main():
         q, r = world_to_hex(wx, wy, s)
         features.append({"id": icon, "glyph": "city", "kind": kind,
                          "label": name, "icon": icon, "lon": lon, "lat": lat,
+                         "anchor": f"{q},{r}", "home": f"{q},{r}"})
+
+    # in-game transport objects (cable cars, funiculars, ...) within the map
+    for o in load_catalog_objects():
+        if not (minlon <= o["lon"] <= maxlon and minlat <= o["lat"] <= maxlat):
+            continue
+        q, r = world_to_hex(*merc(o["lon"], o["lat"]), s)
+        features.append({"id": o["id"], "glyph": "transport", "icon": o["icon"],
+                         "label": o["name"], "type_id": o["type_id"],
+                         "lon": o["lon"], "lat": o["lat"],
                          "anchor": f"{q},{r}", "home": f"{q},{r}"})
 
     # view = world-px bbox of populated hexes (for the editor camera)
