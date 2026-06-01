@@ -120,14 +120,20 @@ async function saveFeedback(payload) {
   const tabs = Array.isArray(payload.tabs) ? payload.tabs : [];
   const jsonPath = path.join(FEEDBACK_DIR, `${stamp}.json`);
   const markdownPath = path.join(FEEDBACK_DIR, `${stamp}.md`);
-  const data = {
-    createdAt: now.toISOString(),
-    tabs: tabs.map((tab) => ({
+  const filledTabs = tabs
+    .map((tab) => ({
       id: String(tab.id ?? ""),
       title: String(tab.title ?? ""),
       feedback: String(tab.feedback ?? "").trim(),
       images: Array.isArray(tab.images) ? tab.images : [],
-    })),
+    }))
+    .filter((tab) => tab.feedback.length > 0);
+  if (filledTabs.length === 0) {
+    throw new Error("No feedback text to save");
+  }
+  const data = {
+    createdAt: now.toISOString(),
+    tabs: filledTabs,
   };
   const markdown = ["# Map Review Feedback", "", `Created: ${data.createdAt}`, ""];
   for (const tab of data.tabs) {

@@ -57,6 +57,9 @@ main {
 
 .tabButton,
 #saveButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border: 1px solid #716447;
   border-radius: 6px;
   background: #2a302d;
@@ -69,6 +72,20 @@ main {
 #saveButton {
   background: #80663b;
   color: #fff2c2;
+}
+
+.feedbackMarker {
+  display: none;
+  width: 8px;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #93d17a;
+  text-indent: -999px;
+}
+
+.tabButton.hasFeedback .feedbackMarker {
+  display: inline-block;
 }
 
 .panelHeader {

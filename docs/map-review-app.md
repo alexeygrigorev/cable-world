@@ -20,7 +20,7 @@ Update the preview images without rebuilding Godot or starting the main web expo
 scripts/map-review-update-previews.sh
 ```
 
-This writes the full-map `50%`, `100%`, `150%` and `200%` previews plus one tab per massif entry from `assets/map/massifs/*.json`. The massif tabs use each entry's `map_bbox_px`, so they stay aligned with the same generated texture that the app uses.
+This writes the full-map `50%`, `100%`, `150%` and `200%` previews plus one tab per massif entry from `assets/map/massifs/*.json`. Each preview is a fixed-size viewport crop, so changing from `50%` to `200%` changes the apparent map scale instead of only changing the PNG dimensions. The massif tabs use each entry's `map_bbox_px`, so they stay aligned with the same generated texture that the app uses.
 The generator also writes `assets/map/review/manifest.json`; the app uses it for readable tab names and descriptions.
 
 Check or stop the local review server:
@@ -37,3 +37,5 @@ Saved feedback is written to:
 ```text
 tmp/map-review-feedback/
 ```
+
+Only tabs with non-empty feedback are saved. Tabs with draft feedback are marked with a small green dot in the tab bar.

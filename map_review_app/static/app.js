@@ -33,8 +33,16 @@ function renderTabs() {
     ...tabs.map((tab, index) => {
       const button = document.createElement("button");
       button.className = "tabButton";
+      if ((feedbackByTab.get(tab.id) ?? "").trim()) {
+        button.classList.add("hasFeedback");
+      }
       button.type = "button";
-      button.textContent = `${index + 1}. ${tab.title}`;
+      const label = document.createElement("span");
+      label.textContent = `${index + 1}. ${tab.title}`;
+      const marker = document.createElement("span");
+      marker.className = "feedbackMarker";
+      marker.textContent = "saved draft";
+      button.append(label, marker);
       button.setAttribute("aria-selected", String(tab.id === activeTabId));
       button.addEventListener("click", () => {
         activeTabId = tab.id;
@@ -132,6 +140,7 @@ function renderPanel() {
   textarea.value = feedbackByTab.get(tab.id) ?? "";
   textarea.addEventListener("input", () => {
     feedbackByTab.set(tab.id, textarea.value);
+    renderTabs();
   });
 
   panelElement.replaceChildren(header, grid, textarea);
@@ -154,13 +163,23 @@ async function loadTabs() {
 }
 
 async function saveFeedback() {
-  const payload = {
-    tabs: tabs.map((tab) => ({
+  const filledTabs = tabs
+    .map((tab) => ({
       id: tab.id,
       title: tab.title,
-      images: tab.images.map((image) => image.name),
-      feedback: feedbackByTab.get(tab.id) ?? "",
-    })),
+      images: tab.images.map((image) => ({
+        name: image.name,
+        label: image.label,
+      })),
+      feedback: (feedbackByTab.get(tab.id) ?? "").trim(),
+    }))
+    .filter((tab) => tab.feedback.length > 0);
+  if (filledTabs.length === 0) {
+    setStatus("Nothing to save: add feedback to at least one tab.");
+    return;
+  }
+  const payload = {
+    tabs: filledTabs,
   };
   const response = await fetch("/api/feedback", {
     method: "POST",
@@ -171,7 +190,7 @@ async function saveFeedback() {
   if (!response.ok) {
     throw new Error(data.error ?? `Save failed: ${response.status}`);
   }
-  setStatus(`Saved: ${data.saved.markdownPath}`);
+  setStatus(`Saved ${filledTabs.length} tab(s): ${data.saved.markdownPath}`);
 }
 
 saveButton.addEventListener("click", () => {

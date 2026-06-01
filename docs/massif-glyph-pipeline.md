@@ -234,7 +234,7 @@ Use this when reviewing visual iterations without Godot export, browser startup 
 uv run python -m map_pipeline.render_map_previews
 ```
 
-It renders full-map PNGs from the same `assets/map/germany_styled.png` texture used by the app:
+It renders fixed-viewport PNGs from the same `assets/map/germany_styled.png` texture used by the app:
 
 - `assets/map/review/germany_styled_preview_050.png`
 - `assets/map/review/germany_styled_preview_100.png`
@@ -244,6 +244,8 @@ It renders full-map PNGs from the same `assets/map/germany_styled.png` texture u
 This is the quick review path for background/map-compositor changes. Runtime-only overlays still need a Godot/browser screenshot check.
 
 By default it also creates review tabs for every massif sidecar in `assets/map/massifs/*.json`, using each `map_bbox_px` as the crop rectangle. That keeps focused tabs like `alps`, `harz` and `black_forest` tied to the same compositor output instead of hand-cut screenshots.
+
+Important quality rule: the user-facing `200%` review level is the target inspection quality. Source glyphs should be generated large enough that `200%` does not expose blocky upscaling. In pipeline terms, `200%` user zoom is the art-source `100%` quality target; if a glyph pixelates there, regenerate that glyph family at a higher source resolution instead of hiding the issue in the review renderer.
 
 Run the local feedback app on port `9010`:
 
