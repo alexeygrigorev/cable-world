@@ -1,48 +1,52 @@
 {
   "arc": [
     {
-      "latitude": 46.6,
-      "longitude": 10.2
+      "latitude": 46.55,
+      "longitude": 10.05
     },
     {
-      "latitude": 46.82,
-      "longitude": 11.3
+      "latitude": 46.76,
+      "longitude": 11.1
     },
     {
-      "latitude": 47.05,
-      "longitude": 12.45
+      "latitude": 46.98,
+      "longitude": 12.3
+    },
+    {
+      "latitude": 47.18,
+      "longitude": 13.05
     }
   ],
   "cropped_size_px": [
-    1236,
-    613
+    1286,
+    731
   ],
   "geo_bounds": {
-    "max_latitude": 47.89548,
-    "max_longitude": 13.42578,
-    "min_latitude": 46.57116,
-    "min_longitude": 9.4913
+    "max_latitude": 47.82289,
+    "max_longitude": 13.56584,
+    "min_latitude": 46.23766,
+    "min_longitude": 9.4722
   },
   "glyphs": [
     {
       "glyph": "massif_alps_wall_1",
-      "latitude": 47.02,
-      "longitude": 10.55,
-      "width": 350,
+      "latitude": 46.82,
+      "longitude": 10.5,
+      "width": 340,
       "y_offset": 0.0
     },
     {
       "glyph": "massif_alps_wall_2",
-      "latitude": 47.18,
-      "longitude": 11.62,
-      "width": 340,
+      "latitude": 47.02,
+      "longitude": 11.55,
+      "width": 350,
       "y_offset": 0.02
     },
     {
       "glyph": "massif_alps_wall_1",
-      "latitude": 47.34,
-      "longitude": 12.52,
-      "width": 285,
+      "latitude": 47.22,
+      "longitude": 12.58,
+      "width": 310,
       "y_offset": 0.04
     }
   ],
@@ -50,42 +54,46 @@
   "image": "bavarian_tyrol_alps_massif.png",
   "label": "Bavarian and Tyrol Alps",
   "map_bbox_px": [
-    784.0,
-    2017.5,
-    1402.0,
-    2324.0
+    781.0,
+    2034.5,
+    1424.0,
+    2400.0
   ],
   "render_bbox_px": [
-    1568,
-    4035,
-    2804,
-    4648
+    1562,
+    4069,
+    2848,
+    4800
   ],
   "required_country_overlap": "",
   "shadow": [
     {
-      "latitude": 46.84,
-      "longitude": 9.95
+      "latitude": 46.3,
+      "longitude": 9.78
     },
     {
-      "latitude": 46.74,
-      "longitude": 11.25
+      "latitude": 46.4,
+      "longitude": 11.1
     },
     {
-      "latitude": 47.06,
-      "longitude": 12.75
+      "latitude": 46.72,
+      "longitude": 12.62
     },
     {
-      "latitude": 47.78,
-      "longitude": 12.95
+      "latitude": 47.0,
+      "longitude": 13.3
     },
     {
-      "latitude": 47.78,
-      "longitude": 11.25
+      "latitude": 47.72,
+      "longitude": 13.18
     },
     {
-      "latitude": 47.46,
-      "longitude": 10.05
+      "latitude": 47.74,
+      "longitude": 11.45
+    },
+    {
+      "latitude": 47.42,
+      "longitude": 10.1
     }
   ],
   "source_extent_id": "bavarian_tyrol_alps_massif",

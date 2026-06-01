@@ -1,7 +1,7 @@
 {
   "cropped_size_px": [
-    3180,
-    1079
+    3470,
+    1481
   ],
   "extends_to": [
     "France",
@@ -12,9 +12,9 @@
   ],
   "geo_bounds": {
     "max_latitude": 48.60314,
-    "max_longitude": 16.03921,
-    "min_latitude": 46.28166,
-    "min_longitude": 5.91654
+    "max_longitude": 16.37345,
+    "min_latitude": 45.39051,
+    "min_longitude": 5.32764
   },
   "glyphs": [],
   "id": "alps",
@@ -22,10 +22,10 @@
   "kind": "cross_border_mountain",
   "label": "Alps",
   "map_bbox_px": [
-    222.5,
+    130.0,
     1850.5,
-    1812.5,
-    2390.0
+    1865.0,
+    2591.0
   ],
   "massif_segments": [
     "western_alps_massif",
@@ -37,63 +37,67 @@
   "placement_policy": "dem_or_named_massif_segments",
   "region_polygon": [
     {
+      "latitude": 45.25,
+      "longitude": 5.55
+    },
+    {
+      "latitude": 45.35,
+      "longitude": 6.65
+    },
+    {
+      "latitude": 45.6,
+      "longitude": 8.55
+    },
+    {
+      "latitude": 45.76,
+      "longitude": 10.55
+    },
+    {
+      "latitude": 45.98,
+      "longitude": 12.6
+    },
+    {
+      "latitude": 46.18,
+      "longitude": 14.5
+    },
+    {
       "latitude": 46.45,
-      "longitude": 5.95
+      "longitude": 16.42
     },
     {
-      "latitude": 46.05,
-      "longitude": 7.15
-    },
-    {
-      "latitude": 45.78,
-      "longitude": 8.75
-    },
-    {
-      "latitude": 45.82,
-      "longitude": 10.35
-    },
-    {
-      "latitude": 46.02,
-      "longitude": 12.05
-    },
-    {
-      "latitude": 46.38,
-      "longitude": 14.05
-    },
-    {
-      "latitude": 46.92,
-      "longitude": 16.05
-    },
-    {
-      "latitude": 47.7,
-      "longitude": 16.25
+      "latitude": 47.48,
+      "longitude": 16.48
     },
     {
       "latitude": 48.18,
-      "longitude": 14.4
+      "longitude": 14.72
     },
     {
-      "latitude": 48.3,
-      "longitude": 12.05
+      "latitude": 48.34,
+      "longitude": 12.2
     },
     {
-      "latitude": 48.05,
+      "latitude": 48.1,
       "longitude": 10.1
     },
     {
-      "latitude": 47.55,
-      "longitude": 8.35
+      "latitude": 47.62,
+      "longitude": 8.25
     },
     {
-      "latitude": 47.18,
-      "longitude": 6.65
+      "latitude": 47.2,
+      "longitude": 6.35
+    },
+    {
+      "latitude": 46.48,
+      "longitude": 5.52
     }
   ],
   "render_bbox_px": [
-    445,
+    260,
     3701,
-    3625,
-    4780
+    3730,
+    5182
   ],
   "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
   "ridge_bands": [

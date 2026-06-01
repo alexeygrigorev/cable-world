@@ -1,48 +1,52 @@
 {
   "arc": [
     {
-      "latitude": 47.05,
-      "longitude": 12.45
+      "latitude": 46.95,
+      "longitude": 12.4
     },
     {
-      "latitude": 47.28,
-      "longitude": 13.7
+      "latitude": 47.08,
+      "longitude": 13.55
     },
     {
-      "latitude": 47.62,
-      "longitude": 15.25
+      "latitude": 47.1,
+      "longitude": 14.72
+    },
+    {
+      "latitude": 46.92,
+      "longitude": 15.85
     }
   ],
   "cropped_size_px": [
-    1253,
-    615
+    1358,
+    638
   ],
   "geo_bounds": {
-    "max_latitude": 48.30136,
-    "max_longitude": 16.03921,
-    "min_latitude": 46.983,
+    "max_latitude": 47.87841,
+    "max_longitude": 16.37345,
+    "min_latitude": 46.49893,
     "min_longitude": 12.05062
   },
   "glyphs": [
     {
       "glyph": "massif_alps_wall_1",
-      "latitude": 47.4,
+      "latitude": 47.18,
       "longitude": 13.05,
       "width": 330,
       "y_offset": 0.0
     },
     {
       "glyph": "massif_alps_wall_2",
-      "latitude": 47.58,
-      "longitude": 14.18,
+      "latitude": 47.2,
+      "longitude": 14.12,
       "width": 330,
       "y_offset": 0.02
     },
     {
       "glyph": "massif_alps_wall_1",
-      "latitude": 47.78,
-      "longitude": 15.15,
-      "width": 270,
+      "latitude": 47.04,
+      "longitude": 15.18,
+      "width": 300,
       "y_offset": 0.04
     }
   ],
@@ -51,41 +55,45 @@
   "label": "Austrian Alps",
   "map_bbox_px": [
     1186.0,
-    1922.0,
-    1812.5,
-    2229.5
+    2021.5,
+    1865.0,
+    2340.5
   ],
   "render_bbox_px": [
     2372,
-    3844,
-    3625,
-    4459
+    4043,
+    3730,
+    4681
   ],
   "required_country_overlap": "",
   "shadow": [
     {
-      "latitude": 47.26,
-      "longitude": 12.2
+      "latitude": 46.7,
+      "longitude": 12.15
     },
     {
-      "latitude": 47.18,
-      "longitude": 13.75
+      "latitude": 46.78,
+      "longitude": 13.62
     },
     {
-      "latitude": 47.6,
-      "longitude": 15.75
+      "latitude": 46.76,
+      "longitude": 15.0
     },
     {
-      "latitude": 48.18,
-      "longitude": 15.95
+      "latitude": 46.56,
+      "longitude": 16.18
     },
     {
-      "latitude": 48.15,
-      "longitude": 14.05
+      "latitude": 47.36,
+      "longitude": 16.28
     },
     {
-      "latitude": 47.82,
-      "longitude": 12.35
+      "latitude": 47.78,
+      "longitude": 14.42
+    },
+    {
+      "latitude": 47.62,
+      "longitude": 12.55
     }
   ],
   "source_extent_id": "austrian_alps_massif",

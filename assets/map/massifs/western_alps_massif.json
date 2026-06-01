@@ -1,84 +1,103 @@
 {
   "arc": [
     {
-      "latitude": 46.78,
-      "longitude": 6.2
+      "latitude": 45.7,
+      "longitude": 5.95
     },
     {
-      "latitude": 46.55,
-      "longitude": 7.1
+      "latitude": 45.95,
+      "longitude": 6.7
     },
     {
-      "latitude": 46.45,
+      "latitude": 46.18,
+      "longitude": 7.45
+    },
+    {
+      "latitude": 46.38,
       "longitude": 8.05
     }
   ],
   "cropped_size_px": [
-    890,
-    504
+    1079,
+    795
   ],
   "geo_bounds": {
-    "max_latitude": 47.42185,
-    "max_longitude": 8.74961,
-    "min_latitude": 46.32562,
-    "min_longitude": 5.91654
+    "max_latitude": 47.13907,
+    "max_longitude": 8.76234,
+    "min_latitude": 45.39051,
+    "min_longitude": 5.32764
   },
   "glyphs": [
     {
       "glyph": "massif_alps_wall_1",
-      "latitude": 46.74,
-      "longitude": 6.95,
-      "width": 320,
+      "latitude": 45.92,
+      "longitude": 6.28,
+      "width": 315,
       "y_offset": 0.0
     },
     {
       "glyph": "massif_alps_wall_2",
-      "latitude": 46.66,
-      "longitude": 7.82,
-      "width": 292,
-      "y_offset": 0.03
+      "latitude": 46.16,
+      "longitude": 7.18,
+      "width": 325,
+      "y_offset": 0.02
+    },
+    {
+      "glyph": "massif_alps_wall_1",
+      "latitude": 46.38,
+      "longitude": 7.92,
+      "width": 265,
+      "y_offset": 0.04
     }
   ],
   "id": "western_alps_massif",
   "image": "western_alps_massif.png",
   "label": "Western Alps",
   "map_bbox_px": [
-    222.5,
-    2128.0,
-    667.5,
-    2380.0
+    130.0,
+    2193.5,
+    669.5,
+    2591.0
   ],
   "render_bbox_px": [
-    445,
-    4256,
-    1335,
-    4760
+    260,
+    4387,
+    1339,
+    5182
   ],
   "required_country_overlap": "",
   "shadow": [
     {
-      "latitude": 46.95,
-      "longitude": 6.0
+      "latitude": 45.45,
+      "longitude": 5.75
     },
     {
-      "latitude": 46.66,
-      "longitude": 7.05
+      "latitude": 45.58,
+      "longitude": 6.55
     },
     {
-      "latitude": 46.58,
+      "latitude": 45.9,
+      "longitude": 7.55
+    },
+    {
+      "latitude": 46.2,
       "longitude": 8.35
     },
     {
-      "latitude": 47.18,
+      "latitude": 46.9,
       "longitude": 8.55
     },
     {
-      "latitude": 47.3,
-      "longitude": 7.25
+      "latitude": 47.08,
+      "longitude": 7.3
     },
     {
-      "latitude": 47.22,
-      "longitude": 6.1
+      "latitude": 46.78,
+      "longitude": 6.15
+    },
+    {
+      "latitude": 46.12,
+      "longitude": 5.7
     }
   ],
   "source_extent_id": "western_alps_massif",

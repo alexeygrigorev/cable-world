@@ -1,84 +1,103 @@
 {
   "arc": [
     {
-      "latitude": 46.48,
-      "longitude": 8.05
+      "latitude": 46.12,
+      "longitude": 7.65
     },
     {
-      "latitude": 46.46,
-      "longitude": 9.1
+      "latitude": 46.22,
+      "longitude": 8.65
+    },
+    {
+      "latitude": 46.4,
+      "longitude": 9.55
     },
     {
       "latitude": 46.58,
-      "longitude": 10.2
+      "longitude": 10.25
     }
   ],
   "cropped_size_px": [
-    1052,
-    532
+    1210,
+    664
   ],
   "geo_bounds": {
-    "max_latitude": 47.43907,
-    "max_longitude": 10.7837,
-    "min_latitude": 46.28166,
-    "min_longitude": 7.43494
+    "max_latitude": 47.21261,
+    "max_longitude": 10.95877,
+    "min_latitude": 45.758,
+    "min_longitude": 7.10707
   },
   "glyphs": [
     {
       "glyph": "massif_alps_wall_2",
-      "latitude": 46.68,
-      "longitude": 8.58,
-      "width": 360,
+      "latitude": 46.28,
+      "longitude": 8.22,
+      "width": 350,
       "y_offset": 0.0
     },
     {
       "glyph": "massif_alps_wall_1",
-      "latitude": 46.76,
-      "longitude": 9.7,
-      "width": 340,
-      "y_offset": 0.03
+      "latitude": 46.45,
+      "longitude": 9.32,
+      "width": 350,
+      "y_offset": 0.02
+    },
+    {
+      "glyph": "massif_alps_wall_2",
+      "latitude": 46.62,
+      "longitude": 10.1,
+      "width": 270,
+      "y_offset": 0.04
     }
   ],
   "id": "swiss_alps_massif",
   "image": "swiss_alps_massif.png",
   "label": "Swiss Alps",
   "map_bbox_px": [
-    461.0,
-    2124.0,
-    987.0,
-    2390.0
+    409.5,
+    2176.5,
+    1014.5,
+    2508.5
   ],
   "render_bbox_px": [
-    922,
-    4248,
-    1974,
-    4780
+    819,
+    4353,
+    2029,
+    5017
   ],
   "required_country_overlap": "",
   "shadow": [
     {
-      "latitude": 46.7,
-      "longitude": 7.75
+      "latitude": 45.82,
+      "longitude": 7.28
     },
     {
-      "latitude": 46.46,
-      "longitude": 9.05
+      "latitude": 45.92,
+      "longitude": 8.55
+    },
+    {
+      "latitude": 46.24,
+      "longitude": 9.78
+    },
+    {
+      "latitude": 46.48,
+      "longitude": 10.6
+    },
+    {
+      "latitude": 47.1,
+      "longitude": 10.58
+    },
+    {
+      "latitude": 47.15,
+      "longitude": 9.35
+    },
+    {
+      "latitude": 46.95,
+      "longitude": 8.05
     },
     {
       "latitude": 46.62,
-      "longitude": 10.45
-    },
-    {
-      "latitude": 47.28,
-      "longitude": 10.65
-    },
-    {
-      "latitude": 47.28,
-      "longitude": 9.25
-    },
-    {
-      "latitude": 47.14,
-      "longitude": 7.8
+      "longitude": 7.4
     }
   ],
   "source_extent_id": "swiss_alps_massif",

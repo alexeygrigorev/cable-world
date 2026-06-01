@@ -2099,3 +2099,26 @@ Added the missing reproducible geometry step before the next art generation:
 - documented the command and artifact purpose in `docs/massif-glyph-pipeline.md`.
 
 Purpose: the next Alps/Harz/etc image generation should use these layouts as image references, so the art keeps the intended silhouette, ridge direction, size hierarchy and anchors instead of inventing random mountain shapes from text.
+
+## Iteration 2026-06-01 Alps Mountain-Driven Geometry
+
+User clarified that massif generation must not be country-driven. Updated the pipeline rule:
+
+- country borders are review context only;
+- generation and placement follow mountain geography: ridge arc, elevation bands, foothill edge, valley exclusions and recognizable massif sectors;
+- snow policy is data-driven from elevation/climate/season/real massif character, not a manual yes/no by country.
+
+Visible map change:
+
+- expanded Alpine relief region and segment anchors so the Alps read as a cross-border Alpine arc through western/central/eastern sectors, with Germany only as the northern edge/foothill context;
+- regenerated `germany_styled.png`, `assets/map/massif_layouts/*`, and Alpine source layers.
+
+Backlog/GitHub:
+
+- Created GitHub issue `#111` for Europe + Turkey + Russia-to-Urals massif inventory with per-range snow policy.
+
+Verification:
+
+- `uv run python -m map_pipeline.render_massif_layouts`: PASS.
+- `uv run python -m map_pipeline.compose_map`: PASS.
+- `uv run python -m unittest tests.test_map_geography_audit tests.test_map_panel_contract`: PASS, 31 tests.

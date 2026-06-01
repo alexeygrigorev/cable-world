@@ -32,6 +32,8 @@ Layout должен содержать:
 - optional high/low zones: high peaks, forested slopes, low foothills;
 - label только в metadata, не на картинке.
 
+Important: layout is mountain-driven, not country-driven. Country borders can be visible context for review, but generation and placement must follow the geography of the massif itself: ridge arc, elevation shape, foothill edge, valley exclusions and recognizable sector shape. Do not ask the generator to make "German Alps" or "Austrian Alps" as country-shaped art; generate Alpine sectors and place them across the map.
+
 Источники layout:
 
 - уже существующие `map_pipeline/data/alpine_relief_extents.json`;
@@ -65,8 +67,12 @@ Preferred generation approach:
 1. Сгенерировать layout image для massif sheet или отдельного массива.
 2. Передать layout как image reference/edit target.
 3. Prompt: сохранить общий силуэт и relative scale, перерисовать как 16-bit RPG atlas terrain glyph.
-4. Для Alps делать несколько segments, потому что это большой массив; каждый segment должен иметь snow caps.
-5. Для остальных массивов snow запрещен, кроме если будущий region реально требует snow.
+4. Для Alps делать несколько segments, потому что это большой массив; high Alpine segments обычно должны иметь snow caps.
+5. Snow is data-driven, not manually forbidden. For every massif/sector, decide snow from elevation band, latitude/climate, season and known real-world character:
+   - `expected`: high Alpine / glacier / consistently snow-capped sectors;
+   - `seasonal_or_high_peaks`: snow only on highest peaks or winter/shoulder-season variants;
+   - `not_expected`: low/mid highlands where snow would visually mislead the map.
+   The pipeline should record the chosen policy in metadata before generating final art.
 
 Если image-to-image недоступен или неудобен, fallback:
 
@@ -133,7 +139,7 @@ Every production massif glyph must be declared in metadata:
 - geographic anchors or arc points;
 - intended display width;
 - source size px;
-- whether snow is allowed;
+- snow policy (`expected`, `seasonal_or_high_peaks`, `not_expected`) with a short geography note;
 - expected character notes.
 
 Composer places glyphs by real coordinates and known region extents, not by random decoration.
