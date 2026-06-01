@@ -1,5 +1,17 @@
 # Map Orchestrator Progress
 
+## 2026-06-01 - #107 rejected marker clutter attempt and new UI follow-ups
+
+- Attempted branch/worktree: `issue-107-marker-clutter` / `worktrees/issue-107-marker-clutter`.
+- Attempted commit: `328f4d5e824de839d669ac710a8266427c47bff7`.
+- Reviewer `Leibniz` returned `REJECT #107`, score `6/10`; do not merge this branch.
+- Fresh bundle: `worktrees/issue-107-marker-clutter/tmp/map-review/issue-107-marker-clutter-20260601T035030Z`.
+- Technical checks passed, but visual gate failed: Köln/Stuttgart still collide with forest/terrain/city landmark/transport layers across mobile initial, zoom 150/200, click, drag and desktop screenshots.
+- Next #107 attempt must solve visual hierarchy around the city clusters, not just add a small avoidance ring.
+- Created follow-up issues from latest user feedback:
+  - #109 `List mode follow-up: align list screen with current atlas map style`.
+  - #110 `Map/list toggle follow-up: replace toggle with polished atlas pictogram`.
+
 ## 2026-06-01 - #74 Eastern Europe/Turkey non-render contract
 
 - Working branch/worktree: `issue-74-eastern-europe-turkey-contract` / `worktrees/issue-74-eastern-europe-turkey-contract`.

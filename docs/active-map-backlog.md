@@ -76,7 +76,7 @@
 - [ ] #104 Map quality blocker: убрать rectangular/striped compositing artifacts и technical-looking route/detail noise вокруг Dresden/Erzgebirge.
 - [ ] #105 Map quality blocker: интегрировать Harz в terrain/forest/highland texture, чтобы он не читался как sticker/blob.
 - [ ] #106 Map quality blocker: убрать tiny background dust и pale patch noise, оставив читаемую land/water texture.
-- [ ] #107 Map quality blocker: снизить Köln/Stuttgart marker/landmark/forest clutter без потери кликабельности и важной видимости объектов.
+- [ ] #107 Map quality blocker: снизить Köln/Stuttgart marker/landmark/forest clutter без потери кликабельности и важной видимости объектов. Первая попытка `issue-107-marker-clutter` / `328f4d5e` отклонена строгим reviewer: `6/10`, Köln/Stuttgart всё ещё конфликтуют с forest/landmark/transport layers, не вливать.
 - [ ] #108 Map quality blocker: переделать Alps cross-border relief shape, чтобы это был реальный массив через Austria/Switzerland/northern Italy, а не bottom-edge band.
 - [ ] REGRESSION / #69/#64: Альпы сейчас географически неправильные и слишком условные. Следующий relief pass должен строиться от реальных elevation/relief maps/data, а не от декоративных anchors: Альпы должны быть сильнее и шире через Austria/Switzerland/northern Italy, а немецкая кромка должна быть частью настоящего массива, не отдельной наклейкой.
 - [x] #68/#69/#64 bounded elevation-backed guardrail pass: добавлен `map_pipeline/data/alpine_relief_extents.json` с source strategy из #75, coverage requirements для Switzerland/Austria/northern Italy/German Alpine edge и lowland exclusions; `audit_alpine_relief_contract()` запрещает Alpine segments без source extent metadata, random/decorative geometry source и проверяет cross-border coverage без изменения render art.
@@ -120,6 +120,8 @@
 - [x] #98 UI review gate follow-up: карта-список должны проходить единый visual/runtime review со screenshots mobile/landscape и Godot-native checks.
 - [x] #101 List mode follow-up: повторно проверить и довести список до того же atlas/map visual language, что fullscreen first screen; strict UI review после #102 подтвердил list style parity, runtime flow, mobile/landscape stability и русский UI без дополнительных code changes.
 - [x] #102 Map/list toggle follow-up: повторно проверить и отполировать pictogram controls для перехода карта/список и возврата на карту; strict UI reviewer ACCEPT после замены clipboard-like toggle на folded-map + ledger pictogram.
+- [ ] #109 List mode follow-up: после нового user review список всё ещё воспринимается как чужой UI; привести его к текущему atlas/map visual language и пройти UI reviewer заново.
+- [ ] #110 Map/list toggle follow-up: заменить/дополировать пиктограмму переключения карта/список и парный return-to-map control так, чтобы они выглядели как часть atlas UI и не конкурировали с картой.
 - [ ] Интегрировать themed splash/loading и Android app icon после завершения parallel subagent.
 - [ ] #65 Разобрать Godot headless shutdown warnings/RID leaks: сейчас `godot --headless --path . --quit-after 1` выходит с кодом 0, но печатает CanvasItem/ObjectDB/DummyTexture/ShapedText/Font leak warnings.
 - [ ] Обновлять GitHub issue #54 после каждой проверяемой итерации и регулярно коммитить.
