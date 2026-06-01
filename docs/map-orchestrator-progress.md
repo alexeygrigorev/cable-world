@@ -1,5 +1,17 @@
 # Map Orchestrator Progress
 
+## 2026-06-01 - #100 map/list toggle pictogram review
+
+- Worktree: `worktrees/issue-100-toggle-pictogram-followup`.
+- No product code changes were needed: current `main` already satisfies #100 after previous toggle/list polish.
+- Reviewer `Goodall` returned `ACCEPT #100`.
+- Evidence:
+  - `xvfb-run -a godot --path . --script scripts/capture_ui_review_screenshots.gd`: PASS, screenshots in `tmp/ui-review/`.
+  - Reviewer checked mobile/landscape map/list screenshots.
+  - `godot --headless --path . --script tests/godot_runtime_runner.gd`: PASS, 13 checks.
+  - `tests/test_app_shell_contract.py`: PASS in reviewer run.
+- Visual verdict: map-first screen remains fullscreen map; toggle is icon-only atlas-style and separate from zoom controls; list return control is stylistically paired.
+
 ## 2026-06-01 - #99 list mode UI gate follow-up
 
 - Working branch/worktree: `issue-99-list-atlas-followup` / `worktrees/issue-99-list-atlas-followup`.
