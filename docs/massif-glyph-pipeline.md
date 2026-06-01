@@ -243,6 +243,8 @@ It renders full-map PNGs from the same `assets/map/germany_styled.png` texture u
 
 This is the quick review path for background/map-compositor changes. Runtime-only overlays still need a Godot/browser screenshot check.
 
+By default it also creates review tabs for every massif sidecar in `assets/map/massifs/*.json`, using each `map_bbox_px` as the crop rectangle. That keeps focused tabs like `alps`, `harz` and `black_forest` tied to the same compositor output instead of hand-cut screenshots.
+
 Run the local feedback app on port `9010`:
 
 ```bash
