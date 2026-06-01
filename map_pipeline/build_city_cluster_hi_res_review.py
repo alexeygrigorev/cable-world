@@ -11,9 +11,6 @@ DEFAULT_SOURCE_DIR = Path("assets/sprites/city_landmark_clusters_hi_res/outlined
 DEFAULT_OUT_DIR = Path("assets/map/review/city_cluster_glyphs_hi_res")
 PREVIEW_FILE_TEMPLATE = "city_cluster_glyphs_hi_res_preview_%s.png"
 PREVIEW_SCALES = {
-    "050": 0.25,
-    "100": 0.5,
-    "150": 0.75,
     "200": 1.0,
 }
 
@@ -80,6 +77,7 @@ def main() -> int:
         "feedbackTarget": args.feedback_target,
         "source": str(args.source_dir),
         "order": sorted(PREVIEW_SCALES),
+        "scaleSemantics": "static_source_quality_only",
         "runtime_integrated": False,
     }
     metadata_path = args.out_dir / "review.yml"

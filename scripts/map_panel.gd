@@ -185,9 +185,9 @@ class OfflineMapLayer:
 		return icon_rect
 
 	func _city_icon_size(icon_id: String) -> float:
-		var scale := _landmark_visual_scale()
 		if CITY_CLUSTER_ICON_IDS.has(icon_id):
-			return round(clamp(62.0 * scale, 54.0, 94.0))
+			return round(clamp(54.0 * _city_cluster_visual_scale(), 54.0, 148.0))
+		var scale := _landmark_visual_scale()
 		return round(clamp(48.0 * scale, 42.0, 76.0))
 
 	func _city_label_has_icon(label_data: Dictionary) -> bool:
@@ -268,6 +268,12 @@ class OfflineMapLayer:
 		var viewport_width: float = max(1.0, size.x)
 		var viewport_scale: float = clamp(sqrt(viewport_width / LANDMARK_VIEWPORT_REFERENCE_WIDTH), LANDMARK_VIEWPORT_SCALE_MIN, LANDMARK_VIEWPORT_SCALE_MAX)
 		return sqrt(max(zoom, 0.75)) * viewport_scale
+
+	func _city_cluster_visual_scale() -> float:
+		var viewport_width: float = max(1.0, size.x)
+		var viewport_scale: float = clamp(sqrt(viewport_width / LANDMARK_VIEWPORT_REFERENCE_WIDTH), LANDMARK_VIEWPORT_SCALE_MIN, LANDMARK_VIEWPORT_SCALE_MAX)
+		var zoom_progress: float = clamp((zoom - 0.5) / 1.5, 0.0, 1.0)
+		return viewport_scale * lerp(1.0, 2.05, zoom_progress)
 
 	func _draw_label_text(font: Font, text: String, position: Vector2, font_size: int, text_color: Color, shadow_color: Color) -> void:
 		var scaled_size := int(clamp(float(font_size) * sqrt(max(zoom, 0.65)), 12.0, 24.0))

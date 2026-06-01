@@ -115,13 +115,7 @@ func _capture_scene(scene_data: Dictionary) -> Error:
 
 
 func _write_manifest() -> void:
-	var tabs := [
-		{
-			"id": "city_cluster_glyphs",
-			"title": "City Cluster Glyphs",
-			"description": "Current multi-symbol city cluster glyph sheet for the first 8 German cities.",
-		}
-	]
+	var tabs := []
 	for scene_data in REVIEW_SCENES:
 		tabs.append({
 			"id": scene_data["id"],

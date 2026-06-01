@@ -42,13 +42,12 @@ assets/map/review/
 
 Each directory contains:
 
-- `*_preview_050.png`
-- `*_preview_100.png`
-- `*_preview_150.png`
-- `*_preview_200.png`
+- one or more `*_preview_*.png` files;
 - `review.yml`
 
 `review.yml` is intentionally written as JSON-compatible YAML, so the app can read it without extra dependencies. Keep it beside the images. If the images are removed, the feedback target disappears with them and stale context cannot pollute the next review.
+
+Use zoom series (`050`, `100`, `150`, `200`) only for runtime map captures where the camera actually changes. Static glyph contact sheets should normally expose only `200`, because downscaled copies do not answer a different review question.
 
 Temporary comparison variants should live under:
 
