@@ -22,10 +22,20 @@
     </main>
 
     <dialog id="lightbox" class="lightbox">
-      <form method="dialog">
-        <button class="closeButton" aria-label="Close" type="submit">x</button>
-      </form>
-      <img id="lightboxImage" alt="">
+      <div class="lightboxToolbar">
+        <div id="lightboxTitle" class="lightboxTitle"></div>
+        <div class="lightboxControls" aria-label="Image zoom controls">
+          <button id="zoomOutButton" type="button">-</button>
+          <button id="zoomResetButton" type="button">100%</button>
+          <button id="zoomInButton" type="button">+</button>
+          <form method="dialog">
+            <button class="closeButton" aria-label="Close" type="submit">x</button>
+          </form>
+        </div>
+      </div>
+      <div id="lightboxViewport" class="lightboxViewport">
+        <img id="lightboxImage" alt="">
+      </div>
     </dialog>
 
     <script src="/app.js" type="module"></script>
