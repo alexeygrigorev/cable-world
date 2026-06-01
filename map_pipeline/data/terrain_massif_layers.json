@@ -44,10 +44,34 @@
     ],
     "allowed_placeholder_status": "repo_native_placeholder_until_replaced_by_named_asset"
   },
+  "production_asset_contract": {
+    "asset_directory": "assets/map/massifs",
+    "manifest_schema": "cable-world.massif-source-layers.v1",
+    "asset_policy": "one_png_and_one_json_sidecar_per_massif_or_source_layer",
+    "scale_basis": "render_bbox_px, map_bbox_px, cropped_size_px and render_scale",
+    "bbox_policy": "each production source layer must declare render_bbox_px, map_bbox_px and geo_bounds",
+    "forbidden_image_names": [
+      "germany_styled.png",
+      "map_glyph_sheet.png",
+      "terrain_forest_sheet.png"
+    ],
+    "required_layer_metadata": [
+      "id",
+      "image",
+      "source_extent_id",
+      "source_type",
+      "geo_bounds",
+      "render_bbox_px",
+      "map_bbox_px",
+      "cropped_size_px"
+    ]
+  },
   "source_layers": [
     {
       "id": "alps",
       "label": "Alps composite relief layer",
+      "production_asset_id": "alps",
+      "asset_role": "composite_source_layer",
       "source_extent_id": "alps_composite_extent",
       "region_id": "alps",
       "source_type": "cross_border_mountain_region",
@@ -68,6 +92,8 @@
     {
       "id": "harz",
       "label": "Harz",
+      "production_asset_id": "harz",
+      "asset_role": "named_massif_source_layer",
       "source_extent_id": "harz_brocken_extent",
       "region_id": "harz",
       "source_type": "isolated_mountain_range",
@@ -86,6 +112,8 @@
     {
       "id": "black_forest",
       "label": "Black Forest",
+      "production_asset_id": "black_forest",
+      "asset_role": "named_massif_source_layer",
       "source_extent_id": "black_forest_spine_extent",
       "region_id": "black_forest",
       "source_type": "forested_highland",
@@ -102,6 +130,8 @@
     {
       "id": "bavarian_forest",
       "label": "Bavarian Forest",
+      "production_asset_id": "bavarian_forest",
+      "asset_role": "named_massif_source_layer",
       "source_extent_id": "bavarian_forest_spine_extent",
       "region_id": "bavarian_forest",
       "source_type": "forested_highland",
@@ -118,6 +148,8 @@
     {
       "id": "erzgebirge",
       "label": "Erzgebirge",
+      "production_asset_id": "erzgebirge",
+      "asset_role": "named_massif_source_layer",
       "source_extent_id": "erzgebirge_border_extent",
       "region_id": "erzgebirge",
       "source_type": "border_mountain_range",
@@ -135,6 +167,8 @@
     {
       "id": "saxon_switzerland",
       "label": "Saxon Switzerland / Elbe Sandstone",
+      "production_asset_id": "saxon_switzerland",
+      "asset_role": "named_massif_source_layer",
       "source_extent_id": "elbe_sandstone_extent",
       "region_id": "saxon_switzerland",
       "source_type": "sandstone_highland",
@@ -151,6 +185,8 @@
     {
       "id": "eifel_hunsrueck",
       "label": "Eifel Hunsrueck",
+      "production_asset_id": "eifel_hunsrueck",
+      "asset_role": "named_massif_source_layer",
       "source_extent_id": "eifel_hunsrueck_low_extent",
       "region_id": "eifel_hunsrueck",
       "source_type": "low_highland",

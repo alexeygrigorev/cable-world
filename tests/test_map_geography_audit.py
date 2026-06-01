@@ -17,6 +17,36 @@ class MapGeographyAuditTest(unittest.TestCase):
 
         self.assertEqual([], audit_massif_source_manifest())
 
+    def test_massif_source_manifest_rejects_monolithic_or_unscaled_layers(self) -> None:
+        import json
+        import tempfile
+        import map_pipeline.compose_map as compose_map
+
+        with open(compose_map.MASSIF_MANIFEST_PATH, "r", encoding="utf-8") as file:
+            manifest = json.load(file)
+
+        original_manifest_path = compose_map.MASSIF_MANIFEST_PATH
+        try:
+            manifest["layers"][0] = dict(manifest["layers"][0])
+            layer_id = manifest["layers"][0]["id"]
+            manifest["layers"][0]["image"] = "germany_styled.png"
+            del manifest["layers"][0]["map_bbox_px"]
+
+            with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".json") as file:
+                json.dump(manifest, file)
+                file.flush()
+                compose_map.MASSIF_MANIFEST_PATH = file.name
+                errors = compose_map.audit_massif_source_manifest()
+
+            self.assertTrue(
+                any(f"massif source layer {layer_id} must use its own source layer PNG" in error for error in errors)
+            )
+            self.assertTrue(
+                any(f"massif source layer {layer_id} must declare map_bbox_px" in error for error in errors)
+            )
+        finally:
+            compose_map.MASSIF_MANIFEST_PATH = original_manifest_path
+
     def test_alpine_relief_extents_pass_source_and_coverage_audit(self) -> None:
         from map_pipeline.compose_map import audit_alpine_relief_contract
 
@@ -26,6 +56,36 @@ class MapGeographyAuditTest(unittest.TestCase):
         from map_pipeline.compose_map import audit_terrain_massif_layer_contract
 
         self.assertEqual([], audit_terrain_massif_layer_contract())
+
+    def test_terrain_massif_contract_requires_production_asset_metadata(self) -> None:
+        import json
+        import tempfile
+        import map_pipeline.compose_map as compose_map
+
+        with open(compose_map.TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
+            contract = json.load(file)
+
+        original_contract_path = compose_map.TERRAIN_MASSIF_LAYERS_PATH
+        try:
+            del contract["production_asset_contract"]
+            contract["source_layers"][0] = dict(contract["source_layers"][0])
+            layer_id = contract["source_layers"][0]["id"]
+            del contract["source_layers"][0]["production_asset_id"]
+
+            with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".json") as file:
+                json.dump(contract, file)
+                file.flush()
+                compose_map.TERRAIN_MASSIF_LAYERS_PATH = file.name
+                errors = compose_map.audit_terrain_massif_layer_contract()
+
+            self.assertTrue(
+                any("terrain massif production asset contract must require source_extent_id" in error for error in errors)
+            )
+            self.assertTrue(
+                any(f"terrain source layer {layer_id} must declare matching production_asset_id" in error for error in errors)
+            )
+        finally:
+            compose_map.TERRAIN_MASSIF_LAYERS_PATH = original_contract_path
 
     def test_germany_terrain_accuracy_contract_passes_current_underlay(self) -> None:
         from map_pipeline.compose_map import audit_germany_terrain_accuracy_contract

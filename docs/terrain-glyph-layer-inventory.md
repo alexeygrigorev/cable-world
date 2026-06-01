@@ -8,7 +8,7 @@ Scope: issue #69 first integrable slice for named massif glyph/layer production.
 
 Production terrain is composed from named reusable layers, not from one generated map bitmap and not from hash-random mountain stamps.
 
-The machine-readable contract is `map_pipeline/data/terrain_massif_layers.json`. It defines source extent ids, placement policy, required ridge bands, allowed placeholder glyphs and replacement status for every exported relief source layer.
+The machine-readable contract is `map_pipeline/data/terrain_massif_layers.json`. It defines source extent ids, placement policy, required ridge bands, allowed placeholder glyphs, replacement status and production asset metadata for every exported relief source layer.
 
 ## Reference Use
 
@@ -37,8 +37,16 @@ They must not be shipped as full-map production underlays.
 
 - exported relief layers missing a source extent contract;
 - forbidden placement policies such as random/decorative/full-map bitmap placement;
+- source layers missing `production_asset_id` or `asset_role`;
 - legacy generic `mountains` lists on named source layers;
 - glyph anchors outside the allowed placeholder glyphs for that layer;
 - source layer manifest metadata that no longer matches the contract.
+
+`audit_massif_source_manifest()` rejects:
+
+- monolithic image names such as `germany_styled.png`, `map_glyph_sheet.png` and `terrain_forest_sheet.png`;
+- production layers missing `geo_bounds`, `render_bbox_px`, `map_bbox_px`, `cropped_size_px`, `source_extent_id` or `source_type`;
+- mismatches between render bbox, cropped PNG size, map bbox and manifest render scale;
+- missing or drifting per-layer JSON sidecars.
 
 This is guardrail work. It does not make the map `10/10` visually by itself.

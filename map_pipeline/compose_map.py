@@ -1012,6 +1012,15 @@ def audit_massif_source_manifest():
     with open(MASSIF_MANIFEST_PATH, "r", encoding="utf-8") as file:
         manifest = json.load(file)
 
+    contract = _load_terrain_massif_contract()
+    asset_contract = contract.get("production_asset_contract", {})
+    expected_schema = asset_contract.get("manifest_schema", "cable-world.massif-source-layers.v1")
+    if manifest.get("schema") != expected_schema:
+        errors.append("massif source manifest has an unknown schema")
+    render_scale = manifest.get("render_scale")
+    if not isinstance(render_scale, (int, float)) or render_scale <= 0:
+        errors.append("massif source manifest must declare positive render_scale")
+
     expected_ids = _expected_source_layer_ids()
     layers = manifest.get("layers", [])
     actual_ids = {layer.get("id") for layer in layers}
@@ -1026,9 +1035,18 @@ def audit_massif_source_manifest():
         layer_id = layer.get("id", "")
         image_name = layer.get("image", "")
         image_path = os.path.join(MASSIF_DIR, image_name)
+        sidecar_path = os.path.join(MASSIF_DIR, f"{layer_id}.json")
+        _audit_massif_source_layer_metadata(errors, layer, asset_contract, render_scale)
         if not image_name or not os.path.exists(image_path):
             errors.append(f"massif source layer {layer_id} image is missing: {image_name}")
             continue
+        if not os.path.exists(sidecar_path):
+            errors.append(f"massif source layer {layer_id} sidecar is missing: {sidecar_path}")
+        else:
+            with open(sidecar_path, "r", encoding="utf-8") as file:
+                sidecar = json.load(file)
+            if sidecar != layer:
+                errors.append(f"massif source layer {layer_id} sidecar does not match manifest metadata")
         with Image.open(image_path) as image:
             if image.mode != "RGBA":
                 errors.append(f"massif source layer {layer_id} must be RGBA")
@@ -1046,15 +1064,93 @@ def audit_massif_source_manifest():
     return errors
 
 
+def _audit_massif_source_layer_metadata(errors, layer, asset_contract, render_scale):
+    layer_id = layer.get("id", "")
+    required_fields = asset_contract.get(
+        "required_layer_metadata",
+        ["id", "image", "source_extent_id", "source_type", "geo_bounds", "render_bbox_px", "map_bbox_px", "cropped_size_px"],
+    )
+    for field in required_fields:
+        if field not in layer:
+            errors.append(f"massif source layer {layer_id} must declare {field}")
+
+    image_name = layer.get("image", "")
+    forbidden_images = set(asset_contract.get("forbidden_image_names", []))
+    if image_name in forbidden_images or os.path.basename(image_name) != image_name:
+        errors.append(f"massif source layer {layer_id} must use its own source layer PNG, not {image_name}")
+    elif layer_id and image_name != f"{layer_id}.png":
+        errors.append(f"massif source layer {layer_id} image must be named {layer_id}.png")
+
+    if layer.get("source_type") not in {"relief_region", "massif_segment"}:
+        errors.append(f"massif source layer {layer_id} has unknown source_type")
+
+    render_bbox = layer.get("render_bbox_px")
+    map_bbox = layer.get("map_bbox_px")
+    cropped_size = layer.get("cropped_size_px")
+    if not _is_numeric_list(render_bbox, 4):
+        errors.append(f"massif source layer {layer_id} must declare a 4-value render_bbox_px")
+        render_bbox = None
+    if not _is_numeric_list(map_bbox, 4):
+        errors.append(f"massif source layer {layer_id} must declare a 4-value map_bbox_px")
+        map_bbox = None
+    if not _is_numeric_list(cropped_size, 2):
+        errors.append(f"massif source layer {layer_id} must declare a 2-value cropped_size_px")
+        cropped_size = None
+
+    if render_bbox:
+        render_width = render_bbox[2] - render_bbox[0]
+        render_height = render_bbox[3] - render_bbox[1]
+        if render_width <= 0 or render_height <= 0:
+            errors.append(f"massif source layer {layer_id} render_bbox_px must have positive size")
+        if cropped_size and [int(render_width), int(render_height)] != [int(cropped_size[0]), int(cropped_size[1])]:
+            errors.append(f"massif source layer {layer_id} cropped_size_px must match render_bbox_px size")
+
+    if render_bbox and map_bbox and isinstance(render_scale, (int, float)) and render_scale > 0:
+        expected_map_bbox = [value / render_scale for value in render_bbox]
+        for expected, actual in zip(expected_map_bbox, map_bbox):
+            if abs(float(actual) - expected) > 0.51:
+                errors.append(f"massif source layer {layer_id} map_bbox_px must match render_bbox_px/render_scale")
+                break
+
+    geo_bounds = layer.get("geo_bounds")
+    required_geo_keys = {"min_longitude", "max_longitude", "min_latitude", "max_latitude"}
+    if not isinstance(geo_bounds, dict) or set(geo_bounds) < required_geo_keys:
+        errors.append(f"massif source layer {layer_id} must declare complete geo_bounds")
+    elif (
+        float(geo_bounds["min_longitude"]) >= float(geo_bounds["max_longitude"])
+        or float(geo_bounds["min_latitude"]) >= float(geo_bounds["max_latitude"])
+    ):
+        errors.append(f"massif source layer {layer_id} geo_bounds must have positive size")
+
+
+def _is_numeric_list(values, length):
+    return (
+        isinstance(values, list)
+        and len(values) == length
+        and all(isinstance(value, (int, float)) for value in values)
+    )
+
+
 def audit_terrain_massif_layer_contract():
     errors = []
-    if not os.path.exists(TERRAIN_MASSIF_LAYERS_PATH):
+    contract = _load_terrain_massif_contract()
+    if not contract:
         return [f"terrain massif layer contract is missing: {TERRAIN_MASSIF_LAYERS_PATH}"]
-    with open(TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
-        contract = json.load(file)
 
     if contract.get("schema") != "cable-world.terrain-massif-layers.v1":
         errors.append("terrain massif layer contract has an unknown schema")
+
+    production_asset_contract = contract.get("production_asset_contract", {})
+    if production_asset_contract.get("manifest_schema") != "cable-world.massif-source-layers.v1":
+        errors.append("terrain massif production asset contract must name the massif manifest schema")
+    if production_asset_contract.get("asset_policy") != "one_png_and_one_json_sidecar_per_massif_or_source_layer":
+        errors.append("terrain massif production asset contract must require one PNG and one JSON sidecar per layer")
+    if production_asset_contract.get("bbox_policy") and "render_bbox_px" not in production_asset_contract.get("bbox_policy", ""):
+        errors.append("terrain massif production asset contract must require render/map/geo bbox metadata")
+    required_metadata = set(production_asset_contract.get("required_layer_metadata", []))
+    for field in ("source_extent_id", "source_type", "geo_bounds", "render_bbox_px", "map_bbox_px", "cropped_size_px"):
+        if field not in required_metadata:
+            errors.append(f"terrain massif production asset contract must require {field}")
 
     forbidden_policy = set(contract.get("placement_policy", {}).get("forbidden", []))
     required_forbidden = {"hash_random_mountain_stamp", "decorative_anchor_only", "full_map_generated_bitmap"}
@@ -1082,6 +1178,10 @@ def audit_terrain_massif_layer_contract():
             continue
         if layer.get("region_id") != layer_id:
             errors.append(f"terrain source layer {layer_id} must point at its matching region_id")
+        if layer.get("production_asset_id") != layer_id:
+            errors.append(f"terrain source layer {layer_id} must declare matching production_asset_id")
+        if layer.get("asset_role") not in {"composite_source_layer", "named_massif_source_layer"}:
+            errors.append(f"terrain source layer {layer_id} must declare a production asset_role")
         if not layer.get("source_extent_id"):
             errors.append(f"terrain source layer {layer_id} must declare source_extent_id")
         if layer.get("placement_policy") in forbidden_policy:
@@ -1127,6 +1227,13 @@ def audit_terrain_massif_layer_contract():
             if manifest_layer.get("replacement_status") != contract_layer.get("replacement_status"):
                 errors.append(f"terrain source layer {layer_id} manifest replacement_status does not match contract")
     return errors
+
+
+def _load_terrain_massif_contract():
+    if not os.path.exists(TERRAIN_MASSIF_LAYERS_PATH):
+        return {}
+    with open(TERRAIN_MASSIF_LAYERS_PATH, "r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 def _expected_source_layer_ids():
