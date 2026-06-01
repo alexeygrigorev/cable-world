@@ -20,6 +20,7 @@ for variant_dir in "$root_dir"/tmp/city-cluster-hi-res-v*/outlined; do
     --out-dir "$out_dir" \
     --id "$variant_id" \
     --title "$variant_title" \
+    --status existing_cluster \
     --description "Temporary city cluster variant generated from $variant_name." \
     --feedback-target "Compare this temporary variant against city_cluster_glyphs_hi_res before replacing tracked runtime assets."
 done

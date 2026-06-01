@@ -1,0 +1,238 @@
+{
+  "schema": "cable-world.city-cluster-glyph-specs.v1",
+  "style_reference": "Use the approved Berlin/Hamburg/Rostock/Munich/Cologne/Frankfurt/Stuttgart/Dresden multi-symbol cluster language: compact 2-4 landmark elements, painterly pixel-art, 2.5D atlas miniature, warm European RPG map palette, crisp dark outline, simplified shapes that stay clean at 200% review zoom.",
+  "output_policy": {
+    "runtime_integrated": true,
+    "source_dir_pattern": "tmp/city-cluster-hi-res-<iteration>/raw",
+    "alpha_dir_pattern": "tmp/city-cluster-hi-res-<iteration>/alpha",
+    "sprite_dir_pattern": "assets/sprites/city_landmark_clusters_hi_res",
+    "review_dir_pattern": "assets/map/review/city_cluster_glyphs_hi_res_<iteration>"
+  },
+  "cities": [
+    {
+      "id": "berlin",
+      "display_name": "Berlin",
+      "map_panel_name": "Berlin",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["Fernsehturm", "Brandenburg Gate", "Reichstag dome or compact skyline mass"],
+      "prompt_spec": "Berlin cluster with Fernsehturm, Brandenburg Gate, and Reichstag dome/compact skyline mass."
+    },
+    {
+      "id": "hamburg",
+      "display_name": "Hamburg",
+      "map_panel_name": "Hamburg",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["Speicherstadt warehouse", "harbor crane", "church spire or ship"],
+      "prompt_spec": "Hamburg cluster with Speicherstadt red-brick warehouse, harbor crane, church spire or small ship."
+    },
+    {
+      "id": "rostock",
+      "display_name": "Rostock",
+      "map_panel_name": "Rostock",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["Hanseatic red-brick city gate", "harbor ship", "church spire"],
+      "prompt_spec": "Rostock cluster with Hanseatic red-brick city gate, harbor ship, and church spire."
+    },
+    {
+      "id": "munich",
+      "display_name": "Munich",
+      "map_panel_name": "München",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["Frauenkirche twin towers", "Rathaus or Marienplatz facade", "city gate/base element"],
+      "prompt_spec": "Munich cluster with Frauenkirche twin towers, Rathaus/Marienplatz facade, and compact city gate/base element."
+    },
+    {
+      "id": "cologne",
+      "display_name": "Cologne",
+      "map_panel_name": "Köln",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["Cologne Cathedral", "Rhine bridge", "river base"],
+      "prompt_spec": "Cologne cluster with Cologne Cathedral, Rhine bridge, and simple river base."
+    },
+    {
+      "id": "frankfurt",
+      "display_name": "Frankfurt",
+      "map_panel_name": "Frankfurt",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["skyline tower group", "central tall tower", "Römer or old-town stepped-gable base"],
+      "prompt_spec": "Frankfurt cluster with simplified skyline towers and Römer/old-town stepped-gable base."
+    },
+    {
+      "id": "stuttgart",
+      "display_name": "Stuttgart",
+      "map_panel_name": "Stuttgart",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["TV tower", "Schlossplatz palace/square", "industrial hill form"],
+      "prompt_spec": "Stuttgart cluster with slim TV tower, Schlossplatz palace/square element, and subtle industrial hill form."
+    },
+    {
+      "id": "dresden",
+      "display_name": "Dresden",
+      "map_panel_name": "Dresden",
+      "status": "existing_cluster",
+      "priority": "seed",
+      "cluster_elements": ["Frauenkirche dome", "Elbe bridge", "old town silhouette"],
+      "prompt_spec": "Dresden cluster with Frauenkirche dome, Elbe bridge, and old town silhouette."
+    },
+    {
+      "id": "hannover",
+      "display_name": "Hannover",
+      "map_panel_name": "Hannover",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["New Town Hall dome", "Maschsee water edge", "Leineschloss or market church tower"],
+      "prompt_spec": "Hannover cluster with New Town Hall dome, Maschsee water edge, and Leineschloss/Market Church tower."
+    },
+    {
+      "id": "bremen",
+      "display_name": "Bremen",
+      "map_panel_name": "Bremen",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Bremen Town Hall", "Roland statue silhouette", "Schnoor gabled houses or Weser quay"],
+      "prompt_spec": "Bremen cluster with Town Hall, Roland statue silhouette, and Schnoor gabled houses/Weser quay."
+    },
+    {
+      "id": "kiel",
+      "display_name": "Kiel",
+      "map_panel_name": "Kiel",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Kiel harbor cranes", "ferry or sailboat", "city hall tower"],
+      "prompt_spec": "Kiel cluster with harbor cranes, ferry/sailboat, and city hall tower."
+    },
+    {
+      "id": "luebeck",
+      "display_name": "Lübeck",
+      "map_panel_name": "Lübeck",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Holstentor twin towers", "brick church spire", "old town gabled houses"],
+      "prompt_spec": "Lübeck cluster with Holstentor twin towers, brick church spire, and old town gabled houses."
+    },
+    {
+      "id": "duesseldorf",
+      "display_name": "Düsseldorf",
+      "map_panel_name": "Düsseldorf",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Rhine Tower", "Rhine promenade/bridge", "Media Harbor leaning buildings"],
+      "prompt_spec": "Düsseldorf cluster with Rhine Tower, Rhine promenade/bridge, and Media Harbor buildings."
+    },
+    {
+      "id": "dortmund",
+      "display_name": "Dortmund",
+      "map_panel_name": "Dortmund",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Dortmund U tower", "industrial headframe", "Westfalenstadion arc or city church"],
+      "prompt_spec": "Dortmund cluster with Dortmund U tower, industrial headframe, and stadium arc/city church."
+    },
+    {
+      "id": "essen",
+      "display_name": "Essen",
+      "map_panel_name": "Essen",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Zollverein winding tower", "red-brick industrial hall", "Ruhr greenery mound"],
+      "prompt_spec": "Essen cluster with Zollverein winding tower, red-brick industrial hall, and Ruhr greenery mound."
+    },
+    {
+      "id": "leipzig",
+      "display_name": "Leipzig",
+      "map_panel_name": "Leipzig",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Monument to the Battle of the Nations", "St Thomas Church tower", "old trade fair facade"],
+      "prompt_spec": "Leipzig cluster with Monument to the Battle of the Nations, St Thomas Church tower, and old trade fair facade."
+    },
+    {
+      "id": "magdeburg",
+      "display_name": "Magdeburg",
+      "map_panel_name": "Magdeburg",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Magdeburg Cathedral", "Green Citadel pink facade", "Elbe bridge/water strip"],
+      "prompt_spec": "Magdeburg cluster with Magdeburg Cathedral, Green Citadel pink facade, and Elbe bridge/water strip."
+    },
+    {
+      "id": "wolfsburg",
+      "display_name": "Wolfsburg",
+      "map_panel_name": "Wolfsburg",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Autostadt twin glass towers", "VW factory silhouette", "Aller canal/waterfront"],
+      "prompt_spec": "Wolfsburg cluster with Autostadt twin glass towers, VW factory silhouette, and Aller canal/waterfront."
+    },
+    {
+      "id": "kassel",
+      "display_name": "Kassel",
+      "map_panel_name": "Kassel",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Herkules monument", "Bergpark cascade steps", "Wilhelmshöhe palace base"],
+      "prompt_spec": "Kassel cluster with Herkules monument, Bergpark cascade steps, and Wilhelmshöhe palace base."
+    },
+    {
+      "id": "erfurt",
+      "display_name": "Erfurt",
+      "map_panel_name": "Erfurt",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Erfurt Cathedral", "Severikirche", "Krämerbrücke bridge houses"],
+      "prompt_spec": "Erfurt cluster with Erfurt Cathedral, Severikirche, and Krämerbrücke bridge houses."
+    },
+    {
+      "id": "nuremberg",
+      "display_name": "Nürnberg",
+      "map_panel_name": "Nürnberg",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Imperial Castle", "old town wall tower", "Pegnitz bridge/river"],
+      "prompt_spec": "Nürnberg cluster with Imperial Castle, old town wall tower, and Pegnitz bridge/river."
+    },
+    {
+      "id": "regensburg",
+      "display_name": "Regensburg",
+      "map_panel_name": "Regensburg",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Regensburg Cathedral twin spires", "Stone Bridge", "Danube river strip"],
+      "prompt_spec": "Regensburg cluster with Cathedral twin spires, Stone Bridge, and Danube river strip."
+    },
+    {
+      "id": "augsburg",
+      "display_name": "Augsburg",
+      "map_panel_name": "Augsburg",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Augsburg Town Hall", "Perlachturm", "Fuggerei gabled houses"],
+      "prompt_spec": "Augsburg cluster with Town Hall, Perlachturm, and Fuggerei gabled houses."
+    },
+    {
+      "id": "freiburg",
+      "display_name": "Freiburg",
+      "map_panel_name": "Freiburg",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Freiburg Minster spire", "Schwabentor or Martinstor gate", "Black Forest hill edge"],
+      "prompt_spec": "Freiburg cluster with Freiburg Minster spire, Schwabentor/Martinstor gate, and Black Forest hill edge."
+    },
+    {
+      "id": "saarbruecken",
+      "display_name": "Saarbrücken",
+      "map_panel_name": "Saarbrücken",
+      "status": "existing_cluster",
+      "priority": "map_panel_remaining",
+      "cluster_elements": ["Ludwigskirche", "Saar river bridge", "Saarbrücken Castle facade"],
+      "prompt_spec": "Saarbrücken cluster with Ludwigskirche, Saar river bridge, and Saarbrücken Castle facade."
+    }
+  ]
+}

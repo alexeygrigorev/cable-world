@@ -340,7 +340,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("func _city_cluster_visual_scale() -> float:", script_text)
         self.assertIn("func _city_icon_size(icon_id: String) -> float:", script_text)
         self.assertIn("const CITY_CLUSTER_ICON_IDS := {", script_text)
-        self.assertIn('"res://assets/sprites/city_landmark_clusters/outlined/city_%s.png"', script_text)
+        self.assertIn('"res://assets/sprites/city_landmark_clusters_hi_res/outlined/city_%s.png"', script_text)
         self.assertIn("if CITY_CLUSTER_ICON_IDS.has(icon_id) and ResourceLoader.exists(cluster_path):", script_text)
         self.assertIn("return round(clamp(48.0 * scale, 42.0, 76.0))", script_text)
         self.assertIn("clamp(54.0 * _city_cluster_visual_scale(), 54.0, 148.0)", script_text)
@@ -395,40 +395,22 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertLessEqual(issue_55_major_cities, set(city_entries))
 
         for name, city_data in city_entries.items():
-            kind = city_data["kind"]
             icon_id = city_data["icon"]
-            if kind in {"capital", "city"}:
-                self.assertTrue(icon_id, f"{name} is visible at default zoom but has no city pictogram")
+            if icon_id:
                 self.assertTrue(
-                    (ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / f"city_{icon_id}.png").exists(),
-                    f"{name} references a missing outlined city pictogram: {icon_id}",
+                    (ROOT / "assets" / "sprites" / "city_landmark_clusters_hi_res" / "outlined" / f"city_{icon_id}.png").exists(),
+                    f"{name} references a missing hi-res cluster pictogram: {icon_id}",
                 )
 
-        no_icon_labels = [name for name, city_data in city_entries.items() if not city_data["icon"]]
-        visible_major_city_icons = {
-            name: city_entries[name]["icon"]
-            for name in issue_55_major_cities
-            if city_entries[name]["kind"] in {"capital", "city"}
-        }
-        self.assertEqual(
-            {
-                "Berlin": "berlin",
-                "Dresden": "dresden",
-                "Hamburg": "hamburg",
-                "Köln": "cologne",
-                "München": "munich",
-                "Stuttgart": "stuttgart",
-            },
-            visible_major_city_icons,
-        )
-        self.assertEqual("town", city_entries["Bremen"]["kind"])
-        self.assertEqual("town", city_entries["Hannover"]["kind"])
-        self.assertIn("Leipzig", no_icon_labels)
-        self.assertIn("Nürnberg", no_icon_labels)
+        major_city_icons = {name: city_entries[name]["icon"] for name in issue_55_major_cities}
+        self.assertEqual("bremen", major_city_icons["Bremen"])
+        self.assertEqual("hannover", major_city_icons["Hannover"])
+        self.assertEqual("leipzig", major_city_icons["Leipzig"])
+        self.assertEqual("nuremberg", major_city_icons["Nürnberg"])
         for name in ["Bremen", "Hannover", "Leipzig", "Nürnberg"]:
-            with self.subTest(hidden_bare_major_city=name):
+            with self.subTest(major_city_has_cluster=name):
                 self.assertEqual("town", city_entries[name]["kind"])
-                self.assertEqual("", city_entries[name]["icon"])
+                self.assertTrue(city_entries[name]["icon"])
 
     def test_primary_city_landmark_coordinates_stay_geographic(self) -> None:
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
@@ -480,25 +462,25 @@ class MapPanelContractTest(unittest.TestCase):
             "Bremen": {
                 "coordinates": "Vector2(8.8017, 53.0793)",
                 "kind": "town",
-                "icon": "",
+                "icon": "bremen",
                 "icon_offset": None,
             },
             "Hannover": {
                 "coordinates": "Vector2(9.7320, 52.3759)",
                 "kind": "town",
-                "icon": "",
+                "icon": "hannover",
                 "icon_offset": None,
             },
             "Leipzig": {
                 "coordinates": "Vector2(12.3731, 51.3397)",
                 "kind": "town",
-                "icon": "",
+                "icon": "leipzig",
                 "icon_offset": None,
             },
             "Nürnberg": {
                 "coordinates": "Vector2(11.0767, 49.4521)",
                 "kind": "town",
-                "icon": "",
+                "icon": "nuremberg",
                 "icon_offset": None,
             },
         }
@@ -863,21 +845,26 @@ class MapPanelContractTest(unittest.TestCase):
 
         self.assertIn('"res://assets/sprites/outlined/%s.png"', script_text)
         self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
-        self.assertIn("city_landmark_clusters/outlined/city_%s.png", script_text)
+        self.assertIn("city_landmark_clusters_hi_res/outlined/city_%s.png", script_text)
 
-    def test_multi_symbol_city_cluster_pipeline_is_documented(self) -> None:
-        cluster_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks.py").read_text(encoding="utf-8")
+    def test_high_res_city_cluster_pipeline_is_documented_and_runtime_integrated(self) -> None:
+        cluster_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks_hi_res.py").read_text(encoding="utf-8")
+        review_text = (ROOT / "map_pipeline" / "build_city_cluster_hi_res_review.py").read_text(encoding="utf-8")
         docs_text = (ROOT / "docs" / "map-generation-handoff.md").read_text(encoding="utf-8")
+        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
 
         for expected in [
-            "ICON_SIZE = 512",
+            "ICON_SIZE = 1024",
+            "PADDING = 96",
             "GRID_COLUMNS = 4",
             "GRID_ROWS = 2",
             "CITY_CLUSTER_ICON_NAMES",
-            "assets/sprites/city_landmark_clusters",
+            "assets/sprites/city_landmark_clusters_hi_res",
             "def _remove_tiny_alpha_islands",
             "narrow_edge_fragment",
-            "Slice a 4x2 multi-symbol city landmark sprite sheet.",
+            "Build 1024px high-res city landmark cluster sprites",
+            "--source-dir",
+            "--sheet",
         ]:
             self.assertIn(expected, cluster_text)
 
@@ -894,35 +881,6 @@ class MapPanelContractTest(unittest.TestCase):
             self.assertIn(city, cluster_text)
 
         for expected in [
-            "Multi-symbol city cluster workflow",
-            "2-4 recognizable city elements",
-            "user zoom `200%` is our source-quality target",
-            "2048x1024 image, 4 columns x 2 rows",
-            "one-symbol-only cities",
-            "map_review_app/scripts/capture-godot.sh",
-            "do not swap `scripts/map_panel.gd` to the cluster directory until the 8-city sheet passes",
-        ]:
-            self.assertIn(expected, docs_text)
-
-    def test_high_res_city_cluster_pipeline_is_separate_from_runtime(self) -> None:
-        hi_res_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks_hi_res.py").read_text(encoding="utf-8")
-        review_text = (ROOT / "map_pipeline" / "build_city_cluster_hi_res_review.py").read_text(encoding="utf-8")
-        docs_text = (ROOT / "docs" / "map-generation-handoff.md").read_text(encoding="utf-8")
-        script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
-
-        for expected in [
-            "ICON_SIZE = 1024",
-            "PADDING = 96",
-            "GRID_COLUMNS = 4",
-            "GRID_ROWS = 2",
-            "assets/sprites/city_landmark_clusters_hi_res",
-            "--source-dir",
-            "--sheet",
-            "Build 1024px high-res city landmark cluster sprites",
-        ]:
-            self.assertIn(expected, hi_res_text)
-
-        for expected in [
             "city_cluster_glyphs_hi_res",
             "PREVIEW_FILE_TEMPLATE = \"city_cluster_glyphs_hi_res_preview_%s.png\"",
             'parser.add_argument("--id", default="city_cluster_glyphs_hi_res")',
@@ -935,14 +893,15 @@ class MapPanelContractTest(unittest.TestCase):
 
         for expected in [
             "High-res city cluster workflow",
-            "separate directory",
             "1254x1254",
             "`1024x1024` transparent city sprites",
-            "do not load `assets/sprites/city_landmark_clusters_hi_res` from `scripts/map_panel.gd`",
+            "Runtime loads `assets/sprites/city_landmark_clusters_hi_res/outlined`",
+            "Static glyph contact sheets should normally expose only `200`",
         ]:
             self.assertIn(expected, docs_text)
 
-        self.assertNotIn("city_landmark_clusters_hi_res", script_text)
+        self.assertIn("city_landmark_clusters_hi_res/outlined/city_%s.png", script_text)
+        self.assertFalse((ROOT / "map_pipeline" / "slice_city_cluster_landmarks.py").exists())
 
     def test_map_review_app_owns_its_scripts_and_metadata_contract(self) -> None:
         readme_text = (ROOT / "map_review_app" / "README.md").read_text(encoding="utf-8")
@@ -956,7 +915,6 @@ class MapPanelContractTest(unittest.TestCase):
             ROOT / "map_review_app" / "scripts" / "status.sh",
             ROOT / "map_review_app" / "scripts" / "clean.sh",
             ROOT / "map_review_app" / "scripts" / "capture-godot.sh",
-            ROOT / "map_review_app" / "scripts" / "build-city-cluster-review.sh",
             ROOT / "map_review_app" / "scripts" / "build-city-cluster-variant-reviews.sh",
             ROOT / "map_review_app" / "capture_map_review_scenes.gd",
         ]:

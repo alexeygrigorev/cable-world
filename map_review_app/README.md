@@ -57,14 +57,6 @@ tmp/city-cluster-hi-res-vN/outlined/
 
 `map_review_app/scripts/capture-godot.sh` will turn each matching folder into its own review tab. These variant tabs are for feedback only; they do not replace tracked runtime assets.
 
-The legacy low-resolution city cluster sheet can still be rebuilt manually with:
-
-```bash
-map_review_app/scripts/build-city-cluster-review.sh
-```
-
-Do not include it in the default review packet unless it is the thing being reviewed; old tabs make it harder to judge the current high-resolution candidates.
-
 The app also reads `assets/map/review/manifest.json` when present for tab ordering and names.
 
 ## Feedback

@@ -208,7 +208,7 @@ The app loads `assets/sprites/city_landmarks/outlined/city_*.png`. Major city la
 
 ## Multi-symbol city cluster workflow
 
-User feedback 2026-06-01: one-symbol city pictograms make city weight inconsistent. Berlin with only the TV tower reads smaller than München with a broader gate/building shape. The next city pass must use small landmark clusters: 2-4 recognizable city elements per icon, balanced to similar visual mass.
+User feedback 2026-06-01: one-symbol city pictograms make city weight inconsistent. Berlin with only the TV tower reads smaller than München with a broader gate/building shape. The active city pictogram path uses high-resolution landmark clusters: 2-4 recognizable city elements per icon, balanced to similar visual mass.
 
 Start with the first 8 high-impact cities before replacing the full 64-icon set:
 
@@ -221,29 +221,23 @@ Start with the first 8 high-impact cities before replacing the full 64-icon set:
 - Stuttgart: Fernsehturm, Schlossplatz/industrial hill form.
 - Dresden: Frauenkirche dome, Elbe bridge, old town silhouette.
 
-Source quality rule: user zoom `200%` is our source-quality target. Generate cluster sheets with enough resolution that the `200%` in-app view still looks like the native asset, not a magnified low-res sprite. The first cluster sheet uses 4 columns x 2 rows at `2048x1024`, then slices each city to a `512x512` transparent source icon.
-
-First generated source:
-
-```text
-/home/alexey/.codex/generated_images/019e7af1-437a-70f1-9164-d2f7b34a9c81/ig_0a51518699bf0fba016a1d5706b5288191b554444218cf4757.png
-```
+Source quality rule: user zoom `200%` is our source-quality target. Generate per-city sources large enough that the `200%` in-app view still looks like the native asset, not a magnified low-res sprite. Runtime loads `assets/sprites/city_landmark_clusters_hi_res/outlined` directly.
 
 Current review tab:
 
 ```text
-http://127.0.0.1:9010/ -> city_cluster_glyphs
+http://127.0.0.1:9010/ -> city_cluster_glyphs_hi_res
 ```
 
-Important slicer behavior: `map_pipeline.slice_city_cluster_landmarks` removes tiny edge-connected alpha islands before fitting each icon. This is required because generated sheets can place small fragments of the neighboring cell near cell boundaries.
+Important slicer behavior: `map_pipeline.slice_city_cluster_landmarks_hi_res` removes tiny edge-connected alpha islands before fitting each icon. This is required because generated sheets can place small fragments of the neighboring cell near cell boundaries.
 
 Prompt:
 
 ```text
 Use case: stylized-concept
-Asset type: 2048x1024 sprite sheet for a Godot 16-bit RPG atlas map UI
+Asset type: high-resolution sprite sheet or per-city sources for a Godot 16-bit RPG atlas map UI
 Primary request: Create one consistent sprite sheet of multi-symbol city landmark cluster pictograms for a European cableways/funiculars map. Each icon must be a compact cluster of 2-4 recognizable city elements, balanced so each city has similar visual weight. The icons must feel like native landmarks on a hand-painted 16-bit adventure atlas, not modern app icons.
-Canvas/layout: 2048x1024 image, 4 columns x 2 rows, one centered city cluster per cell with generous padding. No text, no labels, no numbers, no grid lines, no borders between cells.
+Canvas/layout: one centered city cluster per cell/source with generous padding. No text, no labels, no numbers, no grid lines, no borders between cells.
 Icons in order, left to right, top row then bottom row:
 Berlin cluster with Fernsehturm, Brandenburg Gate, and Reichstag dome/skyline mass;
 Hamburg cluster with Speicherstadt warehouse, harbor crane, church spire/ship;
@@ -261,34 +255,34 @@ Avoid: text, letters, city names, flags, watermark, photorealism, modern flat ve
 Post-processing:
 
 ```bash
-mkdir -p tmp/city-cluster-source
-cp /path/to/generated/city_cluster_sheet.png tmp/city-cluster-source/city_cluster_sheet_source.png
+mkdir -p tmp/city-cluster-hi-res-source
+cp /path/to/generated/city_cluster_source.png tmp/city-cluster-hi-res-source/city_cluster_source.png
 uv run python "${CODEX_HOME:-$HOME/.codex}/skills/.system/imagegen/scripts/remove_chroma_key.py" \
-  --input tmp/city-cluster-source/city_cluster_sheet_source.png \
-  --out tmp/city-cluster-source/city_cluster_sheet_alpha.png \
+  --input tmp/city-cluster-hi-res-source/city_cluster_source.png \
+  --out tmp/city-cluster-hi-res-source/city_cluster_alpha.png \
   --auto-key border \
   --soft-matte \
   --transparent-threshold 12 \
   --opaque-threshold 220 \
   --despill
-uv run python -m map_pipeline.slice_city_cluster_landmarks \
-  --sheet tmp/city-cluster-source/city_cluster_sheet_alpha.png \
-  --out-dir assets/sprites/city_landmark_clusters
+uv run python -m map_pipeline.slice_city_cluster_landmarks_hi_res \
+  --sheet tmp/city-cluster-hi-res-source/city_cluster_alpha.png \
+  --out-dir assets/sprites/city_landmark_clusters_hi_res
 uv run python -m map_pipeline.outline_sprites \
-  --source-dir assets/sprites/city_landmark_clusters \
-  --out-dir assets/sprites/city_landmark_clusters/outlined \
+  --source-dir assets/sprites/city_landmark_clusters_hi_res \
+  --out-dir assets/sprites/city_landmark_clusters_hi_res/outlined \
   --prefix city_ \
-  --radius 4 \
+  --radius 6 \
   --color '#25180fe0'
 godot --headless --path . --import --quit
 map_review_app/scripts/capture-godot.sh
 ```
 
-Review rule: do not swap `scripts/map_panel.gd` to the cluster directory until the 8-city sheet passes the Godot-native review captures at `50%`, `100%`, `150%` and `200%`. The review should specifically compare Berlin/Hamburg/Rostock/München visual weight and reject if any city reads as a tiny single-object icon.
+Review rule: Godot-native review captures at `50%`, `100%`, `150%` and `200%` must show city cluster glyphs scaling with the map. Static glyph contact sheets should normally expose only `200`, because downscaled copies do not answer a different review question.
 
 ## High-res city cluster workflow
 
-User feedback 2026-06-01: the first `512x512` cluster output still pixelates during `200%` review. Keep the runtime path unchanged for now and generate the higher-resolution candidate into a separate directory.
+User feedback 2026-06-01: the first `512x512` cluster output still pixelated during `200%` review. The low-resolution city cluster pipeline has been removed from the active code path; use only `city_landmark_clusters_hi_res`.
 
 The attempted single-sheet high-res prompt asked for `4096x2048`, but the built-in image generator returned only `1774x887`, which is lower source density than the existing `2048x1024` sheet. Do not use that sheet as a high-res source. The current high-res candidate instead uses one per-city source image, each `1254x1254`, then normalizes to `1024x1024` transparent city sprites.
 
@@ -337,7 +331,7 @@ uv run python -m map_pipeline.build_city_cluster_hi_res_review \
   --out-dir assets/map/review/city_cluster_glyphs_hi_res
 ```
 
-For temporary comparison candidates, keep runtime untouched and write a separate review tab:
+For temporary comparison candidates, write a separate review tab:
 
 ```bash
 uv run python -m map_pipeline.build_city_cluster_hi_res_review \
@@ -352,12 +346,9 @@ Outputs:
 
 - `assets/sprites/city_landmark_clusters_hi_res/city_*.png`
 - `assets/sprites/city_landmark_clusters_hi_res/outlined/city_*.png`
-- `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_050.png`
-- `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_100.png`
-- `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_150.png`
 - `assets/map/review/city_cluster_glyphs_hi_res/city_cluster_glyphs_hi_res_preview_200.png`
 
-Runtime note: do not load `assets/sprites/city_landmark_clusters_hi_res` from `scripts/map_panel.gd` until this candidate passes review and a separate runtime integration task explicitly swaps the path.
+Runtime loads `assets/sprites/city_landmark_clusters_hi_res/outlined` from `scripts/map_panel.gd`.
 
 ## Terrain and forest glyph generation workflow
 

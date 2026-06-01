@@ -23,6 +23,8 @@ function sendJson(response, status, body) {
   response.writeHead(status, {
     "Content-Type": CONTENT_TYPES[".json"],
     "Cache-Control": "no-store",
+    "Pragma": "no-cache",
+    "Expires": "0",
   });
   response.end(JSON.stringify(body));
 }
@@ -190,7 +192,7 @@ async function saveFeedback(payload) {
   };
 }
 
-async function serveStatic(response, filePath) {
+async function serveStatic(request, response, filePath) {
   const ext = path.extname(filePath);
   const contentType = CONTENT_TYPES[ext] ?? "application/octet-stream";
   const fileStat = await stat(filePath);
@@ -198,7 +200,14 @@ async function serveStatic(response, filePath) {
     "Content-Type": contentType,
     "Content-Length": fileStat.size,
     "Cache-Control": "no-store",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "Last-Modified": fileStat.mtime.toUTCString(),
   });
+  if (request.method === "HEAD") {
+    response.end();
+    return;
+  }
   createReadStream(filePath).pipe(response);
 }
 
@@ -214,7 +223,7 @@ async function handle(request, response) {
       sendJson(response, 200, { ok: true, saved });
       return;
     }
-    if (request.method === "GET" && url.pathname.startsWith("/review/")) {
+    if ((request.method === "GET" || request.method === "HEAD") && url.pathname.startsWith("/review/")) {
       const relativePath = decodeURIComponent(url.pathname.replace(/^\/review\//, ""));
       const resolvedPath = path.resolve(REVIEW_DIR, relativePath);
       const pathFromReviewDir = path.relative(REVIEW_DIR, resolvedPath);
@@ -222,12 +231,12 @@ async function handle(request, response) {
         sendJson(response, 403, { error: "Forbidden" });
         return;
       }
-      await serveStatic(response, resolvedPath);
+      await serveStatic(request, response, resolvedPath);
       return;
     }
-    if (request.method === "GET") {
+    if (request.method === "GET" || request.method === "HEAD") {
       const name = url.pathname === "/" ? "index.html" : path.basename(decodeURIComponent(url.pathname));
-      await serveStatic(response, path.join(APP_DIR, name));
+      await serveStatic(request, response, path.join(APP_DIR, name));
       return;
     }
     sendJson(response, 405, { error: "Method not allowed" });

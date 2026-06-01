@@ -36,6 +36,23 @@ class OfflineMapLayer:
 		"frankfurt": true,
 		"stuttgart": true,
 		"dresden": true,
+		"hannover": true,
+		"bremen": true,
+		"kiel": true,
+		"luebeck": true,
+		"duesseldorf": true,
+		"dortmund": true,
+		"essen": true,
+		"leipzig": true,
+		"magdeburg": true,
+		"wolfsburg": true,
+		"kassel": true,
+		"erfurt": true,
+		"nuremberg": true,
+		"regensburg": true,
+		"augsburg": true,
+		"freiburg": true,
+		"saarbruecken": true,
 	}
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
@@ -45,24 +62,24 @@ class OfflineMapLayer:
 		{"name": "München", "coordinates": Vector2(11.5820, 48.1351), "kind": "city", "icon": "munich"},
 		{"name": "Dresden", "coordinates": Vector2(13.7373, 51.0504), "kind": "city", "icon": "dresden"},
 		{"name": "Stuttgart", "coordinates": Vector2(9.1829, 48.7758), "kind": "city", "icon": "stuttgart"},
-		{"name": "Hannover", "coordinates": Vector2(9.7320, 52.3759), "kind": "town", "icon": ""},
-		{"name": "Bremen", "coordinates": Vector2(8.8017, 53.0793), "kind": "town", "icon": ""},
-		{"name": "Kiel", "coordinates": Vector2(10.1228, 54.3233), "kind": "town", "icon": ""},
-		{"name": "Lübeck", "coordinates": Vector2(10.6866, 53.8655), "kind": "town", "icon": ""},
+		{"name": "Hannover", "coordinates": Vector2(9.7320, 52.3759), "kind": "town", "icon": "hannover"},
+		{"name": "Bremen", "coordinates": Vector2(8.8017, 53.0793), "kind": "town", "icon": "bremen"},
+		{"name": "Kiel", "coordinates": Vector2(10.1228, 54.3233), "kind": "town", "icon": "kiel"},
+		{"name": "Lübeck", "coordinates": Vector2(10.6866, 53.8655), "kind": "town", "icon": "luebeck"},
 		{"name": "Düsseldorf", "coordinates": Vector2(6.7735, 51.2277), "kind": "town", "icon": "duesseldorf"},
 		{"name": "Dortmund", "coordinates": Vector2(7.4653, 51.5136), "kind": "town", "icon": "dortmund"},
-		{"name": "Essen", "coordinates": Vector2(7.0116, 51.4556), "kind": "town", "icon": ""},
+		{"name": "Essen", "coordinates": Vector2(7.0116, 51.4556), "kind": "town", "icon": "essen"},
 		{"name": "Frankfurt", "coordinates": Vector2(8.6821, 50.1109), "kind": "town", "icon": "frankfurt"},
-		{"name": "Leipzig", "coordinates": Vector2(12.3731, 51.3397), "kind": "town", "icon": ""},
-		{"name": "Magdeburg", "coordinates": Vector2(11.6276, 52.1205), "kind": "town", "icon": ""},
-		{"name": "Wolfsburg", "coordinates": Vector2(10.7865, 52.4227), "kind": "town", "icon": ""},
-		{"name": "Kassel", "coordinates": Vector2(9.4797, 51.3127), "kind": "town", "icon": ""},
-		{"name": "Erfurt", "coordinates": Vector2(11.0299, 50.9848), "kind": "town", "icon": ""},
-		{"name": "Nürnberg", "coordinates": Vector2(11.0767, 49.4521), "kind": "town", "icon": ""},
-		{"name": "Regensburg", "coordinates": Vector2(12.1016, 49.0134), "kind": "town", "icon": ""},
-		{"name": "Augsburg", "coordinates": Vector2(10.8978, 48.3705), "kind": "town", "icon": ""},
-		{"name": "Freiburg", "coordinates": Vector2(7.8421, 47.9990), "kind": "town", "icon": ""},
-		{"name": "Saarbrücken", "coordinates": Vector2(6.9969, 49.2402), "kind": "town", "icon": ""},
+		{"name": "Leipzig", "coordinates": Vector2(12.3731, 51.3397), "kind": "town", "icon": "leipzig"},
+		{"name": "Magdeburg", "coordinates": Vector2(11.6276, 52.1205), "kind": "town", "icon": "magdeburg"},
+		{"name": "Wolfsburg", "coordinates": Vector2(10.7865, 52.4227), "kind": "town", "icon": "wolfsburg"},
+		{"name": "Kassel", "coordinates": Vector2(9.4797, 51.3127), "kind": "town", "icon": "kassel"},
+		{"name": "Erfurt", "coordinates": Vector2(11.0299, 50.9848), "kind": "town", "icon": "erfurt"},
+		{"name": "Nürnberg", "coordinates": Vector2(11.0767, 49.4521), "kind": "town", "icon": "nuremberg"},
+		{"name": "Regensburg", "coordinates": Vector2(12.1016, 49.0134), "kind": "town", "icon": "regensburg"},
+		{"name": "Augsburg", "coordinates": Vector2(10.8978, 48.3705), "kind": "town", "icon": "augsburg"},
+		{"name": "Freiburg", "coordinates": Vector2(7.8421, 47.9990), "kind": "town", "icon": "freiburg"},
+		{"name": "Saarbrücken", "coordinates": Vector2(6.9969, 49.2402), "kind": "town", "icon": "saarbruecken"},
 	]
 	const TERRAIN_LABELS := [
 		{"name": "Harz", "coordinates": Vector2(10.56, 51.80)},
@@ -204,7 +221,7 @@ class OfflineMapLayer:
 
 	func _city_icon_texture(icon_id: String) -> Texture2D:
 		if not _city_icon_textures.has(icon_id):
-			var cluster_path := "res://assets/sprites/city_landmark_clusters/outlined/city_%s.png" % icon_id
+			var cluster_path := "res://assets/sprites/city_landmark_clusters_hi_res/outlined/city_%s.png" % icon_id
 			var fallback_path := "res://assets/sprites/city_landmarks/outlined/city_%s.png" % icon_id
 			if CITY_CLUSTER_ICON_IDS.has(icon_id) and ResourceLoader.exists(cluster_path):
 				_city_icon_textures[icon_id] = load(cluster_path)
