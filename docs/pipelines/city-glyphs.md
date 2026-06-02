@@ -55,10 +55,19 @@ Prompt rules:
 
 Prompt text alone is not enough to keep city glyphs repeatable. Every new batch must be generated and reviewed against an approved reference sheet.
 
-Approved style references:
+Approved style reference:
 
-- compact RPG-map clusters: `city_berlin.png`, `city_bremen.png`, `city_vaduz.png`;
-- compact new-city batches: `city_bolzano.png`, `city_palermo.png`, `city_catania.png`, `city_braga.png`, `city_coimbra.png`, `city_belfast.png`.
+```text
+assets/map/references/city-glyph-style-reference-5x3.png
+```
+
+This sheet is the style source of truth. It is a pre-slice `5 columns x 3 rows` reference generated from these city-token concepts:
+
+```text
+Venice, Bolzano, Augsburg, Leipzig, Brno
+Bremen, Kiel, Berlin, Milan, Prague
+Brussels, Frankfurt, Riga, Kyiv, Athens
+```
 
 When prompting, explicitly ask for the batch to match the approved reference sheet in:
 
@@ -77,9 +86,40 @@ Rejected style patterns:
 
 Do not integrate a batch until its review sheet is visually checked against these references. If a whole batch uses the wrong style, reject the batch and regenerate from the reference sheet; do not patch individual cities from that batch unless the style already matches.
 
+## Reference-Sheet Batch Prompt
+
+Use the approved `5x3` reference image as an input image for every city generation batch. Ask for the output to use the same `5 columns x 3 rows` layout so the model sees and returns the same structure.
+
+Batch prompt skeleton:
+
+```text
+Input image: assets/map/references/city-glyph-style-reference-5x3.png is the style reference.
+Create one coherent 5 columns x 3 rows city glyph sheet for these 15 cities, in this exact order:
+<city ids / display names>.
+
+Match the reference sheet's compact European RPG map city-token style:
+single artist, painterly pixel-art / 2.5D atlas miniature, warm stone and terracotta palette,
+crisp dark outline, consistent camera angle, consistent lighting, shared bottom baseline,
+medium-small controlled tokens, comparable visual mass.
+
+Use only positive city elements in each cell: compact old-town architecture, civic buildings,
+churches, palaces, domes, roofs, towers as modest accents, arcades as building architecture.
+
+Do not mention optional unwanted motifs in the city hints. If a motif should not appear,
+avoid naming it unless it is a hard layer violation.
+
+Hard constraints: no water, canals, rivers, sea, harbor water, boats, ships, piers, docks,
+waterfront bases, terrain massifs, mountain backdrops, snowy peaks, broad hills, flags,
+readable text, labels, frames, watermarks, photorealism, flat vector app-icon style.
+
+Background: perfectly flat solid #ff00ff chroma-key background only, with clean #ff00ff gutters.
+```
+
+Do not ask for one city at a time during a full pass. Use `5x3` batches; a smaller last batch is allowed only when the remaining city count is below 15.
+
 ## Generate
 
-Batch generation is the default because one sheet keeps style, scale, lighting, and outline language consistent across cities. Prefer fitting many cities into one generation when the cells still leave clear gutters, for example `4 columns x 3 rows`, `5 columns x 3 rows`, or larger review batches if the generated resolution keeps every city readable. Use single-city generation only to replace one rejected glyph after review.
+Batch generation is the default because one sheet keeps style, scale, lighting, and outline language consistent across cities. Prefer `5 columns x 3 rows` batches using the approved reference sheet. Use single-city generation only to replace one rejected glyph after review.
 
 Save selected generated sheets under `tmp/`, for example:
 

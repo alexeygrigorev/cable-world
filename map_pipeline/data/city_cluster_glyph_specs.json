@@ -1,6 +1,6 @@
 {
   "schema": "cable-world.city-cluster-glyph-specs.v1",
-  "style_reference": "Match the approved compact RPG-map city cluster reference sheet: Berlin, Bremen, Vaduz, Bolzano, Palermo, Catania, Braga, Coimbra, and Belfast. Use painterly pixel-art / 2.5D atlas miniature volume, warm European RPG map palette, crisp dark outline, and one compact shared-baseline city token. Avoid flat skyline/collage sprites, realistic landmark elevations, single giant monuments, scenic terrain bases, water bases, and wide city blocks that dominate neighboring cities.",
+  "style_reference": "Use assets/map/references/city-glyph-style-reference-5x3.png as the approved style reference sheet. Match its unified 5x3 compact European RPG map city-token language: painterly pixel-art / 2.5D atlas miniature, warm stone and terracotta palette, crisp dark outline, consistent camera angle, shared bottom baseline, medium-small controlled tokens, and comparable visual mass. Avoid flat skylines, realistic architectural elevations, isolated tall towers, giant single monuments, terrain/scenic bases, water bases, and wide city blocks that dominate neighboring cities.",
   "output_policy": {
     "runtime_integrated": true,
     "source_dir_pattern": "tmp/city-cluster-hi-res-<iteration>/raw",
