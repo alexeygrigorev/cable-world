@@ -47,7 +47,7 @@ Prompt rules:
 - Use a warm European RPG map palette and crisp dark outline.
 - Generate on flat `#ff00ff` chroma key background.
 - No text, letters, flags, labels, frames, map background, or photorealism.
-- The glyph must stay clean at user zoom `200%`.
+- The glyph must stay clean at user zoom `300%`.
 
 ## Generate
 
@@ -61,7 +61,7 @@ Keep generator output files under `$CODEX_HOME/generated_images/` as provenance.
 
 ## High-res city cluster workflow
 
-The original accepted pass used per-city `1254x1254` transparent sources. Runtime city sprites are currently normalized to `256x256` transparent PNGs for a mobile-sized map. Do not upscale smaller API output to fake a larger source; keep the generator output as provenance and only downscale/crop into runtime assets. If `256x256` is too soft at user zoom `200%`, raise the runtime target to `512x512` and regenerate from source.
+The original accepted pass used per-city `1254x1254` transparent sources. Runtime city sprites are normalized to `256x256` transparent PNGs for a mobile-sized map, and this size is accepted after review at user zoom `300%`. Do not upscale smaller API output to fake a larger source; keep the generator output as provenance and only downscale/crop into runtime assets.
 
 ## Remove Chroma Key
 
@@ -146,10 +146,10 @@ http://127.0.0.1:9010/
 
 Review rules:
 
-- At `200%`, city glyphs must scale with the map like boats, trees, terrain, and other glyphs.
+- At `300%`, city glyphs must stay readable and scale with the map like boats, trees, terrain, and other glyphs.
 - No visible city label should be bare text once a city has an accepted glyph.
 - City labels must stay close to the pictogram and remain readable above transport markers.
-- Static glyph contact sheets should normally expose only `200`; runtime Godot review captures can use `50%`, `100%`, `150%`, and `200%`.
+- Static glyph contact sheets should normally expose only `300`; runtime Godot review captures can use `100%`, `200%`, and `300%`.
 
 ## Removed Legacy Process
 

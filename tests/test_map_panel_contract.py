@@ -895,8 +895,8 @@ class MapPanelContractTest(unittest.TestCase):
             "High-res city cluster workflow",
             "1254x1254",
             "`256x256` transparent PNGs",
-            "If `256x256` is too soft",
-            "Static glyph contact sheets should normally expose only `200`",
+            "accepted after review at user zoom `300%`",
+            "Static glyph contact sheets should normally expose only `300`",
         ]:
             self.assertIn(expected, docs_text)
 

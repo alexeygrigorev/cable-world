@@ -34,7 +34,7 @@ def prompt_for_city(specs: dict, city_id: str) -> str:
             f"Style reference: {style_reference}",
             "Composition/framing: one centered compact cluster, generous transparent-ready padding, stable visual mass, no frame, no labels.",
             "Background: perfectly flat solid #ff00ff chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #ff00ff anywhere in the icon.",
-            "Constraints: 2-4 recognizable city elements, simplified readable silhouettes, avoid ultra-fine detail and tiny texture noise, clean at user zoom 200%, icon must not be cropped.",
+            "Constraints: 2-4 recognizable city elements, simplified readable silhouettes, avoid ultra-fine detail and tiny texture noise, clean at user zoom 300%, icon must not be cropped.",
             "Avoid: text, letters, city names, flags, watermark, photorealism, flat vector app icon style, mixed styles, large drop shadows, map background, decorative frame, one-symbol-only city.",
         ]
     )

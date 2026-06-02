@@ -1,6 +1,6 @@
 {
   "schema": "cable-world.city-cluster-glyph-specs.v1",
-  "style_reference": "Use the approved Berlin/Hamburg/Rostock/Munich/Cologne/Frankfurt/Stuttgart/Dresden multi-symbol cluster language: compact 2-4 landmark elements, painterly pixel-art, 2.5D atlas miniature, warm European RPG map palette, crisp dark outline, simplified shapes that stay clean at 200% review zoom.",
+  "style_reference": "Use the approved Berlin/Hamburg/Rostock/Munich/Cologne/Frankfurt/Stuttgart/Dresden multi-symbol cluster language: compact 2-4 landmark elements, painterly pixel-art, 2.5D atlas miniature, warm European RPG map palette, crisp dark outline, simplified shapes that stay clean at 300% review zoom.",
   "output_policy": {
     "runtime_integrated": true,
     "source_dir_pattern": "tmp/city-cluster-hi-res-<iteration>/raw",
