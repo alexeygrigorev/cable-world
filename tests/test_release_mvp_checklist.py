@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class ReleaseMvpChecklistTest(unittest.TestCase):
     def test_manual_apk_smoke_checklist_covers_current_mvp(self) -> None:
-        checklist_text = (ROOT / "docs" / "release-mvp-checklist.md").read_text(encoding="utf-8")
+        checklist_text = (ROOT / "docs" / "releases.md").read_text(encoding="utf-8")
 
         for expected in [
             "Запустить приложение",
@@ -32,16 +32,13 @@ class ReleaseMvpChecklistTest(unittest.TestCase):
 
     def test_release_docs_tell_where_to_download_apk(self) -> None:
         releases_text = (ROOT / "docs" / "releases.md").read_text(encoding="utf-8")
-        checklist_text = (ROOT / "docs" / "release-mvp-checklist.md").read_text(encoding="utf-8")
         readme_text = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        for text in [releases_text, checklist_text]:
-            with self.subTest(document=text[:40]):
-                self.assertIn("https://github.com/alexeygrigorev/cable-world/releases", text)
-                self.assertIn("mir-trossov-android-<version>.apk", text)
-                self.assertIn("Assets", text)
+        self.assertIn("https://github.com/alexeygrigorev/cable-world/releases", releases_text)
+        self.assertIn("mir-trossov-android-<version>.apk", releases_text)
+        self.assertIn("Assets", releases_text)
 
-        self.assertIn("docs/release-mvp-checklist.md", readme_text)
+        self.assertIn("docs/releases.md", readme_text)
 
     def test_ci_and_release_workflows_run_contract_tests(self) -> None:
         checks_workflow = (ROOT / ".github" / "workflows" / "checks.yml").read_text(encoding="utf-8")
@@ -57,7 +54,7 @@ class ReleaseMvpChecklistTest(unittest.TestCase):
 
     def test_object_mode_visual_reviewer_gate_is_documented(self) -> None:
         agents_text = (ROOT / "agents.md").read_text(encoding="utf-8")
-        checklist_text = (ROOT / "docs" / "release-mvp-checklist.md").read_text(encoding="utf-8")
+        checklist_text = (ROOT / "docs" / "releases.md").read_text(encoding="utf-8")
 
         for text in [agents_text, checklist_text]:
             with self.subTest(document=text[:40]):

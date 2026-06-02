@@ -170,7 +170,6 @@ class RideModeContractTest(unittest.TestCase):
 
     def test_ride_art_is_reusable_and_documented(self) -> None:
         game_text = (ROOT / "scripts" / "ride_game_view.gd").read_text(encoding="utf-8")
-        docs_text = (ROOT / "docs" / "ride-art-assets.md").read_text(encoding="utf-8")
 
         for asset_path in [
             ROOT / "assets" / "sprites" / "ride" / "ride_sprite_sheet.png",
@@ -191,15 +190,6 @@ class RideModeContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, game_text)
 
-        for expected in [
-            "Generation mode: built-in `image_gen` tool",
-            "Chroma-key removal:",
-            "scripts/capture_ride_art_screenshot.gd",
-            "Cableway physics must be plausible",
-            "Cabin sprite must include a top grip",
-            "Do not bake route-specific station names",
-        ]:
-            self.assertIn(expected, docs_text)
         self.assertTrue((ROOT / "scripts" / "capture_ride_art_screenshot.gd").is_file())
 
         for forbidden in [

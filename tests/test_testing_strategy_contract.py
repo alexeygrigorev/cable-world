@@ -45,10 +45,9 @@ class TestingStrategyContractTest(unittest.TestCase):
 
     def test_process_and_release_protocol_name_both_test_gates(self) -> None:
         process_text = (ROOT / "process.md").read_text(encoding="utf-8")
-        protocol_text = (ROOT / "docs" / "agent-operating-protocol.md").read_text(encoding="utf-8")
         releases_text = (ROOT / "docs" / "releases.md").read_text(encoding="utf-8")
 
-        for text in [process_text, protocol_text, releases_text, self.strategy_text]:
+        for text in [process_text, releases_text, self.strategy_text]:
             with self.subTest(document=text[:50]):
                 for expected in [
                     "python3 -m unittest discover -s tests",
@@ -60,7 +59,7 @@ class TestingStrategyContractTest(unittest.TestCase):
                 ]:
                     self.assertIn(expected, text)
 
-        self.assertIn("Python static assertions не считаются заменой runtime acceptance", protocol_text)
+        self.assertIn("Python static assertions не считаются заменой runtime acceptance", self.strategy_text)
         self.assertIn("не заменяет runtime/UI тесты Godot", process_text)
         self.assertIn("pipeline/data/schema/export/static contracts", releases_text)
 

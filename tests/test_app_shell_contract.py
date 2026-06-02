@@ -151,7 +151,7 @@ class AppShellContractTest(unittest.TestCase):
         for expected in [
             "var active_section_name := \"\"",
             "var map_return_state: Dictionary = {}",
-            'const ATLAS_LIST_BACKDROP := preload("res://assets/map/germany_styled.png")',
+            'const ATLAS_LIST_BACKDROP_PATH := "res://assets/map/germany_styled.png"',
             "var list_backdrop: TextureRect = null",
             'map_list_toggle_button.name = "MapListToggle"',
             'map_list_toggle_button.text = ""',
@@ -186,7 +186,8 @@ class AppShellContractTest(unittest.TestCase):
             "_apply_atlas_toggle_button_style(list_map_return_button, false)",
             'list_map_return_button.pressed.connect(func() -> void: _show_section("map"))',
             'list_backdrop.name = "ListAtlasBackdrop"',
-            "list_backdrop.texture = ATLAS_LIST_BACKDROP",
+            "if ResourceLoader.exists(ATLAS_LIST_BACKDROP_PATH):",
+            "list_backdrop.texture = load(ATLAS_LIST_BACKDROP_PATH)",
             "list_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED",
             "list_backdrop.visible = is_list",
             'list_ledger_header.name = "ListLedgerHeader"',
@@ -260,28 +261,6 @@ class AppShellContractTest(unittest.TestCase):
         self.assertIn("ConfigFile.new()", settings_text)
         for text in ["Как в системе", "Вертикальная", "Горизонтальная"]:
             self.assertIn(text, settings_text)
-
-    def test_layout_settings_ux_analysis_is_documented(self) -> None:
-        doc_text = (ROOT / "docs" / "layout-settings-ux.md").read_text(encoding="utf-8")
-
-        for expected in [
-            "Главная навигация",
-            "Настройки",
-            "Карточка объекта",
-            "Mobile portrait",
-            "`Карта`",
-            "`Список`",
-            "`Карточка`",
-            "`Коллекция`",
-            "`Журнал`",
-            "`Воспоминание`",
-            "`Поездка`",
-            "`Наблюдатель`",
-            "`Настройки`",
-            "`Ориентация`",
-            "не должна занимать место на стартовой карте",
-        ]:
-            self.assertIn(expected, doc_text)
 
     def test_list_panel_can_update_selection_without_reemitting(self) -> None:
         script_text = (ROOT / "scripts" / "object_list_panel.gd").read_text(encoding="utf-8")

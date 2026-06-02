@@ -994,22 +994,6 @@ class MapPanelContractTest(unittest.TestCase):
         ]:
             self.assertIn(expected, script_text)
 
-    def test_real_map_tiles_follow_up_is_documented(self) -> None:
-        doc_text = (ROOT / "docs" / "real-map-tiles-plan.md").read_text(encoding="utf-8")
-
-        for expected in [
-            "Real map tiles follow-up",
-            "OpenStreetMap",
-            "MapLibre",
-            "Android",
-            "Raster tiles внутри Godot",
-            "disk cache",
-            "OfflineMapLayer",
-            "© OpenStreetMap contributors",
-            "feature flag",
-        ]:
-            self.assertIn(expected, doc_text)
-
     def test_main_scene_and_controller_wire_map_selection(self) -> None:
         scene_text = (ROOT / "scenes" / "Main.tscn").read_text(encoding="utf-8")
         main_text = (ROOT / "scripts" / "main_screen.gd").read_text(encoding="utf-8")

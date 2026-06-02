@@ -1,10 +1,8 @@
 # Map Reviewer Gate
 
-Дата: 2026-05-31.
+Этот gate обязателен для задач, которые меняют карту, map assets, map runtime, export payload или UX карты.
 
-Этот gate обязателен для всех задач, которые меняют карту, map assets, map runtime, export payload или UX карты. Он дополняет общий процесс: `issue -> worktree -> implementer -> reviewer -> одна reviewed интеграция`.
-
-Reviewer не принимает карту по описанию implementer. Reviewer обязан открыть свежий live Web build, сделать screenshot review и поставить `REJECT`, если карта не соответствует `10/10` из `docs/map-quality-rubric.md`.
+Reviewer не принимает карту по описанию implementer. Нужны fresh Web build, screenshots, ручной visual review и решение `ACCEPT`/`REJECT`. Для integration карта должна быть `10/10`; все ниже возвращается на доработку.
 
 ## Role Contract
 
@@ -15,12 +13,12 @@ Reviewer должен:
 - запустить или проверить live map на `http://127.0.0.1:9000/`, либо явно указать documented URL/commands, если порт занят и `scripts/serve-web.sh` выбрал следующий порт;
 - получить свежие screenshots через Playwright и просмотреть их глазами;
 - проверить map interaction: pan, zoom, clickability, отсутствие marker jitter;
-- сверить визуальное качество с `docs/map-quality-rubric.md`;
+- сверить visual quality, geography, interaction и glyph scale по критериям ниже;
 - записать итог: `ACCEPT` только для карты `10/10`; `REJECT` для всего, что ниже.
 
 Если карта выглядит как текущий baseline около `6/10`, это не pass. Такой результат может быть технически полезным prototype, но reviewer обязан вернуть задачу на доработку.
 
-## Required Verification Commands
+## Commands
 
 Выполнять из корня worktree задачи:
 
@@ -35,7 +33,7 @@ godot --headless --path . --import --quit
 godot --headless --path . --quit-after 1
 ```
 
-Canonical review bundle command:
+Canonical review bundle:
 
 ```bash
 ISSUE=issue-81 scripts/create-map-review-bundle.sh
@@ -127,7 +125,7 @@ scripts/serve-web.sh --check-headers
 
 Reviewer may add extra manual browser/device checks, but may not skip the commands above for map acceptance.
 
-## Screenshot Review
+## Screenshots
 
 Review at minimum:
 
@@ -140,19 +138,63 @@ Review at minimum:
 - `desktop-1280x800-after-marker-click.png`;
 - `desktop-1280x800-after-drag.png`.
 
-The reviewer must inspect screenshots for:
+## Quality Criteria
 
-- first-glance map quality: it must read as a warm RPG/atlas map in 1-2 seconds, not as GIS/procedural underlay;
-- city pictograms for visible major cities, including Nürnberg, Leipzig and other visible city labels, without missing or duplicated city landmarks;
-- small trees, houses, villages, chapels, mills, ruins and other tiny objects: they must be readable at the shown scale or removed;
-- marker jitter after pan/zoom: city landmarks, transport icons and labels must stay visually stable and attached to the map;
-- pan/zoom behavior: drag must feel direct, zoom controls must be predictable, touch pinch/magnify must not accidentally change zoom;
-- clickability: visible transport objects must open/select correctly and drag must not be swallowed by markers;
-- geographic accuracy: cities, coast, lakes, islands and relief must be plausible, with Rostock near the Baltic and Dresden not visually in Czechia;
-- Alps readability: the Alpine edge must be a real, strong, cross-border massif, not a random southern sticker;
-- Harz readability: Harz must be visible as a central mountain region connected to nearby objects, even if visually exaggerated for gameplay;
-- labels: city labels must be legible, close to their pictograms, consistently sized except for intentional hierarchy such as Berlin;
-- clutter: details, routes and terrain marks must not compete with markers or create technical stripes/noise.
+Reviewer must inspect:
+
+- first-glance quality: warm RPG/atlas map in 1-2 seconds, not a GIS/procedural underlay;
+- aspect ratio: the map is not stretched to viewport;
+- interaction: pan, drag, zoom and click work naturally;
+- stability: transport markers, city landmarks and labels do not jitter or detach during pan/zoom;
+- geography: cities, coast, lakes, islands and relief are plausible;
+- relief: Alps are a real cross-border massif through Austria, Switzerland and northern Italy; Harz, Black Forest, Erzgebirge and other massifs are recognizable and not random stickers;
+- lowlands: large mountains are absent from real lowlands such as North German Plain;
+- city layer: visible major city labels have city pictograms/landmarks, without missing or duplicated landmarks;
+- glyph scale: trees, houses, villages, chapels, mills, ruins and details are readable at screenshot scale or removed;
+- labels: city labels stay close to pictograms and use consistent hierarchy;
+- clutter: routes and terrain marks do not look like technical stripes or visual noise;
+- UI: fullscreen map remains primary, with only minimal map UI over it;
+- Web payload: gzip/no-cache/build metadata checks pass.
+
+## Score Caps
+
+These caps override averages:
+
+- Procedural/GIS-looking map: max `4/10`.
+- No adventure atlas feeling in 1-2 seconds: max `5/10`.
+- Art layers look unrelated or randomly pasted: max `6/10`.
+- Technical stripes, cut artifacts, dust-like details or tiny unreadable glyphs: max `6/10`.
+- Marker jitter, detached overlays or unstable labels: max `6/10`.
+- Missing city pictograms for visible major city labels: max `6/10`.
+- Mountains/relief visibly wrong or random: max `6/10`.
+- Alps not source-backed or not cross-border: max `6/10`.
+- Harz not readable as central mountain region: max `7/10`.
+- Map looks empty or boring at default/mobile viewport: max `6/10`.
+- User still reports "looks bad" for the reviewed build: max `5/10`.
+
+The score must be based on the screenshots and live build, not on implementation effort.
+
+## Score Scale
+
+`1/10`: карта технически сломана: Web build не грузится, маркеры не видны, есть runtime errors.
+
+`2/10`: карта открывается, но выглядит как placeholder/debug layer; UX не соответствует задаче.
+
+`3/10`: fullscreen есть, но это простая GIS/procedural схема: пусто, плоско, горы/леса не читаются, pan/click ненадежны.
+
+`4/10`: базовая техника работает, но подложка все еще выглядит процедурной, а горы/леса/города выглядят как отдельные наклейки.
+
+`5/10`: рабочая карта без грубых UX багов, но композиция слабая и хочется заменить картинку.
+
+`6/10`: usable prototype: география в целом понятна, рельеф и маршруты читаются, но остаются раздражающие дефекты вроде мелкого шума, jitter, слабых ориентиров или технических полос.
+
+`7/10`: хорошая рабочая версия: карта уже выглядит приятно, mobile аккуратный, glyphs достаточно крупные, но есть заметные стилистические компромиссы.
+
+`8/10`: достойный результат: с первого взгляда adventure atlas, основные города/горы/вода узнаваемы, pan/drag/click стабильны, нет технического шума.
+
+`9/10`: сильный art-directed результат: регионы имеют характер, markers являются частью карты, desktop/mobile/landscape выглядят профессионально, нет заметных артефактов.
+
+`10/10`: карту хочется оставить именно в этом виде. Она выглядит как цельный warm RPG/atlas world, интерактив работает без оговорок, geography/relief/cities/water/objects проверены, glyph scale читаемый на mobile и desktop, Web payload оптимизирован, screenshots свежие и без видимых проблем.
 
 ## Acceptance Rule
 
@@ -165,9 +207,9 @@ The reviewer must inspect screenshots for:
 - screenshots exist and were reviewed;
 - interaction review finds no pan, zoom, clickability or jitter blocker;
 - geography review finds no visible major mismatch;
-- visual review scores `10/10` by `docs/map-quality-rubric.md`.
+- visual review scores `10/10` by this gate.
 
-Anything below `10/10` is `REJECT` for this gate. Any visual regression in map readability, glyph scale, icon/label alignment, terrain plausibility or list/map switch affordance is `REJECT`. Rejected visual regressions must go back to an implementer/fix-worker before integration. The reviewer should still record the estimated score and the specific blockers, for example: "current map is about 6/10; reject because city pictograms are missing for visible Nürnberg/Leipzig, small trees read as noise, jitter remains during pan, and Alps/Harz are not readable enough."
+Anything below `10/10` is `REJECT` for this gate. Any visual regression in map readability, glyph scale, icon/label alignment, terrain plausibility or list/map switch affordance is `REJECT`. Rejected visual regressions go back to an implementer/fix-worker before integration. Reviewer still records the estimated score and concrete blockers.
 
 ## Review Record Template
 

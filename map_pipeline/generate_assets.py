@@ -15,7 +15,7 @@ Use one generated 4x2 transport icon sheet, remove the chroma key, then slice it
     --sheet tmp/map-icon-source/transport_icon_sheet.png \\
     --out-dir assets/sprites
 
-The exact prompt and current source file are documented in docs/map-generation-handoff.md.
+Reusable glyph workflows are documented in docs/pipelines/glyph-generation.md.
 """
 
 

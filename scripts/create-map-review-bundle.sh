@@ -161,8 +161,8 @@ Reviewer must replace each PENDING with CHECKED or REJECT. Every screenshot belo
 
 ## Strict Visual Rubric
 
-Rubric source: docs/map-quality-rubric.md
-Reference direction: 16-bit RPG / pixel journey atlas, reusable glyphs/layers, not a monolithic generated map.
+Rubric source: docs/map-reviewer-gate.md
+Reference direction: warm RPG / atlas map, reusable glyphs/layers, not a monolithic generated map.
 
 Reviewer must explicitly check:
 
@@ -181,7 +181,7 @@ Score: __/10
 
 Score cap reasons:
 
-- None / list exact caps from docs/map-quality-rubric.md.
+- None / list exact caps from docs/map-reviewer-gate.md.
 
 Known accepted limitations:
 

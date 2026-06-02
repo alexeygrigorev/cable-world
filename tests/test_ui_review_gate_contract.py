@@ -9,7 +9,7 @@ class UiReviewGateContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.gate_doc = (ROOT / "docs" / "ui-review-gate.md").read_text(encoding="utf-8")
-        cls.protocol_doc = (ROOT / "docs" / "agent-operating-protocol.md").read_text(encoding="utf-8")
+        cls.process_doc = (ROOT / "process.md").read_text(encoding="utf-8")
         cls.screenshot_script = (ROOT / "scripts" / "capture_ui_review_screenshots.gd").read_text(encoding="utf-8")
         cls.runtime_runner = (ROOT / "tests" / "godot_runtime_runner.gd").read_text(encoding="utf-8")
         cls.runtime_app_shell = (ROOT / "tests" / "godot_runtime_app_shell.gd").read_text(encoding="utf-8")
@@ -83,14 +83,14 @@ class UiReviewGateContractTest(unittest.TestCase):
 
     def test_protocol_points_ui_tasks_to_the_ui_review_gate(self) -> None:
         for expected in [
-            "docs/ui-review-gate.md",
+            "UI Review Gate",
             "mobile-390x844-map.png",
             "mobile-390x844-list.png",
             "landscape-844x390-map.png",
             "landscape-844x390-list.png",
         ]:
             with self.subTest(expected=expected):
-                self.assertIn(expected, self.protocol_doc)
+                self.assertIn(expected, self.process_doc)
 
 
 if __name__ == "__main__":

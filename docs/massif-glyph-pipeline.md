@@ -154,7 +154,7 @@ Required checks:
 
 - full map screenshot at default, 150%, 200%;
 - mobile and desktop;
-- compare to `docs/map-quality-rubric.md`;
+- compare to `docs/map-reviewer-gate.md`;
 - explicit self-audit: are Alps/Harz/Schwarzwald/Sächsische Schweiz visually different within 1-2 seconds?
 - reject if mountains are generic, too pixelated at 200%, or placed as stickers with no geographic meaning.
 

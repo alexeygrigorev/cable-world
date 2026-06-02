@@ -54,17 +54,17 @@ MIR_TROSSOV_GODOT_RUNTIME_TEST_SCRIPTS=res://tests/godot_runtime_smoke.gd godot 
 
 These remaining diagnostics are treated as known headless teardown noise for now, not as proof of a project resource leak. New parse errors, missing resources, SQL lock errors, anchor warnings, non-zero exit codes, or new leak categories are not covered by this exception and should fail review.
 
-## UI/static migration inventory
+## Python Contract Inventory
 
-File-level classification for current `tests/test_*contract.py` files:
+File-level classification for current Python contracts:
 
 | Contract files | Primary layer | Decision |
 | --- | --- | --- |
-| `test_map_panel_contract.py`, `test_map_geography_audit.py`, `test_europe_expansion_plan_contract.py`, `test_europe_catalog_research_contract.py`, `test_europe_seed_review_contract.py`, `test_russia_research_contract.py`, `test_russia_seed_review_contract.py`, `test_visual_style_directions_contract.py` | map pipeline/data/geography | Keep Python: data, source asset and geography contracts are not runtime UI checks. |
-| `test_android_export_contract.py`, `test_export_payload_contract.py`, `test_web_serve_contract.py`, `test_infra_reproducibility_contract.py`, `test_1_0_readiness_contract.py`, `test_map_review_bundle_contract.py` | export/release/process | Keep Python: these assert files, workflows, scripts and release gates. |
-| `test_data_model_contract.py`, `test_project_contract.py`, `test_collection_contract.py`, `test_storage_contract.py`, `test_media_metadata_contract.py`, `test_i18n_contract.py` | schema/domain/storage/static | Keep Python: these are cheap source/data contracts. Runtime storage remains covered by `test_godot_storage_contract.py`. |
+| `test_map_panel_contract.py`, `test_map_geography_audit.py`, `test_visual_style_directions_contract.py` | map pipeline/data/geography | Keep Python: data, source asset and geography contracts are not runtime UI checks. |
+| `test_android_export_contract.py`, `test_export_payload_contract.py`, `test_web_serve_contract.py`, `test_infra_reproducibility_contract.py`, `test_map_review_bundle_contract.py` | export/release/process | Keep Python: these assert files, workflows, scripts and release gates. |
+| `test_data_model_contract.py`, `test_project_contract.py`, `test_collection_contract.py`, `test_storage_contract.py`, `test_i18n_contract.py` | schema/domain/storage/static | Keep Python: these are cheap source/data contracts. Runtime storage remains covered by `test_godot_storage_contract.py`. |
 | `test_demo_catalog_europe_contract.py`, `test_demo_catalog_russia_contract.py` | catalog/data | Keep Python: catalog completeness and seed geography are data contracts. |
-| `test_app_shell_contract.py`, `test_object_list_contract.py`, `test_object_card_contract.py`, `test_memory_screen_contract.py`, `test_object_mode_contract.py`, `test_object_mode_ui_contract.py`, `test_observer_mode_contract.py`, `test_ride_mode_contract.py`, `test_v3_scene_contract.py`, `test_v3_scene_modes_contract.py`, `test_engineering_scene_contract.py` | UI/static scene | Keep static coverage, but migrate user-facing runtime behavior to Godot when touched. #83 duplicates the map/list shell and object-list filtering checks natively. |
+| `test_app_shell_contract.py`, `test_object_list_contract.py`, `test_object_card_contract.py`, `test_memory_screen_contract.py`, `test_object_mode_ui_contract.py`, `test_observer_mode_contract.py`, `test_ride_mode_contract.py`, `test_engineering_scene_contract.py` | UI/static scene | Keep static coverage, but migrate user-facing runtime behavior to Godot when touched. #83 duplicates the map/list shell and object-list filtering checks natively. |
 | `test_godot_runtime_runner_contract.py`, `test_godot_storage_contract.py`, `test_testing_strategy_contract.py` | test infrastructure/docs/runtime bridge | Keep Python: these verify the runner, bridge command and strategy docs. |
 
 Migrated high-value runtime checks:
@@ -90,13 +90,14 @@ Python остается владельцем проверок, где запус
 Текущие Python tests по назначению:
 
 - map pipeline и география: `tests/test_map_panel_contract.py`, `tests/test_map_geography_audit.py`, `tests/test_export_payload_contract.py`, `tests/test_android_export_contract.py`;
-- staging/schema/data pipeline: `tests/test_import_candidate_collector.py`, `tests/test_staging_candidate_validator.py`, `tests/test_import_review_preview.py`, `tests/test_osm_wikidata_import_plan.py`;
+- staging/schema/data pipeline: `tests/test_import_candidate_collector.py`, `tests/test_staging_candidate_validator.py`, `tests/test_import_review_preview.py`;
 - catalog и доменные контракты: `tests/test_project_contract.py`, `tests/test_data_model_contract.py`, `tests/test_demo_catalog_europe_contract.py`, `tests/test_demo_catalog_russia_contract.py`, `tests/test_collection_stats.py`, `tests/test_achievements.py`;
-- UI/static scene contracts: `tests/test_app_shell_contract.py`, `tests/test_object_mode_ui_contract.py`, `tests/test_map_panel_contract.py`, `tests/test_v3_scene_contract.py`;
-- release/process/docs contracts: `tests/test_release_mvp_checklist.py`, `tests/test_1_0_readiness_contract.py`, `tests/test_infra_reproducibility_contract.py`;
+- UI/static scene contracts: `tests/test_app_shell_contract.py`, `tests/test_object_mode_ui_contract.py`, `tests/test_map_panel_contract.py`;
+- release/process/docs contracts: `tests/test_release_mvp_checklist.py`, `tests/test_infra_reproducibility_contract.py`;
 - Godot smoke/bridge checks: `tests/test_godot_headless.py`, `tests/test_godot_storage_contract.py`.
 
 Python может читать `.gd`, `.tscn`, JSON, SQL, PNG metadata и export artifacts. Python не должен утверждать, что пользовательский runtime сценарий работает, если этот сценарий требует engine lifecycle, input, focus, layout, signals или scene tree behavior.
+Python static assertions не считаются заменой runtime acceptance.
 
 ## Что проверяет Godot-native
 

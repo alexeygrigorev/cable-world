@@ -11,7 +11,6 @@ class GodotRuntimeRunnerContractTest(unittest.TestCase):
         for path in [
             ROOT / "docs" / "testing-strategy.md",
             ROOT / "process.md",
-            ROOT / "docs" / "agent-operating-protocol.md",
             ROOT / "docs" / "releases.md",
         ]:
             with self.subTest(path=path):

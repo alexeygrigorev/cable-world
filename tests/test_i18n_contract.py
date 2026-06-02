@@ -5,7 +5,6 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-I18N_STRATEGY = ROOT / "docs" / "i18n-strategy.md"
 INITIAL_SCHEMA = ROOT / "scripts" / "storage" / "migrations" / "001_initial_schema.sql"
 MIGRATIONS_DIR = ROOT / "scripts" / "storage" / "migrations"
 DEMO_SEED = ROOT / "scripts" / "storage" / "seeds" / "demo_objects.sql"
@@ -35,26 +34,9 @@ def _insert_rows(sql: str, table: str) -> list[tuple[str, ...]]:
 class I18nContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.strategy_text = I18N_STRATEGY.read_text(encoding="utf-8")
         cls.schema_text = INITIAL_SCHEMA.read_text(encoding="utf-8")
         cls.seed_text = DEMO_SEED.read_text(encoding="utf-8")
         cls.adapter_text = STORAGE_ADAPTER.read_text(encoding="utf-8")
-
-    def test_strategy_document_exists_and_sets_scope(self) -> None:
-        self.assertTrue(I18N_STRATEGY.exists(), "Стратегия i18n должна быть документирована")
-        for expected in [
-            "русский",
-            "`ru`, `de`, `en`",
-            "Godot translation files",
-            "localized",
-            "TransportObject.id",
-            "display labels",
-            "не как ключи данных",
-            "tr(\"key\")",
-            "transport_object_localizations",
-            "если нужной локали нет, UI показывает `ru`",
-        ]:
-            self.assertIn(expected, self.strategy_text)
 
     def test_reference_ids_are_ascii_and_labels_are_display_text(self) -> None:
         for table, label_indexes in {

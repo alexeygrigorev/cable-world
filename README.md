@@ -37,7 +37,7 @@
 
 Если SQLite runtime недоступен, например в Web export, приложение честно деградирует к встроенному `DemoCatalog` без сохранения изменений между запусками.
 
-Доменная модель MVP и SQLite-схема описаны в [docs/data-model.md](docs/data-model.md).
+Документация начинается с [docs/README.md](docs/README.md). Доменная модель MVP и SQLite-схема описаны в [docs/data-model.md](docs/data-model.md).
 SQL migrations и demo seed закреплены в `scripts/storage/`; быстрый SQLite-контракт проверяется стандартным Python `sqlite3`, а runtime-контракт проверяется Godot headless через vendored GDExtension `addons/godot-sqlite`.
 
 ## Проверки
@@ -101,7 +101,7 @@ PORT=9000 scripts/web-status.sh
 
 APK для установки на телефон публикуется в GitHub Releases вместе с Web/Linux-архивами. В релизе нужно скачать файл вида `mir-trossov-android-<version>.apk` и установить его вручную как sideload APK.
 
-Перед семейной установкой пройти ручной [MVP-чеклист релиза APK](docs/release-mvp-checklist.md): запуск, ориентация, карта, карточка объекта, фото, статусы и объекты Германии.
+Перед семейной установкой пройти ручной [release smoke test](docs/releases.md): запуск, ориентация, карта, карточка объекта, фото, статусы и объекты Германии.
 
 Android package id закреплен как `com.mirtrossov.app`, имя приложения на устройстве — «Мир Троссов». APK подписывается стабильным `android/debug.keystore` из репозитория со стандартными debug credentials. Это dev/sideload подпись для семейных сборок, не production key для Google Play.
 
