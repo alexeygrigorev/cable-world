@@ -6,6 +6,7 @@ from pathlib import Path
 DEFAULT_SPECS_FILE = Path("map_pipeline/data/city_cluster_glyph_specs.json")
 APPROVED_REFERENCE_SHEET = Path("assets/map/references/city-glyph-style-reference-5x3.png")
 FULL_REGEN_BATCH_SIZE = 15
+BATCH_GRID_CELLS = 15
 
 FORBIDDEN_HINT_TERMS = (
     "river",
@@ -99,26 +100,42 @@ def sharded_city_ids(ids: list[str], shard_count: int, shard_index: int) -> list
 
 def prompt_for_city_batch(specs: dict, ids: list[str], batch_number: int | None = None) -> str:
     cities = [_city_by_id(specs, city_id) for city_id in ids]
+    filler_count = max(0, BATCH_GRID_CELLS - len(cities))
+    cells = [
+        (city["id"], city["display_name"], _safe_city_hint(city), False)
+        for city in cities
+    ]
+    for index in range(filler_count):
+        filler_id = f"style_filler_{index + 1}"
+        cells.append(
+            (
+                filler_id,
+                "Style filler",
+                "Style filler: compact generic old-town token matching the reference sheet; this cell is a spacing/style pad and will be discarded.",
+                True,
+            )
+        )
     batch_label = f" batch {batch_number}" if batch_number is not None else ""
     return "\n".join(
         [
             "Use case: stylized-concept",
             "Asset type: pre-slice high-resolution city glyph sheet for a Godot atlas map UI",
             f"Input image: {APPROVED_REFERENCE_SHEET} is the approved visual style reference.",
-            f"Primary request: Create one coherent 5 columns x 3 rows city glyph sheet{batch_label} for these {len(ids)} cities, in this exact order:",
-            ",".join(ids) + ".",
+            f"Primary request: Create one coherent 5 columns x 3 rows city glyph sheet{batch_label} for these {len(cells)} cells, in this exact order:",
+            ",".join(cell[0] for cell in cells) + ".",
             "",
             "Cell order:",
-            "\n".join(f"{index + 1}. {city['display_name']} ({city['id']})" for index, city in enumerate(cities)),
+            "\n".join(f"{index + 1}. {display_name} ({city_id})" for index, (city_id, display_name, _hint, _filler) in enumerate(cells)),
             "",
             "Match the reference sheet exactly in visual language: compact European RPG map city-token, single artist, painterly pixel-art / 2.5D atlas miniature, warm stone and terracotta palette, crisp dark outline, consistent camera angle, consistent lighting, shared bottom baseline, medium-small controlled tokens, comparable visual mass.",
             "Each city should be a compact multi-symbol cluster, not one giant monument and not a flat side-view architectural row. Keep tall accents modest and do not let any token fill the whole cell height.",
             "",
             "Use only positive city hints:",
-            "\n".join(f"- {_safe_city_hint(city)}" for city in cities),
+            "\n".join(f"- {hint}" for _city_id, _display_name, hint, _filler in cells),
             "",
             "Hard constraints: no water/canals/rivers/sea/harbor water/boats/ships/piers/docks/waterfront bases, no terrain/mountain backdrops/snowy peaks/broad hills/scenic bases, no flags, no readable text/labels, no frame, no watermark, no photorealism, no flat vector app-icon style.",
-            "Background: perfectly flat solid #ff00ff chroma-key background only, with clean #ff00ff gutters and unused cells left flat #ff00ff for partial batches.",
+            "Background: perfectly flat solid #ff00ff chroma-key background only, with clean #ff00ff gutters. Do not leave partial-batch cells empty; use the listed style filler cells so every grid slot has one separable token.",
+            "Integration note: discard any style_filler_* outputs after slicing; they exist only to keep the sheet geometry stable.",
         ]
     )
 

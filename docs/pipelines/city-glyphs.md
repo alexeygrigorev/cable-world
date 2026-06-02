@@ -133,7 +133,7 @@ readable text, labels, frames, watermarks, photorealism, flat vector app-icon st
 Background: perfectly flat solid #ff00ff chroma-key background only, with clean #ff00ff gutters.
 ```
 
-Do not ask for one city at a time during a full pass. Use `5x3` batches; a smaller last batch is allowed only when the remaining city count is below 15.
+Do not ask for one city at a time during a full pass. Use full `5x3` visual batches. If a batch has fewer than 15 real cities, pad it with generated `style_filler_*` cells and discard those filler outputs after slicing. Do not ask for empty magenta cells in partial batches; empty cells make the model drift and can confuse component assignment during slicing.
 
 ## Full Regeneration Pass
 
@@ -153,7 +153,7 @@ For each shard:
 
 1. Generate coherent `5x3` raw sheets from the approved reference image and generated batch prompts.
 2. Remove chroma key into `alpha/`.
-3. Slice into `sliced/` with ids in exact sheet order and `--columns 5`.
+3. Slice into `sliced/` with ids in exact sheet order and `--columns 5`; include any `style_filler_*` ids in the slice command, then discard those filler PNGs before integration.
 4. Outline into `outlined/` with the normal city outline.
 5. Build a review sheet from `outlined/`.
 6. Run size and content audits; report warnings instead of integrating.
