@@ -9,6 +9,7 @@ from map_pipeline.city_glyph_size_contract import (
     MAX_OUTLINED_CONTENT_SIDE,
     MAX_WIDE_OUTLINED_CONTENT_WIDTH,
     OUTLINED_BOTTOM_PADDING,
+    TARGET_OUTLINED_CONTENT_HEIGHT,
     WIDE_CONTENT_ASPECT_RATIO,
 )
 
@@ -47,6 +48,11 @@ def audit(paths: list[Path]) -> list[str]:
             errors.append(f"{path}: alpha width {width}px exceeds {max_width}px for aspect {aspect:.2f}")
         if height > MAX_OUTLINED_CONTENT_SIDE:
             errors.append(f"{path}: alpha height {height}px exceeds {MAX_OUTLINED_CONTENT_SIDE}px")
+        if aspect <= WIDE_CONTENT_ASPECT_RATIO and height < TARGET_OUTLINED_CONTENT_HEIGHT - 2:
+            errors.append(
+                f"{path}: alpha height {height}px is below target "
+                f"{TARGET_OUTLINED_CONTENT_HEIGHT}px for normal-aspect city glyph"
+            )
         if bottom_padding != OUTLINED_BOTTOM_PADDING:
             errors.append(f"{path}: bottom padding {bottom_padding}px; expected {OUTLINED_BOTTOM_PADDING}px")
 

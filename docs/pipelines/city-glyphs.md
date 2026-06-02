@@ -232,9 +232,11 @@ python3 -m map_pipeline.slice_city_cluster_landmarks_hi_res \
 
 The sheet slicer crops by connected alpha components, not only by the nominal grid cell. This prevents city clusters from losing a side when the generated art crosses a grid line. It also normalizes every accepted glyph to the current runtime target with transparent padding and removes tiny alpha islands from sheet edges.
 
-Normalization rule: after alpha trim and fit, center the resized glyph horizontally and place its bottom on the shared bottom padding baseline. Do not vertically center city glyphs inside the 256x256 canvas; wide/low cities like Amsterdam and Bremen otherwise float above the map anchor while taller cities like Berlin and Hannover look correct by accident.
+Normalization rule: after alpha trim, scale the resized glyph uniformly toward the shared target content height, center it horizontally, and place its bottom on the shared bottom padding baseline. Do not vertically center city glyphs inside the 256x256 canvas; wide/low cities like Amsterdam and Bremen otherwise float above the map anchor while taller cities like Berlin and Hannover look correct by accident.
 
-Wide/low city clusters must not occupy the full available width. If the trimmed glyph aspect ratio is above `1.25`, fit it to `184px` maximum content width before outline instead of the normal `208px` fit box. With the standard `--radius 2` outline this keeps wide runtime glyphs around `188px` alpha width, so examples like Dublin do not become visually wider than the rest of the city set.
+Runtime city glyphs must be comparable by visible size, not only "below maximum". Normal-aspect city clusters should finish at the target outlined alpha height from `city_glyph_size_contract.py` on the shared baseline. The size audit fails normal-aspect glyphs that are visibly shorter than that target, which catches mistakes like Odesa or Venice looking smaller than neighboring cities.
+
+Wide/low city clusters use the same uniform scale but may hit the canvas width first. Do not fix these by non-uniform X/Y stretching; regenerate the city art if its aspect makes it impossible to read at the shared size.
 
 The size contract lives in:
 
@@ -265,7 +267,7 @@ The audit checks the final runtime `outlined/city_*.png` files. It fails if:
 
 - canvas size is not `256x256`;
 - alpha content is wider or taller than the contract allows;
-- wide/low glyphs exceed the stricter wide-city width;
+- normal-aspect alpha content is shorter than the shared target height;
 - bottom alpha padding does not match the shared baseline.
 
 ## Content Audit

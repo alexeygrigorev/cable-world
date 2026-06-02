@@ -6,10 +6,19 @@ from pathlib import Path
 from PIL import Image
 
 from map_pipeline.city_cluster_glyph_specs import DEFAULT_SPECS_FILE, city_ids, load_specs
-from map_pipeline.city_glyph_size_contract import ICON_SIZE, MAX_CONTENT_SIDE, MAX_WIDE_CONTENT_WIDTH, PADDING, WIDE_CONTENT_ASPECT_RATIO
+from map_pipeline.city_glyph_size_contract import (
+    ICON_SIZE,
+    MAX_CONTENT_SIDE,
+    MAX_WIDE_CONTENT_WIDTH,
+    PADDING,
+    TARGET_CONTENT_HEIGHT,
+    WIDE_CONTENT_ASPECT_RATIO,
+)
 from map_pipeline.sheet_slice_audit import audit_grid_cut_components, cell_bounds, format_cut_issues
 
 
+# Runtime city glyphs use ICON_SIZE = 256 and PADDING = 24 from
+# city_glyph_size_contract.py; keep those values centralized.
 GRID_COLUMNS = 4
 GRID_ROWS = 2
 DEFAULT_OUT_DIR = "assets/sprites/city_landmark_clusters_hi_res"
@@ -84,8 +93,9 @@ def _trim_alpha(image: Image.Image) -> Image.Image:
 
 def _fit_hi_res_icon(image: Image.Image) -> Image.Image:
     icon = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (0, 0, 0, 0))
-    max_width = MAX_WIDE_CONTENT_WIDTH if image.width / image.height > WIDE_CONTENT_ASPECT_RATIO else MAX_CONTENT_SIDE
-    scale = min(1.0, max_width / image.width, MAX_CONTENT_SIDE / image.height)
+    aspect = image.width / image.height
+    max_width = MAX_WIDE_CONTENT_WIDTH if aspect > WIDE_CONTENT_ASPECT_RATIO else MAX_CONTENT_SIDE
+    scale = min(TARGET_CONTENT_HEIGHT / image.height, max_width / image.width, MAX_CONTENT_SIDE / image.height)
     resized = image.resize(
         (max(1, round(image.width * scale)), max(1, round(image.height * scale))),
         Image.Resampling.LANCZOS,
