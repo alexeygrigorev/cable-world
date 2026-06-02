@@ -22,6 +22,8 @@ FORBIDDEN_HINT_TERMS = (
     "waterfront",
     "bridge",
     "promenade",
+    "quay",
+    "cascade",
     "skyline",
     "mound",
 )
