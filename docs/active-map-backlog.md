@@ -72,7 +72,7 @@
 - [x] #73 Multi-symbol city cluster hi-res pipeline: для Berlin/Hamburg/Rostock/München/Köln/Frankfurt/Stuttgart/Dresden добавлен `1024x1024` per-city pipeline в `assets/sprites/city_landmark_clusters_hi_res/`; старый low-res path удалён из активного кода.
 - [x] #73 Runtime интеграция: первые 8 городов грузят multi-symbol cluster glyphs из `assets/sprites/city_landmark_clusters_hi_res/outlined`, city glyphs масштабируются вместе с zoom до `200%`.
 - [ ] #73 Расширить hi-res cluster glyph coverage на остальные German `CITY_LABELS`, чтобы видимые Leipzig/Nürnberg/Bremen/Hannover/etc. получили такие же multi-symbol pictograms и могли отображаться без bare labels.
-- [x] #73 Первый pass по city pictograms: дефолтно видимые German city labels теперь должны иметь runtime pictogram; города без доступной `city_landmarks/outlined` иконки, включая Leipzig/Nürnberg, остаются скрыты до более высокого zoom, чтобы на стартовой карте не было bare city text.
+- [x] #73 Первый pass по city pictograms: дефолтно видимые German city labels теперь должны иметь runtime pictogram; города без доступной `city_landmark_clusters_hi_res/outlined` иконки, включая Leipzig/Nürnberg, остаются скрыты до более высокого zoom, чтобы на стартовой карте не было bare city text.
 - [x] Заменить cluster count badges на более нативные atlas group markers: clusters теперь показываются как stack из реальных транспортных sprites без count text/circles/station badge.
 - [x] #60 Убрать залитые фоновые плашки под транспортными пиктограммами: оставить естественный outline/glow, чтобы объекты читались лучше городов и выглядели частью карты.
 - [x] #61 Масштабировать транспортные и городские иконки вместе с zoom и resize viewport, но с максимальным порогом размера, чтобы пиксель-арт не раздувался.

@@ -4,6 +4,8 @@ import sys
 
 from PIL import Image
 
+from map_pipeline.sheet_slice_audit import audit_grid_cut_components, cell_bounds, format_cut_issues
+
 SPRITES_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "sprites")
 ICON_SIZE = 256
 PADDING = 18
@@ -18,16 +20,6 @@ ICON_NAMES = [
     "icon_aerial_tram.png",
     "icon_station.png",
 ]
-
-
-def _cell_bounds(width: int, height: int, index: int) -> tuple[int, int, int, int]:
-    col = index % 4
-    row = index // 4
-    left = round(width * col / 4)
-    right = round(width * (col + 1) / 4)
-    top = round(height * row / 2)
-    bottom = round(height * (row + 1) / 2)
-    return left, top, right, bottom
 
 
 def _trim_alpha(image: Image.Image) -> Image.Image:
@@ -67,6 +59,7 @@ def _parse_args() -> argparse.Namespace:
         default=SPRITES_DIR,
         help="Directory for sliced runtime icons. Defaults to assets/sprites.",
     )
+    parser.add_argument("--edge-audit", choices=["off", "warn", "error"], default="warn")
     return parser.parse_args()
 
 
@@ -80,9 +73,19 @@ def main() -> int:
         return 1
 
     sheet = Image.open(sheet_path).convert("RGBA")
+    names = [filename.removesuffix(".png") for filename in ICON_NAMES]
+    if args.edge_audit != "off":
+        issues = audit_grid_cut_components(sheet, names, 4, 2)
+        if issues:
+            message = format_cut_issues(issues)
+            if args.edge_audit == "error":
+                print(f"Grid-cut alpha components detected in {sheet_path}:\n{message}", file=sys.stderr)
+                return 1
+            print(f"Grid-cut alpha components detected in {sheet_path}:\n{message}", file=sys.stderr)
+
     os.makedirs(out_dir, exist_ok=True)
     for index, filename in enumerate(ICON_NAMES):
-        cell = sheet.crop(_cell_bounds(sheet.width, sheet.height, index))
+        cell = sheet.crop(cell_bounds(sheet.width, sheet.height, index, 4, 2))
         icon = _fit_icon(_trim_alpha(cell))
         out_path = os.path.join(out_dir, filename)
         icon.save(out_path, "PNG", optimize=True)

@@ -1,6 +1,8 @@
-# City Cluster Glyph Pipeline
+# City Cluster Glyph Expansion
 
-This project uses one current city pictogram process: high-resolution multi-symbol city cluster glyphs. The old low-resolution `city_landmark_clusters` sheet pipeline has been removed and must not be revived.
+Canonical pipeline doc: [pipelines/city-glyphs.md](pipelines/city-glyphs.md).
+
+This file keeps expansion-specific notes and command examples from the first city cluster rollout. New repeatable pipeline rules belong in the canonical doc above.
 
 ## Source Of Truth
 

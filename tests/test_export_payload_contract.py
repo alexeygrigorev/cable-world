@@ -25,11 +25,15 @@ class ExportPayloadContractTest(unittest.TestCase):
             "assets/map/glyphs/map_glyph_sheet.png.import",
             "assets/map/glyphs/terrain_forest_sheet.png",
             "assets/map/glyphs/terrain_forest_sheet.png.import",
-            "assets/map/massifs/**",
+            "asset_archive/**",
+            "assets/map/massifs/alps.png",
+            "assets/map/massifs/alps.png.import",
+            "assets/map/massifs/normal_mountains_contact.png",
+            "assets/map/massifs/normal_mountains_contact.png.import",
             "assets/sprites/icon_*.png",
             "assets/sprites/icon_*.png.import",
-            "assets/sprites/city_landmarks/city_*.png",
-            "assets/sprites/city_landmarks/city_*.png.import",
+            "assets/sprites/city_landmark_clusters_hi_res/city_*.png",
+            "assets/sprites/city_landmark_clusters_hi_res/city_*.png.import",
         ]
 
         for section in self.parser.sections():

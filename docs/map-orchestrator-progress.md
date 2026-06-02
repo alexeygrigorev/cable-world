@@ -180,11 +180,13 @@ Self-audit: stronger `7/10` and closer to `8/10`, but still not `10/10`. Cluster
 Implemented:
 
 - Generated one 8x8 city landmark sprite sheet for 64 German/European city icons in one image-generation call.
-- Sliced all 64 city landmark icons into `assets/sprites/city_landmarks/` for current and future maps.
+- Sliced all 64 single-symbol city landmark icons for current and future maps.
 - Added Germany landmarks to the map layer: Berlin, Hamburg, Rostock, Köln, München, Dresden, Stuttgart.
-- Added `map_pipeline/slice_city_landmarks.py` so the sprite sheet slicing is repeatable.
+- Added a repeatable slicer for that legacy sprite sheet.
 - Updated German city labels to use umlauts where needed.
 - Enlarged city landmark rendering and changed cluster badges to a quieter parchment/atlas treatment.
+
+Superseded on 2026-06-02: the single-symbol sheet slicer was removed from active code, and its generated assets were archived. New city assets must use `map_pipeline.slice_city_cluster_landmarks_hi_res` and `assets/sprites/city_landmark_clusters_hi_res/outlined/`.
 
 Evidence:
 
@@ -506,8 +508,8 @@ Implemented:
 - Added export excludes for source-only sprite/material assets:
   - `assets/map/glyphs/map_glyph_sheet.png`
   - non-outlined transport source icons under `assets/sprites/icon_*.png`
-  - non-outlined city landmark source icons under `assets/sprites/city_landmarks/city_*.png`
-- Kept the runtime assets that the app actually loads: `assets/sprites/outlined/*` and `assets/sprites/city_landmarks/outlined/*`.
+  - non-outlined city landmark source icons under `assets/sprites/city_landmark_clusters_hi_res/city_*.png`
+- Kept the runtime assets that the app actually loads: `assets/sprites/outlined/*` and `assets/sprites/city_landmark_clusters_hi_res/outlined/*`.
 - Added `tests/test_export_payload_contract.py` so Web/Linux/Android presets keep excluding source-only assets.
 
 Evidence:

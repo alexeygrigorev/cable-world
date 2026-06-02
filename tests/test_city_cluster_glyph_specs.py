@@ -20,10 +20,9 @@ def _map_panel_city_labels() -> dict[str, str]:
     return labels
 
 
-def _map_panel_cluster_ids() -> set[str]:
-    script_text = MAP_PANEL_PATH.read_text(encoding="utf-8")
-    block = script_text.split("const CITY_CLUSTER_ICON_IDS := {", 1)[1].split("}", 1)[0]
-    return set(re.findall(r'"([^"]+)": true', block))
+def _asset_cluster_ids() -> set[str]:
+    cluster_dir = ROOT / "assets" / "sprites" / "city_landmark_clusters_hi_res"
+    return {path.stem.removeprefix("city_") for path in cluster_dir.glob("city_*.png")}
 
 
 class CityClusterGlyphSpecsTest(unittest.TestCase):
@@ -33,20 +32,20 @@ class CityClusterGlyphSpecsTest(unittest.TestCase):
 
     def test_specs_cover_every_current_map_panel_city_label(self) -> None:
         labels = _map_panel_city_labels()
-        spec_names = {city["map_panel_name"] for city in self.specs["cities"]}
+        spec_names = {city["map_panel_name"] for city in self.specs["cities"] if city["map_panel_name"]}
 
         self.assertGreaterEqual(len(labels), 20)
-        self.assertEqual(set(labels), spec_names)
+        self.assertLessEqual(set(labels), spec_names)
 
     def test_specs_are_exactly_runtime_cluster_assets(self) -> None:
         labels = _map_panel_city_labels()
-        cluster_ids = _map_panel_cluster_ids()
+        asset_ids = _asset_cluster_ids()
         planned = {city["id"] for city in self.specs["cities"] if city["status"] == "planned_cluster"}
         existing = {city["id"] for city in self.specs["cities"] if city["status"] == "existing_cluster"}
 
-        self.assertEqual(cluster_ids, existing)
-        self.assertEqual(set(labels.values()), existing)
-        self.assertEqual(set(), planned)
+        self.assertEqual(asset_ids, existing)
+        self.assertLessEqual(set(labels.values()), existing)
+        self.assertEqual(set(), planned & asset_ids)
         for icon_id in existing:
             with self.subTest(icon_id=icon_id):
                 self.assertTrue((ROOT / "assets" / "sprites" / "city_landmark_clusters_hi_res" / f"city_{icon_id}.png").exists())
@@ -64,7 +63,7 @@ class CityClusterGlyphSpecsTest(unittest.TestCase):
     def test_pipeline_commands_support_specs_file_for_expansion_review(self) -> None:
         slicer_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks_hi_res.py").read_text(encoding="utf-8")
         review_text = (ROOT / "map_pipeline" / "build_city_cluster_hi_res_review.py").read_text(encoding="utf-8")
-        docs_text = (ROOT / "docs" / "city-cluster-glyph-expansion.md").read_text(encoding="utf-8")
+        docs_text = (ROOT / "docs" / "pipelines" / "city-glyphs.md").read_text(encoding="utf-8")
 
         for expected in [
             "--specs-file",

@@ -48,6 +48,19 @@ SQL migrations и demo seed закреплены в `scripts/storage/`; быст
 python3 -m unittest discover -s tests
 ```
 
+Пайплайны генерации glyph-ассетов описаны в [docs/pipelines/glyph-generation.md](docs/pipelines/glyph-generation.md). Городские glyphs отдельно: [docs/pipelines/city-glyphs.md](docs/pipelines/city-glyphs.md).
+
+Проверка нарезки glyph sheets перед добавлением ассетов в карту:
+
+```bash
+python3 -m map_pipeline.sheet_slice_audit \
+  --sheet tmp/<sheet>.png \
+  --ids id_1,id_2,id_3,id_4 \
+  --columns 4
+```
+
+Этот чек смотрит на пиксельную полоску вдоль линий разреза и ловит случаи, когда alpha-компонент реально пересекает grid cut. Он включен в городской и транспортный слайсеры через `--edge-audit`.
+
 Если Godot установлен, этот же набор дополнительно запускает движок в headless-режиме:
 
 ```bash
@@ -57,6 +70,32 @@ python3 -m unittest discover -s tests
 ```
 
 Так мы ловим не только ошибки структуры файлов, но и реальные ошибки компиляции GDScript, загрузки главной сцены и работы SQLite-адаптера внутри Godot. Позже добавим GdUnit4 для сценариев Godot и оставим Python-проверки как быстрый контракт структуры проекта в CI.
+
+## Web-сборка локально
+
+Для локального Web export нужен установленный `godot`. Штатный скрипт пересобирает проект в `build/web`, добавляет cache busting и поднимает сервер на `http://127.0.0.1:9000/`:
+
+```bash
+PORT=9000 scripts/serve-web.sh
+```
+
+Если нужно отдать уже существующую сборку без нового export:
+
+```bash
+PORT=9000 scripts/serve-web.sh --no-export
+```
+
+Скрипт сохраняет PID сервера в `build/web/.serve-web.pid`. Остановить управляемый сервер можно так:
+
+```bash
+scripts/stop-web.sh
+```
+
+Проверить текущий локальный сервер и build stamp можно так:
+
+```bash
+PORT=9000 scripts/web-status.sh
+```
 
 ## Android APK
 

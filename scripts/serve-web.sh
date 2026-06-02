@@ -5,8 +5,10 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 build_dir="${BUILD_DIR_OVERRIDE:-$root_dir/build/web}"
 host="${HOST:-127.0.0.1}"
 start_port="${PORT:-9000}"
+pid_file="$build_dir/.serve-web.pid"
 skip_export=0
 check_headers=0
+background=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -17,9 +19,12 @@ for arg in "$@"; do
       check_headers=1
       skip_export=1
       ;;
+    --background|-b)
+      background=1
+      ;;
     -h|--help)
       cat <<'USAGE'
-Usage: scripts/serve-web.sh [--no-export] [--check-headers]
+Usage: scripts/serve-web.sh [--no-export] [--check-headers] [--background]
 
 Build and serve the Godot Web export locally.
 
@@ -30,6 +35,9 @@ Environment:
 Options:
   --no-export     Serve the existing build/web directory without rebuilding.
   --check-headers Validate no-store and gzip headers, then exit.
+  --background    Build in the foreground, then detach the server (nohup) and
+                  return immediately. The server PID is written to the PID file;
+                  stop it with scripts/stop-web.sh.
 USAGE
       exit 0
       ;;
@@ -42,6 +50,7 @@ done
 
 if [[ "$check_headers" -eq 1 ]]; then
   build_dir="$(mktemp -d "${TMPDIR:-/tmp}/cable-world-web-check.XXXXXX")"
+  pid_file="$build_dir/.serve-web.pid"
 fi
 
 if [[ "$skip_export" -eq 0 ]]; then
@@ -88,6 +97,16 @@ if "<head>" in text:
     text = text.replace("<head>", f"<head>\n\t\t{meta}", 1)
 else:
     text = f"{meta}\n{text}"
+
+# Keep Godot's splash/progress overlay visible until the engine explicitly hides
+# it. The stock shell starts with a black body and a hidden status overlay, which
+# makes early JS/WebAssembly failures look like a blank black screen.
+text = re.sub(
+    r'(#status\s*\{[^}]*?)\n\tvisibility:\s*hidden;',
+    r'\1\n\tvisibility: visible;',
+    text,
+    count=1,
+)
 
 def cache_bust(match: re.Match[str]) -> str:
     attr = match.group(1)
@@ -155,16 +174,28 @@ if [[ "$check_headers" -eq 1 ]]; then
   exit 0
 fi
 
-python3 - "$build_dir" "$host" "$start_port" <<'PY'
+if [[ -f "$pid_file" ]]; then
+  existing_pid="$(cat "$pid_file")"
+  if [[ -n "$existing_pid" ]] && kill -0 "$existing_pid" 2>/dev/null; then
+    echo "Managed Web server is already running with PID $existing_pid." >&2
+    echo "Stop it with: scripts/stop-web.sh" >&2
+    exit 1
+  fi
+  rm -f "$pid_file"
+fi
+
+server_py="$(cat <<'PY'
 import functools
 import http.server
 import os
 import socket
 import sys
 import urllib.parse
+from pathlib import Path
 
-build_dir, host, start_port_text = sys.argv[1:4]
+build_dir, host, start_port_text, pid_file_text = sys.argv[1:5]
 start_port = int(start_port_text)
+pid_file = Path(pid_file_text)
 
 if start_port < 9000 or start_port > 9999:
     raise SystemExit("PORT must be in the 9000..9999 range")
@@ -237,8 +268,52 @@ port = find_port(start_port)
 if port != start_port:
     print(f"Requested port {start_port} is busy; leaving it untouched and using {port}.", flush=True)
 server = http.server.ThreadingHTTPServer((host, port), GodotWebHandler)
+pid_file.parent.mkdir(parents=True, exist_ok=True)
+pid_file.write_text(f"{os.getpid()}\n", encoding="utf-8")
 print(f"Serving Godot Web build from {build_dir}", flush=True)
 print(f"Build stamp: {os.path.join(build_dir, '.web-build.json')}", flush=True)
+print(f"PID file: {pid_file}", flush=True)
 print(f"URL: http://{host}:{port}/", flush=True)
-server.serve_forever()
+try:
+    server.serve_forever()
+finally:
+    server.server_close()
+    try:
+        if pid_file.read_text(encoding="utf-8").strip() == str(os.getpid()):
+            pid_file.unlink()
+    except FileNotFoundError:
+        pass
 PY
+)"
+
+if [[ "$background" -eq 1 ]]; then
+  server_log="$build_dir/.serve-web.out"
+  : > "$server_log"
+  nohup python3 -c "$server_py" "$build_dir" "$host" "$start_port" "$pid_file" >"$server_log" 2>&1 </dev/null &
+  disown 2>/dev/null || true
+
+  url=""
+  for _ in {1..100}; do
+    if [[ -f "$pid_file" ]] && grep -q '^URL: ' "$server_log" 2>/dev/null; then
+      url="$(sed -n 's/^URL: //p' "$server_log" | tail -n 1)"
+      break
+    fi
+    sleep 0.1
+  done
+
+  server_pid="$(cat "$pid_file" 2>/dev/null || true)"
+  if [[ -z "$server_pid" ]] || ! kill -0 "$server_pid" 2>/dev/null; then
+    echo "Web server failed to start; see $server_log" >&2
+    cat "$server_log" >&2 || true
+    exit 1
+  fi
+
+  echo "Web server running in background."
+  echo "PID: $server_pid (file: $pid_file)"
+  echo "URL: ${url:-unknown — see $server_log}"
+  echo "Log: $server_log"
+  echo "Stop with: scripts/stop-web.sh"
+  exit 0
+fi
+
+python3 -c "$server_py" "$build_dir" "$host" "$start_port" "$pid_file"

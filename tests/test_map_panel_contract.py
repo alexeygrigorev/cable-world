@@ -122,7 +122,7 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('"München"', script_text)
         self.assertIn('"Dresden"', script_text)
         self.assertIn('"icon_offset": Vector2(0.0, 52.0)', script_text)
-        self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
+        self.assertIn("city_landmark_clusters_hi_res/outlined/city_%s.png", script_text)
         self.assertIn('load("res://assets/fonts/LiberationSerif-BoldItalic.ttf")', script_text)
         self.assertIn("var city_font := _city_label_font()", script_text)
         self.assertIn("var atlas_font := _map_label_font()", script_text)
@@ -339,9 +339,9 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn("func _landmark_visual_scale() -> float:", script_text)
         self.assertIn("func _city_cluster_visual_scale() -> float:", script_text)
         self.assertIn("func _city_icon_size(icon_id: String) -> float:", script_text)
-        self.assertIn("const CITY_CLUSTER_ICON_IDS := {", script_text)
         self.assertIn('"res://assets/sprites/city_landmark_clusters_hi_res/outlined/city_%s.png"', script_text)
-        self.assertIn("if CITY_CLUSTER_ICON_IDS.has(icon_id) and ResourceLoader.exists(cluster_path):", script_text)
+        self.assertIn("if _city_icon_texture(icon_id) != null:", script_text)
+        self.assertIn("_city_icon_textures[icon_id] = load(cluster_path) if ResourceLoader.exists(cluster_path) else null", script_text)
         self.assertIn("return round(clamp(48.0 * scale, 42.0, 76.0))", script_text)
         self.assertIn("clamp(54.0 * _city_cluster_visual_scale(), 54.0, 148.0)", script_text)
         self.assertIn("lerp(1.0, 2.05, zoom_progress)", script_text)
@@ -358,7 +358,8 @@ class MapPanelContractTest(unittest.TestCase):
         self.assertIn('map_label_layer.name = "ПодписиГородов"', script_text)
         self.assertIn('map_layer.set("draw_city_labels", false)', script_text)
         self.assertIn('map_label_layer.set("draw_map_background", false)', script_text)
-        self.assertIn('map_label_layer.set("draw_city_labels", true)', script_text)
+        self.assertIn('map_label_layer.set("draw_city_labels", false)', script_text)
+        self.assertIn("City labels now come from the shared hex model", script_text)
         self.assertIn("func _sync_offline_layer_transform(layer_control: Control) -> void:", script_text)
         self.assertLess(
             city_icon_rect_body.index("if texture == null:"),
@@ -837,20 +838,19 @@ class MapPanelContractTest(unittest.TestCase):
         for path in [
             ROOT / "assets" / "sprites" / "outlined" / "icon_cable_gondola.png",
             ROOT / "assets" / "sprites" / "outlined" / "icon_funicular.png",
-            ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / "city_berlin.png",
-            ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / "city_hamburg.png",
-            ROOT / "assets" / "sprites" / "city_landmarks" / "outlined" / "city_rostock.png",
+            ROOT / "assets" / "sprites" / "city_landmark_clusters_hi_res" / "outlined" / "city_berlin.png",
+            ROOT / "assets" / "sprites" / "city_landmark_clusters_hi_res" / "outlined" / "city_hamburg.png",
+            ROOT / "assets" / "sprites" / "city_landmark_clusters_hi_res" / "outlined" / "city_rostock.png",
         ]:
             self.assertTrue(path.exists(), f"Missing outlined sprite: {path}")
 
         self.assertIn('"res://assets/sprites/outlined/%s.png"', script_text)
-        self.assertIn("city_landmarks/outlined/city_%s.png", script_text)
         self.assertIn("city_landmark_clusters_hi_res/outlined/city_%s.png", script_text)
 
     def test_high_res_city_cluster_pipeline_is_documented_and_runtime_integrated(self) -> None:
         cluster_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks_hi_res.py").read_text(encoding="utf-8")
         review_text = (ROOT / "map_pipeline" / "build_city_cluster_hi_res_review.py").read_text(encoding="utf-8")
-        docs_text = (ROOT / "docs" / "map-generation-handoff.md").read_text(encoding="utf-8")
+        docs_text = (ROOT / "docs" / "pipelines" / "city-glyphs.md").read_text(encoding="utf-8")
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
 
         for expected in [

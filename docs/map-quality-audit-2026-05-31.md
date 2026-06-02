@@ -178,7 +178,7 @@ Corrected rubric estimate after later user review 2026-05-31: still around 4/10 
 
 Outline readability iteration result:
 
-- Transport and city landmark sprites now have generated outline-only runtime variants under `assets/sprites/outlined/` and `assets/sprites/city_landmarks/outlined/`.
+- Transport and city landmark sprites now have generated outline-only runtime variants under `assets/sprites/outlined/` and `assets/sprites/city_landmark_clusters_hi_res/outlined/`.
 - The map UI loads those outlined variants, so objects can read over forests/lakes/routes without reintroducing circles, plaques, or background disks.
 - City labels were moved closer to their pictograms. Secondary town labels are hidden until zoom `1.20`, while major landmarks such as Berlin, Hamburg, Rostock, Köln, München, Dresden and Stuttgart remain available at the default view.
 - Fresh Web build is served on `http://127.0.0.1:9000/`; `index.pck` returns gzip and no-store headers.

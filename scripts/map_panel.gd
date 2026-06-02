@@ -27,33 +27,6 @@ class OfflineMapLayer:
 	const LANDMARK_VIEWPORT_SCALE_MIN := 0.92
 	const LANDMARK_VIEWPORT_SCALE_MAX := 1.30
 	const CITY_ICON_LABEL_BASELINE_OVERLAP := 9.0
-	const CITY_CLUSTER_ICON_IDS := {
-		"berlin": true,
-		"hamburg": true,
-		"rostock": true,
-		"munich": true,
-		"cologne": true,
-		"frankfurt": true,
-		"stuttgart": true,
-		"dresden": true,
-		"hannover": true,
-		"bremen": true,
-		"kiel": true,
-		"luebeck": true,
-		"duesseldorf": true,
-		"dortmund": true,
-		"essen": true,
-		"leipzig": true,
-		"magdeburg": true,
-		"wolfsburg": true,
-		"kassel": true,
-		"erfurt": true,
-		"nuremberg": true,
-		"regensburg": true,
-		"augsburg": true,
-		"freiburg": true,
-		"saarbruecken": true,
-	}
 	const CITY_LABELS := [
 		{"name": "Hamburg", "coordinates": Vector2(9.9937, 53.5511), "kind": "city", "icon": "hamburg"},
 		{"name": "Berlin", "coordinates": Vector2(13.4050, 52.5200), "kind": "capital", "icon": "berlin"},
@@ -202,7 +175,7 @@ class OfflineMapLayer:
 		return icon_rect
 
 	func _city_icon_size(icon_id: String) -> float:
-		if CITY_CLUSTER_ICON_IDS.has(icon_id):
+		if _city_icon_texture(icon_id) != null:
 			return round(clamp(54.0 * _city_cluster_visual_scale(), 54.0, 148.0))
 		var scale := _landmark_visual_scale()
 		return round(clamp(48.0 * scale, 42.0, 76.0))
@@ -222,11 +195,7 @@ class OfflineMapLayer:
 	func _city_icon_texture(icon_id: String) -> Texture2D:
 		if not _city_icon_textures.has(icon_id):
 			var cluster_path := "res://assets/sprites/city_landmark_clusters_hi_res/outlined/city_%s.png" % icon_id
-			var fallback_path := "res://assets/sprites/city_landmarks/outlined/city_%s.png" % icon_id
-			if CITY_CLUSTER_ICON_IDS.has(icon_id) and ResourceLoader.exists(cluster_path):
-				_city_icon_textures[icon_id] = load(cluster_path)
-			else:
-				_city_icon_textures[icon_id] = load(fallback_path) if ResourceLoader.exists(fallback_path) else null
+			_city_icon_textures[icon_id] = load(cluster_path) if ResourceLoader.exists(cluster_path) else null
 		return _city_icon_textures.get(icon_id, null)
 
 	func _draw_terrain_label(font: Font, label_data: Dictionary, occupied_rects: Array[Rect2]) -> void:
@@ -445,6 +414,9 @@ var map_scope := MAP_SCOPE_GERMANY
 var map_layer: Control
 var map_label_layer: Control
 var map_content: Control
+var hex_view: HexMapView
+var hex_model: HexMapModel
+var _hex_reload_accum := 0.0
 var empty_state_label: Label
 var summary_label: Label
 var zoom_controls: HBoxContainer
@@ -489,6 +461,9 @@ func _ready() -> void:
 
 	map_layer = OfflineMapLayer.new()
 	map_layer.name = "ТочкиОбъектов"
+	# The hex map model is now the background (see hex_view below); the old
+	# static germany_styled.png / graticule background is disabled.
+	map_layer.set("draw_map_background", false)
 	map_layer.set("draw_city_labels", false)
 	map_layer.set("draw_terrain_labels", false)
 	map_layer.custom_minimum_size = Vector2(0.0, MAP_VIEW_HEIGHT)
@@ -501,6 +476,17 @@ func _ready() -> void:
 	rows.add_child(map_layer)
 	resized.connect(_sync_map_canvas_height)
 
+	# Shared hex map model (the web editor's hex_map.json), rendered as the map
+	# background beneath the interactive object markers.
+	hex_model = HexMapModel.new()
+	hex_model.load_from()
+	hex_view = HexMapView.new()
+	hex_view.name = "ГексКарта"
+	hex_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hex_view.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hex_view.set_model(hex_model)
+	map_layer.add_child(hex_view)
+
 	map_content = Control.new()
 	map_content.name = "ПодвижнаяКарта"
 	map_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -511,7 +497,9 @@ func _ready() -> void:
 	map_label_layer.name = "ПодписиГородов"
 	map_label_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	map_label_layer.set("draw_map_background", false)
-	map_label_layer.set("draw_city_labels", true)
+	# City labels now come from the shared hex model (hex_view draws city sprites
+	# and their labels), so the hardcoded label layer no longer duplicates them.
+	map_label_layer.set("draw_city_labels", false)
 	map_label_layer.set("draw_terrain_labels", false)
 	map_label_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	map_label_layer.z_index = 20
@@ -563,6 +551,25 @@ func _ready() -> void:
 	_refresh_markers()
 	call_deferred("_sync_map_canvas_height")
 	call_deferred("_reset_map_view")
+
+# Live map sync (dev only): when the map editor saves hex_map.json, reload the
+# model and redraw so editor changes show up in the running game without a
+# restart. In an exported build the file is baked into the PCK and not polled.
+func _process(delta: float) -> void:
+	if hex_model == null or not hex_model.loaded:
+		return
+	if not (OS.has_feature("editor") or OS.is_debug_build()):
+		return
+	_hex_reload_accum += delta
+	if _hex_reload_accum < 1.0:
+		return
+	_hex_reload_accum = 0.0
+	if hex_model.file_changed():
+		hex_model.load_from(hex_model.source_path)
+		if hex_view != null:
+			hex_view.set_model(hex_model)
+			hex_view.geo_bounds = hex_model.geo_bounds_dict()
+			hex_view.queue_redraw()
 
 func set_objects(next_objects: Array[Dictionary]) -> void:
 	objects = next_objects
@@ -1048,6 +1055,10 @@ func _apply_map_transform() -> void:
 		_sync_offline_layer_transform(map_layer)
 	if map_label_layer != null:
 		_sync_offline_layer_transform(map_label_layer)
+	if hex_view != null:
+		hex_view.pan_offset = pan_offset
+		hex_view.zoom = zoom
+		hex_view.queue_redraw()
 	_update_zoom_percent_label()
 	_position_markers()
 
@@ -1428,6 +1439,11 @@ func _update_map_reference_data() -> void:
 		label_layer.geo_bounds = _active_coordinate_bounds()
 		label_layer.map_scope = map_scope
 		label_layer.queue_redraw()
+	if hex_view != null and hex_model != null and hex_model.loaded:
+		# hex map renders in the model's focus box (the same Germany geo_bounds
+		# the markers use), so hexes and markers stay aligned.
+		hex_view.geo_bounds = hex_model.geo_bounds_dict()
+		hex_view.queue_redraw()
 
 func _has_coordinates(object_data: Dictionary) -> bool:
 	if object_data.has("coordinates") and object_data.get("coordinates") is Vector2:
