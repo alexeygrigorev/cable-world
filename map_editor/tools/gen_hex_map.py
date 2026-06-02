@@ -135,6 +135,11 @@ EUROPE_CITY_POINTS = [
     ("Rome", 12.4964, 41.9028, "capital", "rome"),
     ("Milan", 9.1900, 45.4642, "city", "milan"),
     ("Venice", 12.3155, 45.4408, "city", "venice"),
+    ("Bolzano", 11.3548, 46.4983, "city", "bolzano"),
+    ("Naples", 14.2681, 40.8518, "city", "naples"),
+    ("Bari", 16.8719, 41.1171, "city", "bari"),
+    ("Palermo", 13.3615, 38.1157, "city", "palermo"),
+    ("Catania", 15.0873, 37.5027, "city", "catania"),
     ("San Marino", 12.4578, 43.9424, "capital", "san_marino"),
     ("Valletta", 14.5146, 35.8997, "capital", "valletta"),
     ("Nicosia", 33.3823, 35.1856, "capital", "nicosia"),
@@ -163,7 +168,16 @@ EUROPE_CITY_POINTS = [
     ("Athens", 23.7275, 37.9838, "capital", "athens"),
     ("Kyiv", 30.5234, 50.4501, "capital", "kyiv"),
     ("Lviv", 24.0311, 49.8397, "city", "lviv"),
+    ("Kharkiv", 36.2304, 49.9935, "city", "kharkiv"),
+    ("Dnipro", 35.0462, 48.4647, "city", "dnipro"),
+    ("Chernivtsi", 25.9358, 48.2915, "city", "chernivtsi"),
+    ("Uzhhorod", 22.2879, 48.6208, "city", "uzhhorod"),
+    ("Simferopol", 34.1024, 44.9521, "city", "simferopol"),
     ("Minsk", 27.5615, 53.9045, "capital", "minsk"),
+    ("Grodno", 23.8131, 53.6694, "city", "grodno"),
+    ("Brest", 23.7275, 52.0976, "city", "brest"),
+    ("Vitebsk", 30.2049, 55.1848, "city", "vitebsk"),
+    ("Gomel", 30.9754, 52.4412, "city", "gomel"),
     ("Vilnius", 25.2797, 54.6872, "capital", "vilnius"),
     ("Riga", 24.1052, 56.9496, "capital", "riga"),
     ("Tallinn", 24.7536, 59.4370, "capital", "tallinn"),
@@ -174,7 +188,33 @@ EUROPE_CITY_POINTS = [
     ("Reykjavik", -21.9426, 64.1466, "capital", "reykjavik"),
     ("Istanbul", 28.9784, 41.0082, "city", "istanbul"),
     ("Ankara", 32.8597, 39.9334, "capital", "ankara"),
+    ("Konya", 32.4846, 37.8746, "city", "konya"),
+    ("Kayseri", 35.4853, 38.7205, "city", "kayseri"),
+    ("Samsun", 36.3361, 41.2867, "city", "samsun"),
+    ("Erzurum", 41.2769, 39.9055, "city", "erzurum"),
     ("Andorra la Vella", 1.5218, 42.5063, "capital", "andorra"),
+    ("Coimbra", -8.4265, 40.2033, "city", "coimbra"),
+    ("Braga", -8.4265, 41.5454, "city", "braga"),
+    ("Thessaloniki", 22.9444, 40.6401, "city", "thessaloniki"),
+    ("Patras", 21.7346, 38.2466, "city", "patras"),
+    ("Ioannina", 20.8537, 39.6650, "city", "ioannina"),
+    ("Heraklion", 25.1442, 35.3387, "city", "heraklion"),
+    ("Gdansk", 18.6466, 54.3520, "city", "gdansk"),
+    ("Wroclaw", 17.0385, 51.1079, "city", "wroclaw"),
+    ("Poznan", 16.9252, 52.4064, "city", "poznan"),
+    ("Edinburgh", -3.1883, 55.9533, "city", "edinburgh"),
+    ("Manchester", -2.2426, 53.4808, "city", "manchester"),
+    ("Cardiff", -3.1791, 51.4816, "city", "cardiff"),
+    ("Belfast", -5.9301, 54.5973, "city", "belfast"),
+    ("Trondheim", 10.3951, 63.4305, "city", "trondheim"),
+    ("Stavanger", 5.7331, 58.9700, "city", "stavanger"),
+    ("Uppsala", 17.6389, 59.8586, "city", "uppsala"),
+    ("Oulu", 25.4651, 65.0121, "city", "oulu"),
+    ("Kaliningrad", 20.4522, 54.7104, "city", "kaliningrad"),
+    ("Pskov", 28.3318, 57.8194, "city", "pskov"),
+    ("Smolensk", 32.0453, 54.7826, "city", "smolensk"),
+    ("Veliky Novgorod", 31.2755, 58.5215, "city", "novgorod"),
+    ("Nizhny Novgorod", 44.0020, 56.3269, "city", "nizhny_novgorod"),
 ]
 
 MICROSTATE_COUNTRY_ANCHORS = [
@@ -187,9 +227,30 @@ CITY_COUNTRY_OVERRIDES = {
     "andorra": "AD",
     "monaco": "MC",
     "san_marino": "SM",
+    "simferopol": "CR",
     "vaduz": "LI",
     "vatican": "VA",
 }
+
+CRIMEA_COUNTRY_POLYGON = Polygon([
+    (32.25, 44.35),
+    (33.15, 44.15),
+    (34.70, 44.35),
+    (36.55, 45.05),
+    (36.65, 45.55),
+    (35.55, 46.15),
+    (33.75, 46.25),
+    (32.55, 45.70),
+    (32.25, 44.35),
+])
+
+STRAIT_OF_MESSINA_WATER_GAP = Polygon([
+    (15.52, 37.92),
+    (16.22, 37.92),
+    (16.22, 38.22),
+    (15.52, 38.22),
+    (15.52, 37.92),
+])
 
 SUPPLEMENTAL_RELIEF_LAYERS = [
     {
@@ -647,6 +708,7 @@ def glyph_footprint(image_name, zoom_factor, s):
         "type": "massif",
         "file": image_name,
         "anchor_offset": "bottom-left",
+        "anchor_point": "hex-lower-left-0.75",
         "zoom_factor": round(float(zoom_factor), 1),
         "render_width_hex": round(float(zoom_factor), 1),
         "render_height_hex": round(height_px / s, 1),
@@ -690,6 +752,8 @@ def main():
     mountain_polys, massif_pieces = load_massifs()
     expansion_relief = load_expansion_relief_layers()
     def country_of(pt):
+        if CRIMEA_COUNTRY_POLYGON.contains(pt):
+            return "CR"
         for iso, pg, (bx0, by0, bx1, by1), _geom in cgeo:
             if bx0 <= pt.x <= bx1 and by0 <= pt.y <= by1 and pg.contains(pt):
                 return iso
@@ -726,6 +790,8 @@ def main():
             if not (minlon <= lon <= maxlon and minlat <= lat <= maxlat):
                 continue
             pt = Point(lon, lat)
+            if STRAIT_OF_MESSINA_WATER_GAP.contains(pt):
+                continue
             if not land_prep.contains(pt):
                 continue
             hexes[f"{q},{r}"] = {"country": country_of(pt), "terrain": "plain",

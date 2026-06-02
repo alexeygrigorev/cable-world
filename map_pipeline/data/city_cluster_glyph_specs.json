@@ -1,6 +1,6 @@
 {
   "schema": "cable-world.city-cluster-glyph-specs.v1",
-  "style_reference": "Use the approved Berlin/Hamburg/Rostock/Munich/Cologne/Frankfurt/Stuttgart/Dresden multi-symbol cluster language: compact 2-4 landmark elements, painterly pixel-art, 2.5D atlas miniature, warm European RPG map palette, crisp dark outline, simplified shapes that stay clean at 300% review zoom.",
+  "style_reference": "Match the approved compact RPG-map city cluster reference sheet: Berlin, Bremen, Vaduz, Bolzano, Palermo, Catania, Braga, Coimbra, and Belfast. Use painterly pixel-art / 2.5D atlas miniature volume, warm European RPG map palette, crisp dark outline, and one compact shared-baseline city token. Avoid flat skyline/collage sprites, realistic landmark elevations, single giant monuments, scenic terrain bases, water bases, and wide city blocks that dominate neighboring cities.",
   "output_policy": {
     "runtime_integrated": true,
     "source_dir_pattern": "tmp/city-cluster-hi-res-<iteration>/raw",
@@ -114,6 +114,32 @@
       "prompt_spec": "Barcelona cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "bari",
+      "display_name": "Bari",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Bari cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
+      "id": "belfast",
+      "display_name": "Belfast",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Belfast cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "belgrade",
       "display_name": "Belgrade",
       "map_panel_name": "",
@@ -166,6 +192,19 @@
       "prompt_spec": "Bilbao cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "bolzano",
+      "display_name": "Bolzano",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Bolzano cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "bordeaux",
       "display_name": "Bordeaux",
       "map_panel_name": "",
@@ -177,6 +216,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Bordeaux cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "braga",
+      "display_name": "Braga",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Braga cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "bratislava",
@@ -203,6 +255,19 @@
         "Schnoor gabled houses or Weser quay"
       ],
       "prompt_spec": "Bremen cluster with Town Hall, Roland statue silhouette, and Schnoor gabled houses/Weser quay."
+    },
+    {
+      "id": "brest",
+      "display_name": "Brest",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Brest cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "brno",
@@ -270,6 +335,32 @@
       "prompt_spec": "Bursa cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "cardiff",
+      "display_name": "Cardiff",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Cardiff cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
+      "id": "catania",
+      "display_name": "Catania",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Catania cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "chamonix",
       "display_name": "Chamonix",
       "map_panel_name": "",
@@ -281,6 +372,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Chamonix cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "chernivtsi",
+      "display_name": "Chernivtsi",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Chernivtsi cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "chisinau",
@@ -309,6 +413,19 @@
       "prompt_spec": "Cluj-Napoca cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "coimbra",
+      "display_name": "Coimbra",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Coimbra cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "cologne",
       "display_name": "Cologne",
       "map_panel_name": "Köln",
@@ -333,6 +450,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Copenhagen cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "dnipro",
+      "display_name": "Dnipro",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Dnipro cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "dortmund",
@@ -387,6 +517,19 @@
       "prompt_spec": "Düsseldorf cluster with Rhine Tower, Rhine promenade/bridge, and Media Harbor buildings."
     },
     {
+      "id": "edinburgh",
+      "display_name": "Edinburgh",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Edinburgh cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "erfurt",
       "display_name": "Erfurt",
       "map_panel_name": "Erfurt",
@@ -398,6 +541,19 @@
         "Krämerbrücke bridge houses"
       ],
       "prompt_spec": "Erfurt cluster with Erfurt Cathedral, Severikirche, and Krämerbrücke bridge houses."
+    },
+    {
+      "id": "erzurum",
+      "display_name": "Erzurum",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Erzurum cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "essen",
@@ -439,6 +595,19 @@
       "prompt_spec": "Freiburg cluster with Freiburg Minster spire, Schwabentor/Martinstor gate, and Black Forest hill edge."
     },
     {
+      "id": "gdansk",
+      "display_name": "Gdansk",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Gdansk cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "geneva",
       "display_name": "Geneva",
       "map_panel_name": "",
@@ -450,6 +619,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Geneva cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "gomel",
+      "display_name": "Gomel",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Gomel cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "gothenburg",
@@ -491,6 +673,19 @@
       "prompt_spec": "Grenoble cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "grodno",
+      "display_name": "Grodno",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Grodno cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "hamburg",
       "display_name": "Hamburg",
       "map_panel_name": "Hamburg",
@@ -530,6 +725,32 @@
       "prompt_spec": "Helsinki cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "heraklion",
+      "display_name": "Heraklion",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Heraklion cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
+      "id": "ioannina",
+      "display_name": "Ioannina",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Ioannina cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "istanbul",
       "display_name": "Istanbul",
       "map_panel_name": "",
@@ -556,6 +777,19 @@
       "prompt_spec": "Izmir cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "kaliningrad",
+      "display_name": "Kaliningrad",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Kaliningrad cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "kassel",
       "display_name": "Kassel",
       "map_panel_name": "Kassel",
@@ -569,6 +803,32 @@
       "prompt_spec": "Kassel cluster with Herkules monument, Bergpark cascade steps, and Wilhelmshöhe palace base."
     },
     {
+      "id": "kayseri",
+      "display_name": "Kayseri",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Kayseri cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
+      "id": "kharkiv",
+      "display_name": "Kharkiv",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Kharkiv cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "kiel",
       "display_name": "Kiel",
       "map_panel_name": "Kiel",
@@ -580,6 +840,19 @@
         "city hall tower"
       ],
       "prompt_spec": "Kiel cluster with harbor cranes, ferry/sailboat, and city hall tower."
+    },
+    {
+      "id": "konya",
+      "display_name": "Konya",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Konya cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "krakow",
@@ -751,6 +1024,19 @@
       "prompt_spec": "Malmo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "manchester",
+      "display_name": "Manchester",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Manchester cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "marseille",
       "display_name": "Marseille",
       "map_panel_name": "",
@@ -829,6 +1115,19 @@
       "prompt_spec": "Munich cluster with Frauenkirche twin towers, Rathaus/Marienplatz facade, and compact city gate/base element."
     },
     {
+      "id": "naples",
+      "display_name": "Naples",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Naples cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "nicosia",
       "display_name": "Nicosia",
       "map_panel_name": "",
@@ -840,6 +1139,32 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Nicosia cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "nizhny_novgorod",
+      "display_name": "Nizhny Novgorod",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Nizhny Novgorod cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
+      "id": "novgorod",
+      "display_name": "Novgorod",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Novgorod cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "nuremberg",
@@ -881,6 +1206,32 @@
       "prompt_spec": "Oslo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "oulu",
+      "display_name": "Oulu",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Oulu cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
+      "id": "palermo",
+      "display_name": "Palermo",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Palermo cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "paris",
       "display_name": "Paris",
       "map_panel_name": "",
@@ -892,6 +1243,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Paris cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "patras",
+      "display_name": "Patras",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Patras cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "podgorica",
@@ -920,6 +1284,19 @@
       "prompt_spec": "Porto cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "poznan",
+      "display_name": "Poznan",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Poznan cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "prague",
       "display_name": "Prague",
       "map_panel_name": "",
@@ -944,6 +1321,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Pristina cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "pskov",
+      "display_name": "Pskov",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Pskov cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "regensburg",
@@ -1024,6 +1414,19 @@
       "prompt_spec": "Saarbrücken cluster with Ludwigskirche, Saar river bridge, and Saarbrücken Castle facade."
     },
     {
+      "id": "samsun",
+      "display_name": "Samsun",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Samsun cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "san_marino",
       "display_name": "San Marino",
       "map_panel_name": "",
@@ -1063,6 +1466,19 @@
       "prompt_spec": "Seville cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "simferopol",
+      "display_name": "Simferopol",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Simferopol cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "skopje",
       "display_name": "Skopje",
       "map_panel_name": "",
@@ -1074,6 +1490,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Skopje cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "smolensk",
+      "display_name": "Smolensk",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Smolensk cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "sofia",
@@ -1100,6 +1529,19 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "St Petersburg cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "stavanger",
+      "display_name": "Stavanger",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Stavanger cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "stockholm",
@@ -1154,6 +1596,19 @@
       "prompt_spec": "Tampere cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "thessaloniki",
+      "display_name": "Thessaloniki",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Thessaloniki cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "tirana",
       "display_name": "Tirana",
       "map_panel_name": "",
@@ -1206,6 +1661,19 @@
       "prompt_spec": "Tromso cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "trondheim",
+      "display_name": "Trondheim",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Trondheim cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "turku",
       "display_name": "Turku",
       "map_panel_name": "",
@@ -1217,6 +1685,32 @@
         "balanced multi-symbol city silhouette"
       ],
       "prompt_spec": "Turku cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+    },
+    {
+      "id": "uppsala",
+      "display_name": "Uppsala",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Uppsala cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
+      "id": "uzhhorod",
+      "display_name": "Uzhhorod",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Uzhhorod cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "vaduz",
@@ -1310,6 +1804,19 @@
       "prompt_spec": "Vilnius cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
     },
     {
+      "id": "vitebsk",
+      "display_name": "Vitebsk",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Vitebsk cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
+    },
+    {
       "id": "warsaw",
       "display_name": "Warsaw",
       "map_panel_name": "",
@@ -1334,6 +1841,19 @@
         "Aller canal/waterfront"
       ],
       "prompt_spec": "Wolfsburg cluster with Autostadt twin glass towers, VW factory silhouette, and Aller canal/waterfront."
+    },
+    {
+      "id": "wroclaw",
+      "display_name": "Wroclaw",
+      "map_panel_name": "",
+      "status": "existing_cluster",
+      "priority": "europe_city_cluster_expansion_2026_06_02",
+      "cluster_elements": [
+        "2-4 recognizable local landmark elements",
+        "compact old-town building cluster without terrain or water layers",
+        "balanced multi-symbol city silhouette"
+      ],
+      "prompt_spec": "Wroclaw cluster generated in the Europe/Turkey expansion city pass with 2-4 recognizable local landmarks, no mountain backdrop, and no water layer."
     },
     {
       "id": "zagreb",

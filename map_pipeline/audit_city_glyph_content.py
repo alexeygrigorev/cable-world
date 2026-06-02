@@ -13,7 +13,8 @@ def _count_water_like_pixels(path: Path) -> tuple[int, int]:
         rgba = image.convert("RGBA")
     total = 0
     water = 0
-    for r, g, b, a in rgba.getdata():
+    pixels = rgba.get_flattened_data() if hasattr(rgba, "get_flattened_data") else rgba.getdata()
+    for r, g, b, a in pixels:
         if a < 48:
             continue
         total += 1

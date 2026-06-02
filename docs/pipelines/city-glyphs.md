@@ -51,6 +51,32 @@ Prompt rules:
 - No text, letters, flags, labels, frames, map background, or photorealism.
 - The glyph must stay clean at user zoom `300%`.
 
+## Repeatable Style Contract
+
+Prompt text alone is not enough to keep city glyphs repeatable. Every new batch must be generated and reviewed against an approved reference sheet.
+
+Approved style references:
+
+- compact RPG-map clusters: `city_berlin.png`, `city_bremen.png`, `city_vaduz.png`;
+- compact new-city batches: `city_bolzano.png`, `city_palermo.png`, `city_catania.png`, `city_braga.png`, `city_coimbra.png`, `city_belfast.png`.
+
+When prompting, explicitly ask for the batch to match the approved reference sheet in:
+
+- 2.5D cluster volume, not flat architectural elevation;
+- compact footprint with one shared bottom baseline;
+- warm painted roofs and stone, not realistic postcard lighting;
+- dark readable outline at the same strength as the reference sprites;
+- varied landmark silhouettes that still read as one city token.
+
+Rejected style patterns:
+
+- flat skyline/collage sprites, especially realistic landmark elevations;
+- single giant monument with tiny filler houses;
+- terrain or scenic bases that make the city behave like a mountain/water glyph;
+- wide city blocks that dominate neighboring cities after normalization.
+
+Do not integrate a batch until its review sheet is visually checked against these references. If a whole batch uses the wrong style, reject the batch and regenerate from the reference sheet; do not patch individual cities from that batch unless the style already matches.
+
 ## Generate
 
 Batch generation is the default because one sheet keeps style, scale, lighting, and outline language consistent across cities. Prefer fitting many cities into one generation when the cells still leave clear gutters, for example `4 columns x 3 rows`, `5 columns x 3 rows`, or larger review batches if the generated resolution keeps every city readable. Use single-city generation only to replace one rejected glyph after review.
@@ -159,6 +185,16 @@ The audit checks the final runtime `outlined/city_*.png` files. It fails if:
 - wide/low glyphs exceed the stricter wide-city width;
 - bottom alpha padding does not match the shared baseline.
 
+## Content Audit
+
+Run the content audit after every slice/outline pass while replacing old city glyphs:
+
+```bash
+python3 -m map_pipeline.audit_city_glyph_content --warn-only
+```
+
+It reports water-like content so batches with rivers, harbors, seas, boats, or blue water bases can be rejected before integration. During the current cleanup pass use `--warn-only` to get the candidate list without blocking older accepted assets. After all water-bearing city glyphs are replaced, run it without `--warn-only` as a gate.
+
 ## Import And Review
 
 ```bash
@@ -179,6 +215,7 @@ Review rules:
 - No visible city label should be bare text once a city has an accepted glyph.
 - City labels must stay close to the pictogram and remain readable above transport markers.
 - Static glyph contact sheets should normally expose only `300`; runtime Godot review captures can use `100%`, `200%`, and `300%`.
+- Compare neighboring cities on the actual map before accepting replacements. Nearby pairs such as Copenhagen/Malmo must have comparable visual mass unless the design intentionally marks one as a much larger city.
 
 ## Removed Legacy Process
 

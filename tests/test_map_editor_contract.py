@@ -197,6 +197,41 @@ class MapEditorContractTest(unittest.TestCase):
         cell_color_fn = self.main_js.split("function cellColor(cell)", 1)[1].split("// ----- glyphs", 1)[0]
         self.assertNotIn('cell.country === "DE"', cell_color_fn)
 
+    def test_new_city_generation_targets_are_on_hex_map(self) -> None:
+        city_ids = {feature["id"]: feature for feature in self.hex_map["features"] if feature.get("glyph") == "city"}
+        for city_id in [
+            "kharkiv", "dnipro", "chernivtsi", "uzhhorod", "grodno", "brest",
+            "vitebsk", "gomel", "kaliningrad", "pskov", "smolensk", "novgorod",
+            "nizhny_novgorod", "simferopol", "konya", "kayseri", "samsun",
+            "erzurum", "coimbra", "braga", "bolzano", "naples", "bari",
+            "palermo", "catania", "thessaloniki", "patras", "ioannina",
+            "heraklion", "gdansk", "wroclaw", "poznan", "edinburgh",
+            "manchester", "cardiff", "belfast", "trondheim", "stavanger",
+            "uppsala", "oulu",
+        ]:
+            with self.subTest(city_id=city_id):
+                self.assertIn(city_id, city_ids)
+                self.assertIn(city_ids[city_id]["anchor"], self.hex_map["hexes"])
+
+    def test_crimea_uses_separate_country_code(self) -> None:
+        city_ids = {feature["id"]: feature for feature in self.hex_map["features"] if feature.get("glyph") == "city"}
+        simferopol = city_ids["simferopol"]
+        self.assertEqual(self.hex_map["hexes"][simferopol["anchor"]]["country"], "CR")
+
+    def test_sicily_is_not_connected_to_mainland_by_hex_bridge(self) -> None:
+        for key, cell in self.hex_map["hexes"].items():
+            lon, lat = cell["center"]
+            with self.subTest(key=key):
+                self.assertFalse(
+                    15.52 < lon < 16.22 and 37.92 < lat < 38.22,
+                    f"{key} fills the Strait of Messina water gap",
+                )
+
+        city_ids = {feature["id"]: feature for feature in self.hex_map["features"] if feature.get("glyph") == "city"}
+        for city_id in ["palermo", "catania"]:
+            with self.subTest(city_id=city_id):
+                self.assertIn(city_ids[city_id]["anchor"], self.hex_map["hexes"])
+
     def test_zoom_keeps_current_viewport_center_after_pan(self) -> None:
         for expected in [
             "function viewportCenterContent()",

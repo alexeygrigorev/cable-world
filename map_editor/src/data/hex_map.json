@@ -6,7 +6,7 @@
     "world_size_px": 65536,
     "hex_size_px": 37.5071,
     "nominal_km": 25,
-    "nominal_lat": 51,
+    "nominal_lat": 51.0,
     "scope": "world",
     "populated": "europe-land+germany-detail"
   },
@@ -124,7 +124,7 @@
         22886.24
       ],
       [
-        34307,
+        34307.0,
         22890.69
       ],
       [
@@ -196,7 +196,7 @@
         22669.26
       ],
       [
-        34187,
+        34187.0,
         22631.69
       ],
       [
@@ -264,7 +264,7 @@
         22471.82
       ],
       [
-        34049,
+        34049.0,
         22475.21
       ],
       [
@@ -760,7 +760,7 @@
         21217.01
       ],
       [
-        34269,
+        34269.0,
         21213.07
       ],
       [
@@ -1132,7 +1132,7 @@
         21158.1
       ],
       [
-        35371,
+        35371.0,
         21179.06
       ],
       [
@@ -1233,7 +1233,7 @@
       ],
       [
         35426.15,
-        21697
+        21697.0
       ],
       [
         35430.2,
@@ -1648,7 +1648,7 @@
         22593.25
       ],
       [
-        35280,
+        35280.0,
         22611.09
       ],
       [
@@ -1880,7 +1880,7 @@
         22945.41
       ],
       [
-        34767,
+        34767.0,
         22944.06
       ],
       [
@@ -2089,7 +2089,7 @@
       ],
       [
         35164.09,
-        20929
+        20929.0
       ],
       [
         35163.04,
@@ -2124,7 +2124,7 @@
         20839.62
       ],
       [
-        35224,
+        35224.0,
         20850.39
       ],
       [
@@ -2304,14 +2304,19 @@
       "type": "massif",
       "file": "austrian_alps_massif.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 10.6,
       "render_width_hex": 10.6,
       "render_height_hex": 4.4,
+      "anchor_source_px": [
+        94,
+        177
+      ],
       "bounds_offset_hex": [
         -2.323,
         -4.398,
         8.277,
-        0
+        0.0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2332,25 +2337,25 @@
         "3,-2",
         "4,-2",
         "-1,-1"
-      ],
-      "anchor_source_px": [
-        94,
-        177
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     },
     "massif:bavarian_forest": {
       "type": "massif",
       "file": "bavarian_forest.png",
       "anchor_offset": "bottom-left",
-      "zoom_factor": 5,
-      "render_width_hex": 5,
-      "render_height_hex": 3,
+      "anchor_point": "hex-lower-left-0.75",
+      "zoom_factor": 5.0,
+      "render_width_hex": 5.0,
+      "render_height_hex": 3.0,
+      "anchor_source_px": [
+        110,
+        217
+      ],
       "bounds_offset_hex": [
         -1.519,
         -3.011,
         3.481,
-        0
+        0.0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2359,25 +2364,25 @@
         "0,0",
         "1,0"
       ],
-      "faint_offsets": [],
-      "anchor_source_px": [
-        110,
-        217
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      "faint_offsets": []
     },
     "massif:bavarian_tyrol_alps_massif": {
       "type": "massif",
       "file": "bavarian_tyrol_alps_massif.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 10.8,
       "render_width_hex": 10.8,
       "render_height_hex": 4.8,
+      "anchor_source_px": [
+        146,
+        191
+      ],
       "bounds_offset_hex": [
         -3.617,
         -4.756,
         7.183,
-        0
+        0.0
       ],
       "primary_offsets": [
         "0,-2",
@@ -2401,25 +2406,25 @@
       "faint_offsets": [
         "-1,-2",
         "4,-2"
-      ],
-      "anchor_source_px": [
-        146,
-        191
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     },
     "massif:black_forest": {
       "type": "massif",
       "file": "black_forest.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 5.2,
       "render_width_hex": 5.2,
       "render_height_hex": 2.9,
+      "anchor_source_px": [
+        9,
+        196
+      ],
       "bounds_offset_hex": [
         -0.133,
         -2.902,
         5.067,
-        0
+        0.0
       ],
       "primary_offsets": [
         "1,-1",
@@ -2427,25 +2432,25 @@
         "1,0",
         "2,0"
       ],
-      "faint_offsets": [],
-      "anchor_source_px": [
-        9,
-        196
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      "faint_offsets": []
     },
     "massif:eifel_hunsrueck": {
       "type": "massif",
       "file": "eifel_hunsrueck.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 4.8,
       "render_width_hex": 4.8,
       "render_height_hex": 2.4,
+      "anchor_source_px": [
+        159,
+        177
+      ],
       "bounds_offset_hex": [
         -2.108,
         -2.36,
         2.692,
-        0
+        0.0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2456,25 +2461,25 @@
       ],
       "faint_offsets": [
         "1,-1"
-      ],
-      "anchor_source_px": [
-        159,
-        177
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     },
     "massif:erzgebirge": {
       "type": "massif",
       "file": "erzgebirge.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 5.6,
       "render_width_hex": 5.6,
       "render_height_hex": 4.2,
+      "anchor_source_px": [
+        65,
+        263
+      ],
       "bounds_offset_hex": [
         -1.037,
         -4.212,
         4.563,
-        0
+        0.0
       ],
       "primary_offsets": [
         "2,-2",
@@ -2487,25 +2492,25 @@
       "faint_offsets": [
         "3,-2",
         "0,-1"
-      ],
-      "anchor_source_px": [
-        65,
-        263
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     },
     "massif:german_alpine_edge_massif": {
       "type": "massif",
       "file": "german_alpine_edge_massif.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 9.2,
       "render_width_hex": 9.2,
       "render_height_hex": 3.7,
+      "anchor_source_px": [
+        121,
+        170
+      ],
       "bounds_offset_hex": [
         -2.583,
         -3.65,
         6.617,
-        0
+        0.0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2522,25 +2527,25 @@
         "2,-2",
         "-1,-1",
         "3,-1"
-      ],
-      "anchor_source_px": [
-        121,
-        170
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     },
     "massif:harz": {
       "type": "massif",
       "file": "harz.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 4.3,
       "render_width_hex": 4.3,
       "render_height_hex": 3.6,
+      "anchor_source_px": [
+        168,
+        284
+      ],
       "bounds_offset_hex": [
         -2.094,
         -3.552,
         2.206,
-        0
+        0.0
       ],
       "primary_offsets": [
         "-1,-1",
@@ -2553,25 +2558,25 @@
       ],
       "faint_offsets": [
         "1,-2"
-      ],
-      "anchor_source_px": [
-        168,
-        284
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     },
     "massif:saxon_switzerland": {
       "type": "massif",
       "file": "saxon_switzerland.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 3.8,
       "render_width_hex": 3.8,
       "render_height_hex": 2.8,
+      "anchor_source_px": [
+        108,
+        245
+      ],
       "bounds_offset_hex": [
         -1.211,
         -2.758,
         2.589,
-        0
+        0.0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2580,25 +2585,25 @@
         "0,0",
         "1,0"
       ],
-      "faint_offsets": [],
-      "anchor_source_px": [
-        108,
-        245
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      "faint_offsets": []
     },
     "massif:swiss_alps_massif": {
       "type": "massif",
       "file": "swiss_alps_massif.png",
       "anchor_offset": "bottom-left",
+      "anchor_point": "hex-lower-left-0.75",
       "zoom_factor": 11.2,
       "render_width_hex": 11.2,
       "render_height_hex": 4.6,
+      "anchor_source_px": [
+        145,
+        174
+      ],
       "bounds_offset_hex": [
         -3.777,
         -4.558,
         7.423,
-        0
+        0.0
       ],
       "primary_offsets": [
         "1,-2",
@@ -2621,25 +2626,25 @@
         "2,-2",
         "4,-1",
         "4,0"
-      ],
-      "anchor_source_px": [
-        145,
-        174
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     },
     "massif:western_alps_massif": {
       "type": "massif",
       "file": "western_alps_massif.png",
       "anchor_offset": "bottom-left",
-      "zoom_factor": 11,
-      "render_width_hex": 11,
+      "anchor_point": "hex-lower-left-0.75",
+      "zoom_factor": 11.0,
+      "render_width_hex": 11.0,
       "render_height_hex": 5.4,
+      "anchor_source_px": [
+        61,
+        208
+      ],
       "bounds_offset_hex": [
         -1.575,
         -5.397,
         9.425,
-        0
+        0.0
       ],
       "primary_offsets": [
         "4,-2",
@@ -2660,12 +2665,7 @@
         "3,-2",
         "6,-2",
         "0,-1"
-      ],
-      "anchor_source_px": [
-        61,
-        208
-      ],
-      "anchor_point": "hex-lower-left-0.75"
+      ]
     }
   },
   "hexes": {
@@ -7455,7 +7455,7 @@
     },
     "437,271": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.30194,
         68.88204
@@ -7463,7 +7463,7 @@
     },
     "438,271": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.6588,
         68.88204
@@ -7935,7 +7935,7 @@
     },
     "436,272": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.12351,
         68.77041
@@ -7959,7 +7959,7 @@
     },
     "439,272": {
       "country": "FI",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.19409,
         68.77041
@@ -8439,7 +8439,7 @@
     },
     "435,273": {
       "country": "FI",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.94508,
         68.65822
@@ -8447,7 +8447,7 @@
     },
     "436,273": {
       "country": "FI",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.30194,
         68.65822
@@ -8455,7 +8455,7 @@
     },
     "437,273": {
       "country": "FI",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.6588,
         68.65822
@@ -8463,7 +8463,7 @@
     },
     "438,273": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         25.01566,
         68.65822
@@ -26439,7 +26439,7 @@
     },
     "301,302": {
       "country": "IS",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -18.69961,
         65.14905
@@ -26447,7 +26447,7 @@
     },
     "302,302": {
       "country": "IS",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -18.34275,
         65.14905
@@ -27183,7 +27183,7 @@
     },
     "299,303": {
       "country": "IS",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -19.23489,
         65.01885
@@ -28127,7 +28127,7 @@
     },
     "387,304": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         12.34715,
         64.88801
@@ -28135,7 +28135,7 @@
     },
     "388,304": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         12.70401,
         64.88801
@@ -28143,7 +28143,7 @@
     },
     "389,304": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         13.06087,
         64.88801
@@ -28735,7 +28735,7 @@
     },
     "297,305": {
       "country": "IS",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -19.59175,
         64.75654
@@ -28743,7 +28743,7 @@
     },
     "298,305": {
       "country": "IS",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -19.23489,
         64.75654
@@ -28751,7 +28751,7 @@
     },
     "299,305": {
       "country": "IS",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -18.87804,
         64.75654
@@ -28863,7 +28863,7 @@
     },
     "385,305": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.81186,
         64.75654
@@ -28895,7 +28895,7 @@
     },
     "389,305": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         13.2393,
         64.75654
@@ -28903,7 +28903,7 @@
     },
     "390,305": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         13.59616,
         64.75654
@@ -28911,7 +28911,7 @@
     },
     "391,305": {
       "country": "SE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         13.95302,
         64.75654
@@ -29655,7 +29655,7 @@
     },
     "384,306": {
       "country": "NOR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.63343,
         64.62442
@@ -29703,7 +29703,7 @@
     },
     "390,306": {
       "country": "SE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         13.77459,
         64.62442
@@ -29711,7 +29711,7 @@
     },
     "391,306": {
       "country": "SE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         14.13145,
         64.62442
@@ -30479,7 +30479,7 @@
     },
     "384,307": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.81186,
         64.49165
@@ -30487,7 +30487,7 @@
     },
     "385,307": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.16872,
         64.49165
@@ -30495,7 +30495,7 @@
     },
     "386,307": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.52558,
         64.49165
@@ -30503,7 +30503,7 @@
     },
     "387,307": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.88244,
         64.49165
@@ -30511,7 +30511,7 @@
     },
     "388,307": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.2393,
         64.49165
@@ -30519,7 +30519,7 @@
     },
     "389,307": {
       "country": "NOR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.59616,
         64.49165
@@ -55735,7 +55735,7 @@
     },
     "376,339": {
       "country": "SE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.66674,
         59.88791
@@ -55743,7 +55743,7 @@
     },
     "377,339": {
       "country": "SE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         15.0236,
         59.88791
@@ -56407,7 +56407,7 @@
     },
     "375,340": {
       "country": "SE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.48831,
         59.7325
@@ -56431,7 +56431,7 @@
     },
     "378,340": {
       "country": "SE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         15.55888,
         59.7325
@@ -57087,7 +57087,7 @@
     },
     "374,341": {
       "country": "SE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.30988,
         59.57636
@@ -57095,7 +57095,7 @@
     },
     "375,341": {
       "country": "SE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.66674,
         59.57636
@@ -57103,7 +57103,7 @@
     },
     "376,341": {
       "country": "SE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         15.0236,
         59.57636
@@ -57111,7 +57111,7 @@
     },
     "377,341": {
       "country": "SE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         15.38046,
         59.57636
@@ -66095,7 +66095,7 @@
     },
     "313,354": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -5.13895,
         57.47956
@@ -66103,7 +66103,7 @@
     },
     "314,354": {
       "country": "GB",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -4.78209,
         57.47956
@@ -66815,7 +66815,7 @@
     },
     "312,355": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -5.31738,
         57.31304
@@ -66839,7 +66839,7 @@
     },
     "315,355": {
       "country": "GB",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -4.24681,
         57.31304
@@ -67559,7 +67559,7 @@
     },
     "311,356": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -5.49581,
         57.14576
@@ -67567,7 +67567,7 @@
     },
     "312,356": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -5.13895,
         57.14576
@@ -67575,7 +67575,7 @@
     },
     "313,356": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -4.78209,
         57.14576
@@ -67583,7 +67583,7 @@
     },
     "314,356": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -4.42523,
         57.14576
@@ -70807,7 +70807,7 @@
     },
     "394,360": {
       "country": "LV",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.83723,
         56.46902
@@ -70815,7 +70815,7 @@
     },
     "395,360": {
       "country": "LV",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.19409,
         56.46902
@@ -71551,7 +71551,7 @@
     },
     "393,361": {
       "country": "LT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.6588,
         56.29792
@@ -71575,7 +71575,7 @@
     },
     "396,361": {
       "country": "LV",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.72937,
         56.29792
@@ -72239,7 +72239,7 @@
     },
     "392,362": {
       "country": "LT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.48037,
         56.12605
@@ -72247,7 +72247,7 @@
     },
     "393,362": {
       "country": "LT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.83723,
         56.12605
@@ -72255,7 +72255,7 @@
     },
     "394,362": {
       "country": "LT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         25.19409,
         56.12605
@@ -72263,7 +72263,7 @@
     },
     "395,362": {
       "country": "LT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         25.55094,
         56.12605
@@ -82903,7 +82903,7 @@
     },
     "293,376": {
       "country": "IE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -8.35069,
         53.63806
@@ -82911,7 +82911,7 @@
     },
     "294,376": {
       "country": "IE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -7.99383,
         53.63806
@@ -82959,7 +82959,7 @@
     },
     "308,376": {
       "country": "GB",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -2.9978,
         53.63806
@@ -83895,7 +83895,7 @@
     },
     "292,377": {
       "country": "IE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -8.52912,
         53.45443
@@ -83919,7 +83919,7 @@
     },
     "295,377": {
       "country": "IE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -7.45854,
         53.45443
@@ -83959,7 +83959,7 @@
     },
     "309,377": {
       "country": "GB",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -2.46251,
         53.45443
@@ -84895,7 +84895,7 @@
     },
     "291,378": {
       "country": "IE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -8.70755,
         53.27001
@@ -84903,7 +84903,7 @@
     },
     "292,378": {
       "country": "IE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -8.35069,
         53.27001
@@ -84911,7 +84911,7 @@
     },
     "293,378": {
       "country": "IE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -7.99383,
         53.27001
@@ -84919,7 +84919,7 @@
     },
     "294,378": {
       "country": "IE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -7.63697,
         53.27001
@@ -84967,7 +84967,7 @@
     },
     "305,378": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -3.71152,
         53.27001
@@ -84975,7 +84975,7 @@
     },
     "306,378": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -3.35466,
         53.27001
@@ -84983,7 +84983,7 @@
     },
     "307,378": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -2.9978,
         53.27001
@@ -84991,7 +84991,7 @@
     },
     "308,378": {
       "country": "GB",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -2.64094,
         53.27001
@@ -91807,7 +91807,7 @@
     },
     "342,384": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         10.56286,
         52.14662
@@ -92911,7 +92911,7 @@
     },
     "340,385": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         10.02757,
         51.95657
@@ -94007,7 +94007,7 @@
     },
     "339,386": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         9.84914,
         51.76571
@@ -95063,7 +95063,7 @@
     },
     "339,387": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         10.02757,
         51.57404
@@ -95071,7 +95071,7 @@
     },
     "340,387": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         10.38443,
         51.57404
@@ -95079,7 +95079,7 @@
     },
     "341,387": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         10.74128,
         51.57404
@@ -95087,7 +95087,7 @@
     },
     "342,387": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.09814,
         51.57404
@@ -98311,7 +98311,7 @@
     },
     "347,390": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         13.41773,
         50.99416
@@ -99391,7 +99391,7 @@
     },
     "349,391": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.30988,
         50.79923
@@ -100383,7 +100383,7 @@
     },
     "345,392": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.06087,
         50.6035
@@ -100391,7 +100391,7 @@
     },
     "346,392": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.41773,
         50.6035
@@ -100399,7 +100399,7 @@
     },
     "347,392": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.77459,
         50.6035
@@ -100447,7 +100447,7 @@
     },
     "353,392": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         15.91574,
         50.6035
@@ -100455,7 +100455,7 @@
     },
     "354,392": {
       "country": "CZ",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         16.2726,
         50.6035
@@ -101447,7 +101447,7 @@
     },
     "352,393": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         15.73731,
         50.40694
@@ -101471,7 +101471,7 @@
     },
     "355,393": {
       "country": "PL",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         16.80789,
         50.40694
@@ -102231,7 +102231,7 @@
     },
     "325,394": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         6.28054,
         50.20956
@@ -102439,7 +102439,7 @@
     },
     "351,394": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         15.55888,
         50.20956
@@ -102447,7 +102447,7 @@
     },
     "352,394": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         15.91574,
         50.20956
@@ -102455,7 +102455,7 @@
     },
     "353,394": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         16.2726,
         50.20956
@@ -102463,7 +102463,7 @@
     },
     "354,394": {
       "country": "PL",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         16.62946,
         50.20956
@@ -103223,7 +103223,7 @@
     },
     "326,395": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.81583,
         50.01137
@@ -103231,7 +103231,7 @@
     },
     "327,395": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         7.17269,
         50.01137
@@ -106407,7 +106407,7 @@
     },
     "341,398": {
       "country": "CZ",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         12.70401,
         49.41185
@@ -106559,7 +106559,7 @@
     },
     "360,398": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         19.48434,
         49.41185
@@ -106567,7 +106567,7 @@
     },
     "361,398": {
       "country": "PL",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         19.8412,
         49.41185
@@ -106575,7 +106575,7 @@
     },
     "362,398": {
       "country": "PL",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         20.19806,
         49.41185
@@ -107591,7 +107591,7 @@
     },
     "358,399": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         18.94905,
         49.21037
@@ -107623,7 +107623,7 @@
     },
     "362,399": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         20.37649,
         49.21037
@@ -107631,7 +107631,7 @@
     },
     "363,399": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         20.73334,
         49.21037
@@ -107639,7 +107639,7 @@
     },
     "364,399": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         21.0902,
         49.21037
@@ -108495,7 +108495,7 @@
     },
     "339,400": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.34715,
         49.00806
@@ -108503,7 +108503,7 @@
     },
     "340,400": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.70401,
         49.00806
@@ -108511,7 +108511,7 @@
     },
     "341,400": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.06087,
         49.00806
@@ -108519,7 +108519,7 @@
     },
     "342,400": {
       "country": "CZ",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.41773,
         49.00806
@@ -108639,7 +108639,7 @@
     },
     "357,400": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         18.77062,
         49.00806
@@ -108687,7 +108687,7 @@
     },
     "363,400": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         20.91177,
         49.00806
@@ -108695,7 +108695,7 @@
     },
     "364,400": {
       "country": "SK",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         21.26863,
         49.00806
@@ -108743,7 +108743,7 @@
     },
     "370,400": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         23.40979,
         49.00806
@@ -108751,7 +108751,7 @@
     },
     "371,400": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         23.76665,
         49.00806
@@ -108759,7 +108759,7 @@
     },
     "372,400": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.12351,
         49.00806
@@ -109447,7 +109447,7 @@
     },
     "326,401": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         7.88641,
         48.80492
@@ -109455,7 +109455,7 @@
     },
     "327,401": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         8.24327,
         48.80492
@@ -109695,7 +109695,7 @@
     },
     "357,401": {
       "country": "SK",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         18.94905,
         48.80492
@@ -109703,7 +109703,7 @@
     },
     "358,401": {
       "country": "SK",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         19.30591,
         48.80492
@@ -109711,7 +109711,7 @@
     },
     "359,401": {
       "country": "SK",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         19.66277,
         48.80492
@@ -109719,7 +109719,7 @@
     },
     "360,401": {
       "country": "SK",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         20.01963,
         48.80492
@@ -109727,7 +109727,7 @@
     },
     "361,401": {
       "country": "SK",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         20.37649,
         48.80492
@@ -109735,7 +109735,7 @@
     },
     "362,401": {
       "country": "SK",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         20.73334,
         48.80492
@@ -109783,7 +109783,7 @@
     },
     "368,401": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         22.8745,
         48.80492
@@ -109815,7 +109815,7 @@
     },
     "372,401": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.30194,
         48.80492
@@ -109823,7 +109823,7 @@
     },
     "373,401": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.6588,
         48.80492
@@ -109831,7 +109831,7 @@
     },
     "374,401": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.01566,
         48.80492
@@ -110551,7 +110551,7 @@
     },
     "325,402": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         7.70798,
         48.60096
@@ -110575,7 +110575,7 @@
     },
     "328,402": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         8.77856,
         48.60096
@@ -110887,7 +110887,7 @@
     },
     "367,402": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         22.69607,
         48.60096
@@ -110935,7 +110935,7 @@
     },
     "373,402": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.83723,
         48.60096
@@ -110943,7 +110943,7 @@
     },
     "374,402": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.19409,
         48.60096
@@ -111663,7 +111663,7 @@
     },
     "324,403": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         7.52955,
         48.39617
@@ -111671,7 +111671,7 @@
     },
     "325,403": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         7.88641,
         48.39617
@@ -111679,7 +111679,7 @@
     },
     "326,403": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         8.24327,
         48.39617
@@ -111687,7 +111687,7 @@
     },
     "327,403": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         8.60013,
         48.39617
@@ -112007,7 +112007,7 @@
     },
     "367,403": {
       "country": "UA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         22.8745,
         48.39617
@@ -112015,7 +112015,7 @@
     },
     "368,403": {
       "country": "UA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.23136,
         48.39617
@@ -112023,7 +112023,7 @@
     },
     "369,403": {
       "country": "UA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.58822,
         48.39617
@@ -112031,7 +112031,7 @@
     },
     "370,403": {
       "country": "UA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.94508,
         48.39617
@@ -112039,7 +112039,7 @@
     },
     "371,403": {
       "country": "UA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.30194,
         48.39617
@@ -112047,7 +112047,7 @@
     },
     "372,403": {
       "country": "UA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.6588,
         48.39617
@@ -112871,7 +112871,7 @@
     },
     "336,404": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.99029,
         48.19056
@@ -113959,7 +113959,7 @@
     },
     "333,405": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.09814,
         47.98411
@@ -113967,7 +113967,7 @@
     },
     "334,405": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.455,
         47.98411
@@ -113991,7 +113991,7 @@
     },
     "337,405": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         12.52558,
         47.98411
@@ -114247,7 +114247,7 @@
     },
     "369,405": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         23.94508,
         47.98411
@@ -114255,7 +114255,7 @@
     },
     "370,405": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.30194,
         47.98411
@@ -114263,7 +114263,7 @@
     },
     "371,405": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.6588,
         47.98411
@@ -114951,7 +114951,7 @@
     },
     "320,406": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.6374,
         47.77684
@@ -114959,7 +114959,7 @@
     },
     "321,406": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         6.99426,
         47.77684
@@ -115087,7 +115087,7 @@
     },
     "337,406": {
       "country": "DE",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         12.70401,
         47.77684
@@ -115327,7 +115327,7 @@
     },
     "367,406": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         23.40979,
         47.77684
@@ -115359,7 +115359,7 @@
     },
     "371,406": {
       "country": "UA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.83723,
         47.77684
@@ -115367,7 +115367,7 @@
     },
     "372,406": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.19409,
         47.77684
@@ -115375,7 +115375,7 @@
     },
     "373,406": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.55094,
         47.77684
@@ -116015,7 +116015,7 @@
     },
     "319,407": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.45897,
         47.56874
@@ -116039,7 +116039,7 @@
     },
     "322,407": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         7.52955,
         47.56874
@@ -116111,7 +116111,7 @@
     },
     "331,407": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         10.74128,
         47.56874
@@ -116119,7 +116119,7 @@
     },
     "332,407": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.09814,
         47.56874
@@ -116127,7 +116127,7 @@
     },
     "333,407": {
       "country": "DE",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.455,
         47.56874
@@ -116135,7 +116135,7 @@
     },
     "334,407": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.81186,
         47.56874
@@ -116143,7 +116143,7 @@
     },
     "335,407": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.16872,
         47.56874
@@ -116151,7 +116151,7 @@
     },
     "336,407": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.52558,
         47.56874
@@ -116191,7 +116191,7 @@
     },
     "341,407": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         14.30988,
         47.56874
@@ -116199,7 +116199,7 @@
     },
     "342,407": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         14.66674,
         47.56874
@@ -116207,7 +116207,7 @@
     },
     "343,407": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         15.0236,
         47.56874
@@ -116391,7 +116391,7 @@
     },
     "366,407": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         23.23136,
         47.56874
@@ -116439,7 +116439,7 @@
     },
     "372,407": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.37252,
         47.56874
@@ -116447,7 +116447,7 @@
     },
     "373,407": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.72937,
         47.56874
@@ -117079,7 +117079,7 @@
     },
     "318,408": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.28054,
         47.35981
@@ -117087,7 +117087,7 @@
     },
     "319,408": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.6374,
         47.35981
@@ -117095,7 +117095,7 @@
     },
     "320,408": {
       "country": "CH",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.99426,
         47.35981
@@ -117103,7 +117103,7 @@
     },
     "321,408": {
       "country": "CH",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         7.35112,
         47.35981
@@ -117175,7 +117175,7 @@
     },
     "330,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         10.56286,
         47.35981
@@ -117183,7 +117183,7 @@
     },
     "331,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         10.91971,
         47.35981
@@ -117191,7 +117191,7 @@
     },
     "332,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.27657,
         47.35981
@@ -117199,7 +117199,7 @@
     },
     "333,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.63343,
         47.35981
@@ -117207,7 +117207,7 @@
     },
     "334,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         11.99029,
         47.35981
@@ -117215,7 +117215,7 @@
     },
     "335,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         12.34715,
         47.35981
@@ -117239,7 +117239,7 @@
     },
     "338,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         13.41773,
         47.35981
@@ -117279,7 +117279,7 @@
     },
     "343,408": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         15.20203,
         47.35981
@@ -117463,7 +117463,7 @@
     },
     "366,408": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.40979,
         47.35981
@@ -117471,7 +117471,7 @@
     },
     "367,408": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.76665,
         47.35981
@@ -117479,7 +117479,7 @@
     },
     "368,408": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.12351,
         47.35981
@@ -117487,7 +117487,7 @@
     },
     "369,408": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.48037,
         47.35981
@@ -117495,7 +117495,7 @@
     },
     "370,408": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.83723,
         47.35981
@@ -117503,7 +117503,7 @@
     },
     "371,408": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         25.19409,
         47.35981
@@ -118231,7 +118231,7 @@
     },
     "329,409": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         10.38443,
         47.15004
@@ -118279,7 +118279,7 @@
     },
     "335,409": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         12.52558,
         47.15004
@@ -118343,7 +118343,7 @@
     },
     "343,409": {
       "country": "AT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         15.38046,
         47.15004
@@ -119231,7 +119231,7 @@
     },
     "322,410": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         8.06484,
         46.93945
@@ -119247,7 +119247,7 @@
     },
     "324,410": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         8.77856,
         46.93945
@@ -119255,7 +119255,7 @@
     },
     "325,410": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         9.13542,
         46.93945
@@ -119263,7 +119263,7 @@
     },
     "326,410": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         9.49228,
         46.93945
@@ -119279,7 +119279,7 @@
     },
     "328,410": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         10.206,
         46.93945
@@ -119343,7 +119343,7 @@
     },
     "336,410": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.06087,
         46.93945
@@ -119351,7 +119351,7 @@
     },
     "337,410": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.41773,
         46.93945
@@ -119359,7 +119359,7 @@
     },
     "338,410": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         13.77459,
         46.93945
@@ -119367,7 +119367,7 @@
     },
     "339,410": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.13145,
         46.93945
@@ -119375,7 +119375,7 @@
     },
     "340,410": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.48831,
         46.93945
@@ -119383,7 +119383,7 @@
     },
     "341,410": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         14.84517,
         46.93945
@@ -120247,7 +120247,7 @@
     },
     "321,411": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         7.88641,
         46.72802
@@ -120255,7 +120255,7 @@
     },
     "322,411": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         8.24327,
         46.72802
@@ -120295,7 +120295,7 @@
     },
     "327,411": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         10.02757,
         46.72802
@@ -120311,7 +120311,7 @@
     },
     "329,411": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         10.74128,
         46.72802
@@ -120319,7 +120319,7 @@
     },
     "330,411": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.09814,
         46.72802
@@ -120327,7 +120327,7 @@
     },
     "331,411": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.455,
         46.72802
@@ -120335,7 +120335,7 @@
     },
     "332,411": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         11.81186,
         46.72802
@@ -120343,7 +120343,7 @@
     },
     "333,411": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.16872,
         46.72802
@@ -120351,7 +120351,7 @@
     },
     "334,411": {
       "country": "AT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         12.52558,
         46.72802
@@ -121231,7 +121231,7 @@
     },
     "317,412": {
       "country": "CH",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         6.6374,
         46.51577
@@ -121319,7 +121319,7 @@
     },
     "328,412": {
       "country": "IT",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         10.56286,
         46.51577
@@ -122231,7 +122231,7 @@
     },
     "321,413": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         8.24327,
         46.30268
@@ -122239,7 +122239,7 @@
     },
     "322,413": {
       "country": "CH",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         8.60013,
         46.30268
@@ -122247,7 +122247,7 @@
     },
     "323,413": {
       "country": "CH",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         8.95699,
         46.30268
@@ -122255,7 +122255,7 @@
     },
     "324,413": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         9.31385,
         46.30268
@@ -122263,7 +122263,7 @@
     },
     "325,413": {
       "country": "IT",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         9.67071,
         46.30268
@@ -122271,7 +122271,7 @@
     },
     "326,413": {
       "country": "CH",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         10.02757,
         46.30268
@@ -123111,7 +123111,7 @@
     },
     "314,414": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         5.92368,
         46.08875
@@ -123119,7 +123119,7 @@
     },
     "315,414": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.28054,
         46.08875
@@ -123127,7 +123127,7 @@
     },
     "316,414": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.6374,
         46.08875
@@ -123135,7 +123135,7 @@
     },
     "317,414": {
       "country": "CH",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.99426,
         46.08875
@@ -123143,7 +123143,7 @@
     },
     "318,414": {
       "country": "CH",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         7.35112,
         46.08875
@@ -123519,7 +123519,7 @@
     },
     "365,414": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.12351,
         46.08875
@@ -123527,7 +123527,7 @@
     },
     "366,414": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.48037,
         46.08875
@@ -123535,7 +123535,7 @@
     },
     "367,414": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         24.83723,
         46.08875
@@ -123662,7 +123662,7 @@
       ]
     },
     "391,414": {
-      "country": "UA",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.40185,
@@ -123670,7 +123670,7 @@
       ]
     },
     "392,414": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.75871,
@@ -123678,7 +123678,7 @@
       ]
     },
     "393,414": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.11557,
@@ -123686,7 +123686,7 @@
       ]
     },
     "394,414": {
-      "country": "UA",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.47243,
@@ -123694,7 +123694,7 @@
       ]
     },
     "395,414": {
-      "country": "UA",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.82929,
@@ -124007,7 +124007,7 @@
     },
     "314,415": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.10211,
         45.874
@@ -124015,7 +124015,7 @@
     },
     "315,415": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         6.45897,
         45.874
@@ -124399,7 +124399,7 @@
     },
     "363,415": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         23.58822,
         45.874
@@ -124431,7 +124431,7 @@
     },
     "367,415": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.01566,
         45.874
@@ -124439,7 +124439,7 @@
     },
     "368,415": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.37252,
         45.874
@@ -124447,7 +124447,7 @@
     },
     "369,415": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.72937,
         45.874
@@ -124550,7 +124550,7 @@
       ]
     },
     "391,415": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.58028,
@@ -124558,7 +124558,7 @@
       ]
     },
     "392,415": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.93714,
@@ -124566,7 +124566,7 @@
       ]
     },
     "393,415": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.294,
@@ -124574,7 +124574,7 @@
       ]
     },
     "394,415": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.65086,
@@ -125279,7 +125279,7 @@
     },
     "362,416": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         23.40979,
         45.65841
@@ -125327,7 +125327,7 @@
     },
     "368,416": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.55094,
         45.65841
@@ -125335,7 +125335,7 @@
     },
     "369,416": {
       "country": "RO",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         25.9078,
         45.65841
@@ -125422,7 +125422,7 @@
       ]
     },
     "389,416": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.04499,
@@ -125430,7 +125430,7 @@
       ]
     },
     "390,416": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.40185,
@@ -125438,7 +125438,7 @@
       ]
     },
     "391,416": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.75871,
@@ -125446,7 +125446,7 @@
       ]
     },
     "392,416": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.11557,
@@ -125454,7 +125454,7 @@
       ]
     },
     "393,416": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.47243,
@@ -125462,7 +125462,7 @@
       ]
     },
     "394,416": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.82929,
@@ -126167,7 +126167,7 @@
     },
     "362,417": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.58822,
         45.44199
@@ -126175,7 +126175,7 @@
     },
     "363,417": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.94508,
         45.44199
@@ -126183,7 +126183,7 @@
     },
     "364,417": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.30194,
         45.44199
@@ -126191,7 +126191,7 @@
     },
     "365,417": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         24.6588,
         45.44199
@@ -126199,7 +126199,7 @@
     },
     "366,417": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         25.01566,
         45.44199
@@ -126207,7 +126207,7 @@
     },
     "367,417": {
       "country": "RO",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         25.37252,
         45.44199
@@ -126310,7 +126310,7 @@
       ]
     },
     "388,417": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         32.86656,
@@ -126318,7 +126318,7 @@
       ]
     },
     "389,417": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.22342,
@@ -126326,7 +126326,7 @@
       ]
     },
     "390,417": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.58028,
@@ -126334,7 +126334,7 @@
       ]
     },
     "391,417": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.93714,
@@ -126342,7 +126342,7 @@
       ]
     },
     "392,417": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.294,
@@ -126350,7 +126350,7 @@
       ]
     },
     "393,417": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.65086,
@@ -126358,7 +126358,7 @@
       ]
     },
     "394,417": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         35.00772,
@@ -127182,7 +127182,7 @@
       ]
     },
     "389,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.40185,
@@ -127190,7 +127190,7 @@
       ]
     },
     "390,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.75871,
@@ -127198,7 +127198,7 @@
       ]
     },
     "391,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.11557,
@@ -127206,7 +127206,7 @@
       ]
     },
     "392,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.47243,
@@ -127214,7 +127214,7 @@
       ]
     },
     "393,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.82929,
@@ -127222,7 +127222,7 @@
       ]
     },
     "394,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         35.18615,
@@ -127230,7 +127230,7 @@
       ]
     },
     "395,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         35.543,
@@ -127238,7 +127238,7 @@
       ]
     },
     "396,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         35.89986,
@@ -127246,7 +127246,7 @@
       ]
     },
     "397,418": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         36.25672,
@@ -127527,7 +127527,7 @@
     },
     "303,419": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         2.89038,
         45.00664
@@ -127535,7 +127535,7 @@
     },
     "304,419": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         3.24724,
         45.00664
@@ -128086,7 +128086,7 @@
       ]
     },
     "390,419": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.93714,
@@ -128094,7 +128094,7 @@
       ]
     },
     "391,419": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.294,
@@ -128102,7 +128102,7 @@
       ]
     },
     "392,419": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.65086,
@@ -128110,7 +128110,7 @@
       ]
     },
     "393,419": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         35.00772,
@@ -128118,7 +128118,7 @@
       ]
     },
     "394,419": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         35.36457,
@@ -128399,7 +128399,7 @@
     },
     "302,420": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         2.71195,
         44.78772
@@ -128423,7 +128423,7 @@
     },
     "305,420": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         3.78253,
         44.78772
@@ -128934,7 +128934,7 @@
       ]
     },
     "389,420": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.75871,
@@ -128942,7 +128942,7 @@
       ]
     },
     "390,420": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.11557,
@@ -128950,7 +128950,7 @@
       ]
     },
     "391,420": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.47243,
@@ -129207,7 +129207,7 @@
     },
     "301,421": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         2.53352,
         44.56797
@@ -129215,7 +129215,7 @@
     },
     "302,421": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         2.89038,
         44.56797
@@ -129223,7 +129223,7 @@
     },
     "303,421": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         3.24724,
         44.56797
@@ -129231,7 +129231,7 @@
     },
     "304,421": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         3.6041,
         44.56797
@@ -129734,7 +129734,7 @@
       ]
     },
     "388,421": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.58028,
@@ -129742,7 +129742,7 @@
       ]
     },
     "389,421": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         33.93714,
@@ -129750,7 +129750,7 @@
       ]
     },
     "390,421": {
-      "country": "RU",
+      "country": "CR",
       "terrain": "plain",
       "center": [
         34.294,
@@ -130247,7 +130247,7 @@
     },
     "340,422": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         16.62946,
         44.34738
@@ -130255,7 +130255,7 @@
     },
     "341,422": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         16.98632,
         44.34738
@@ -130263,7 +130263,7 @@
     },
     "342,422": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         17.34318,
         44.34738
@@ -130951,7 +130951,7 @@
     },
     "338,423": {
       "country": "HR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         16.09417,
         44.12596
@@ -130983,7 +130983,7 @@
     },
     "342,423": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         17.52161,
         44.12596
@@ -130991,7 +130991,7 @@
     },
     "343,423": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         17.87847,
         44.12596
@@ -130999,7 +130999,7 @@
     },
     "344,423": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         18.23533,
         44.12596
@@ -131655,7 +131655,7 @@
     },
     "337,424": {
       "country": "HR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         15.91574,
         43.9037
@@ -131703,7 +131703,7 @@
     },
     "343,424": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         18.0569,
         43.9037
@@ -131711,7 +131711,7 @@
     },
     "344,424": {
       "country": "BA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         18.41376,
         43.9037
@@ -132359,7 +132359,7 @@
     },
     "337,425": {
       "country": "HR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         16.09417,
         43.68061
@@ -132367,7 +132367,7 @@
     },
     "338,425": {
       "country": "HR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         16.45103,
         43.68061
@@ -132375,7 +132375,7 @@
     },
     "339,425": {
       "country": "HR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         16.80789,
         43.68061
@@ -132383,7 +132383,7 @@
     },
     "340,425": {
       "country": "BA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         17.16475,
         43.68061
@@ -132391,7 +132391,7 @@
     },
     "341,425": {
       "country": "BA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         17.52161,
         43.68061
@@ -132399,7 +132399,7 @@
     },
     "342,425": {
       "country": "BA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         17.87847,
         43.68061
@@ -132887,7 +132887,7 @@
     },
     "292,426": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         0.21394,
         43.45669
@@ -132895,7 +132895,7 @@
     },
     "293,426": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         0.5708,
         43.45669
@@ -132903,7 +132903,7 @@
     },
     "294,426": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         0.92765,
         43.45669
@@ -133543,7 +133543,7 @@
     },
     "277,427": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -4.96052,
         43.23194
@@ -133647,7 +133647,7 @@
     },
     "290,427": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -0.32135,
         43.23194
@@ -133679,7 +133679,7 @@
     },
     "294,427": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         1.10608,
         43.23194
@@ -133687,7 +133687,7 @@
     },
     "295,427": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         1.46294,
         43.23194
@@ -133695,7 +133695,7 @@
     },
     "296,427": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         1.8198,
         43.23194
@@ -134351,7 +134351,7 @@
     },
     "289,428": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -0.49978,
         43.00635
@@ -134399,7 +134399,7 @@
     },
     "295,428": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         1.64137,
         43.00635
@@ -134407,7 +134407,7 @@
     },
     "296,428": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         1.99823,
         43.00635
@@ -134871,7 +134871,7 @@
     },
     "275,429": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -5.31738,
         42.77994
@@ -134879,7 +134879,7 @@
     },
     "276,429": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -4.96052,
         42.77994
@@ -134887,7 +134887,7 @@
     },
     "277,429": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -4.60366,
         42.77994
@@ -134983,7 +134983,7 @@
     },
     "289,429": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -0.32135,
         42.77994
@@ -135031,7 +135031,7 @@
     },
     "295,429": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         1.8198,
         42.77994
@@ -135039,7 +135039,7 @@
     },
     "296,429": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         2.17666,
         42.77994
@@ -135607,7 +135607,7 @@
     },
     "289,430": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -0.14292,
         42.55269
@@ -135655,7 +135655,7 @@
     },
     "295,430": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         1.99823,
         42.55269
@@ -135663,7 +135663,7 @@
     },
     "296,430": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         2.35509,
         42.55269
@@ -135703,7 +135703,7 @@
     },
     "316,430": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         9.49228,
         42.55269
@@ -136183,7 +136183,7 @@
     },
     "289,431": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         0.03551,
         42.32461
@@ -136191,7 +136191,7 @@
     },
     "290,431": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         0.39237,
         42.32461
@@ -136199,7 +136199,7 @@
     },
     "291,431": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         0.74922,
         42.32461
@@ -136207,7 +136207,7 @@
     },
     "292,431": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         1.10608,
         42.32461
@@ -136215,7 +136215,7 @@
     },
     "293,431": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         1.46294,
         42.32461
@@ -136223,7 +136223,7 @@
     },
     "294,431": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         1.8198,
         42.32461
@@ -136263,7 +136263,7 @@
     },
     "314,431": {
       "country": "FRA",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         8.95699,
         42.32461
@@ -137367,7 +137367,7 @@
     },
     "313,433": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         8.95699,
         41.86597
@@ -137375,7 +137375,7 @@
     },
     "314,433": {
       "country": "FRA",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         9.31385,
         41.86597
@@ -137903,7 +137903,7 @@
     },
     "285,434": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -0.85664,
         41.6354
@@ -137911,7 +137911,7 @@
     },
     "286,434": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -0.49978,
         41.6354
@@ -138511,7 +138511,7 @@
     },
     "283,435": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -1.39193,
         41.40401
@@ -138767,7 +138767,7 @@
     },
     "353,435": {
       "country": "BG",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.58822,
         41.40401
@@ -138975,7 +138975,7 @@
     },
     "388,435": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         36.07829,
         41.40401
@@ -139639,7 +139639,7 @@
     },
     "386,436": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         35.543,
         41.17179
@@ -139671,7 +139671,7 @@
     },
     "390,436": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         36.97044,
         41.17179
@@ -139695,7 +139695,7 @@
     },
     "403,436": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         41.60961,
         41.17179
@@ -139703,7 +139703,7 @@
     },
     "404,436": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         41.96647,
         41.17179
@@ -139711,7 +139711,7 @@
     },
     "405,436": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         42.32333,
         41.17179
@@ -139839,7 +139839,7 @@
     },
     "274,437": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -4.24681,
         40.93874
@@ -139847,7 +139847,7 @@
     },
     "275,437": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -3.88995,
         40.93874
@@ -139895,7 +139895,7 @@
     },
     "281,437": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -1.74879,
         40.93874
@@ -139903,7 +139903,7 @@
     },
     "282,437": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -1.39193,
         40.93874
@@ -139911,7 +139911,7 @@
     },
     "283,437": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -1.03507,
         40.93874
@@ -140111,7 +140111,7 @@
     },
     "349,437": {
       "country": "GR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         22.51764,
         40.93874
@@ -140119,7 +140119,7 @@
     },
     "350,437": {
       "country": "GR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         22.8745,
         40.93874
@@ -140127,7 +140127,7 @@
     },
     "351,437": {
       "country": "GR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.23136,
         40.93874
@@ -140135,7 +140135,7 @@
     },
     "352,437": {
       "country": "GR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         23.58822,
         40.93874
@@ -140351,7 +140351,7 @@
     },
     "385,437": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         35.36457,
         40.93874
@@ -140399,7 +140399,7 @@
     },
     "391,437": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         37.50573,
         40.93874
@@ -140407,7 +140407,7 @@
     },
     "392,437": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         37.86259,
         40.93874
@@ -140479,7 +140479,7 @@
     },
     "401,437": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         41.07432,
         40.93874
@@ -140511,7 +140511,7 @@
     },
     "405,437": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         42.50176,
         40.93874
@@ -140519,7 +140519,7 @@
     },
     "406,437": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         42.85862,
         40.93874
@@ -140527,7 +140527,7 @@
     },
     "407,437": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         43.21548,
         40.93874
@@ -140623,7 +140623,7 @@
     },
     "272,438": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -4.78209,
         40.70487
@@ -141111,7 +141111,7 @@
     },
     "385,438": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         35.543,
         40.70487
@@ -141119,7 +141119,7 @@
     },
     "386,438": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         35.89986,
         40.70487
@@ -141127,7 +141127,7 @@
     },
     "387,438": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         36.25672,
         40.70487
@@ -141135,7 +141135,7 @@
     },
     "388,438": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         36.61358,
         40.70487
@@ -141143,7 +141143,7 @@
     },
     "389,438": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         36.97044,
         40.70487
@@ -141151,7 +141151,7 @@
     },
     "390,438": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         37.3273,
         40.70487
@@ -141231,7 +141231,7 @@
     },
     "400,438": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         40.89589,
         40.70487
@@ -141279,7 +141279,7 @@
     },
     "406,438": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         43.03705,
         40.70487
@@ -141287,7 +141287,7 @@
     },
     "407,438": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         43.39391,
         40.70487
@@ -141967,7 +141967,7 @@
     },
     "400,439": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         41.07432,
         40.47017
@@ -141975,7 +141975,7 @@
     },
     "401,439": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         41.43118,
         40.47017
@@ -141983,7 +141983,7 @@
     },
     "402,439": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         41.78804,
         40.47017
@@ -141991,7 +141991,7 @@
     },
     "403,439": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         42.1449,
         40.47017
@@ -141999,7 +141999,7 @@
     },
     "404,439": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         42.50176,
         40.47017
@@ -142007,7 +142007,7 @@
     },
     "405,439": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         42.85862,
         40.47017
@@ -142111,7 +142111,7 @@
     },
     "270,440": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -5.13895,
         40.23465
@@ -142119,7 +142119,7 @@
     },
     "271,440": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -4.78209,
         40.23465
@@ -142127,7 +142127,7 @@
     },
     "272,440": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -4.42523,
         40.23465
@@ -143767,7 +143767,7 @@
     },
     "292,442": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         3.06881,
         39.76115
@@ -143775,7 +143775,7 @@
     },
     "293,442": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         3.42567,
         39.76115
@@ -144503,7 +144503,7 @@
     },
     "290,443": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         2.53352,
         39.52317
@@ -145551,7 +145551,7 @@
     },
     "381,444": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         35.18615,
         39.28437
@@ -145559,7 +145559,7 @@
     },
     "382,444": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         35.543,
         39.28437
@@ -146223,7 +146223,7 @@
     },
     "379,445": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         34.65086,
         39.04476
@@ -147551,7 +147551,7 @@
     },
     "377,447": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         34.294,
         38.56308
@@ -147559,7 +147559,7 @@
     },
     "378,447": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         34.65086,
         38.56308
@@ -147567,7 +147567,7 @@
     },
     "379,447": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         35.00772,
         38.56308
@@ -148645,22 +148645,6 @@
         38.07815
       ]
     },
-    "324,449": {
-      "country": "IT",
-      "terrain": "plain",
-      "center": [
-        15.73731,
-        38.07815
-      ]
-    },
-    "325,449": {
-      "country": "IT",
-      "terrain": "plain",
-      "center": [
-        16.09417,
-        38.07815
-      ]
-    },
     "340,449": {
       "country": "GR",
       "terrain": "plain",
@@ -149559,7 +149543,7 @@
     },
     "373,450": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         33.40185,
         37.83447
@@ -149567,7 +149551,7 @@
     },
     "374,450": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         33.75871,
         37.83447
@@ -149575,7 +149559,7 @@
     },
     "375,450": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         34.11557,
         37.83447
@@ -149935,7 +149919,7 @@
     },
     "271,451": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -2.81937,
         37.58999
@@ -149943,7 +149927,7 @@
     },
     "272,451": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -2.46251,
         37.58999
@@ -150223,7 +150207,7 @@
     },
     "371,451": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         32.86656,
         37.58999
@@ -150255,7 +150239,7 @@
     },
     "375,451": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         34.294,
         37.58999
@@ -150263,7 +150247,7 @@
     },
     "376,451": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         34.65086,
         37.58999
@@ -150271,7 +150255,7 @@
     },
     "377,451": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         35.00772,
         37.58999
@@ -150607,7 +150591,7 @@
     },
     "269,452": {
       "country": "ES",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         -3.35466,
         37.34469
@@ -150831,7 +150815,7 @@
     },
     "370,452": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         32.68813,
         37.34469
@@ -150879,7 +150863,7 @@
     },
     "376,452": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         34.82929,
         37.34469
@@ -150887,7 +150871,7 @@
     },
     "377,452": {
       "country": "TR",
-      "terrain": "plain",
+      "terrain": "mountain",
       "center": [
         35.18615,
         37.34469
@@ -151399,7 +151383,7 @@
     },
     "370,453": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         32.86656,
         37.0986
@@ -151407,7 +151391,7 @@
     },
     "371,453": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         33.22342,
         37.0986
@@ -151415,7 +151399,7 @@
     },
     "372,453": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         33.58028,
         37.0986
@@ -151423,7 +151407,7 @@
     },
     "373,453": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         33.93714,
         37.0986
@@ -151431,7 +151415,7 @@
     },
     "374,453": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         34.294,
         37.0986
@@ -151439,7 +151423,7 @@
     },
     "375,453": {
       "country": "TR",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         34.65086,
         37.0986
@@ -151655,7 +151639,7 @@
     },
     "267,454": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -3.71152,
         36.8517
@@ -151663,7 +151647,7 @@
     },
     "268,454": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -3.35466,
         36.8517
@@ -151671,7 +151655,7 @@
     },
     "269,454": {
       "country": "ES",
-      "terrain": "mountain",
+      "terrain": "plain",
       "center": [
         -2.9978,
         36.8517
@@ -153110,10 +153094,9 @@
       "image": "black_forest.png",
       "glyph_ref": "massif:black_forest",
       "label": "Pennines and Wales uplands",
-      "anchor": "308,377",
+      "anchor": "307,377",
       "home": "307,377",
-      "source": "map_block_relief_layer",
-      "cells": []
+      "source": "map_block_relief_layer"
     },
     {
       "id": "relief-irish_uplands",
@@ -153554,6 +153537,61 @@
       "home": "330,417"
     },
     {
+      "id": "bolzano",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Bolzano",
+      "icon": "bolzano",
+      "lon": 11.3548,
+      "lat": 46.4983,
+      "anchor": "330,412",
+      "home": "330,412"
+    },
+    {
+      "id": "naples",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Naples",
+      "icon": "naples",
+      "lon": 14.2681,
+      "lat": 40.8518,
+      "anchor": "326,437",
+      "home": "326,437"
+    },
+    {
+      "id": "bari",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Bari",
+      "icon": "bari",
+      "lon": 16.8719,
+      "lat": 41.1171,
+      "anchor": "333,437",
+      "home": "333,437"
+    },
+    {
+      "id": "palermo",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Palermo",
+      "icon": "palermo",
+      "lon": 13.3615,
+      "lat": 38.1157,
+      "anchor": "317,449",
+      "home": "317,449"
+    },
+    {
+      "id": "catania",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Catania",
+      "icon": "catania",
+      "lon": 15.0873,
+      "lat": 37.5027,
+      "anchor": "321,451",
+      "home": "321,451"
+    },
+    {
       "id": "san_marino",
       "glyph": "city",
       "kind": "capital",
@@ -153862,6 +153900,61 @@
       "home": "374,396"
     },
     {
+      "id": "kharkiv",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Kharkiv",
+      "icon": "kharkiv",
+      "lon": 36.2304,
+      "lat": 49.9935,
+      "anchor": "408,395",
+      "home": "408,395"
+    },
+    {
+      "id": "dnipro",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Dnipro",
+      "icon": "dnipro",
+      "lon": 35.0462,
+      "lat": 48.4647,
+      "anchor": "401,403",
+      "home": "401,403"
+    },
+    {
+      "id": "chernivtsi",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Chernivtsi",
+      "icon": "chernivtsi",
+      "lon": 25.9358,
+      "lat": 48.2915,
+      "anchor": "375,404",
+      "home": "375,404"
+    },
+    {
+      "id": "uzhhorod",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Uzhhorod",
+      "icon": "uzhhorod",
+      "lon": 22.2879,
+      "lat": 48.6208,
+      "anchor": "366,402",
+      "home": "366,402"
+    },
+    {
+      "id": "simferopol",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Simferopol",
+      "icon": "simferopol",
+      "lon": 34.1024,
+      "lat": 44.9521,
+      "anchor": "390,420",
+      "home": "390,420"
+    },
+    {
       "id": "minsk",
       "glyph": "city",
       "kind": "capital",
@@ -153871,6 +153964,50 @@
       "lat": 53.9045,
       "anchor": "394,375",
       "home": "394,375"
+    },
+    {
+      "id": "grodno",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Grodno",
+      "icon": "grodno",
+      "lon": 23.8131,
+      "lat": 53.6694,
+      "anchor": "383,376",
+      "home": "383,376"
+    },
+    {
+      "id": "brest",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Brest",
+      "icon": "brest",
+      "lon": 23.7275,
+      "lat": 52.0976,
+      "anchor": "379,384",
+      "home": "379,384"
+    },
+    {
+      "id": "vitebsk",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Vitebsk",
+      "icon": "vitebsk",
+      "lon": 30.2049,
+      "lat": 55.1848,
+      "anchor": "405,368",
+      "home": "405,368"
+    },
+    {
+      "id": "gomel",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Gomel",
+      "icon": "gomel",
+      "lon": 30.9754,
+      "lat": 52.4412,
+      "anchor": "400,382",
+      "home": "400,382"
     },
     {
       "id": "vilnius",
@@ -153983,6 +154120,50 @@
       "home": "376,441"
     },
     {
+      "id": "konya",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Konya",
+      "icon": "konya",
+      "lon": 32.4846,
+      "lat": 37.8746,
+      "anchor": "370,450",
+      "home": "370,450"
+    },
+    {
+      "id": "kayseri",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Kayseri",
+      "icon": "kayseri",
+      "lon": 35.4853,
+      "lat": 38.7205,
+      "anchor": "381,446",
+      "home": "381,446"
+    },
+    {
+      "id": "samsun",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Samsun",
+      "icon": "samsun",
+      "lon": 36.3361,
+      "lat": 41.2867,
+      "anchor": "388,436",
+      "home": "388,436"
+    },
+    {
+      "id": "erzurum",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Erzurum",
+      "icon": "erzurum",
+      "lon": 41.2769,
+      "lat": 39.9055,
+      "anchor": "399,442",
+      "home": "399,442"
+    },
+    {
       "id": "andorra",
       "glyph": "city",
       "kind": "capital",
@@ -153992,6 +154173,248 @@
       "lat": 42.5063,
       "anchor": "294,430",
       "home": "294,430"
+    },
+    {
+      "id": "coimbra",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Coimbra",
+      "icon": "coimbra",
+      "lon": -8.4265,
+      "lat": 40.2033,
+      "anchor": "261,440",
+      "home": "261,440"
+    },
+    {
+      "id": "braga",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Braga",
+      "icon": "braga",
+      "lon": -8.4265,
+      "lat": 41.5454,
+      "anchor": "264,434",
+      "home": "264,434"
+    },
+    {
+      "id": "thessaloniki",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Thessaloniki",
+      "icon": "thessaloniki",
+      "lon": 22.9444,
+      "lat": 40.6401,
+      "anchor": "350,438",
+      "home": "350,438"
+    },
+    {
+      "id": "patras",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Patras",
+      "icon": "patras",
+      "lon": 21.7346,
+      "lat": 38.2466,
+      "anchor": "341,449",
+      "home": "341,449"
+    },
+    {
+      "id": "ioannina",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Ioannina",
+      "icon": "ioannina",
+      "lon": 20.8537,
+      "lat": 39.665,
+      "anchor": "342,442",
+      "home": "342,442"
+    },
+    {
+      "id": "heraklion",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Heraklion",
+      "icon": "heraklion",
+      "lon": 25.1442,
+      "lat": 35.3387,
+      "anchor": "344,461",
+      "home": "344,461"
+    },
+    {
+      "id": "gdansk",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Gdansk",
+      "icon": "gdansk",
+      "lon": 18.6466,
+      "lat": 54.352,
+      "anchor": "371,372",
+      "home": "371,372"
+    },
+    {
+      "id": "wroclaw",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Wroclaw",
+      "icon": "wroclaw",
+      "lon": 17.0385,
+      "lat": 51.1079,
+      "anchor": "357,390",
+      "home": "357,390"
+    },
+    {
+      "id": "poznan",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Poznan",
+      "icon": "poznan",
+      "lon": 16.9252,
+      "lat": 52.4064,
+      "anchor": "361,382",
+      "home": "361,382"
+    },
+    {
+      "id": "edinburgh",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Edinburgh",
+      "icon": "edinburgh",
+      "lon": -3.1883,
+      "lat": 55.9533,
+      "anchor": "314,363",
+      "home": "314,363"
+    },
+    {
+      "id": "manchester",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Manchester",
+      "icon": "manchester",
+      "lon": -2.2426,
+      "lat": 53.4808,
+      "anchor": "310,377",
+      "home": "310,377"
+    },
+    {
+      "id": "cardiff",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Cardiff",
+      "icon": "cardiff",
+      "lon": -3.1791,
+      "lat": 51.4816,
+      "anchor": "302,387",
+      "home": "302,387"
+    },
+    {
+      "id": "belfast",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Belfast",
+      "icon": "belfast",
+      "lon": -5.9301,
+      "lat": 54.5973,
+      "anchor": "302,371",
+      "home": "302,371"
+    },
+    {
+      "id": "trondheim",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Trondheim",
+      "icon": "trondheim",
+      "lon": 10.3951,
+      "lat": 63.4305,
+      "anchor": "376,315",
+      "home": "376,315"
+    },
+    {
+      "id": "stavanger",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Stavanger",
+      "icon": "stavanger",
+      "lon": 5.7331,
+      "lat": 58.97,
+      "anchor": "348,345",
+      "home": "348,345"
+    },
+    {
+      "id": "uppsala",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Uppsala",
+      "icon": "uppsala",
+      "lon": 17.6389,
+      "lat": 59.8586,
+      "anchor": "384,339",
+      "home": "384,339"
+    },
+    {
+      "id": "oulu",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Oulu",
+      "icon": "oulu",
+      "lon": 25.4651,
+      "lat": 65.0121,
+      "anchor": "424,303",
+      "home": "424,303"
+    },
+    {
+      "id": "kaliningrad",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Kaliningrad",
+      "icon": "kaliningrad",
+      "lon": 20.4522,
+      "lat": 54.7104,
+      "anchor": "377,370",
+      "home": "377,370"
+    },
+    {
+      "id": "pskov",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Pskov",
+      "icon": "pskov",
+      "lon": 28.3318,
+      "lat": 57.8194,
+      "anchor": "408,352",
+      "home": "408,352"
+    },
+    {
+      "id": "smolensk",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Smolensk",
+      "icon": "smolensk",
+      "lon": 32.0453,
+      "lat": 54.7826,
+      "anchor": "409,370",
+      "home": "409,370"
+    },
+    {
+      "id": "novgorod",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Veliky Novgorod",
+      "icon": "novgorod",
+      "lon": 31.2755,
+      "lat": 58.5215,
+      "anchor": "418,348",
+      "home": "418,348"
+    },
+    {
+      "id": "nizhny_novgorod",
+      "glyph": "city",
+      "kind": "city",
+      "label": "Nizhny Novgorod",
+      "icon": "nizhny_novgorod",
+      "lon": 44.002,
+      "lat": 56.3269,
+      "anchor": "447,361",
+      "home": "447,361"
     },
     {
       "id": "lyon",
