@@ -46,12 +46,16 @@ Prompt rules:
 - Use painterly pixel-art / 2.5D atlas miniature style.
 - Use a warm European RPG map palette and crisp dark outline.
 - Generate on flat `#ff00ff` chroma key background.
+- Do not include mountain backdrops, snowy peaks, broad hills, or terrain massifs in city glyphs. Terrain is rendered by the map's terrain/massif layers; city glyphs should show the town/city itself.
+- Do not include water backdrops, harbor water, river strips, lakes, sea, boats, ships, piers, or wide bridges in city glyphs. Water and transport objects are separate map layers; city glyphs should not carry their own coastline/river scene.
 - No text, letters, flags, labels, frames, map background, or photorealism.
 - The glyph must stay clean at user zoom `300%`.
 
 ## Generate
 
-Preferred batching is small sheets, for example `3 columns x 2 rows` or `4 columns x 2 rows`, so generated city clusters remain large enough. Save selected generated sheets under `tmp/`, for example:
+Batch generation is the default because one sheet keeps style, scale, lighting, and outline language consistent across cities. Prefer fitting many cities into one generation when the cells still leave clear gutters, for example `4 columns x 3 rows`, `5 columns x 3 rows`, or larger review batches if the generated resolution keeps every city readable. Use single-city generation only to replace one rejected glyph after review.
+
+Save selected generated sheets under `tmp/`, for example:
 
 ```text
 tmp/city-cluster-hi-res-expanded/raw/sheet_01.png
@@ -121,6 +125,14 @@ The sheet slicer crops by connected alpha components, not only by the nominal gr
 
 Normalization rule: after alpha trim and fit, center the resized glyph horizontally and place its bottom on the shared bottom padding baseline. Do not vertically center city glyphs inside the 256x256 canvas; wide/low cities like Amsterdam and Bremen otherwise float above the map anchor while taller cities like Berlin and Hannover look correct by accident.
 
+Wide/low city clusters must not occupy the full available width. If the trimmed glyph aspect ratio is above `1.25`, fit it to `184px` maximum content width before outline instead of the normal `208px` fit box. With the standard `--radius 2` outline this keeps wide runtime glyphs around `188px` alpha width, so examples like Dublin do not become visually wider than the rest of the city set.
+
+The size contract lives in:
+
+```text
+map_pipeline/city_glyph_size_contract.py
+```
+
 ## Outline
 
 ```bash
@@ -131,6 +143,21 @@ python3 -m map_pipeline.outline_sprites \
   --radius 2 \
   --color '#25180fe0'
 ```
+
+## Size Audit
+
+Run the size audit after every slice/outline pass:
+
+```bash
+python3 -m map_pipeline.audit_city_glyph_sizes
+```
+
+The audit checks the final runtime `outlined/city_*.png` files. It fails if:
+
+- canvas size is not `256x256`;
+- alpha content is wider or taller than the contract allows;
+- wide/low glyphs exceed the stricter wide-city width;
+- bottom alpha padding does not match the shared baseline.
 
 ## Import And Review
 

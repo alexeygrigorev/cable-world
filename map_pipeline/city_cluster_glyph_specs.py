@@ -36,6 +36,7 @@ def prompt_for_city(specs: dict, city_id: str) -> str:
             "Background: perfectly flat solid #ff00ff chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #ff00ff anywhere in the icon.",
             "Constraints: 2-4 recognizable city elements, simplified readable silhouettes, avoid ultra-fine detail and tiny texture noise, clean at user zoom 300%, icon must not be cropped.",
             "Avoid: text, letters, city names, flags, watermark, photorealism, flat vector app icon style, mixed styles, large drop shadows, map background, decorative frame, one-symbol-only city.",
+            "Avoid terrain and water layers inside the city glyph: no mountain backdrops, snowy peaks, broad hills, terrain massifs, river strips, lakes, sea, harbor water, boats, ships, piers, or wide bridges.",
         ]
     )
 

@@ -1,5 +1,6 @@
 import json
 import re
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -85,7 +86,19 @@ class CityClusterGlyphSpecsTest(unittest.TestCase):
     def test_city_slicer_bottom_aligns_normalized_icons(self) -> None:
         slicer_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks_hi_res.py").read_text(encoding="utf-8")
         self.assertIn("ICON_SIZE - resized.height - PADDING", slicer_text)
+        self.assertIn("MAX_WIDE_CONTENT_WIDTH", slicer_text)
+        self.assertIn("WIDE_CONTENT_ASPECT_RATIO", slicer_text)
         self.assertNotIn("(ICON_SIZE - resized.height) // 2", slicer_text)
+
+    def test_city_size_audit_passes_for_runtime_clusters(self) -> None:
+        subprocess.run(
+            ["python", "-m", "map_pipeline.audit_city_glyph_sizes"],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@
     "world_size_px": 65536,
     "hex_size_px": 37.5071,
     "nominal_km": 25,
-    "nominal_lat": 51.0,
+    "nominal_lat": 51,
     "scope": "world",
     "populated": "europe-land+germany-detail"
   },
@@ -124,7 +124,7 @@
         22886.24
       ],
       [
-        34307.0,
+        34307,
         22890.69
       ],
       [
@@ -196,7 +196,7 @@
         22669.26
       ],
       [
-        34187.0,
+        34187,
         22631.69
       ],
       [
@@ -264,7 +264,7 @@
         22471.82
       ],
       [
-        34049.0,
+        34049,
         22475.21
       ],
       [
@@ -760,7 +760,7 @@
         21217.01
       ],
       [
-        34269.0,
+        34269,
         21213.07
       ],
       [
@@ -1132,7 +1132,7 @@
         21158.1
       ],
       [
-        35371.0,
+        35371,
         21179.06
       ],
       [
@@ -1233,7 +1233,7 @@
       ],
       [
         35426.15,
-        21697.0
+        21697
       ],
       [
         35430.2,
@@ -1648,7 +1648,7 @@
         22593.25
       ],
       [
-        35280.0,
+        35280,
         22611.09
       ],
       [
@@ -1880,7 +1880,7 @@
         22945.41
       ],
       [
-        34767.0,
+        34767,
         22944.06
       ],
       [
@@ -2089,7 +2089,7 @@
       ],
       [
         35164.09,
-        20929.0
+        20929
       ],
       [
         35163.04,
@@ -2124,7 +2124,7 @@
         20839.62
       ],
       [
-        35224.0,
+        35224,
         20850.39
       ],
       [
@@ -2311,7 +2311,7 @@
         -2.323,
         -4.398,
         8.277,
-        0.0
+        0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2343,14 +2343,14 @@
       "type": "massif",
       "file": "bavarian_forest.png",
       "anchor_offset": "bottom-left",
-      "zoom_factor": 5.0,
-      "render_width_hex": 5.0,
-      "render_height_hex": 3.0,
+      "zoom_factor": 5,
+      "render_width_hex": 5,
+      "render_height_hex": 3,
       "bounds_offset_hex": [
         -1.519,
         -3.011,
         3.481,
-        0.0
+        0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2377,7 +2377,7 @@
         -3.617,
         -4.756,
         7.183,
-        0.0
+        0
       ],
       "primary_offsets": [
         "0,-2",
@@ -2419,7 +2419,7 @@
         -0.133,
         -2.902,
         5.067,
-        0.0
+        0
       ],
       "primary_offsets": [
         "1,-1",
@@ -2445,7 +2445,7 @@
         -2.108,
         -2.36,
         2.692,
-        0.0
+        0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2474,7 +2474,7 @@
         -1.037,
         -4.212,
         4.563,
-        0.0
+        0
       ],
       "primary_offsets": [
         "2,-2",
@@ -2505,7 +2505,7 @@
         -2.583,
         -3.65,
         6.617,
-        0.0
+        0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2540,7 +2540,7 @@
         -2.094,
         -3.552,
         2.206,
-        0.0
+        0
       ],
       "primary_offsets": [
         "-1,-1",
@@ -2571,7 +2571,7 @@
         -1.211,
         -2.758,
         2.589,
-        0.0
+        0
       ],
       "primary_offsets": [
         "0,-1",
@@ -2598,7 +2598,7 @@
         -3.777,
         -4.558,
         7.423,
-        0.0
+        0
       ],
       "primary_offsets": [
         "1,-2",
@@ -2632,14 +2632,14 @@
       "type": "massif",
       "file": "western_alps_massif.png",
       "anchor_offset": "bottom-left",
-      "zoom_factor": 11.0,
-      "render_width_hex": 11.0,
+      "zoom_factor": 11,
+      "render_width_hex": 11,
       "render_height_hex": 5.4,
       "bounds_offset_hex": [
         -1.575,
         -5.397,
         9.425,
-        0.0
+        0
       ],
       "primary_offsets": [
         "4,-2",
@@ -153110,9 +153110,10 @@
       "image": "black_forest.png",
       "glyph_ref": "massif:black_forest",
       "label": "Pennines and Wales uplands",
-      "anchor": "307,377",
+      "anchor": "308,377",
       "home": "307,377",
-      "source": "map_block_relief_layer"
+      "source": "map_block_relief_layer",
+      "cells": []
     },
     {
       "id": "relief-irish_uplands",
