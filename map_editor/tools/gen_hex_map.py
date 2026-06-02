@@ -49,6 +49,12 @@ MASSIF_ASSET_WIDTH_HEX = {
     "erzgebirge": 5.6,
     "saxon_switzerland": 3.8,
 }
+MASSIF_FOOTPRINT_OVERRIDES = {
+    "black_forest.png": {
+        "anchor_source_x_px": 9,
+        "faint_offsets": [],
+    },
+}
 GEO_BOUNDS_MASSIF_IDS = {
     "western_alps_massif",
     "swiss_alps_massif",
@@ -535,12 +541,12 @@ def relief_image_for(layer_id):
     wooded_ids = ("massif_central", "vosges", "jura", "bohemian", "sudetes", "swedish", "lapland", "baltic", "scottish", "pennines", "wales", "irish")
     sandstone_ids = ("dinaric", "balkan", "pindus", "rhodope", "crimean")
     if any(token in layer_id for token in alpine_ids):
-        return "swiss_alps_massif.png", 8.5
+        return "swiss_alps_massif.png", MASSIF_ASSET_WIDTH_HEX["swiss_alps_massif"]
     if any(token in layer_id for token in sandstone_ids):
-        return "saxon_switzerland.png", 5.5
+        return "saxon_switzerland.png", MASSIF_ASSET_WIDTH_HEX["saxon_switzerland"]
     if any(token in layer_id for token in wooded_ids):
-        return "black_forest.png", 5.4
-    return "erzgebirge.png", 5.8
+        return "black_forest.png", MASSIF_ASSET_WIDTH_HEX["black_forest"]
+    return "erzgebirge.png", MASSIF_ASSET_WIDTH_HEX["erzgebirge"]
 
 
 def feature_bounds_from_center(cx, cy, image_name, width_hex, s):
@@ -559,8 +565,30 @@ def point_inside_hex(dx, dy, s):
     return abs(dx) <= (math.sqrt(3) / 2) * s and abs(dy) + abs(dx) / math.sqrt(3) <= s
 
 
-def glyph_ref(image_name, zoom_factor):
-    return f"massif:{image_name}@{float(zoom_factor):.1f}"
+def glyph_ref(image_name):
+    return f"massif:{os.path.splitext(image_name)[0]}"
+
+
+def alpha_bottom_left_anchor_x(alpha, threshold=ALPHA_THRESHOLD):
+    bbox = alpha.getbbox()
+    if not bbox:
+        return 0
+    width, _height = alpha.size
+    pixels = alpha.load()
+    alpha_height = bbox[3] - bbox[1]
+    band_top = max(bbox[1], bbox[3] - max(12, int(alpha_height * 0.08)))
+    xs = []
+    for y in range(band_top, bbox[3]):
+        for x in range(width):
+            if pixels[x, y] > threshold:
+                xs.append(x)
+    if not xs:
+        return bbox[0]
+    xs.sort()
+    # Use the lower-left support mass, not the first stray edge pixel. The 25th
+    # percentile keeps the anchor on the left side while putting the anchor hex
+    # inside the visible glyph base.
+    return xs[len(xs) // 4]
 
 
 def glyph_footprint(image_name, zoom_factor, s):
@@ -572,14 +600,23 @@ def glyph_footprint(image_name, zoom_factor, s):
 
     width_px = s * float(zoom_factor)
     height_px = width_px * ih / iw
-    x0, y0, x1, y1 = -width_px / 2, -height_px / 2, width_px / 2, height_px / 2
+    anchor_x_px = MASSIF_FOOTPRINT_OVERRIDES.get(image_name, {}).get(
+        "anchor_source_x_px",
+        alpha_bottom_left_anchor_x(alpha),
+    )
+    anchor_x = width_px * anchor_x_px / iw
+    x0, y0, x1, y1 = -anchor_x, -height_px, width_px - anchor_x, 0
     primary_offsets = []
     faint_offsets = []
     max_dq = math.ceil((abs(x0) + abs(x1)) / (math.sqrt(3) * s)) + 3
     max_dr = math.ceil((abs(y0) + abs(y1)) / (1.5 * s)) + 3
     for dr in range(-max_dr, max_dr + 1):
+        if dr > 0:
+            continue
         for dq in range(-max_dq, max_dq + 1):
             wx, wy = hex_to_world(dq, dr, s)
+            wx += math.sqrt(3) * s / 2
+            wy -= s * 0.75
             if wx + s < x0 or wx - s > x1 or wy + s < y0 or wy - s > y1:
                 continue
             opaque = 0
@@ -609,16 +646,17 @@ def glyph_footprint(image_name, zoom_factor, s):
     return {
         "type": "massif",
         "file": image_name,
-        "anchor_offset": "0,0",
+        "anchor_offset": "bottom-left",
         "zoom_factor": round(float(zoom_factor), 1),
         "render_width_hex": round(float(zoom_factor), 1),
         "render_height_hex": round(height_px / s, 1),
+        "anchor_source_px": [anchor_x_px, ih - 1],
         "bounds_offset_hex": [
             round(x0 / s, 3), round(y0 / s, 3),
             round(x1 / s, 3), round(y1 / s, 3),
         ],
-        "primary_offsets": primary_offsets,
-        "faint_offsets": faint_offsets,
+        "primary_offsets": MASSIF_FOOTPRINT_OVERRIDES.get(image_name, {}).get("primary_offsets", primary_offsets),
+        "faint_offsets": MASSIF_FOOTPRINT_OVERRIDES.get(image_name, {}).get("faint_offsets", faint_offsets),
     }
 
 
@@ -741,7 +779,7 @@ def main():
     glyphs = {}
 
     def ensure_massif_glyph(image_name, zoom_factor):
-        ref = glyph_ref(image_name, zoom_factor)
+        ref = glyph_ref(image_name)
         if ref not in glyphs:
             glyphs[ref] = glyph_footprint(image_name, zoom_factor, s)
         return ref

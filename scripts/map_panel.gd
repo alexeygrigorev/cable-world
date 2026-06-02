@@ -1125,11 +1125,9 @@ func _clamp_pan_offset() -> void:
 # Pan limits based on the full hex map extent (model.view), expressed in the same
 # pan space the markers use (point*zoom). Lets the camera roam all of Europe.
 func _clamp_pan_offset_hex(viewport_size: Vector2) -> void:
-	var layer := map_layer as OfflineMapLayer
-	var base := layer.map_base_size()
-	if base.x <= 0.0 or hex_model.focus_size.x <= 0.0:
+	if hex_model.focus_size.x <= 0.0:
 		return
-	var ratio := base.x / hex_model.focus_size.x   # world px -> pan-space point
+	var ratio := HexMapView.FIXED_MAP_SCALE   # world px -> pan-space point at 100%
 	var content_origin := (hex_model.view_origin - hex_model.focus_origin) * ratio
 	var content_size := hex_model.view_size * ratio
 	var scaled := content_size * zoom

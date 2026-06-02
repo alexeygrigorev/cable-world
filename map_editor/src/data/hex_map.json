@@ -2300,192 +2300,215 @@
     ]
   ],
   "glyphs": {
-    "massif:austrian_alps_massif.png@10.6": {
+    "massif:austrian_alps_massif": {
       "type": "massif",
       "file": "austrian_alps_massif.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 10.6,
       "render_width_hex": 10.6,
       "render_height_hex": 4.4,
       "bounds_offset_hex": [
-        -5.3,
-        -2.199,
-        5.3,
-        2.199
+        -2.323,
+        -4.398,
+        8.277,
+        0.0
       ],
       "primary_offsets": [
+        "0,-1",
         "1,-1",
         "2,-1",
+        "3,-1",
+        "4,-1",
         "-2,0",
         "-1,0",
         "0,0",
         "1,0",
         "2,0",
         "3,0",
-        "-3,1",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1",
-        "2,1"
+        "4,0"
       ],
       "faint_offsets": [
-        "0,-1",
-        "3,-1"
-      ]
+        "2,-2",
+        "3,-2",
+        "4,-2",
+        "-1,-1"
+      ],
+      "anchor_source_px": [
+        94,
+        177
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:bavarian_forest.png@5.0": {
+    "massif:bavarian_forest": {
       "type": "massif",
       "file": "bavarian_forest.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 5.0,
       "render_width_hex": 5.0,
       "render_height_hex": 3.0,
       "bounds_offset_hex": [
-        -2.5,
-        -1.506,
-        2.5,
-        1.506
+        -1.519,
+        -3.011,
+        3.481,
+        0.0
       ],
       "primary_offsets": [
+        "0,-1",
         "1,-1",
         "-1,0",
         "0,0",
-        "1,0",
-        "-2,1",
-        "-1,1",
-        "0,1"
+        "1,0"
       ],
-      "faint_offsets": [
-        "1,1"
-      ]
+      "faint_offsets": [],
+      "anchor_source_px": [
+        110,
+        217
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:bavarian_tyrol_alps_massif.png@10.8": {
+    "massif:bavarian_tyrol_alps_massif": {
       "type": "massif",
       "file": "bavarian_tyrol_alps_massif.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 10.8,
       "render_width_hex": 10.8,
       "render_height_hex": 4.8,
       "bounds_offset_hex": [
-        -5.4,
-        -2.378,
-        5.4,
-        2.378
+        -3.617,
+        -4.756,
+        7.183,
+        0.0
       ],
       "primary_offsets": [
+        "0,-2",
+        "1,-2",
+        "2,-2",
+        "3,-2",
+        "-2,-1",
         "-1,-1",
         "0,-1",
         "1,-1",
         "2,-1",
-        "-3,0",
+        "3,-1",
+        "4,-1",
         "-2,0",
         "-1,0",
         "0,0",
         "1,0",
         "2,0",
-        "3,0",
-        "-3,1",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1",
-        "2,1",
-        "3,1"
+        "3,0"
       ],
       "faint_offsets": [
-        "3,-1"
-      ]
+        "-1,-2",
+        "4,-2"
+      ],
+      "anchor_source_px": [
+        146,
+        191
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:black_forest.png@5.2": {
+    "massif:black_forest": {
       "type": "massif",
       "file": "black_forest.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 5.2,
       "render_width_hex": 5.2,
       "render_height_hex": 2.9,
       "bounds_offset_hex": [
-        -2.6,
-        -1.451,
-        2.6,
-        1.451
+        -0.133,
+        -2.902,
+        5.067,
+        0.0
       ],
       "primary_offsets": [
-        "0,-1",
-        "-1,0",
+        "1,-1",
         "0,0",
         "1,0",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1"
+        "2,0"
       ],
-      "faint_offsets": []
+      "faint_offsets": [],
+      "anchor_source_px": [
+        9,
+        196
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:eifel_hunsrueck.png@4.8": {
+    "massif:eifel_hunsrueck": {
       "type": "massif",
       "file": "eifel_hunsrueck.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 4.8,
       "render_width_hex": 4.8,
       "render_height_hex": 2.4,
       "bounds_offset_hex": [
-        -2.4,
-        -1.18,
-        2.4,
-        1.18
+        -2.108,
+        -2.36,
+        2.692,
+        0.0
       ],
       "primary_offsets": [
+        "0,-1",
+        "-2,0",
         "-1,0",
         "0,0",
-        "1,0",
-        "-1,1",
-        "0,1"
+        "1,0"
       ],
       "faint_offsets": [
-        "0,-1",
         "1,-1"
-      ]
+      ],
+      "anchor_source_px": [
+        159,
+        177
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:erzgebirge.png@5.6": {
+    "massif:erzgebirge": {
       "type": "massif",
       "file": "erzgebirge.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 5.6,
       "render_width_hex": 5.6,
       "render_height_hex": 4.2,
       "bounds_offset_hex": [
-        -2.8,
-        -2.106,
-        2.8,
-        2.106
+        -1.037,
+        -4.212,
+        4.563,
+        0.0
       ],
       "primary_offsets": [
+        "2,-2",
         "1,-1",
         "2,-1",
         "-1,0",
         "0,0",
-        "1,0",
-        "-2,1",
-        "-1,1",
-        "0,1"
+        "1,0"
       ],
-      "faint_offsets": []
+      "faint_offsets": [
+        "3,-2",
+        "0,-1"
+      ],
+      "anchor_source_px": [
+        65,
+        263
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:german_alpine_edge_massif.png@9.2": {
+    "massif:german_alpine_edge_massif": {
       "type": "massif",
       "file": "german_alpine_edge_massif.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 9.2,
       "render_width_hex": 9.2,
       "render_height_hex": 3.7,
       "bounds_offset_hex": [
-        -4.6,
-        -1.825,
-        4.6,
-        1.825
+        -2.583,
+        -3.65,
+        6.617,
+        0.0
       ],
       "primary_offsets": [
+        "0,-1",
         "1,-1",
         "2,-1",
         "-2,0",
@@ -2493,246 +2516,156 @@
         "0,0",
         "1,0",
         "2,0",
-        "-3,1",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1",
-        "2,1"
+        "3,0"
       ],
-      "faint_offsets": []
+      "faint_offsets": [
+        "2,-2",
+        "-1,-1",
+        "3,-1"
+      ],
+      "anchor_source_px": [
+        121,
+        170
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:harz.png@4.3": {
+    "massif:harz": {
       "type": "massif",
       "file": "harz.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 4.3,
       "render_width_hex": 4.3,
       "render_height_hex": 3.6,
       "bounds_offset_hex": [
-        -2.15,
-        -1.776,
-        2.15,
-        1.776
-      ],
-      "primary_offsets": [
-        "1,-1",
-        "-1,0",
-        "0,0",
-        "1,0",
-        "-1,1",
-        "0,1"
-      ],
-      "faint_offsets": [
-        "0,-1",
-        "-2,1",
-        "1,1"
-      ]
-    },
-    "massif:saxon_switzerland.png@3.8": {
-      "type": "massif",
-      "file": "saxon_switzerland.png",
-      "anchor_offset": "0,0",
-      "zoom_factor": 3.8,
-      "render_width_hex": 3.8,
-      "render_height_hex": 2.8,
-      "bounds_offset_hex": [
-        -1.9,
-        -1.379,
-        1.9,
-        1.379
-      ],
-      "primary_offsets": [
-        "1,-1",
-        "-1,0",
-        "0,0",
-        "1,0",
-        "-1,1",
-        "0,1"
-      ],
-      "faint_offsets": [
-        "0,-1"
-      ]
-    },
-    "massif:swiss_alps_massif.png@11.2": {
-      "type": "massif",
-      "file": "swiss_alps_massif.png",
-      "anchor_offset": "0,0",
-      "zoom_factor": 11.2,
-      "render_width_hex": 11.2,
-      "render_height_hex": 4.6,
-      "bounds_offset_hex": [
-        -5.6,
-        -2.279,
-        5.6,
-        2.279
+        -2.094,
+        -3.552,
+        2.206,
+        0.0
       ],
       "primary_offsets": [
         "-1,-1",
         "0,-1",
+        "1,-1",
+        "-2,0",
+        "-1,0",
+        "0,0",
+        "1,0"
+      ],
+      "faint_offsets": [
+        "1,-2"
+      ],
+      "anchor_source_px": [
+        168,
+        284
+      ],
+      "anchor_point": "hex-lower-left-0.75"
+    },
+    "massif:saxon_switzerland": {
+      "type": "massif",
+      "file": "saxon_switzerland.png",
+      "anchor_offset": "bottom-left",
+      "zoom_factor": 3.8,
+      "render_width_hex": 3.8,
+      "render_height_hex": 2.8,
+      "bounds_offset_hex": [
+        -1.211,
+        -2.758,
+        2.589,
+        0.0
+      ],
+      "primary_offsets": [
+        "0,-1",
+        "1,-1",
+        "-1,0",
+        "0,0",
+        "1,0"
+      ],
+      "faint_offsets": [],
+      "anchor_source_px": [
+        108,
+        245
+      ],
+      "anchor_point": "hex-lower-left-0.75"
+    },
+    "massif:swiss_alps_massif": {
+      "type": "massif",
+      "file": "swiss_alps_massif.png",
+      "anchor_offset": "bottom-left",
+      "zoom_factor": 11.2,
+      "render_width_hex": 11.2,
+      "render_height_hex": 4.6,
+      "bounds_offset_hex": [
+        -3.777,
+        -4.558,
+        7.423,
+        0.0
+      ],
+      "primary_offsets": [
+        "1,-2",
+        "-2,-1",
+        "-1,-1",
+        "0,-1",
+        "1,-1",
+        "2,-1",
+        "3,-1",
         "-3,0",
         "-2,0",
         "-1,0",
         "0,0",
         "1,0",
         "2,0",
-        "-4,1",
-        "-3,1",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1",
-        "2,1"
+        "3,0"
       ],
       "faint_offsets": [
-        "1,-1",
-        "2,-1",
-        "3,0"
-      ]
+        "0,-2",
+        "2,-2",
+        "4,-1",
+        "4,0"
+      ],
+      "anchor_source_px": [
+        145,
+        174
+      ],
+      "anchor_point": "hex-lower-left-0.75"
     },
-    "massif:western_alps_massif.png@11.0": {
+    "massif:western_alps_massif": {
       "type": "massif",
       "file": "western_alps_massif.png",
-      "anchor_offset": "0,0",
+      "anchor_offset": "bottom-left",
       "zoom_factor": 11.0,
       "render_width_hex": 11.0,
       "render_height_hex": 5.4,
       "bounds_offset_hex": [
-        -5.5,
-        -2.698,
-        5.5,
-        2.698
+        -1.575,
+        -5.397,
+        9.425,
+        0.0
       ],
       "primary_offsets": [
+        "4,-2",
+        "5,-2",
+        "1,-1",
         "2,-1",
         "3,-1",
+        "4,-1",
+        "5,-1",
         "-1,0",
         "0,0",
         "1,0",
         "2,0",
-        "3,0",
-        "-3,1",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1"
+        "3,0"
       ],
       "faint_offsets": [
+        "5,-3",
         "3,-2",
-        "1,-1",
-        "-3,2",
-        "-2,2"
-      ]
-    },
-    "massif:swiss_alps_massif.png@8.5": {
-      "type": "massif",
-      "file": "swiss_alps_massif.png",
-      "anchor_offset": "0,0",
-      "zoom_factor": 8.5,
-      "render_width_hex": 8.5,
-      "render_height_hex": 3.5,
-      "bounds_offset_hex": [
-        -4.25,
-        -1.73,
-        4.25,
-        1.73
+        "6,-2",
+        "0,-1"
       ],
-      "primary_offsets": [
-        "0,-1",
-        "-2,0",
-        "-1,0",
-        "0,0",
-        "1,0",
-        "2,0",
-        "-3,1",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1",
-        "2,1"
+      "anchor_source_px": [
+        61,
+        208
       ],
-      "faint_offsets": [
-        "-1,-1",
-        "1,-1"
-      ]
-    },
-    "massif:black_forest.png@5.4": {
-      "type": "massif",
-      "file": "black_forest.png",
-      "anchor_offset": "0,0",
-      "zoom_factor": 5.4,
-      "render_width_hex": 5.4,
-      "render_height_hex": 3.0,
-      "bounds_offset_hex": [
-        -2.7,
-        -1.507,
-        2.7,
-        1.507
-      ],
-      "primary_offsets": [
-        "0,-1",
-        "-1,0",
-        "0,0",
-        "1,0",
-        "-2,1",
-        "-1,1",
-        "0,1",
-        "1,1"
-      ],
-      "faint_offsets": []
-    },
-    "massif:erzgebirge.png@5.8": {
-      "type": "massif",
-      "file": "erzgebirge.png",
-      "anchor_offset": "0,0",
-      "zoom_factor": 5.8,
-      "render_width_hex": 5.8,
-      "render_height_hex": 4.4,
-      "bounds_offset_hex": [
-        -2.9,
-        -2.181,
-        2.9,
-        2.181
-      ],
-      "primary_offsets": [
-        "1,-1",
-        "2,-1",
-        "-1,0",
-        "0,0",
-        "1,0",
-        "-2,1",
-        "-1,1",
-        "0,1"
-      ],
-      "faint_offsets": []
-    },
-    "massif:saxon_switzerland.png@5.5": {
-      "type": "massif",
-      "file": "saxon_switzerland.png",
-      "anchor_offset": "0,0",
-      "zoom_factor": 5.5,
-      "render_width_hex": 5.5,
-      "render_height_hex": 4.0,
-      "bounds_offset_hex": [
-        -2.75,
-        -1.996,
-        2.75,
-        1.996
-      ],
-      "primary_offsets": [
-        "1,-1",
-        "-1,0",
-        "0,0",
-        "1,0",
-        "-2,1",
-        "-1,1",
-        "0,1"
-      ],
-      "faint_offsets": [
-        "0,-1",
-        "2,-1",
-        "1,1"
-      ]
+      "anchor_point": "hex-lower-left-0.75"
     }
   },
   "hexes": {
@@ -152806,7 +152739,7 @@
       "id": "austrian_alps_massif",
       "glyph": "massif",
       "image": "austrian_alps_massif.png",
-      "glyph_ref": "massif:austrian_alps_massif.png@10.6",
+      "glyph_ref": "massif:austrian_alps_massif",
       "label": "austrian_alps_massif",
       "anchor": "339,409",
       "home": "339,409"
@@ -152815,7 +152748,7 @@
       "id": "bavarian_forest",
       "glyph": "massif",
       "image": "bavarian_forest.png",
-      "glyph_ref": "massif:bavarian_forest.png@5.0",
+      "glyph_ref": "massif:bavarian_forest",
       "label": "bavarian_forest",
       "anchor": "341,399",
       "home": "341,399"
@@ -152824,7 +152757,7 @@
       "id": "bavarian_tyrol_alps_massif",
       "glyph": "massif",
       "image": "bavarian_tyrol_alps_massif.png",
-      "glyph_ref": "massif:bavarian_tyrol_alps_massif.png@10.8",
+      "glyph_ref": "massif:bavarian_tyrol_alps_massif",
       "label": "bavarian_tyrol_alps_massif",
       "anchor": "331,410",
       "home": "331,410"
@@ -152833,7 +152766,7 @@
       "id": "black_forest",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.2",
+      "glyph_ref": "massif:black_forest",
       "label": "black_forest",
       "anchor": "326,402",
       "home": "326,402"
@@ -152842,7 +152775,7 @@
       "id": "eifel_hunsrueck",
       "glyph": "massif",
       "image": "eifel_hunsrueck.png",
-      "glyph_ref": "massif:eifel_hunsrueck.png@4.8",
+      "glyph_ref": "massif:eifel_hunsrueck",
       "label": "eifel_hunsrueck",
       "anchor": "327,394",
       "home": "327,394"
@@ -152851,7 +152784,7 @@
       "id": "erzgebirge",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.6",
+      "glyph_ref": "massif:erzgebirge",
       "label": "erzgebirge",
       "anchor": "347,391",
       "home": "347,391"
@@ -152860,7 +152793,7 @@
       "id": "german_alpine_edge_massif",
       "glyph": "massif",
       "image": "german_alpine_edge_massif.png",
-      "glyph_ref": "massif:german_alpine_edge_massif.png@9.2",
+      "glyph_ref": "massif:german_alpine_edge_massif",
       "label": "german_alpine_edge_massif",
       "anchor": "334,406",
       "home": "334,406"
@@ -152869,7 +152802,7 @@
       "id": "harz",
       "glyph": "massif",
       "image": "harz.png",
-      "glyph_ref": "massif:harz.png@4.3",
+      "glyph_ref": "massif:harz",
       "label": "harz",
       "anchor": "341,386",
       "home": "341,386"
@@ -152878,7 +152811,7 @@
       "id": "saxon_switzerland",
       "glyph": "massif",
       "image": "saxon_switzerland.png",
-      "glyph_ref": "massif:saxon_switzerland.png@3.8",
+      "glyph_ref": "massif:saxon_switzerland",
       "label": "saxon_switzerland",
       "anchor": "349,390",
       "home": "349,390"
@@ -152887,7 +152820,7 @@
       "id": "swiss_alps_massif",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@11.2",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "swiss_alps_massif",
       "anchor": "324,412",
       "home": "324,412"
@@ -152896,7 +152829,7 @@
       "id": "western_alps_massif",
       "glyph": "massif",
       "image": "western_alps_massif.png",
-      "glyph_ref": "massif:western_alps_massif.png@11.0",
+      "glyph_ref": "massif:western_alps_massif",
       "label": "western_alps_massif",
       "anchor": "317,413",
       "home": "317,413"
@@ -152905,7 +152838,7 @@
       "id": "relief-pyrenees_france",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "French Pyrenees",
       "anchor": "292,428",
       "home": "292,428",
@@ -152915,7 +152848,7 @@
       "id": "relief-pyrenees_spain_andorra",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Spanish and Andorran Pyrenees",
       "anchor": "292,430",
       "home": "292,430",
@@ -152925,7 +152858,7 @@
       "id": "relief-massif_central",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Massif Central",
       "anchor": "303,420",
       "home": "303,420",
@@ -152935,7 +152868,7 @@
       "id": "relief-vosges_jura",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Vosges and Jura",
       "anchor": "320,407",
       "home": "320,407",
@@ -152945,7 +152878,7 @@
       "id": "relief-cantabrian_mountains",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Cantabrian Mountains",
       "anchor": "277,428",
       "home": "277,428",
@@ -152955,7 +152888,7 @@
       "id": "relief-central_system",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Sistema Central",
       "anchor": "272,439",
       "home": "272,439",
@@ -152965,7 +152898,7 @@
       "id": "relief-iberian_system",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Iberian System",
       "anchor": "283,436",
       "home": "283,436",
@@ -152975,7 +152908,7 @@
       "id": "relief-sierra_nevada",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Sierra Nevada",
       "anchor": "269,453",
       "home": "269,453",
@@ -152985,7 +152918,7 @@
       "id": "relief-corsica_mountains",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Corsica mountains",
       "anchor": "314,432",
       "home": "314,432",
@@ -152995,7 +152928,7 @@
       "id": "relief-balearic_context",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Balearic Islands context",
       "anchor": "290,444",
       "home": "290,444",
@@ -153005,7 +152938,7 @@
       "id": "relief-scandinavian_mountains",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Scandinavian Mountains",
       "anchor": "387,306",
       "home": "387,306",
@@ -153015,7 +152948,7 @@
       "id": "relief-swedish_highlands",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Swedish highlands and upland context",
       "anchor": "376,340",
       "home": "376,340",
@@ -153025,7 +152958,7 @@
       "id": "relief-lapland_fells_context",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Lapland fells context",
       "anchor": "437,272",
       "home": "437,272",
@@ -153035,7 +152968,7 @@
       "id": "relief-baltic_upland_context",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Baltic upland context",
       "anchor": "394,361",
       "home": "394,361",
@@ -153045,7 +152978,7 @@
       "id": "relief-iceland_volcanic_highlands",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Iceland volcanic highlands",
       "anchor": "299,304",
       "home": "299,304",
@@ -153055,7 +152988,7 @@
       "id": "relief-sudetes",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Sudetes",
       "anchor": "353,393",
       "home": "353,393",
@@ -153065,7 +152998,7 @@
       "id": "relief-western_carpathians",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Western Carpathians",
       "anchor": "360,400",
       "home": "360,400",
@@ -153075,7 +153008,7 @@
       "id": "relief-eastern_carpathians",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Eastern Carpathians",
       "anchor": "369,407",
       "home": "369,407",
@@ -153085,7 +153018,7 @@
       "id": "relief-southern_carpathians",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Southern Carpathians",
       "anchor": "365,416",
       "home": "365,416",
@@ -153095,7 +153028,7 @@
       "id": "relief-dinaric_alps",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Dinaric Alps",
       "anchor": "340,424",
       "home": "340,424",
@@ -153105,7 +153038,7 @@
       "id": "relief-rhodope_pindus_context",
       "glyph": "massif",
       "image": "saxon_switzerland.png",
-      "glyph_ref": "massif:saxon_switzerland.png@5.5",
+      "glyph_ref": "massif:saxon_switzerland",
       "label": "Rhodope and Pindus context",
       "anchor": "351,436",
       "home": "351,436",
@@ -153115,7 +153048,7 @@
       "id": "relief-ukrainian_carpathians_cutoff",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Ukrainian Carpathians cutoff",
       "anchor": "370,402",
       "home": "370,402",
@@ -153125,7 +153058,7 @@
       "id": "relief-pontic_mountains",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Pontic Mountains",
       "anchor": "388,437",
       "home": "388,437",
@@ -153135,7 +153068,7 @@
       "id": "relief-taurus_mountains",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Taurus Mountains",
       "anchor": "373,452",
       "home": "373,452",
@@ -153145,7 +153078,7 @@
       "id": "relief-anatolian_plateau",
       "glyph": "massif",
       "image": "erzgebirge.png",
-      "glyph_ref": "massif:erzgebirge.png@5.8",
+      "glyph_ref": "massif:erzgebirge",
       "label": "Anatolian Plateau",
       "anchor": "379,446",
       "home": "379,446",
@@ -153155,7 +153088,7 @@
       "id": "relief-caucasus_armenian_highlands_context",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Caucasus and Armenian Highlands context",
       "anchor": "403,438",
       "home": "403,438",
@@ -153165,7 +153098,7 @@
       "id": "relief-scottish_highlands",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Scottish Highlands",
       "anchor": "313,355",
       "home": "313,355",
@@ -153175,7 +153108,7 @@
       "id": "relief-pennines_wales",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Pennines and Wales uplands",
       "anchor": "307,377",
       "home": "307,377",
@@ -153185,7 +153118,7 @@
       "id": "relief-irish_uplands",
       "glyph": "massif",
       "image": "black_forest.png",
-      "glyph_ref": "massif:black_forest.png@5.4",
+      "glyph_ref": "massif:black_forest",
       "label": "Irish uplands",
       "anchor": "293,377",
       "home": "293,377",
@@ -153195,7 +153128,7 @@
       "id": "relief-troodos_mountains",
       "glyph": "massif",
       "image": "swiss_alps_massif.png",
-      "glyph_ref": "massif:swiss_alps_massif.png@8.5",
+      "glyph_ref": "massif:swiss_alps_massif",
       "label": "Troodos Mountains",
       "anchor": "366,462",
       "home": "366,462",

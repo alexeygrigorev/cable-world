@@ -16,7 +16,8 @@ This is the index for generated map glyph workflows. Keep repeatable production 
 - Before accepting any sheet sliced by a grid, run `map_pipeline.sheet_slice_audit`.
 - The final acceptance zoom for map art is user zoom `300%`; do not accept assets that only look good when downscaled.
 - In the hex editor, every feature shown in the clicked-hex panel must show its object id, concrete glyph filename, and a visible glyph preview.
-- Multi-hex glyphs must have metadata, not per-instance footprints: `anchor_offset` is local `0,0`, `zoom_factor` is shared by every instance of the same `glyph_ref`, `primary_offsets` are bright blue debug dots, and `faint_offsets` are pale gray weak-alpha debug dots. Empty alpha has no dot and must not select the glyph.
+- Multi-hex glyphs must have metadata, not per-instance footprints: `anchor_offset` is `bottom-left`, meaning `anchor_source_px` is the per-glyph lower-left support point chosen from the glyph's bottom visible alpha band and the rendered glyph is attached to the lower-left support point of the anchor hex. Footprint math uses that lower-left support point; debug dots and the yellow anchor ring are displayed at hex centers for readability. Each PNG has one canonical `glyph_ref` without a size suffix, for example `massif:swiss_alps_massif`; size lives only in metadata as `zoom_factor` / `render_width_hex`. `primary_offsets` are bright blue debug dots, and `faint_offsets` are pale gray weak-alpha debug dots. Empty alpha has no dot and must not select the glyph.
+- Bottom-left anchored glyph PNGs must have minimal bottom alpha padding. Run `python3 -m map_pipeline.audit_glyph_alpha_anchor --fix assets/map/massifs/*.png` before regenerating `hex_map.json`; then run without `--fix` as the gate.
 - Add or update a focused Python contract test when a pipeline rule becomes required.
 
 ## Sheet Cut Audit

@@ -15,13 +15,14 @@ const COLORS = {
   sea: "#315f6d",        // OCEAN
   landDE: "#9da05a",     // GERMANY_LAND
   landOther: "#8f9150",  // NEIGHBOR_LAND
-  edge: "rgba(40,33,18,0.22)",
-  outline: "#463c28",    // GERMANY_EDGE
+  edge: "rgba(40,33,18,0.07)",
+  outline: "rgba(70,60,40,0.55)", // country border
   labelFill: "#f6df9b",  // city label text in the game
   labelStroke: "rgba(28,18,8,0.9)",
 };
 const CITY_LABEL_FONT_SCALE = 0.72;
 const CITY_LABEL_OUTLINE_SCALE = 0.17;
+const FIXED_MAP_SCALE = 0.64;
 // zoom range/step/default shared with the game (scripts/hex_map_model.gd reads
 // the same map_config.json)
 const ZCFG = (mapConfig && mapConfig.zoom) || { min: 0.25, max: 3.0, step: 0.25, default: 1.0 };
@@ -36,7 +37,7 @@ const zoomValEl = document.getElementById("zoomVal");
 // camera: fit-to-view at 100%, then user zoom on top, plus pan in CSS px
 let zoomVal = ZCFG.default; // 1.0 = 100%
 let panX = 0, panY = 0;
-let cssW = 0, cssH = 0, fitScale = 1;
+let cssW = 0, cssH = 0;
 
 const sizeW = () => state.grid.hex_size_px; // world px
 const origin = () => state.view.origin;
@@ -75,7 +76,7 @@ function hexPath(cx, cy, s) {
 function cellColor(cell) {
   // forests/mountains are glyphs on land, like the game — land color underneath
   if (cell.terrain === "sea") return COLORS.sea;
-  return cell.country === "DE" ? COLORS.landDE : COLORS.landOther;
+  return cell.country === currentCountry() ? COLORS.landDE : COLORS.landOther;
 }
 
 // ----- glyphs (save/restore so they never leak style into the grid) -----
@@ -167,25 +168,13 @@ function getImg(name) {
   return img;
 }
 
-// which hexes a massif actually paints (sampling the image's alpha). Primary
-// points mark mostly opaque art; faint points mark weak alpha. Fully transparent
-// bbox area is not part of the footprint and cannot select the glyph.
-const alphaData = new Map();   // image name -> ImageData
-const coverageCache = new Map(); // glyph render key -> { primaryOffsets, faintOffsets }
-const HEX_ALPHA_STEP = 0.18;
-const PRIMARY_ALPHA_RATIO = 0.22;
-
-function pointInsideHex(dx, dy, s) {
-  return Math.abs(dx) <= (Math.sqrt(3) / 2) * s && Math.abs(dy) + Math.abs(dx) / Math.sqrt(3) <= s;
-}
+// Multi-hex glyph footprint is metadata of glyph_ref, not a per-instance
+// calculation. Primary points mark mostly opaque art; faint points mark weak
+// alpha. Empty alpha has no point and cannot select the glyph.
 
 function parseKey(key) {
   const [q, r] = key.split(",").map(Number);
   return { q, r };
-}
-
-function offsetKey(dq, dr) {
-  return `${dq},${dr}`;
 }
 
 function applyOffset(anchor, offset) {
@@ -199,147 +188,77 @@ function hexToWorld(q, r) {
   return { x: s * SQRT3 * (q + r / 2), y: s * 1.5 * r };
 }
 
+function hexAnchorWorld(q, r) {
+  const c = hexToWorld(q, r);
+  const s = sizeW();
+  return { x: c.x - (SQRT3 * s) / 2, y: c.y + s * 0.75 };
+}
+
+function worldToContent(x, y) {
+  const o = origin();
+  return { x: x - o[0], y: y - o[1] };
+}
+
 function glyphMetadata(f) {
   return f.glyph_ref ? state.glyphs?.[f.glyph_ref] : null;
 }
 
-function glyphRefFor(image, zoomFactor) {
-  return `massif:${image}@${Number(zoomFactor || 5).toFixed(1)}`;
+function glyphRefFor(image) {
+  return `massif:${image.replace(/\.png$/, "")}`;
 }
 
 function ensureMassifGlyphMetadata(image, zoomFactor, aspect) {
   state.glyphs ||= {};
-  const ref = glyphRefFor(image, zoomFactor);
+  const ref = glyphRefFor(image);
   if (!state.glyphs[ref]) {
     const width = Number(zoomFactor || 5);
     const height = width / Number(aspect || 2);
     state.glyphs[ref] = {
       type: "massif",
       file: image,
-      anchor_offset: "0,0",
+      anchor_offset: "bottom-left",
       zoom_factor: round1(width),
       render_width_hex: round1(width),
       render_height_hex: round1(height),
       bounds_offset_hex: [
-        round1(-width / 2),
-        round1(-height / 2),
-        round1(width / 2),
-        round1(height / 2),
+        0,
+        round1(-height),
+        round1(width),
+        0,
       ],
     };
   }
   return ref;
 }
 
-function massifBounds(f) {
+function massifBounds(f, unit = sizeW()) {
   const meta = glyphMetadata(f);
   if (meta?.bounds_offset_hex) {
     const a = parseKey(f.anchor);
-    const c = hexToWorld(a.q, a.r);
-    const s = sizeW();
-    const [x0, y0, x1, y1] = meta.bounds_offset_hex.map((v) => v * s);
+    const c = hexAnchorWorld(a.q, a.r);
+    const [x0, y0, x1, y1] = meta.bounds_offset_hex.map((v) => v * unit);
     return [c.x + x0, c.y + y0, c.x + x1, c.y + y1].map(round1);
   }
   return null;
 }
 
-function massifRelativeBounds(f) {
-  const meta = glyphMetadata(f);
-  if (meta?.bounds_offset_hex) return meta.bounds_offset_hex.map((v) => round1(v * sizeW()));
-  return null;
-}
-
-function massifCoverageKey(f, data) {
-  const version = assetVersions.get(f.image) || "dev";
-  return [
-    f.image,
-    version,
-    data.width,
-    data.height,
-    massifRelativeBounds(f).join(","),
-  ].join("|");
+function massifAnchorContent(f, delta = { dq: 0, dr: 0 }) {
+  const [q, r] = shiftKey(f.anchor, delta.dq, delta.dr).split(",").map(Number);
+  return hexToContent(q, r);
 }
 
 function coverageCellsFromOffsets(f, offsets) {
-  return offsets
-    .map((offset) => applyOffset(f.anchor, offset))
-    .filter((key) => state.hexes[key]);
+  return offsets.map((offset) => applyOffset(f.anchor, offset));
 }
 
 function massifCoverage(f) {
   const meta = glyphMetadata(f);
-  if (meta?.primary_offsets && meta?.faint_offsets) {
-    return {
-      primaryOffsets: meta.primary_offsets,
-      faintOffsets: meta.faint_offsets,
-      primary: coverageCellsFromOffsets(f, meta.primary_offsets),
-      faint: coverageCellsFromOffsets(f, meta.faint_offsets),
-    };
-  }
-  if (!f.image || !meta?.bounds_offset_hex) return null;
-  const img = getImg(f.image);
-  if (!img.complete || !img.naturalWidth) return null; // not loaded yet
-
-  let data = alphaData.get(f.image);
-  if (!data) {
-    const oc = document.createElement("canvas");
-    oc.width = img.naturalWidth;
-    oc.height = img.naturalHeight;
-    const octx = oc.getContext("2d", { willReadFrequently: true });
-    octx.drawImage(img, 0, 0);
-    data = octx.getImageData(0, 0, oc.width, oc.height);
-    alphaData.set(f.image, data);
-  }
-
-  const cacheKey = massifCoverageKey(f, data);
-  let pattern = coverageCache.get(cacheKey);
-  if (pattern) {
-    return {
-      ...pattern,
-      primary: coverageCellsFromOffsets(f, pattern.primaryOffsets),
-      faint: coverageCellsFromOffsets(f, pattern.faintOffsets),
-    };
-  }
-
-  const relBounds = massifRelativeBounds(f);
-  if (!relBounds) return null;
-  const [x0, y0, x1, y1] = relBounds;
-  const W = x1 - x0, H = y1 - y0, s = sizeW();
-  const primaryOffsets = [];
-  const faintOffsets = [];
-  const maxDq = Math.ceil((Math.abs(x0) + Math.abs(x1)) / (SQRT3 * s)) + 3;
-  const maxDr = Math.ceil((Math.abs(y0) + Math.abs(y1)) / (1.5 * s)) + 3;
-  for (let dr = -maxDr; dr <= maxDr; dr++) {
-    for (let dq = -maxDq; dq <= maxDq; dq++) {
-      const { x: wx, y: wy } = hexDeltaWorld(dq, dr);
-      if (wx + s < x0 || wx - s > x1 || wy + s < y0 || wy - s > y1) continue; // hex cannot overlap glyph box
-      let opaque = 0;
-      let sampled = 0;
-      for (let oy = -0.9; oy <= 0.91; oy += HEX_ALPHA_STEP) {
-        for (let ox = -0.9; ox <= 0.91; ox += HEX_ALPHA_STEP) {
-          const sx = wx + ox * s;
-          const sy = wy + oy * s;
-          if (!pointInsideHex(sx - wx, sy - wy, s)) continue;
-          const ix = Math.round(((sx - x0) / W) * (data.width - 1));
-          const iy = Math.round(((sy - y0) / H) * (data.height - 1));
-          if (ix < 0 || iy < 0 || ix >= data.width || iy >= data.height) continue;
-          sampled++;
-          if (data.data[(iy * data.width + ix) * 4 + 3] > 50) opaque++;
-        }
-      }
-      if (!sampled || !opaque) continue;
-      const coverage = opaque / sampled;
-      const key = offsetKey(dq, dr);
-      if (coverage >= PRIMARY_ALPHA_RATIO) primaryOffsets.push(key);
-      else faintOffsets.push(key);
-    }
-  }
-  pattern = { primaryOffsets, faintOffsets };
-  coverageCache.set(cacheKey, pattern);
+  if (!meta?.primary_offsets || !meta?.faint_offsets) return null;
   return {
-    ...pattern,
-    primary: coverageCellsFromOffsets(f, pattern.primaryOffsets),
-    faint: coverageCellsFromOffsets(f, pattern.faintOffsets),
+    primaryOffsets: meta.primary_offsets,
+    faintOffsets: meta.faint_offsets,
+    primary: coverageCellsFromOffsets(f, meta.primary_offsets),
+    faint: coverageCellsFromOffsets(f, meta.faint_offsets),
   };
 }
 
@@ -378,8 +297,6 @@ async function requestAssetVersions() {
     if (assetVersions.get(name) !== version) {
       assetVersions.set(name, version);
       imgCache.delete(name);
-      alphaData.delete(name);
-      coverageCache.clear();
       changed = true;
     }
   }
@@ -464,19 +381,16 @@ function drawCity(cx, cy, s, f, showLabel) {
 }
 
 // ----- camera / rendering -----
-function computeFit() {
+function computeViewport() {
   updateLayoutMetrics();
   const rect = canvas.getBoundingClientRect();
   cssW = rect.width;
   cssH = rect.height;
-  const [fw, fh] = state.focus.size; // 100% = same Germany geo_bounds as the game
-  // COVER fit, matching the game's _map_base_size_for_viewport (fills the viewport)
-  fitScale = Math.max(cssW / fw, cssH / fh);
 }
 
 function setupCanvas() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  computeFit();
+  computeViewport();
   canvas.width = cssW * dpr;
   canvas.height = cssH * dpr;
 }
@@ -488,7 +402,11 @@ function updateLayoutMetrics() {
 }
 
 function scale() {
-  return fitScale * zoomVal;
+  return FIXED_MAP_SCALE * zoomVal;
+}
+
+function objectUnit() {
+  return sizeW();
 }
 
 // content-space center of the Germany focus box
@@ -534,9 +452,12 @@ function render() {
   ctx.scale(sc, sc);
 
   const s = sizeW();
+  const os = objectUnit();
+  const objectScreenS = os * sc;
   // visible content rect (for culling) + margin
-  const vx0 = -tx / sc - s, vy0 = -ty / sc - s;
-  const vx1 = (cssW - tx) / sc + s, vy1 = (cssH - ty) / sc + s;
+  const cullMargin = Math.max(s, os * 12);
+  const vx0 = -tx / sc - cullMargin, vy0 = -ty / sc - cullMargin;
+  const vx1 = (cssW - tx) / sc + cullMargin, vy1 = (cssH - ty) / sc + cullMargin;
 
   const onScreen = (x, y) => x >= vx0 && x <= vx1 && y >= vy0 && y <= vy1;
 
@@ -549,13 +470,13 @@ function render() {
     ctx.fillStyle = cellColor(cell);
     ctx.fill();
     ctx.strokeStyle = COLORS.edge;
-    ctx.lineWidth = s * 0.03;
+    ctx.lineWidth = s * 0.012;
     ctx.stroke();
   }
 
   // 2. country borders: edge between two land hexes of different countries
   ctx.strokeStyle = COLORS.outline;
-  ctx.lineWidth = s * 0.14;
+  ctx.lineWidth = s * 0.08;
   ctx.lineCap = "round";
   const apothem = (s * SQRT3) / 2;
   for (const [key, cell] of Object.entries(state.hexes)) {
@@ -578,14 +499,14 @@ function render() {
     }
   }
 
-  // 3. multi-hex massif glyphs (each its own image, placed by geo_bounds)
+  // 3. multi-hex massif glyphs (each its own image, placed from glyph_ref metadata)
   for (const f of state.features || []) {
     if (f.glyph !== "massif" || !f.image) continue;
     const img = getImg(f.image);
     if (!img.complete || !img.naturalWidth) continue;
     const held = f === dragging?.feature;
     const d = held && dragging.delta ? hexDeltaWorld(dragging.delta.dq, dragging.delta.dr) : { x: 0, y: 0 };
-    const bounds = massifBounds(f);
+    const bounds = massifBounds(f, os);
     if (!bounds) continue;
     const [x0, y0, x1, y1] = bounds;
     ctx.globalAlpha = held ? 0.6 : 1;
@@ -603,13 +524,13 @@ function render() {
       const [q, r] = shiftKey(k, dd.dq, dd.dr).split(",").map(Number);
       const { x, y } = hexToContent(q, r);
       if (!onScreen(x, y)) continue;
-      if (!drawSprite(variant(k, FOREST_GLYPHS), x, y, s, s * 1.9, false)) drawTree(x, y, s);
+      if (!drawSprite(variant(k, FOREST_GLYPHS), x, y, os, os * 1.9, false)) drawTree(x, y, os);
     }
     ctx.globalAlpha = 1;
   }
 
   // 5. point objects (cities + transport) on top, south-over-north
-  const showLabels = s * sc > 13;
+  const showLabels = objectScreenS > 13;
   const points = (state.features || [])
     .filter((f) => f.glyph === "city" || f.glyph === "transport")
     .map((f) => {
@@ -620,8 +541,8 @@ function render() {
   for (const { f, held, pos } of points) {
     if (!onScreen(pos.x, pos.y)) continue;
     if (held) ctx.globalAlpha = 0.5;
-    if (f.glyph === "city") drawCity(pos.x, pos.y, s, f, showLabels);
-    else drawTransport(pos.x, pos.y, s, f, showLabels);
+    if (f.glyph === "city") drawCity(pos.x, pos.y, os, f, showLabels);
+    else drawTransport(pos.x, pos.y, os, f, showLabels);
     ctx.globalAlpha = 1;
   }
 
@@ -667,10 +588,10 @@ function render() {
       const [q, r] = k.split(",").map(Number);
       const c = hexToContent(q, r);
       ctx.beginPath();
-      ctx.arc(c.x, c.y, s * 0.13, 0, Math.PI * 2);
+      ctx.arc(c.x, c.y, os * 0.13, 0, Math.PI * 2);
       ctx.fillStyle = "rgba(215,215,215,0.42)";
       ctx.fill();
-      ctx.lineWidth = s * 0.035;
+      ctx.lineWidth = os * 0.035;
       ctx.strokeStyle = "rgba(80,80,80,0.35)";
       ctx.stroke();
     }
@@ -678,12 +599,26 @@ function render() {
       const [q, r] = k.split(",").map(Number);
       const c = hexToContent(q, r);
       ctx.beginPath();
-      ctx.arc(c.x, c.y, s * 0.2, 0, Math.PI * 2);
+      ctx.arc(c.x, c.y, os * 0.2, 0, Math.PI * 2);
       ctx.fillStyle = "#1e88e5";
       ctx.fill();
-      ctx.lineWidth = s * 0.06;
+      ctx.lineWidth = os * 0.06;
       ctx.strokeStyle = "#fff";
       ctx.stroke();
+    }
+    if (hi.glyph === "massif") {
+      const c = massifAnchorContent(hi, d);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, os * 0.31, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(246,223,155,0.18)";
+      ctx.fill();
+      ctx.lineWidth = os * 0.08;
+      ctx.strokeStyle = "#f6df9b";
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, os * 0.08, 0, Math.PI * 2);
+      ctx.fillStyle = "#f6df9b";
+      ctx.fill();
     }
   }
 
@@ -699,14 +634,14 @@ function render() {
     ctx.stroke();
     ctx.globalAlpha = 0.7;
     if (placing.kind === "forest") {
-      if (!drawSprite(FOREST_GLYPHS[0], c.x, c.y, s, s * 1.9, false)) drawTree(c.x, c.y, s);
+      if (!drawSprite(FOREST_GLYPHS[0], c.x, c.y, os, os * 1.9, false)) drawTree(c.x, c.y, os);
     } else if (placing.kind === "massif") {
-      const width = s * (placing.zoomFactor || 5.0);
+      const width = os * (placing.zoomFactor || 5.0);
       const img = placing.image ? getImg(placing.image) : null;
       const aspect = img?.complete && img.naturalWidth ? img.naturalWidth / img.naturalHeight : (placing.aspect || 2.0);
-      if (!drawSprite(placing.image, c.x, c.y, s, width / aspect, false)) drawPeak(c.x, c.y, s);
+      if (!drawSprite(placing.image, c.x, c.y, os, width / aspect, false)) drawPeak(c.x, c.y, os);
     } else {
-      drawTransport(c.x, c.y, s, { icon: placing.icon }, false);
+      drawTransport(c.x, c.y, os, { icon: placing.icon }, false);
     }
     ctx.globalAlpha = 1;
   }
@@ -749,6 +684,10 @@ const panelBody = document.getElementById("panelBody");
 let selectedHex = null;
 document.getElementById("panelClose").addEventListener("click", deselect);
 
+function currentCountry() {
+  return state.hexes[selectedHex]?.country || "DE";
+}
+
 function deselect() {
   selected = null;
   selectedHex = null;
@@ -771,7 +710,7 @@ function featureOccupiesHex(f, key) {
   if (f.glyph !== "massif") return (f.cells || []).includes(key);
   const coverage = f.image ? massifCoverage(f) : null;
   if (coverage) return coverage.primary.includes(key) || coverage.faint.includes(key);
-  return (f.cells || []).includes(key);
+  return false;
 }
 
 function canReset(f) {
@@ -898,6 +837,8 @@ function glyphDebugPayload(f, hexKey = selectedHex) {
       aspect_preserved: true,
       glyph_ref: f.glyph_ref || null,
       anchor_offset: glyphMetadata(f)?.anchor_offset || "0,0",
+      anchor_cell: f.anchor,
+      anchor_source_px: glyphMetadata(f)?.anchor_source_px || null,
       zoom_factor: glyphMetadata(f)?.zoom_factor ?? null,
       primary_alpha_offsets: coverage?.primaryOffsets || [],
       faint_alpha_offsets: coverage?.faintOffsets || [],
@@ -1033,7 +974,7 @@ function eventToContent(e) {
 }
 
 function featureAt(p) {
-  const s = sizeW(), o = origin();
+  const s = objectUnit();
   // transport objects first (they sit on top and are the focus), then cities
   for (const f of state.features || []) {
     if (f.glyph !== "transport") continue;
@@ -1058,12 +999,7 @@ function featureAt(p) {
     const coverage = massifCoverage(f);
     if (coverage) {
       if (coverage.primary.includes(pk) || coverage.faint.includes(pk)) return f;
-      continue;
     }
-    const bounds = massifBounds(f);
-    if (!bounds) continue;
-    const [x0, y0, x1, y1] = bounds;
-    if (p.x >= x0 - o[0] && p.x <= x1 - o[0] && p.y >= y0 - o[1] && p.y <= y1 - o[1]) return f;
   }
   return null;
 }
@@ -1341,7 +1277,18 @@ function boot(data) {
   statusEl.textContent = `Европа · ${state.grid.nominal_km} км · города ${c.city || 0} · массивы ${c.massif || 0} · леса ${c.forest || 0} · транспорт ${c.transport || 0}`;
 }
 
-window.addEventListener("resize", () => { syncPaletteToggle(); setupCanvas(); render(); });
+window.addEventListener("resize", () => {
+  const center = cssW && cssH ? viewportCenterContent() : null;
+  syncPaletteToggle();
+  setupCanvas();
+  if (center) {
+    const sc = scale();
+    const fc = focusCenter();
+    panX = (fc.x - center.x) * sc;
+    panY = (fc.y - center.y) * sc;
+  }
+  render();
+});
 
 boot(initialData);
 

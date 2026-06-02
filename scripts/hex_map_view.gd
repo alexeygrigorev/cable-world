@@ -18,8 +18,8 @@ const NB := [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1), V
 const COL_SEA := Color("315f6d")
 const COL_LAND_DE := Color("9da05a")
 const COL_LAND_OTHER := Color("8f9150")
-const COL_EDGE := Color(0.157, 0.129, 0.071, 0.22)   # rgba(40,33,18,0.22)
-const COL_OUTLINE := Color("463c28")
+const COL_EDGE := Color(0.157, 0.129, 0.071, 0.07)   # rgba(40,33,18,0.07)
+const COL_OUTLINE := Color(0.275, 0.235, 0.157, 0.55) # rgba(70,60,40,0.55)
 const COL_LABEL_FILL := Color("f6df9b")
 const COL_LABEL_STROKE := Color(0.110, 0.071, 0.031, 0.9)
 const COL_TREE := Color("4e7a3f")
@@ -27,6 +27,7 @@ const COL_TREE := Color("4e7a3f")
 const LABEL_FONT_PATH := "res://assets/fonts/LiberationSerif-BoldItalic.ttf"
 const CITY_LABEL_FONT_SCALE := 0.72
 const CITY_LABEL_OUTLINE_SCALE := 0.17
+const FIXED_MAP_SCALE := 0.64
 
 # terrain glyph set, varied per hex by a stable hash (matches main.js FOREST_GLYPHS)
 const FOREST_GLYPHS := [
@@ -144,12 +145,10 @@ static func _mercator_y(latitude: float) -> float:
 	var lat: float = clamp(latitude, -85.0, 85.0)
 	return log(tan(PI / 4.0 + deg_to_rad(lat) / 2.0))
 
-# uniform world-px -> screen scale (proven equal in x and y because map_base
-# aspect == focus.size aspect). One scalar keeps hexes regular on screen.
+# uniform world-px -> screen scale. 100% is fixed and viewport-independent:
+# resizing the control changes how much map is visible, not the map scale.
 func _scale_factor() -> float:
-	if model == null:
-		return zoom
-	return (_map_base_size().x / model.focus_size.x) * zoom
+	return FIXED_MAP_SCALE * zoom
 
 func _w2s(world: Vector2, k: float) -> Vector2:
 	return pan_offset + (world - model.focus_origin) * k
@@ -164,9 +163,11 @@ func _draw() -> void:
 	if k <= 0.0:
 		return
 	var s := model.hex_size * k        # on-screen hex radius (editor's s*sc)
+	var object_s := model.hex_size * k
 
 	# visible world-pixel rectangle (+ margin), for culling
-	var margin := model.hex_size * 2.0
+	var object_world_s := object_s / k
+	var margin: float = max(model.hex_size * 2.0, object_world_s * 14.0)
 	var w_tl := model.focus_origin + (Vector2.ZERO - pan_offset) / k
 	var w_br := model.focus_origin + (size - pan_offset) / k
 	var view_rect := Rect2(w_tl, w_br - w_tl).abs().grow(margin)
@@ -190,9 +191,9 @@ func _draw() -> void:
 	if not _bord_pts.is_empty():
 		RenderingServer.canvas_item_add_triangle_array(ci, _bord_idx, _bord_pts, _bord_cols)
 
-	_draw_massifs(k, view_rect)
-	_draw_forests(k, s, view_rect)
-	_draw_cities(k, s, view_rect)
+	_draw_massifs(k, object_s, view_rect)
+	_draw_forests(k, object_s, view_rect)
+	_draw_cities(k, object_s, view_rect)
 
 func _rebuild_screen_geometry(k: float, s: float, view_rect: Rect2) -> void:
 	_fill_pts = PackedVector2Array()
@@ -205,7 +206,7 @@ func _rebuild_screen_geometry(k: float, s: float, view_rect: Rect2) -> void:
 	_bord_cols = PackedColorArray()
 	_bord_idx = PackedInt32Array()
 
-	var edge_hw: float = max(0.5, s * 0.03) * 0.5
+	var edge_hw: float = max(0.35, s * 0.012) * 0.5
 	for i in _hex_centers.size():
 		var c: Vector2 = _hex_centers[i]
 		if not view_rect.has_point(c):
@@ -224,7 +225,7 @@ func _rebuild_screen_geometry(k: float, s: float, view_rect: Rect2) -> void:
 			_fill_idx.append(base + 1 + ((j + 1) % 6))
 			_append_quad(_edge_pts, _edge_cols, _edge_idx, _fill_pts[base + 1 + j], _fill_pts[base + 1 + ((j + 1) % 6)], edge_hw, COL_EDGE)
 
-	var hw: float = max(1.0, s * 0.14) * 0.5
+	var hw: float = max(1.0, s * 0.08) * 0.5
 	var bi := 0
 	while bi < _border_segments.size():
 		var a: Vector2 = _border_segments[bi]
@@ -251,25 +252,29 @@ func _append_quad(pts: PackedVector2Array, cols: PackedColorArray, idx: PackedIn
 	idx.append(base); idx.append(base + 1); idx.append(base + 2)
 	idx.append(base); idx.append(base + 2); idx.append(base + 3)
 
-func _draw_massifs(k: float, view_rect: Rect2) -> void:
+func _draw_massifs(k: float, object_s: float, view_rect: Rect2) -> void:
 	for f in model.features:
 		if str(f.get("glyph", "")) != "massif":
 			continue
 		var image := str(f.get("image", ""))
 		if image.is_empty():
 			continue
-		var bounds: Array = f.get("bounds_px", [])
+		var meta: Dictionary = model.glyphs.get(str(f.get("glyph_ref", "")), {})
+		var bounds: Array = meta.get("bounds_offset_hex", [])
 		if bounds.size() < 4:
 			continue
-		var x0 := float(bounds[0])
-		var y0 := float(bounds[1])
-		var box := Rect2(Vector2(x0, y0), Vector2(float(bounds[2]) - x0, float(bounds[3]) - y0))
-		if not view_rect.intersects(box):
+		var anchor_world := model.hex_world_key(str(f.get("anchor", "0,0"))) + Vector2(-model.hex_size * SQRT3 * 0.5, model.hex_size * 0.75)
+		if not view_rect.has_point(anchor_world):
 			continue
 		var tex := model.texture(image)
 		if tex == null:
 			continue
-		draw_texture_rect(tex, Rect2(_w2s(box.position, k), box.size * k), false)
+		var anchor_screen := _w2s(anchor_world, k)
+		var x0 := float(bounds[0]) * object_s
+		var y0 := float(bounds[1]) * object_s
+		var x1 := float(bounds[2]) * object_s
+		var y1 := float(bounds[3]) * object_s
+		draw_texture_rect(tex, Rect2(anchor_screen + Vector2(x0, y0), Vector2(x1 - x0, y1 - y0)), false)
 
 # Forest glyphs are batched per texture (one textured triangle array per glyph
 # variant) instead of one draw_texture_rect per cell — on web GL the per-draw-call

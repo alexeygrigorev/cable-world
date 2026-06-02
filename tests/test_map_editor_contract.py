@@ -1,5 +1,11 @@
 from pathlib import Path
+import json
 import unittest
+
+try:
+    from PIL import Image
+except ModuleNotFoundError:
+    Image = None
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,6 +18,7 @@ class MapEditorContractTest(unittest.TestCase):
         cls.index_html = (ROOT / "map_editor" / "index.html").read_text(encoding="utf-8")
         cls.readme = (ROOT / "map_editor" / "README.md").read_text(encoding="utf-8")
         cls.glyph_doc = (ROOT / "docs" / "pipelines" / "glyph-generation.md").read_text(encoding="utf-8")
+        cls.hex_map = json.loads((ROOT / "map_editor" / "src" / "data" / "hex_map.json").read_text(encoding="utf-8"))
 
     def test_clicked_hex_panel_shows_hex_id_even_without_objects(self) -> None:
         for expected in [
@@ -64,20 +71,19 @@ class MapEditorContractTest(unittest.TestCase):
 
     def test_multicell_glyph_debug_distinguishes_primary_and_faint_footprints(self) -> None:
         for expected in [
-            "coverageCache",
             "function massifCoverage(f)",
             "function glyphMetadata(f)",
-            "function glyphRefFor(image, zoomFactor)",
+            "function glyphRefFor(image)",
             "zoom_factor",
             "primary_offsets",
             "faint_offsets",
-            "function pointInsideHex(dx, dy, s)",
-            "HEX_ALPHA_STEP",
-            "PRIMARY_ALPHA_RATIO",
-            "primaryOffsets.push(key)",
-            "faintOffsets.push(key)",
+            "return offsets.map((offset) => applyOffset(f.anchor, offset));",
+            "primaryOffsets: meta.primary_offsets",
+            "faintOffsets: meta.faint_offsets",
             "rgba(215,215,215,0.42)",
             "#1e88e5",
+            "#f6df9b",
+            "anchor_cell: f.anchor",
             "bright blue dots",
             "pale gray dots",
         ]:
@@ -86,6 +92,110 @@ class MapEditorContractTest(unittest.TestCase):
                     expected in self.main_js or expected in self.readme or expected in self.glyph_doc,
                     expected,
                 )
+
+    def test_multicell_glyph_footprint_is_metadata_only(self) -> None:
+        coverage_fn = self.main_js.split("function massifCoverage(f)", 1)[1].split("// warm the cache", 1)[0]
+        self.assertIn("glyphMetadata(f)", coverage_fn)
+        self.assertIn("meta.primary_offsets", coverage_fn)
+        self.assertIn("meta.faint_offsets", coverage_fn)
+        self.assertNotIn("getImageData", coverage_fn)
+        self.assertNotIn("state.hexes", coverage_fn)
+
+        occupies_fn = self.main_js.split("function featureOccupiesHex(f, key)", 1)[1].split("function canReset", 1)[0]
+        self.assertIn("return false;", occupies_fn)
+        massif_branch = occupies_fn.split('const coverage = f.image ? massifCoverage(f) : null;', 1)[1]
+        self.assertNotIn("(f.cells || []).includes(key);", massif_branch)
+
+    def test_each_massif_png_has_one_canonical_glyph_ref(self) -> None:
+        refs_by_image = {}
+        for feature in self.hex_map["features"]:
+            if feature.get("glyph") != "massif":
+                continue
+            refs_by_image.setdefault(feature["image"], set()).add(feature.get("glyph_ref"))
+        for image, refs in refs_by_image.items():
+            with self.subTest(image=image):
+                self.assertEqual(len(refs), 1, refs)
+                ref = next(iter(refs))
+                self.assertNotIn("@", ref)
+                self.assertEqual(ref, f"massif:{Path(image).stem}")
+
+        metadata_by_file = {}
+        for ref, meta in self.hex_map["glyphs"].items():
+            metadata_by_file.setdefault(meta["file"], set()).add(ref)
+        for image, refs in metadata_by_file.items():
+            with self.subTest(metadata=image):
+                self.assertEqual(len(refs), 1, refs)
+
+    def test_massif_anchor_is_bottom_left_and_visible(self) -> None:
+        if Image is None:
+            self.skipTest("PIL is required for alpha anchor validation")
+        for ref, meta in self.hex_map["glyphs"].items():
+            with self.subTest(ref=ref):
+                self.assertEqual(meta.get("anchor_offset"), "bottom-left")
+                self.assertEqual(meta.get("anchor_point"), "hex-lower-left-0.75")
+                self.assertIn("anchor_source_px", meta)
+                with Image.open(ROOT / "assets" / "map" / "massifs" / meta["file"]) as source:
+                    alpha = source.convert("RGBA").getchannel("A")
+                    bbox = alpha.getbbox()
+                    self.assertIsNotNone(bbox)
+                    pixels = alpha.load()
+                    alpha_height = bbox[3] - bbox[1]
+                    band_top = max(bbox[1], bbox[3] - max(12, int(alpha_height * 0.08)))
+                    xs = [
+                        x
+                        for y in range(band_top, bbox[3])
+                        for x in range(alpha.width)
+                        if pixels[x, y] > 50
+                    ]
+                    self.assertIn(meta["anchor_source_px"][0], xs)
+                    self.assertEqual(meta["anchor_source_px"][1], alpha.height - 1)
+                x0, y0, x1, y1 = meta["bounds_offset_hex"]
+                self.assertLessEqual(x0, 0)
+                self.assertGreater(x1, 0)
+                self.assertLess(y0, 0)
+                self.assertEqual(y1, 0)
+
+        for expected in [
+            "if (hi.glyph === \"massif\")",
+            "function hexAnchorWorld(q, r)",
+            "x: c.x - (SQRT3 * s) / 2",
+            "y: c.y + s * 0.75",
+            "return hexToContent(q, r);",
+            "ctx.arc(c.x, c.y, os * 0.31",
+            "ctx.strokeStyle = \"#f6df9b\";",
+        ]:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.main_js)
+
+    def test_object_sprite_size_is_not_viewport_fit_dependent(self) -> None:
+        for expected in [
+            "const FIXED_MAP_SCALE = 0.64;",
+            "return FIXED_MAP_SCALE * zoomVal;",
+            "function objectUnit()",
+            "return sizeW();",
+            "const os = objectUnit();",
+            "const objectScreenS = os * sc;",
+            "const showLabels = objectScreenS > 13;",
+            "massifBounds(f, os)",
+            "drawCity(pos.x, pos.y, os, f, showLabels)",
+            "drawTransport(pos.x, pos.y, os, f, showLabels)",
+        ]:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.main_js)
+
+        self.assertNotIn("fitScale * zoomVal", self.main_js)
+        self.assertNotIn("Math.max(cssW / fw, cssH / fh)", self.main_js)
+
+    def test_clicked_country_gets_current_land_color(self) -> None:
+        for expected in [
+            "function currentCountry()",
+            "return state.hexes[selectedHex]?.country || \"DE\";",
+            "return cell.country === currentCountry() ? COLORS.landDE : COLORS.landOther;",
+        ]:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.main_js)
+        cell_color_fn = self.main_js.split("function cellColor(cell)", 1)[1].split("// ----- glyphs", 1)[0]
+        self.assertNotIn('cell.country === "DE"', cell_color_fn)
 
     def test_zoom_keeps_current_viewport_center_after_pan(self) -> None:
         for expected in [
