@@ -19,6 +19,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "map_pipeline"))
 
 import geopandas as gpd
+from PIL import Image
 from shapely.geometry import Point, Polygon, box
 from shapely.prepared import prep
 
@@ -219,6 +220,9 @@ FOREST_POINTS = [
     (10.55, 49.45), (9.58, 48.62), (11.34, 48.02), (12.15, 48.10),
 ]
 NEIGHBORS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
+HEX_ALPHA_STEP = 0.18
+PRIMARY_ALPHA_RATIO = 0.22
+ALPHA_THRESHOLD = 50
 
 CATALOGS = [
     os.path.join(ROOT, "scripts", "demo_catalog.gd"),
@@ -551,6 +555,79 @@ def feature_bounds_from_center(cx, cy, image_name, width_hex, s):
     ]
 
 
+def point_inside_hex(dx, dy, s):
+    return abs(dx) <= (math.sqrt(3) / 2) * s and abs(dy) + abs(dx) / math.sqrt(3) <= s
+
+
+def glyph_ref(image_name, zoom_factor):
+    return f"massif:{image_name}@{float(zoom_factor):.1f}"
+
+
+def glyph_footprint(image_name, zoom_factor, s):
+    path = os.path.join(MASSIF_DIR, image_name)
+    with Image.open(path) as img:
+        alpha = img.convert("RGBA").getchannel("A")
+        iw, ih = alpha.size
+        alpha_px = alpha.load()
+
+    width_px = s * float(zoom_factor)
+    height_px = width_px * ih / iw
+    x0, y0, x1, y1 = -width_px / 2, -height_px / 2, width_px / 2, height_px / 2
+    primary_offsets = []
+    faint_offsets = []
+    max_dq = math.ceil((abs(x0) + abs(x1)) / (math.sqrt(3) * s)) + 3
+    max_dr = math.ceil((abs(y0) + abs(y1)) / (1.5 * s)) + 3
+    for dr in range(-max_dr, max_dr + 1):
+        for dq in range(-max_dq, max_dq + 1):
+            wx, wy = hex_to_world(dq, dr, s)
+            if wx + s < x0 or wx - s > x1 or wy + s < y0 or wy - s > y1:
+                continue
+            opaque = 0
+            sampled = 0
+            oy = -0.9
+            while oy <= 0.91:
+                ox = -0.9
+                while ox <= 0.91:
+                    sx, sy = wx + ox * s, wy + oy * s
+                    if point_inside_hex(sx - wx, sy - wy, s):
+                        ix = round(((sx - x0) / width_px) * (iw - 1))
+                        iy = round(((sy - y0) / height_px) * (ih - 1))
+                        if 0 <= ix < iw and 0 <= iy < ih:
+                            sampled += 1
+                            if alpha_px[ix, iy] > ALPHA_THRESHOLD:
+                                opaque += 1
+                    ox += HEX_ALPHA_STEP
+                oy += HEX_ALPHA_STEP
+            if not sampled or not opaque:
+                continue
+            key = f"{dq},{dr}"
+            if opaque / sampled >= PRIMARY_ALPHA_RATIO:
+                primary_offsets.append(key)
+            else:
+                faint_offsets.append(key)
+
+    return {
+        "type": "massif",
+        "file": image_name,
+        "anchor_offset": "0,0",
+        "zoom_factor": round(float(zoom_factor), 1),
+        "render_width_hex": round(float(zoom_factor), 1),
+        "render_height_hex": round(height_px / s, 1),
+        "bounds_offset_hex": [
+            round(x0 / s, 3), round(y0 / s, 3),
+            round(x1 / s, 3), round(y1 / s, 3),
+        ],
+        "primary_offsets": primary_offsets,
+        "faint_offsets": faint_offsets,
+    }
+
+
+def apply_offset(anchor, offset):
+    aq, ar = [int(v) for v in anchor.split(",")]
+    dq, dr = [int(v) for v in offset.split(",")]
+    return f"{aq + dq},{ar + dr}"
+
+
 def main():
     s = hex_size_px()
     minlon, minlat, maxlon, maxlat = EUROPE_BOUNDS
@@ -574,8 +651,6 @@ def main():
         cgeo.append((iso, prep(row.geometry), row.geometry.bounds, row.geometry))
     mountain_polys, massif_pieces = load_massifs()
     expansion_relief = load_expansion_relief_layers()
-    relief_boxes = [(layer, box(*layer["bounds"])) for layer in expansion_relief]
-
     def country_of(pt):
         for iso, pg, (bx0, by0, bx1, by1), _geom in cgeo:
             if bx0 <= pt.x <= bx1 and by0 <= pt.y <= by1 and pg.contains(pt):
@@ -615,12 +690,7 @@ def main():
             pt = Point(lon, lat)
             if not land_prep.contains(pt):
                 continue
-            # massifs are cross-border: mountain regardless of country
-            terrain = "mountain" if (
-                any(m.contains(pt) for m in mountain_polys)
-                or any(poly.contains(pt) for _layer, poly in relief_boxes)
-            ) else "plain"
-            hexes[f"{q},{r}"] = {"country": country_of(pt), "terrain": terrain,
+            hexes[f"{q},{r}"] = {"country": country_of(pt), "terrain": "plain",
                                  "center": [round(lon, 5), round(lat, 5)]}
 
     def nearest_land_key(lon, lat, radius=8, preferred_country=None):
@@ -668,76 +738,64 @@ def main():
                             "cells": cells, "anchor": anchor, "home": anchor})
 
     features = list(forests)
+    glyphs = {}
+
+    def ensure_massif_glyph(image_name, zoom_factor):
+        ref = glyph_ref(image_name, zoom_factor)
+        if ref not in glyphs:
+            glyphs[ref] = glyph_footprint(image_name, zoom_factor, s)
+        return ref
+
+    def massif_cells(anchor, ref):
+        glyph = glyphs[ref]
+        offsets = glyph["primary_offsets"] + glyph["faint_offsets"]
+        return [key for key in (apply_offset(anchor, offset) for offset in offsets) if key in hexes]
 
     # separate massif glyph pieces: Alps as its named segments, every other
     # massif as its own piece — each its own image, placed by real geo_bounds.
     for m in massif_pieces:
         gb = m["geo_bounds"]
-        region_poly = m.get("region_polygon")
-        region_prep = prep(region_poly) if region_poly else None
-        cells = []
-        for k, c in hexes.items():
-            if c["terrain"] != "mountain":
-                continue
-            lon, lat = c["center"]
-            if not (gb["min_longitude"] <= lon <= gb["max_longitude"]
-                    and gb["min_latitude"] <= lat <= gb["max_latitude"]):
-                continue
-            if region_prep and not region_prep.covers(Point(lon, lat)):
-                continue
-            cells.append(k)
-
-        if m["id"] in GEO_BOUNDS_MASSIF_IDS:
-            x0, y0 = merc(gb["min_longitude"], gb["max_latitude"])
-            x1, y1 = merc(gb["max_longitude"], gb["min_latitude"])
-            aq, ar = world_to_hex((x0 + x1) / 2, (y0 + y1) / 2, s)
-            features.append({"id": m["id"], "glyph": "massif", "image": m["image"],
-                             "label": m["id"], "bounds_px": [round(x0, 1), round(y0, 1),
-                             round(x1, 1), round(y1, 1)], "cells": cells,
-                             "anchor": f"{aq},{ar}", "home": f"{aq},{ar}"})
-            continue
-
         cx, cy = merc((gb["min_longitude"] + gb["max_longitude"]) / 2,
                       (gb["min_latitude"] + gb["max_latitude"]) / 2)
         aq, ar = world_to_hex(cx, cy, s)
-        asset_width_hex = float(m.get("asset_width_hex", 5.0))
-        width_px = s * asset_width_hex
-        iw, ih = m.get("image_size") or (1, 1)
-        height_px = width_px * ih / iw
-        x0, y0 = cx - width_px / 2, cy - height_px / 2
-        x1, y1 = cx + width_px / 2, cy + height_px / 2
+        ax, ay = hex_to_world(aq, ar, s)
+        zoom_factor = float(m.get("asset_width_hex", 5.0))
+        ref = ensure_massif_glyph(m["image"], zoom_factor)
+        anchor = f"{aq},{ar}"
         features.append({"id": m["id"], "glyph": "massif", "image": m["image"],
-                         "label": m["id"], "bounds_px": [round(x0, 1), round(y0, 1),
-                         round(x1, 1), round(y1, 1)], "cells": cells,
-                         "anchor": f"{aq},{ar}", "home": f"{aq},{ar}",
-                         "asset_width_hex": asset_width_hex})
+                         "glyph_ref": ref, "label": m["id"],
+                         "anchor": anchor, "home": anchor})
 
     for layer in expansion_relief:
         min_lon, min_lat, max_lon, max_lat = layer["bounds"]
-        cells = [
-            k for k, c in hexes.items()
-            if c["terrain"] == "mountain"
-            and min_lon <= c["center"][0] <= max_lon
-            and min_lat <= c["center"][1] <= max_lat
-        ]
-        if not cells:
-            continue
         cx, cy = merc((min_lon + max_lon) / 2, (min_lat + max_lat) / 2)
         aq, ar = world_to_hex(cx, cy, s)
-        image_name, width_hex = relief_image_for(layer["id"])
-        bounds = feature_bounds_from_center(cx, cy, image_name, width_hex, s)
+        ax, ay = hex_to_world(aq, ar, s)
+        image_name, zoom_factor = relief_image_for(layer["id"])
+        ref = ensure_massif_glyph(image_name, zoom_factor)
+        anchor = f"{aq},{ar}"
+        cells = massif_cells(anchor, ref)
+        if not cells:
+            continue
         features.append({
             "id": f"relief-{layer['id']}",
             "glyph": "massif",
             "image": image_name,
+            "glyph_ref": ref,
             "label": layer["label"],
-            "bounds_px": bounds,
-            "cells": cells,
-            "anchor": f"{aq},{ar}",
-            "home": f"{aq},{ar}",
-            "asset_width_hex": width_hex,
+            "anchor": anchor,
+            "home": anchor,
             "source": "map_block_relief_layer",
         })
+
+    for feature in features:
+        if feature.get("glyph") != "massif":
+            continue
+        ref = feature.get("glyph_ref")
+        keys = massif_cells(feature["anchor"], ref) if ref else feature.get("cells", [])
+        for key in keys:
+            if key in hexes:
+                hexes[key]["terrain"] = "mountain"
 
     city_rows = []
     seen_city_ids = set()
@@ -827,6 +885,7 @@ def main():
                  "size": [round(maxx - minx, 2), round(maxy - miny, 2)]},
         "focus": focus,
         "reference_outline": outline,
+        "glyphs": glyphs,
         "hexes": hexes,
         "features": features,
     }

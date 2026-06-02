@@ -1,0 +1,103 @@
+{
+  "cropped_size_px": [
+    550,
+    627
+  ],
+  "extends_to": [
+    "Belgium",
+    "Luxembourg"
+  ],
+  "geo_bounds": {
+    "max_latitude": 50.79849,
+    "max_longitude": 7.79146,
+    "min_latitude": 49.52046,
+    "min_longitude": 6.04068
+  },
+  "glyphs": [
+    {
+      "glyph": "massif_eifel_hunsrueck_low",
+      "latitude": 50.18,
+      "longitude": 6.72,
+      "width": 225,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "eifel_hunsrueck",
+  "image": "eifel_hunsrueck.png",
+  "kind": "low_highland",
+  "label": "Eifel Hunsrueck",
+  "map_bbox_px": [
+    242.0,
+    1317.0,
+    517.0,
+    1630.5
+  ],
+  "massif_segments": [],
+  "placement_policy": "named_region_polygon_and_low_spine",
+  "region_polygon": [
+    {
+      "latitude": 50.8,
+      "longitude": 5.9
+    },
+    {
+      "latitude": 50.55,
+      "longitude": 7.7
+    },
+    {
+      "latitude": 49.65,
+      "longitude": 7.75
+    },
+    {
+      "latitude": 49.45,
+      "longitude": 6.25
+    },
+    {
+      "latitude": 50.1,
+      "longitude": 5.55
+    }
+  ],
+  "render_bbox_px": [
+    484,
+    2634,
+    1034,
+    3261
+  ],
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
+  "ridge_bands": [
+    {
+      "height": 30,
+      "id": "eifel_hunsrueck_low_spine",
+      "points": [
+        {
+          "latitude": 50.55,
+          "longitude": 5.95
+        },
+        {
+          "latitude": 50.25,
+          "longitude": 6.7
+        },
+        {
+          "latitude": 49.9,
+          "longitude": 7.4
+        }
+      ],
+      "step": 34,
+      "style": "low"
+    }
+  ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "eifel_hunsrueck_low_extent",
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 49.75,
+      "longitude": 7.05,
+      "radius": 64
+    },
+    {
+      "latitude": 50.45,
+      "longitude": 7.35,
+      "radius": 48
+    }
+  ]
+}

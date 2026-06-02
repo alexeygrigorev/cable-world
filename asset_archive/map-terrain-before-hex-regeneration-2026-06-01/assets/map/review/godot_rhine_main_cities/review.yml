@@ -1,0 +1,14 @@
+{
+	"captureScript": "map_review_app/capture_map_review_scenes.gd",
+	"description": "Runtime crop for Köln and Frankfurt cluster glyphs.",
+	"feedbackTarget": "Check whether Köln and Frankfurt have comparable visual weight and stay legible over terrain.",
+	"id": "godot_rhine_main_cities",
+	"order": [
+		"050",
+		"100",
+		"150",
+		"200"
+	],
+	"schema": "cable-world.map-review-set.v1",
+	"title": "Godot Köln Frankfurt"
+}

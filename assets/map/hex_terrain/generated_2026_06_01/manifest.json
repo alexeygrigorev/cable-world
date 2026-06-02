@@ -1,0 +1,683 @@
+{
+  "generated_at": "2026-06-01",
+  "style": "warm 16-bit RPG atlas pixel art, chroma-key alpha cutouts",
+  "max_runtime_zoom_target": "200%",
+  "assets": [
+    {
+      "id": "mountain_alps_central_wall_v1",
+      "file": "alps/mountain_alps_central_wall_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        1,
+        0
+      ],
+      "size_px": [
+        389,
+        179
+      ]
+    },
+    {
+      "id": "mountain_alps_central_wall_v2",
+      "file": "alps/mountain_alps_central_wall_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        1,
+        0
+      ],
+      "size_px": [
+        435,
+        205
+      ]
+    },
+    {
+      "id": "mountain_alps_east_wall_v1",
+      "file": "alps/mountain_alps_east_wall_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        2,
+        0
+      ],
+      "size_px": [
+        386,
+        141
+      ]
+    },
+    {
+      "id": "mountain_alps_east_wall_v2",
+      "file": "alps/mountain_alps_east_wall_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        2,
+        0
+      ],
+      "size_px": [
+        429,
+        178
+      ]
+    },
+    {
+      "id": "mountain_alps_foothills_v1",
+      "file": "alps/mountain_alps_foothills_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        1,
+        1
+      ],
+      "size_px": [
+        389,
+        128
+      ]
+    },
+    {
+      "id": "mountain_alps_foothills_v2",
+      "file": "alps/mountain_alps_foothills_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        1,
+        1
+      ],
+      "size_px": [
+        435,
+        132
+      ]
+    },
+    {
+      "id": "mountain_alps_green_lower_ridge_v1",
+      "file": "alps/mountain_alps_green_lower_ridge_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        3,
+        1
+      ],
+      "size_px": [
+        388,
+        121
+      ]
+    },
+    {
+      "id": "mountain_alps_green_lower_ridge_v2",
+      "file": "alps/mountain_alps_green_lower_ridge_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        3,
+        1
+      ],
+      "size_px": [
+        426,
+        123
+      ]
+    },
+    {
+      "id": "mountain_alps_northern_edge_v1",
+      "file": "alps/mountain_alps_northern_edge_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        3,
+        0
+      ],
+      "size_px": [
+        388,
+        121
+      ]
+    },
+    {
+      "id": "mountain_alps_northern_edge_v2",
+      "file": "alps/mountain_alps_northern_edge_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        3,
+        0
+      ],
+      "size_px": [
+        431,
+        171
+      ]
+    },
+    {
+      "id": "mountain_alps_snow_high_range_v1",
+      "file": "alps/mountain_alps_snow_high_range_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        2,
+        1
+      ],
+      "size_px": [
+        389,
+        160
+      ]
+    },
+    {
+      "id": "mountain_alps_snow_high_range_v2",
+      "file": "alps/mountain_alps_snow_high_range_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        2,
+        1
+      ],
+      "size_px": [
+        430,
+        175
+      ]
+    },
+    {
+      "id": "mountain_alps_tyrol_wall_v1",
+      "file": "alps/mountain_alps_tyrol_wall_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        0,
+        1
+      ],
+      "size_px": [
+        388,
+        164
+      ]
+    },
+    {
+      "id": "mountain_alps_tyrol_wall_v2",
+      "file": "alps/mountain_alps_tyrol_wall_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        0,
+        1
+      ],
+      "size_px": [
+        436,
+        192
+      ]
+    },
+    {
+      "id": "mountain_alps_west_wall_v1",
+      "file": "alps/mountain_alps_west_wall_v1.png",
+      "source_sheet": "alps_sheet_source.png",
+      "cell": [
+        0,
+        0
+      ],
+      "size_px": [
+        388,
+        198
+      ]
+    },
+    {
+      "id": "mountain_alps_west_wall_v2",
+      "file": "alps/mountain_alps_west_wall_v2.png",
+      "source_sheet": "alps_sheet_v2_source.png",
+      "cell": [
+        0,
+        0
+      ],
+      "size_px": [
+        426,
+        209
+      ]
+    },
+    {
+      "id": "forest_broadleaf_bundle_3_v1",
+      "file": "forests/forest_broadleaf_bundle_3_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        2,
+        1
+      ],
+      "size_px": [
+        251,
+        226
+      ]
+    },
+    {
+      "id": "forest_broadleaf_bundle_7_v1",
+      "file": "forests/forest_broadleaf_bundle_7_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        2,
+        2
+      ],
+      "size_px": [
+        370,
+        254
+      ]
+    },
+    {
+      "id": "forest_broadleaf_single_v1",
+      "file": "forests/forest_broadleaf_single_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        2,
+        0
+      ],
+      "size_px": [
+        182,
+        172
+      ]
+    },
+    {
+      "id": "forest_dark_conifer_single_v1",
+      "file": "forests/forest_dark_conifer_single_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        3,
+        0
+      ],
+      "size_px": [
+        173,
+        176
+      ]
+    },
+    {
+      "id": "forest_mixed_bundle_3_v1",
+      "file": "forests/forest_mixed_bundle_3_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        1,
+        1
+      ],
+      "size_px": [
+        277,
+        232
+      ]
+    },
+    {
+      "id": "forest_mixed_bundle_7_v1",
+      "file": "forests/forest_mixed_bundle_7_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        1,
+        2
+      ],
+      "size_px": [
+        322,
+        253
+      ]
+    },
+    {
+      "id": "forest_mixed_single_v1",
+      "file": "forests/forest_mixed_single_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        1,
+        0
+      ],
+      "size_px": [
+        171,
+        173
+      ]
+    },
+    {
+      "id": "forest_pine_bundle_3_v1",
+      "file": "forests/forest_pine_bundle_3_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        0,
+        1
+      ],
+      "size_px": [
+        257,
+        318
+      ]
+    },
+    {
+      "id": "forest_pine_bundle_7_v1",
+      "file": "forests/forest_pine_bundle_7_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        0,
+        2
+      ],
+      "size_px": [
+        328,
+        245
+      ]
+    },
+    {
+      "id": "forest_pine_single_v1",
+      "file": "forests/forest_pine_single_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        0,
+        0
+      ],
+      "size_px": [
+        166,
+        172
+      ]
+    },
+    {
+      "id": "forest_rocky_bundle_3_v1",
+      "file": "forests/forest_rocky_bundle_3_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        3,
+        1
+      ],
+      "size_px": [
+        283,
+        234
+      ]
+    },
+    {
+      "id": "forest_sparse_edge_bundle_7_v1",
+      "file": "forests/forest_sparse_edge_bundle_7_v1.png",
+      "source_sheet": "forest_sheet_source.png",
+      "cell": [
+        3,
+        2
+      ],
+      "size_px": [
+        320,
+        253
+      ]
+    },
+    {
+      "id": "mountain_alpine_edge_v1",
+      "file": "german_mountains/mountain_alpine_edge_v1.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        2,
+        2
+      ],
+      "size_px": [
+        354,
+        271
+      ]
+    },
+    {
+      "id": "mountain_alpine_edge_v2",
+      "file": "german_mountains/mountain_alpine_edge_v2.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        3,
+        2
+      ],
+      "size_px": [
+        349,
+        283
+      ]
+    },
+    {
+      "id": "mountain_erzgebirge_ridge_v1",
+      "file": "german_mountains/mountain_erzgebirge_ridge_v1.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        0,
+        2
+      ],
+      "size_px": [
+        348,
+        270
+      ]
+    },
+    {
+      "id": "mountain_erzgebirge_ridge_v2",
+      "file": "german_mountains/mountain_erzgebirge_ridge_v2.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        1,
+        2
+      ],
+      "size_px": [
+        351,
+        264
+      ]
+    },
+    {
+      "id": "mountain_harz_brocken_v1",
+      "file": "german_mountains/mountain_harz_brocken_v1.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        0,
+        0
+      ],
+      "size_px": [
+        333,
+        262
+      ]
+    },
+    {
+      "id": "mountain_harz_brocken_v2",
+      "file": "german_mountains/mountain_harz_brocken_v2.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        1,
+        0
+      ],
+      "size_px": [
+        345,
+        285
+      ]
+    },
+    {
+      "id": "mountain_harz_brocken_v3",
+      "file": "german_mountains/mountain_harz_brocken_v3.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        2,
+        0
+      ],
+      "size_px": [
+        318,
+        257
+      ]
+    },
+    {
+      "id": "mountain_harz_brocken_v4",
+      "file": "german_mountains/mountain_harz_brocken_v4.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        3,
+        0
+      ],
+      "size_px": [
+        328,
+        259
+      ]
+    },
+    {
+      "id": "mountain_saxon_switzerland_v1",
+      "file": "german_mountains/mountain_saxon_switzerland_v1.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        0,
+        1
+      ],
+      "size_px": [
+        338,
+        285
+      ]
+    },
+    {
+      "id": "mountain_saxon_switzerland_v2",
+      "file": "german_mountains/mountain_saxon_switzerland_v2.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        1,
+        1
+      ],
+      "size_px": [
+        349,
+        258
+      ]
+    },
+    {
+      "id": "mountain_saxon_switzerland_v3",
+      "file": "german_mountains/mountain_saxon_switzerland_v3.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        2,
+        1
+      ],
+      "size_px": [
+        339,
+        246
+      ]
+    },
+    {
+      "id": "mountain_saxon_switzerland_v4",
+      "file": "german_mountains/mountain_saxon_switzerland_v4.png",
+      "source_sheet": "german_mountain_sheet_source.png",
+      "cell": [
+        3,
+        1
+      ],
+      "size_px": [
+        353,
+        248
+      ]
+    },
+    {
+      "id": "wooded_mountain_bavarian_forest_v1",
+      "file": "wooded_mountains/wooded_mountain_bavarian_forest_v1.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        0,
+        1
+      ],
+      "size_px": [
+        362,
+        218
+      ]
+    },
+    {
+      "id": "wooded_mountain_bavarian_forest_v2",
+      "file": "wooded_mountains/wooded_mountain_bavarian_forest_v2.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        1,
+        1
+      ],
+      "size_px": [
+        381,
+        206
+      ]
+    },
+    {
+      "id": "wooded_mountain_black_forest_v1",
+      "file": "wooded_mountains/wooded_mountain_black_forest_v1.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        0,
+        0
+      ],
+      "size_px": [
+        360,
+        212
+      ]
+    },
+    {
+      "id": "wooded_mountain_black_forest_v2",
+      "file": "wooded_mountains/wooded_mountain_black_forest_v2.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        1,
+        0
+      ],
+      "size_px": [
+        381,
+        225
+      ]
+    },
+    {
+      "id": "wooded_mountain_black_forest_v3",
+      "file": "wooded_mountains/wooded_mountain_black_forest_v3.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        2,
+        0
+      ],
+      "size_px": [
+        362,
+        204
+      ]
+    },
+    {
+      "id": "wooded_mountain_black_forest_v4",
+      "file": "wooded_mountains/wooded_mountain_black_forest_v4.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        3,
+        0
+      ],
+      "size_px": [
+        353,
+        197
+      ]
+    },
+    {
+      "id": "wooded_mountain_eifel_hunsrueck_v1",
+      "file": "wooded_mountains/wooded_mountain_eifel_hunsrueck_v1.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        0,
+        2
+      ],
+      "size_px": [
+        362,
+        178
+      ]
+    },
+    {
+      "id": "wooded_mountain_eifel_hunsrueck_v2",
+      "file": "wooded_mountains/wooded_mountain_eifel_hunsrueck_v2.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        1,
+        2
+      ],
+      "size_px": [
+        364,
+        204
+      ]
+    },
+    {
+      "id": "wooded_mountain_erzgebirge_v1",
+      "file": "wooded_mountains/wooded_mountain_erzgebirge_v1.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        2,
+        1
+      ],
+      "size_px": [
+        367,
+        187
+      ]
+    },
+    {
+      "id": "wooded_mountain_erzgebirge_v2",
+      "file": "wooded_mountains/wooded_mountain_erzgebirge_v2.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        3,
+        1
+      ],
+      "size_px": [
+        350,
+        196
+      ]
+    },
+    {
+      "id": "wooded_mountain_low_hills_v1",
+      "file": "wooded_mountains/wooded_mountain_low_hills_v1.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        2,
+        2
+      ],
+      "size_px": [
+        357,
+        190
+      ]
+    },
+    {
+      "id": "wooded_mountain_low_hills_v2",
+      "file": "wooded_mountains/wooded_mountain_low_hills_v2.png",
+      "source_sheet": "wooded_mountain_sheet_source.png",
+      "cell": [
+        3,
+        2
+      ],
+      "size_px": [
+        339,
+        160
+      ]
+    }
+  ]
+}

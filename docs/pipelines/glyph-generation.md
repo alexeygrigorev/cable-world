@@ -15,6 +15,8 @@ This is the index for generated map glyph workflows. Keep repeatable production 
 - Runtime assets must be transparent PNGs with stable `city_` / `icon_` / glyph ids that match the code and data contracts.
 - Before accepting any sheet sliced by a grid, run `map_pipeline.sheet_slice_audit`.
 - The final acceptance zoom for map art is user zoom `300%`; do not accept assets that only look good when downscaled.
+- In the hex editor, every feature shown in the clicked-hex panel must show its object id, concrete glyph filename, and a visible glyph preview.
+- Multi-hex glyphs must have metadata, not per-instance footprints: `anchor_offset` is local `0,0`, `zoom_factor` is shared by every instance of the same `glyph_ref`, `primary_offsets` are bright blue debug dots, and `faint_offsets` are pale gray weak-alpha debug dots. Empty alpha has no dot and must not select the glyph.
 - Add or update a focused Python contract test when a pipeline rule becomes required.
 
 ## Sheet Cut Audit

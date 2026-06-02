@@ -13,7 +13,9 @@ const ATLAS_CONTROL_BORDER := Color("#3b2a18")
 const ATLAS_CONTROL_INK := Color("#27321f")
 const ATLAS_CONTROL_ACCENT := Color("#31544d")
 const ATLAS_CONTROL_SHADOW := Color(0.12, 0.08, 0.03, 0.42)
-const ATLAS_LIST_BACKDROP := preload("res://assets/map/germany_styled.png")
+# Loaded lazily (not preload) so decommissioning the old static map image
+# doesn't break the build; the hex map model is the live map now.
+const ATLAS_LIST_BACKDROP_PATH := "res://assets/map/germany_styled.png"
 const ATLAS_ICON_PARCHMENT := Color("#f2e5bd")
 const ATLAS_ICON_PARCHMENT_DARK := Color("#d7c06f")
 const ATLAS_ICON_GREEN := Color("#8fb18a")
@@ -742,7 +744,8 @@ func _create_list_map_return_button() -> void:
 func _create_list_backdrop() -> void:
 	list_backdrop = TextureRect.new()
 	list_backdrop.name = "ListAtlasBackdrop"
-	list_backdrop.texture = ATLAS_LIST_BACKDROP
+	if ResourceLoader.exists(ATLAS_LIST_BACKDROP_PATH):
+		list_backdrop.texture = load(ATLAS_LIST_BACKDROP_PATH)
 	list_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	list_backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	list_backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)

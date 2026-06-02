@@ -119,6 +119,8 @@ python3 -m map_pipeline.slice_city_cluster_landmarks_hi_res \
 
 The sheet slicer crops by connected alpha components, not only by the nominal grid cell. This prevents city clusters from losing a side when the generated art crosses a grid line. It also normalizes every accepted glyph to the current runtime target with transparent padding and removes tiny alpha islands from sheet edges.
 
+Normalization rule: after alpha trim and fit, center the resized glyph horizontally and place its bottom on the shared bottom padding baseline. Do not vertically center city glyphs inside the 256x256 canvas; wide/low cities like Amsterdam and Bremen otherwise float above the map anchor while taller cities like Berlin and Hannover look correct by accident.
+
 ## Outline
 
 ```bash

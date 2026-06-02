@@ -1,0 +1,103 @@
+{
+  "cropped_size_px": [
+    415,
+    434
+  ],
+  "extends_to": [
+    "Czechia",
+    "Austria"
+  ],
+  "geo_bounds": {
+    "max_latitude": 49.7451,
+    "max_longitude": 13.63905,
+    "min_latitude": 48.84453,
+    "min_longitude": 12.31801
+  },
+  "glyphs": [
+    {
+      "glyph": "massif_bavarian_forest",
+      "latitude": 49.2,
+      "longitude": 12.95,
+      "width": 210,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "bavarian_forest",
+  "image": "bavarian_forest.png",
+  "kind": "forested_highland",
+  "label": "Bavarian Forest",
+  "map_bbox_px": [
+    1228.0,
+    1576.0,
+    1435.5,
+    1793.0
+  ],
+  "massif_segments": [],
+  "placement_policy": "named_region_polygon_and_ridge_spine",
+  "region_polygon": [
+    {
+      "latitude": 49.35,
+      "longitude": 11.8
+    },
+    {
+      "latitude": 48.8,
+      "longitude": 12.55
+    },
+    {
+      "latitude": 48.8,
+      "longitude": 13.7
+    },
+    {
+      "latitude": 49.35,
+      "longitude": 13.85
+    },
+    {
+      "latitude": 49.85,
+      "longitude": 12.7
+    }
+  ],
+  "render_bbox_px": [
+    2456,
+    3152,
+    2871,
+    3586
+  ],
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
+  "ridge_bands": [
+    {
+      "height": 36,
+      "id": "bavarian_forest_spine",
+      "points": [
+        {
+          "latitude": 49.38,
+          "longitude": 12.15
+        },
+        {
+          "latitude": 49.12,
+          "longitude": 12.7
+        },
+        {
+          "latitude": 49.02,
+          "longitude": 13.4
+        }
+      ],
+      "step": 34,
+      "style": "forested"
+    }
+  ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "bavarian_forest_spine_extent",
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 49.35,
+      "longitude": 12.8,
+      "radius": 72
+    },
+    {
+      "latitude": 49.05,
+      "longitude": 13.2,
+      "radius": 62
+    }
+  ]
+}

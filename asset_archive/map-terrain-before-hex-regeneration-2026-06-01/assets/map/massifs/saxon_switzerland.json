@@ -1,0 +1,101 @@
+{
+  "cropped_size_px": [
+    324,
+    265
+  ],
+  "extends_to": [
+    "Czechia"
+  ],
+  "geo_bounds": {
+    "max_latitude": 51.2926,
+    "max_longitude": 14.69589,
+    "min_latitude": 50.76228,
+    "min_longitude": 13.66452
+  },
+  "glyphs": [
+    {
+      "glyph": "massif_saxon_switzerland_sandstone",
+      "latitude": 50.96,
+      "longitude": 14.18,
+      "width": 170,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "saxon_switzerland",
+  "image": "saxon_switzerland.png",
+  "kind": "sandstone_highland",
+  "label": "Saxon Switzerland / Elbe Sandstone",
+  "map_bbox_px": [
+    1439.5,
+    1193.5,
+    1601.5,
+    1326.0
+  ],
+  "massif_segments": [],
+  "placement_policy": "named_sandstone_region_polygon_and_rim",
+  "region_polygon": [
+    {
+      "latitude": 51.05,
+      "longitude": 13.65
+    },
+    {
+      "latitude": 50.82,
+      "longitude": 14.05
+    },
+    {
+      "latitude": 50.78,
+      "longitude": 14.45
+    },
+    {
+      "latitude": 50.98,
+      "longitude": 14.75
+    },
+    {
+      "latitude": 51.18,
+      "longitude": 14.35
+    },
+    {
+      "latitude": 51.22,
+      "longitude": 13.85
+    }
+  ],
+  "render_bbox_px": [
+    2879,
+    2387,
+    3203,
+    2652
+  ],
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
+  "ridge_bands": [
+    {
+      "height": 28,
+      "id": "elbe_sandstone_rim",
+      "points": [
+        {
+          "latitude": 51.04,
+          "longitude": 13.78
+        },
+        {
+          "latitude": 50.92,
+          "longitude": 14.2
+        },
+        {
+          "latitude": 50.96,
+          "longitude": 14.58
+        }
+      ],
+      "step": 28,
+      "style": "sandstone"
+    }
+  ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "elbe_sandstone_extent",
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 50.96,
+      "longitude": 14.18,
+      "radius": 42
+    }
+  ]
+}

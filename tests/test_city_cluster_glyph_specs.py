@@ -82,6 +82,11 @@ class CityClusterGlyphSpecsTest(unittest.TestCase):
         ]:
             self.assertIn(expected, docs_text)
 
+    def test_city_slicer_bottom_aligns_normalized_icons(self) -> None:
+        slicer_text = (ROOT / "map_pipeline" / "slice_city_cluster_landmarks_hi_res.py").read_text(encoding="utf-8")
+        self.assertIn("ICON_SIZE - resized.height - PADDING", slicer_text)
+        self.assertNotIn("(ICON_SIZE - resized.height) // 2", slicer_text)
+
 
 if __name__ == "__main__":
     unittest.main()

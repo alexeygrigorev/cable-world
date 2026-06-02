@@ -1,0 +1,109 @@
+{
+  "cropped_size_px": [
+    438,
+    782
+  ],
+  "extends_to": [],
+  "geo_bounds": {
+    "max_latitude": 49.40465,
+    "max_longitude": 8.71778,
+    "min_latitude": 47.75876,
+    "min_longitude": 7.32352
+  },
+  "glyphs": [
+    {
+      "glyph": "massif_black_forest_spine",
+      "latitude": 48.23,
+      "longitude": 8.02,
+      "width": 235,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "black_forest",
+  "image": "black_forest.png",
+  "kind": "forested_highland",
+  "label": "Black Forest",
+  "map_bbox_px": [
+    443.5,
+    1658.5,
+    662.5,
+    2049.5
+  ],
+  "massif_segments": [],
+  "placement_policy": "named_region_polygon_and_ridge_spine",
+  "region_polygon": [
+    {
+      "latitude": 49.2,
+      "longitude": 7.45
+    },
+    {
+      "latitude": 48.9,
+      "longitude": 8.25
+    },
+    {
+      "latitude": 47.75,
+      "longitude": 8.55
+    },
+    {
+      "latitude": 47.45,
+      "longitude": 7.65
+    },
+    {
+      "latitude": 48.25,
+      "longitude": 6.95
+    }
+  ],
+  "render_bbox_px": [
+    887,
+    3317,
+    1325,
+    4099
+  ],
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
+  "ridge_bands": [
+    {
+      "height": 38,
+      "id": "black_forest_spine",
+      "points": [
+        {
+          "latitude": 49.0,
+          "longitude": 7.78
+        },
+        {
+          "latitude": 48.55,
+          "longitude": 8.05
+        },
+        {
+          "latitude": 48.12,
+          "longitude": 8.05
+        },
+        {
+          "latitude": 47.72,
+          "longitude": 7.82
+        }
+      ],
+      "step": 34,
+      "style": "forested"
+    }
+  ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "black_forest_spine_extent",
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 49.0,
+      "longitude": 8.0,
+      "radius": 82
+    },
+    {
+      "latitude": 48.45,
+      "longitude": 8.15,
+      "radius": 76
+    },
+    {
+      "latitude": 47.95,
+      "longitude": 7.8,
+      "radius": 70
+    }
+  ]
+}

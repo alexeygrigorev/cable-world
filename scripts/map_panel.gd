@@ -392,14 +392,17 @@ const TRANSPORT_TYPE_ICON := {
 	"special_transport_system": "icon_station",
 	"unique_engineering_object": "icon_station",
 }
-const MIN_ZOOM := 0.5
-const MAX_ZOOM := 2.0
-const ZOOM_STEP := 0.25
-const DEFAULT_ZOOM := 1.10
-const DEFAULT_LANDSCAPE_ZOOM := 1.0
+# Zoom range/step/default come from the shared map_config.json (so the editor
+# and the game stay in sync). Defaults here are the fallback if the file is gone.
+var MIN_ZOOM := 0.25
+var MAX_ZOOM := 3.0
+var ZOOM_STEP := 0.25
+var DEFAULT_ZOOM := 1.0
+var DEFAULT_LANDSCAPE_ZOOM := 1.0
 const MAP_CONTROL_SIZE := Vector2(48.0, 48.0)
 const FIT_CONTROL_SIZE := Vector2(48.0, 48.0)
 const PAN_LIMIT_PADDING := 72.0
+const WHEEL_PAN_STEP := 90.0
 const PAN_DRAG_SCALE := 1.0
 const TOUCH_PAN_DRAG_SCALE := 0.34
 const DRAG_TAP_SUPPRESS_DISTANCE := 10.0
@@ -432,6 +435,7 @@ var marker_icons: Dictionary = {}
 var map_view_initialized := false
 
 func _ready() -> void:
+	_load_zoom_config()
 	custom_minimum_size.y = max(custom_minimum_size.y, MAP_MIN_HEIGHT)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color(1.0, 1.0, 1.0, 0.0)
@@ -551,6 +555,14 @@ func _ready() -> void:
 	_refresh_markers()
 	call_deferred("_sync_map_canvas_height")
 	call_deferred("_reset_map_view")
+
+func _load_zoom_config() -> void:
+	var cfg := HexMapModel.load_zoom_config()
+	MIN_ZOOM = float(cfg["min"])
+	MAX_ZOOM = float(cfg["max"])
+	ZOOM_STEP = float(cfg["step"])
+	DEFAULT_ZOOM = clamp(float(cfg["default"]), MIN_ZOOM, MAX_ZOOM)
+	DEFAULT_LANDSCAPE_ZOOM = DEFAULT_ZOOM
 
 # Live map sync (dev only): when the map editor saves hex_map.json, reload the
 # model and redraw so editor changes show up in the running game without a
@@ -969,11 +981,23 @@ func _on_map_layer_gui_input(event: InputEvent) -> void:
 		accept_event()
 
 func _handle_mouse_button(event: InputEventMouseButton) -> void:
+	# Wheel pans the map (zoom is only via the +/- buttons), matching the editor.
+	var wheel_step: float = WHEEL_PAN_STEP * (event.factor if event.factor > 0.0 else 1.0)
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
-		_zoom_by_delta(event.position, ZOOM_STEP)
+		_pan_by(Vector2(0.0, wheel_step))
+		_apply_map_transform()
 		accept_event()
 	elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
-		_zoom_by_delta(event.position, -ZOOM_STEP)
+		_pan_by(Vector2(0.0, -wheel_step))
+		_apply_map_transform()
+		accept_event()
+	elif event.button_index == MOUSE_BUTTON_WHEEL_LEFT and event.pressed:
+		_pan_by(Vector2(wheel_step, 0.0))
+		_apply_map_transform()
+		accept_event()
+	elif event.button_index == MOUSE_BUTTON_WHEEL_RIGHT and event.pressed:
+		_pan_by(Vector2(-wheel_step, 0.0))
+		_apply_map_transform()
 		accept_event()
 	elif event.button_index == MOUSE_BUTTON_LEFT:
 		dragging = event.pressed
@@ -1080,6 +1104,12 @@ func _clamp_pan_offset() -> void:
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
 
+	# With the hex map active, pan across the whole populated extent (Europe),
+	# not just the Germany focus box — otherwise you can only move up/down.
+	if hex_model != null and hex_model.loaded and map_scope == MAP_SCOPE_GERMANY:
+		_clamp_pan_offset_hex(viewport_size)
+		return
+
 	var layer := map_layer as OfflineMapLayer
 	var scaled_size := layer.map_base_size() * zoom
 	if scaled_size.x <= viewport_size.x:
@@ -1091,6 +1121,35 @@ func _clamp_pan_offset() -> void:
 		pan_offset.y = (viewport_size.y - scaled_size.y) * 0.5
 	else:
 		pan_offset.y = clamp(pan_offset.y, viewport_size.y - scaled_size.y - PAN_LIMIT_PADDING, PAN_LIMIT_PADDING)
+
+# Pan limits based on the full hex map extent (model.view), expressed in the same
+# pan space the markers use (point*zoom). Lets the camera roam all of Europe.
+func _clamp_pan_offset_hex(viewport_size: Vector2) -> void:
+	var layer := map_layer as OfflineMapLayer
+	var base := layer.map_base_size()
+	if base.x <= 0.0 or hex_model.focus_size.x <= 0.0:
+		return
+	var ratio := base.x / hex_model.focus_size.x   # world px -> pan-space point
+	var content_origin := (hex_model.view_origin - hex_model.focus_origin) * ratio
+	var content_size := hex_model.view_size * ratio
+	var scaled := content_size * zoom
+	var pad := PAN_LIMIT_PADDING
+
+	if scaled.x <= viewport_size.x:
+		pan_offset.x = (viewport_size.x - scaled.x) * 0.5 - content_origin.x * zoom
+	else:
+		pan_offset.x = clamp(
+			pan_offset.x,
+			viewport_size.x - scaled.x - pad - content_origin.x * zoom,
+			pad - content_origin.x * zoom)
+
+	if scaled.y <= viewport_size.y:
+		pan_offset.y = (viewport_size.y - scaled.y) * 0.5 - content_origin.y * zoom
+	else:
+		pan_offset.y = clamp(
+			pan_offset.y,
+			viewport_size.y - scaled.y - pad - content_origin.y * zoom,
+			pad - content_origin.y * zoom)
 
 func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZE) -> Vector2:
 	return _pixel_snap(pan_offset + point * zoom - marker_size * 0.5)

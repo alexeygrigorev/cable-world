@@ -1,0 +1,37 @@
+{
+	"review_goal": "current_city_cluster_runtime_review",
+	"schema": "cable-world.map-review-previews.v1",
+	"source": "map_review_app/capture_map_review_scenes.gd",
+	"tabs": [
+		{
+			"description": "Runtime crop focused on the Berlin multi-symbol city cluster glyph.",
+			"id": "godot_berlin_cluster",
+			"title": "Godot Berlin Cluster"
+		},
+		{
+			"description": "Runtime crop for Hamburg, Rostock and Berlin cluster glyphs.",
+			"id": "godot_north_cities",
+			"title": "Godot Hamburg Rostock Berlin"
+		},
+		{
+			"description": "Runtime crop for Köln and Frankfurt cluster glyphs.",
+			"id": "godot_rhine_main_cities",
+			"title": "Godot Köln Frankfurt"
+		},
+		{
+			"description": "Runtime crop for München and Stuttgart cluster glyphs.",
+			"id": "godot_munich_stuttgart",
+			"title": "Godot München Stuttgart"
+		}
+	],
+	"viewport_size_px": [
+		1280,
+		900
+	],
+	"zooms": [
+		50,
+		100,
+		150,
+		200
+	]
+}

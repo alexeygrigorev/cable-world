@@ -1,5 +1,6 @@
 import "./style.css";
 import initialData from "./data/hex_map.json";
+import mapConfig from "./data/map_config.json";
 
 // the game's label font (scripts/map_panel.gd loads the same TTF)
 const LABEL_FONT = "MapLabel";
@@ -19,7 +20,12 @@ const COLORS = {
   labelFill: "#f6df9b",  // city label text in the game
   labelStroke: "rgba(28,18,8,0.9)",
 };
-const ZOOM_LEVELS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+const CITY_LABEL_FONT_SCALE = 0.72;
+const CITY_LABEL_OUTLINE_SCALE = 0.17;
+// zoom range/step/default shared with the game (scripts/hex_map_model.gd reads
+// the same map_config.json)
+const ZCFG = (mapConfig && mapConfig.zoom) || { min: 0.25, max: 3.0, step: 0.25, default: 1.0 };
+const assetVersions = new Map();
 
 let state = structuredClone(initialData);
 const canvas = document.getElementById("map");
@@ -28,7 +34,7 @@ const statusEl = document.getElementById("status");
 const zoomValEl = document.getElementById("zoomVal");
 
 // camera: fit-to-view at 100%, then user zoom on top, plus pan in CSS px
-let zoomIdx = 2; // 1.0
+let zoomVal = ZCFG.default; // 1.0 = 100%
 let panX = 0, panY = 0;
 let cssW = 0, cssH = 0, fitScale = 1;
 
@@ -110,10 +116,26 @@ function drawPeak(cx, cy, s) {
 }
 
 // terrain glyph sets from the game (varied per hex by a stable hash)
-const FOREST_GLYPHS = ["forest_cluster_1.png", "forest_cluster_2.png", "forest_cluster_3.png",
-  "forest_cluster_4.png", "forest_cluster_5.png", "forest_cluster_6.png"];
-const MOUNTAIN_GLYPHS = ["alps_peak_1.png", "alps_peak_2.png", "alps_range_1.png", "alps_range_2.png"];
-
+const FOREST_GLYPHS = [
+  "forest_pine_single_v1.png",
+  "forest_mixed_single_v1.png",
+  "forest_broadleaf_single_v1.png",
+  "forest_dark_conifer_single_v1.png",
+  "forest_pine_bundle_3_v1.png",
+  "forest_mixed_bundle_3_v1.png",
+  "forest_broadleaf_bundle_3_v1.png",
+  "forest_rocky_bundle_3_v1.png",
+  "forest_pine_bundle_7_v1.png",
+  "forest_mixed_bundle_7_v1.png",
+  "forest_broadleaf_bundle_7_v1.png",
+  "forest_sparse_edge_bundle_7_v1.png",
+];
+const MOUNTAIN_GLYPHS = [
+  "mountain_harz_brocken_v1.png",
+  "mountain_saxon_switzerland_v1.png",
+  "mountain_erzgebirge_ridge_v1.png",
+  "mountain_alps_central_wall_v1.png",
+];
 function hashKey(str) {
   let h = 2166136261;
   for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -131,28 +153,132 @@ function requestRender() {
 
 // real game sprites, loaded on demand and cached (HTTP-cached too)
 const imgCache = new Map();
+function assetUrl(name) {
+  return `/asset/${name}?v=${assetVersions.get(name) || "dev"}`;
+}
+
 function getImg(name) {
   if (imgCache.has(name)) return imgCache.get(name);
   const img = new Image();
   img.decoding = "async";
   img.onload = requestRender;
-  img.src = `/asset/${name}`;
+  img.src = assetUrl(name);
   imgCache.set(name, img);
   return img;
 }
 
-// which hexes a massif actually paints (sampling the image's alpha), so points
-// land only where there's real art — not on transparent edges of the bbox.
+// which hexes a massif actually paints (sampling the image's alpha). Primary
+// points mark mostly opaque art; faint points mark weak alpha. Fully transparent
+// bbox area is not part of the footprint and cannot select the glyph.
 const alphaData = new Map();   // image name -> ImageData
-const filledCache = new Map(); // feature id -> { bkey, keys }
-const SAMPLE = [[0, 0], [0.45, 0], [-0.45, 0], [0, 0.5], [0, -0.5], [0.35, 0.35], [-0.35, -0.35]];
+const coverageCache = new Map(); // glyph render key -> { primaryOffsets, faintOffsets }
+const HEX_ALPHA_STEP = 0.18;
+const PRIMARY_ALPHA_RATIO = 0.22;
 
-function massifFilledKeys(f) {
+function pointInsideHex(dx, dy, s) {
+  return Math.abs(dx) <= (Math.sqrt(3) / 2) * s && Math.abs(dy) + Math.abs(dx) / Math.sqrt(3) <= s;
+}
+
+function parseKey(key) {
+  const [q, r] = key.split(",").map(Number);
+  return { q, r };
+}
+
+function offsetKey(dq, dr) {
+  return `${dq},${dr}`;
+}
+
+function applyOffset(anchor, offset) {
+  const a = parseKey(anchor);
+  const o = parseKey(offset);
+  return `${a.q + o.q},${a.r + o.r}`;
+}
+
+function hexToWorld(q, r) {
+  const s = sizeW();
+  return { x: s * SQRT3 * (q + r / 2), y: s * 1.5 * r };
+}
+
+function glyphMetadata(f) {
+  return f.glyph_ref ? state.glyphs?.[f.glyph_ref] : null;
+}
+
+function glyphRefFor(image, zoomFactor) {
+  return `massif:${image}@${Number(zoomFactor || 5).toFixed(1)}`;
+}
+
+function ensureMassifGlyphMetadata(image, zoomFactor, aspect) {
+  state.glyphs ||= {};
+  const ref = glyphRefFor(image, zoomFactor);
+  if (!state.glyphs[ref]) {
+    const width = Number(zoomFactor || 5);
+    const height = width / Number(aspect || 2);
+    state.glyphs[ref] = {
+      type: "massif",
+      file: image,
+      anchor_offset: "0,0",
+      zoom_factor: round1(width),
+      render_width_hex: round1(width),
+      render_height_hex: round1(height),
+      bounds_offset_hex: [
+        round1(-width / 2),
+        round1(-height / 2),
+        round1(width / 2),
+        round1(height / 2),
+      ],
+    };
+  }
+  return ref;
+}
+
+function massifBounds(f) {
+  const meta = glyphMetadata(f);
+  if (meta?.bounds_offset_hex) {
+    const a = parseKey(f.anchor);
+    const c = hexToWorld(a.q, a.r);
+    const s = sizeW();
+    const [x0, y0, x1, y1] = meta.bounds_offset_hex.map((v) => v * s);
+    return [c.x + x0, c.y + y0, c.x + x1, c.y + y1].map(round1);
+  }
+  return null;
+}
+
+function massifRelativeBounds(f) {
+  const meta = glyphMetadata(f);
+  if (meta?.bounds_offset_hex) return meta.bounds_offset_hex.map((v) => round1(v * sizeW()));
+  return null;
+}
+
+function massifCoverageKey(f, data) {
+  const version = assetVersions.get(f.image) || "dev";
+  return [
+    f.image,
+    version,
+    data.width,
+    data.height,
+    massifRelativeBounds(f).join(","),
+  ].join("|");
+}
+
+function coverageCellsFromOffsets(f, offsets) {
+  return offsets
+    .map((offset) => applyOffset(f.anchor, offset))
+    .filter((key) => state.hexes[key]);
+}
+
+function massifCoverage(f) {
+  const meta = glyphMetadata(f);
+  if (meta?.primary_offsets && meta?.faint_offsets) {
+    return {
+      primaryOffsets: meta.primary_offsets,
+      faintOffsets: meta.faint_offsets,
+      primary: coverageCellsFromOffsets(f, meta.primary_offsets),
+      faint: coverageCellsFromOffsets(f, meta.faint_offsets),
+    };
+  }
+  if (!f.image || !meta?.bounds_offset_hex) return null;
   const img = getImg(f.image);
   if (!img.complete || !img.naturalWidth) return null; // not loaded yet
-  const bkey = f.bounds_px.join(",");
-  const cached = filledCache.get(f.id);
-  if (cached && cached.bkey === bkey) return cached.keys;
 
   let data = alphaData.get(f.image);
   if (!data) {
@@ -165,33 +291,99 @@ function massifFilledKeys(f) {
     alphaData.set(f.image, data);
   }
 
-  const [x0, y0, x1, y1] = f.bounds_px;
-  const W = x1 - x0, H = y1 - y0, s = sizeW();
-  const keys = [];
-  for (const key in state.hexes) {
-    const [q, r] = key.split(",").map(Number);
-    const wx = s * SQRT3 * (q + r / 2), wy = s * 1.5 * r;
-    if (wx < x0 || wx > x1 || wy < y0 || wy > y1) continue; // outside the glyph box
-    let opaque = 0;
-    for (const [ox, oy] of SAMPLE) {
-      const ix = Math.round(((wx + ox * s - x0) / W) * data.width);
-      const iy = Math.round(((wy + oy * s - y0) / H) * data.height);
-      if (ix < 0 || iy < 0 || ix >= data.width || iy >= data.height) continue;
-      if (data.data[(iy * data.width + ix) * 4 + 3] > 50) opaque++;
-    }
-    if (opaque / SAMPLE.length >= 0.6) keys.push(key); // hex mostly covered by art
+  const cacheKey = massifCoverageKey(f, data);
+  let pattern = coverageCache.get(cacheKey);
+  if (pattern) {
+    return {
+      ...pattern,
+      primary: coverageCellsFromOffsets(f, pattern.primaryOffsets),
+      faint: coverageCellsFromOffsets(f, pattern.faintOffsets),
+    };
   }
-  filledCache.set(f.id, { bkey, keys });
-  return keys;
+
+  const relBounds = massifRelativeBounds(f);
+  if (!relBounds) return null;
+  const [x0, y0, x1, y1] = relBounds;
+  const W = x1 - x0, H = y1 - y0, s = sizeW();
+  const primaryOffsets = [];
+  const faintOffsets = [];
+  const maxDq = Math.ceil((Math.abs(x0) + Math.abs(x1)) / (SQRT3 * s)) + 3;
+  const maxDr = Math.ceil((Math.abs(y0) + Math.abs(y1)) / (1.5 * s)) + 3;
+  for (let dr = -maxDr; dr <= maxDr; dr++) {
+    for (let dq = -maxDq; dq <= maxDq; dq++) {
+      const { x: wx, y: wy } = hexDeltaWorld(dq, dr);
+      if (wx + s < x0 || wx - s > x1 || wy + s < y0 || wy - s > y1) continue; // hex cannot overlap glyph box
+      let opaque = 0;
+      let sampled = 0;
+      for (let oy = -0.9; oy <= 0.91; oy += HEX_ALPHA_STEP) {
+        for (let ox = -0.9; ox <= 0.91; ox += HEX_ALPHA_STEP) {
+          const sx = wx + ox * s;
+          const sy = wy + oy * s;
+          if (!pointInsideHex(sx - wx, sy - wy, s)) continue;
+          const ix = Math.round(((sx - x0) / W) * (data.width - 1));
+          const iy = Math.round(((sy - y0) / H) * (data.height - 1));
+          if (ix < 0 || iy < 0 || ix >= data.width || iy >= data.height) continue;
+          sampled++;
+          if (data.data[(iy * data.width + ix) * 4 + 3] > 50) opaque++;
+        }
+      }
+      if (!sampled || !opaque) continue;
+      const coverage = opaque / sampled;
+      const key = offsetKey(dq, dr);
+      if (coverage >= PRIMARY_ALPHA_RATIO) primaryOffsets.push(key);
+      else faintOffsets.push(key);
+    }
+  }
+  pattern = { primaryOffsets, faintOffsets };
+  coverageCache.set(cacheKey, pattern);
+  return {
+    ...pattern,
+    primary: coverageCellsFromOffsets(f, pattern.primaryOffsets),
+    faint: coverageCellsFromOffsets(f, pattern.faintOffsets),
+  };
 }
 
 // warm the cache for everything on the map so panning never pops in
 function preloadAssets() {
+  requestAssetVersions();
   for (const f of state.features || []) {
     if (f.glyph === "city" && f.icon) getImg(`city_${f.icon}.png`);
     else if (f.glyph === "massif" && f.image) getImg(f.image);
   }
   for (const g of [...FOREST_GLYPHS]) getImg(g);
+}
+
+function assetNamesInUse() {
+  const names = new Set([...FOREST_GLYPHS]);
+  for (const f of state.features || []) {
+    if (f.glyph === "city" && f.icon) names.add(`city_${f.icon}.png`);
+    else if (f.glyph === "transport" && f.icon) names.add(`icon_${f.icon}.png`);
+    else if (f.glyph === "massif" && f.image) names.add(f.image);
+  }
+  for (const p of PALETTE) {
+    if (p.image) names.add(p.image);
+    if (p.icon) names.add(`icon_${p.icon}.png`);
+  }
+  return [...names];
+}
+
+async function requestAssetVersions() {
+  const names = assetNamesInUse();
+  if (!names.length) return;
+  const res = await fetch(`/__asset_versions?names=${encodeURIComponent(names.join(","))}`).catch(() => null);
+  if (!res?.ok) return;
+  const data = await res.json();
+  let changed = false;
+  for (const [name, version] of Object.entries(data)) {
+    if (assetVersions.get(name) !== version) {
+      assetVersions.set(name, version);
+      imgCache.delete(name);
+      alphaData.delete(name);
+      coverageCache.clear();
+      changed = true;
+    }
+  }
+  if (changed) requestRender();
 }
 
 function drawTransport(cx, cy, s, f) {
@@ -200,12 +392,16 @@ function drawTransport(cx, cy, s, f) {
   if (img && img.complete && img.naturalWidth) {
     const h = s * 2.0;
     const w = h * (img.naturalWidth / img.naturalHeight);
-    // soft dark glow so the icon reads over busy terrain, without a flashy halo
-    ctx.shadowColor = "rgba(20,16,10,0.5)";
-    ctx.shadowBlur = s * 0.32;
-    ctx.drawImage(img, cx - w / 2, cy - h * 0.72, w, h);
+    // dark outline-glow so the icon reads over busy terrain (built up by a few
+    // shadowed passes), then a crisp draw on top — not white, but visible
+    const dx = cx - w / 2, dy = cy - h * 0.72;
+    ctx.shadowColor = "rgba(22,16,9,0.9)";
+    ctx.shadowBlur = s * 0.22;
+    ctx.drawImage(img, dx, dy, w, h);
+    ctx.drawImage(img, dx, dy, w, h);
+    ctx.drawImage(img, dx, dy, w, h);
     ctx.shadowBlur = 0;
-    ctx.drawImage(img, cx - w / 2, cy - h * 0.72, w, h); // crisp on top
+    ctx.drawImage(img, dx, dy, w, h);
   } else {
     ctx.beginPath();
     ctx.arc(cx, cy, s * 0.4, 0, Math.PI * 2);
@@ -254,11 +450,11 @@ function drawCity(cx, cy, s, f, showLabel) {
   }
   if (f.label && showLabel) {
     const ly = bottom - s * 0.55; // tucked closer under the city
-    ctx.font = `${(s * 0.95).toFixed(1)}px "${LABEL_FONT}", serif`;
+    ctx.font = `${(s * CITY_LABEL_FONT_SCALE).toFixed(1)}px "${LABEL_FONT}", serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.lineJoin = "round";
-    ctx.lineWidth = s * 0.22;
+    ctx.lineWidth = s * CITY_LABEL_OUTLINE_SCALE;
     ctx.strokeStyle = COLORS.labelStroke;
     ctx.strokeText(f.label, cx, ly);
     ctx.fillStyle = COLORS.labelFill;
@@ -269,6 +465,7 @@ function drawCity(cx, cy, s, f, showLabel) {
 
 // ----- camera / rendering -----
 function computeFit() {
+  updateLayoutMetrics();
   const rect = canvas.getBoundingClientRect();
   cssW = rect.width;
   cssH = rect.height;
@@ -284,8 +481,14 @@ function setupCanvas() {
   canvas.height = cssH * dpr;
 }
 
+function updateLayoutMetrics() {
+  const bar = document.getElementById("bar");
+  const barHeight = Math.ceil(bar?.getBoundingClientRect().height || 48);
+  document.documentElement.style.setProperty("--bar-height", `${barHeight}px`);
+}
+
 function scale() {
-  return fitScale * ZOOM_LEVELS[zoomIdx];
+  return fitScale * zoomVal;
 }
 
 // content-space center of the Germany focus box
@@ -303,6 +506,13 @@ function clampPan(fc, sc) {
   cy = Math.max(-m, Math.min(vh + m, cy));
   panX = (fc.x - cx) * sc;
   panY = (fc.y - cy) * sc;
+}
+
+function viewportCenterContent() {
+  const sc = scale();
+  const fc = focusCenter();
+  clampPan(fc, sc);
+  return { x: fc.x - panX / sc, y: fc.y - panY / sc };
 }
 
 function camera() {
@@ -375,7 +585,9 @@ function render() {
     if (!img.complete || !img.naturalWidth) continue;
     const held = f === dragging?.feature;
     const d = held && dragging.delta ? hexDeltaWorld(dragging.delta.dq, dragging.delta.dr) : { x: 0, y: 0 };
-    const [x0, y0, x1, y1] = f.bounds_px;
+    const bounds = massifBounds(f);
+    if (!bounds) continue;
+    const [x0, y0, x1, y1] = bounds;
     ctx.globalAlpha = held ? 0.6 : 1;
     ctx.drawImage(img, x0 - origin()[0] + d.x, y0 - origin()[1] + d.y, x1 - x0, y1 - y0);
     ctx.globalAlpha = 1;
@@ -413,25 +625,56 @@ function render() {
     ctx.globalAlpha = 1;
   }
 
+  // 5a. clicked hex debug outline. It is independent from feature selection so
+  // empty hexes can still show their id in the panel.
+  if (selectedHex) {
+    const [q, r] = selectedHex.split(",").map(Number);
+    const c = hexToContent(q, r);
+    if (onScreen(c.x, c.y)) {
+      hexPath(c.x, c.y, s);
+      ctx.fillStyle = "rgba(246,223,155,0.08)";
+      ctx.fill();
+      ctx.strokeStyle = "#f6df9b";
+      ctx.lineWidth = s * 0.09;
+      ctx.stroke();
+    }
+  }
+
   // 5b. occupied-hex points of the selected (or dragged) feature, drawn on top
   //     so they're visible even under a city/transport sprite
   const hi = dragging && dragPos ? dragging.feature : selected;
-  if (hi && hi.glyph !== "city") { // cities aren't highlighted
-    let keys;
+  if (hi) {
+    let primaryKeys;
+    let faintKeys = [];
     const d = dragging?.feature === hi && dragging.delta ? dragging.delta : { dq: 0, dr: 0 };
     if (hi.glyph === "massif") {
-      let filled = massifFilledKeys(hi); // points only where the art covers a hex
-      if (!filled || filled.length === 0) filled = [hi.anchor];
-      keys = filled.map((k) => shiftKey(k, d.dq, d.dr));
+      const coverage = massifCoverage(hi);
+      let filled = coverage?.primary || []; // points only where the art mostly covers a hex
+      if (!filled.length) filled = [hi.anchor];
+      primaryKeys = filled.map((k) => shiftKey(k, d.dq, d.dr));
+      faintKeys = (coverage?.faint || [])
+        .filter((k) => !filled.includes(k))
+        .map((k) => shiftKey(k, d.dq, d.dr));
     } else if (hi.glyph === "forest") {
-      keys = (hi.cells || []).map((k) => shiftKey(k, d.dq, d.dr));
+      primaryKeys = (hi.cells || []).map((k) => shiftKey(k, d.dq, d.dr));
     } else if (dragging?.feature === hi && dragPos) {
       const { q, r } = contentToHex(dragPos.x, dragPos.y);
-      keys = [`${q},${r}`];
+      primaryKeys = [`${q},${r}`];
     } else {
-      keys = [hi.anchor];
+      primaryKeys = [hi.anchor];
     }
-    for (const k of keys) {
+    for (const k of faintKeys) {
+      const [q, r] = k.split(",").map(Number);
+      const c = hexToContent(q, r);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, s * 0.13, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(215,215,215,0.42)";
+      ctx.fill();
+      ctx.lineWidth = s * 0.035;
+      ctx.strokeStyle = "rgba(80,80,80,0.35)";
+      ctx.stroke();
+    }
+    for (const k of primaryKeys) {
       const [q, r] = k.split(",").map(Number);
       const c = hexToContent(q, r);
       ctx.beginPath();
@@ -457,6 +700,11 @@ function render() {
     ctx.globalAlpha = 0.7;
     if (placing.kind === "forest") {
       if (!drawSprite(FOREST_GLYPHS[0], c.x, c.y, s, s * 1.9, false)) drawTree(c.x, c.y, s);
+    } else if (placing.kind === "massif") {
+      const width = s * (placing.zoomFactor || 5.0);
+      const img = placing.image ? getImg(placing.image) : null;
+      const aspect = img?.complete && img.naturalWidth ? img.naturalWidth / img.naturalHeight : (placing.aspect || 2.0);
+      if (!drawSprite(placing.image, c.x, c.y, s, width / aspect, false)) drawPeak(c.x, c.y, s);
     } else {
       drawTransport(c.x, c.y, s, { icon: placing.icon }, false);
     }
@@ -513,13 +761,25 @@ const featureRank = (f) => (f.glyph === "transport" ? 0 : f.glyph === "city" ? 1
 
 function featuresAtHex(key) {
   return (state.features || [])
-    .filter((f) => (f.glyph === "city" || f.glyph === "transport")
-      ? f.anchor === key : (f.cells || []).includes(key))
+    .filter((f) => featureOccupiesHex(f, key))
     .sort((a, b) => featureRank(a) - featureRank(b));
+}
+
+function featureOccupiesHex(f, key) {
+  if (f.glyph === "city" || f.glyph === "transport") return f.anchor === key;
+  if (f.glyph === "forest") return (f.cells || []).includes(key);
+  if (f.glyph !== "massif") return (f.cells || []).includes(key);
+  const coverage = f.image ? massifCoverage(f) : null;
+  if (coverage) return coverage.primary.includes(key) || coverage.faint.includes(key);
+  return (f.cells || []).includes(key);
 }
 
 function canReset(f) {
   return !f.user && f.glyph !== "forest" && f.home && f.anchor !== f.home;
+}
+
+function canDelete(f) {
+  return f.user || (moveEnabled && (f.glyph === "forest" || f.glyph === "massif"));
 }
 
 // select everything sitting on the clicked hex; show all in the panel
@@ -529,10 +789,9 @@ function selectAt(p) {
   let list = featuresAtHex(key);
   const top = featureAt(p);
   if (top && !list.includes(top)) list = [top, ...list];
-  if (!list.length) { deselect(); return; }
-  selected = top && list.includes(top) ? top : list[0];
+  selected = list.length ? (top && list.includes(top) ? top : list[0]) : null;
   selectedHex = key;
-  renderPanelList(list);
+  renderPanelList(list, key);
   panelEl.hidden = false;
   render();
 }
@@ -540,11 +799,11 @@ function selectAt(p) {
 function refreshPanel() {
   if (!selectedHex) return;
   const list = featuresAtHex(selectedHex);
-  if (list.length) renderPanelList(list); else deselect();
+  renderPanelList(list, selectedHex);
 }
 
 function deleteFeature(f) {
-  if (!f.user) return;
+  if (!canDelete(f)) return;
   pushUndo();
   state.features = state.features.filter((x) => x !== f);
   if (selected === f) selected = featuresAtHex(selectedHex).find((x) => x !== f) || null;
@@ -563,55 +822,175 @@ function resetFeature(f) {
     pushUndo();
     f.anchor = f.home;
     if (f.cells) f.cells = f.cells.map((k) => shiftKey(k, dq, dr));
-    if (f.bounds_px) {
-      const d = hexDeltaWorld(dq, dr);
-      f.bounds_px = [f.bounds_px[0] + d.x, f.bounds_px[1] + d.y, f.bounds_px[2] + d.x, f.bounds_px[3] + d.y];
-    }
     save();
   }
   refreshPanel();
   render();
 }
 
+function glyphName(f) {
+  if (f.glyph === "city") return f.icon ? `city_${f.icon}.png` : "точка города";
+  if (f.glyph === "transport") return f.icon ? `icon_${f.icon}.png` : "точка объекта";
+  if (f.glyph === "massif") return f.image || "massif";
+  if (f.glyph === "forest") return variant(f.anchor || (f.cells || [])[0] || f.id, FOREST_GLYPHS);
+  return f.glyph || "unknown";
+}
+
+function glyphPreviewHtml(f) {
+  const name = glyphName(f);
+  if (name.endsWith(".png")) return `<img class="thumb" src="${assetUrl(name)}" alt="">`;
+  return "";
+}
+
+function glyphDebugRows(f) {
+  const name = glyphName(f);
+  if (!name.endsWith(".png")) return "";
+  const img = getImg(name);
+  const natural = img.complete && img.naturalWidth ? `${img.naturalWidth}×${img.naturalHeight}` : "загрузка";
+  if (f.glyph !== "massif") return `<dt>PNG</dt><dd>${natural}</dd>`;
+
+  const bounds = massifBounds(f);
+  if (!bounds) return `<dt>PNG</dt><dd>${natural}</dd>`;
+  const [x0, y0, x1, y1] = bounds;
+  const widthHex = ((x1 - x0) / sizeW()).toFixed(1);
+  const heightHex = ((y1 - y0) / sizeW()).toFixed(1);
+  const coverage = massifCoverage(f);
+  const primary = coverage?.primary?.length ?? 0;
+  const faint = coverage?.faint?.length ?? 0;
+  const zoom = glyphMetadata(f)?.zoom_factor;
+  return `<dt>PNG</dt><dd>${natural}</dd>
+    <dt>Рендер</dt><dd>${widthHex}×${heightHex} гексов, zoom ${zoom ?? widthHex}</dd>
+    <dt>Alpha</dt><dd>${primary} primary · ${faint} faint</dd>`;
+}
+
+function glyphDebugPayload(f, hexKey = selectedHex) {
+  const name = glyphName(f);
+  const img = name.endsWith(".png") ? getImg(name) : null;
+  const payload = {
+    clicked_hex: hexKey,
+    clicked_cell: hexKey ? state.hexes[hexKey] : null,
+    feature: {
+      id: f.id,
+      glyph: f.glyph,
+      label: f.label,
+      glyph_file: name,
+      glyph_ref: f.glyph_ref || null,
+      anchor: f.anchor,
+      legacy_cells_count: (f.cells || []).length,
+      legacy_cells: f.cells || [],
+      lon: f.lon ?? null,
+      lat: f.lat ?? null,
+    },
+    image: img && img.complete && img.naturalWidth ? {
+      natural_width: img.naturalWidth,
+      natural_height: img.naturalHeight,
+      aspect: round1(img.naturalWidth / img.naturalHeight),
+    } : null,
+  };
+  if (f.glyph === "massif") {
+    const bounds = massifBounds(f);
+    const coverage = massifCoverage(f);
+    if (!bounds) return payload;
+    const [x0, y0, x1, y1] = bounds;
+    payload.render = {
+      width_hex: round1((x1 - x0) / sizeW()),
+      height_hex: round1((y1 - y0) / sizeW()),
+      aspect_preserved: true,
+      glyph_ref: f.glyph_ref || null,
+      anchor_offset: glyphMetadata(f)?.anchor_offset || "0,0",
+      zoom_factor: glyphMetadata(f)?.zoom_factor ?? null,
+      primary_alpha_offsets: coverage?.primaryOffsets || [],
+      faint_alpha_offsets: coverage?.faintOffsets || [],
+      primary_alpha_cells_count: coverage?.primary?.length ?? null,
+      primary_alpha_cells: coverage?.primary || [],
+      faint_alpha_cells_count: coverage?.faint?.length ?? null,
+      faint_alpha_cells: coverage?.faint || [],
+    };
+  }
+  return payload;
+}
+
+async function copyGlyphDebug(f) {
+  const text = JSON.stringify(glyphDebugPayload(f), null, 2);
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.left = "-9999px";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    return ok;
+  }
+}
+
 function cardHtml(f) {
   if (f.glyph === "city") {
     return `<h2>${f.label}</h2><div class="kind">${f.kind === "capital" ? "Столица" : "Город"}</div>
-      <dl><dt>Тип</dt><dd>город</dd><dt>id</dt><dd>${f.id}</dd>
+      ${glyphPreviewHtml(f)}
+      <dl><dt>Тип</dt><dd>город</dd><dt>id</dt><dd>${f.id}</dd><dt>Глиф</dt><dd>${glyphName(f)}</dd>${glyphDebugRows(f)}
       <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
       <dt>Гекс</dt><dd>${f.anchor}</dd></dl>`;
   }
   if (f.glyph === "transport") {
     return `<h2>${f.label || "Объект"}</h2><div class="kind">Транспортный объект</div>
-      <img class="thumb" src="/asset/icon_${f.icon}.png" alt="">
-      <dl><dt>Тип</dt><dd>${TRANSPORT_LABELS[f.icon] || f.icon}</dd><dt>id</dt><dd>${f.id}</dd>
+      ${glyphPreviewHtml(f)}
+      <dl><dt>Тип</dt><dd>${TRANSPORT_LABELS[f.icon] || f.icon}</dd><dt>id</dt><dd>${f.id}</dd><dt>Глиф</dt><dd>${glyphName(f)}</dd>${glyphDebugRows(f)}
       <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
       <dt>Гекс</dt><dd>${f.anchor}</dd></dl>`;
   }
   if (f.glyph === "massif") {
+    const coverage = massifCoverage(f);
+    const footprintCount = (coverage?.primary?.length ?? 0) + (coverage?.faint?.length ?? 0);
     return `<h2>${f.label}</h2><div class="kind">Горный массив</div>
-      <img class="thumb" src="/asset/${f.image}" alt="">
-      <dl><dt>id</dt><dd>${f.id}</dd><dt>Гексов</dt><dd>${(f.cells || []).length}</dd>
+      ${glyphPreviewHtml(f)}
+      <dl><dt>id</dt><dd>${f.id}</dd><dt>Глиф</dt><dd>${glyphName(f)}</dd>${glyphDebugRows(f)}<dt>Footprint</dt><dd>${footprintCount}</dd>
       <dt>Якорь</dt><dd>${f.anchor}</dd></dl>`;
   }
   return `<h2>Лес</h2><div class="kind">Лесной массив</div>
-    <dl><dt>id</dt><dd>${f.id}</dd><dt>Гексов</dt><dd>${(f.cells || []).length}</dd>
+    ${glyphPreviewHtml(f)}
+    <dl><dt>id</dt><dd>${f.id}</dd><dt>Глиф</dt><dd>${glyphName(f)}</dd>${glyphDebugRows(f)}<dt>Гексов</dt><dd>${(f.cells || []).length}</dd>
     <dt>Якорь</dt><dd>${f.anchor}</dd></dl>`;
 }
 
-function renderPanelList(list) {
+function renderPanelList(list, hexKey = selectedHex) {
   panelBody.innerHTML = "";
+  if (hexKey) {
+    const hexInfo = document.createElement("div");
+    hexInfo.className = "hex-debug";
+    const cell = state.hexes[hexKey];
+    hexInfo.innerHTML = `<h2>Гекс ${hexKey}</h2>
+      <dl><dt>id</dt><dd>${hexKey}</dd>
+      <dt>Страна</dt><dd>${cell?.country || "—"}</dd>
+      <dt>Террейн</dt><dd>${cell?.terrain || "—"}</dd></dl>`;
+    panelBody.appendChild(hexInfo);
+  }
   if (list.length > 1) {
     const h = document.createElement("div");
     h.className = "panel-count";
     h.textContent = `Объектов на гексе: ${list.length}`;
+    panelBody.appendChild(h);
+  } else if (!list.length) {
+    const h = document.createElement("div");
+    h.className = "panel-count";
+    h.textContent = "Объектов на гексе нет";
     panelBody.appendChild(h);
   }
   for (const f of list) {
     const card = document.createElement("div");
     card.className = "obj-card" + (f === selected ? " sel" : "");
     card.innerHTML = cardHtml(f);
-    card.addEventListener("click", () => { selected = f; render(); refreshPanel(); });
-    if (f.user) {
+    card.addEventListener("click", () => {
+      if (panelHasTextSelection()) return;
+      selected = f;
+      render();
+      refreshPanel();
+    });
+    if (canDelete(f)) {
       const b = document.createElement("button");
       b.className = "card-act del";
       b.textContent = "🗑 удалить";
@@ -624,8 +1003,24 @@ function renderPanelList(list) {
       b.addEventListener("click", (e) => { e.stopPropagation(); resetFeature(f); });
       card.appendChild(b);
     }
+    const copy = document.createElement("button");
+    copy.className = "card-act copy";
+    copy.textContent = "copy glyph debug";
+    copy.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      copy.textContent = await copyGlyphDebug(f) ? "copied" : "copy failed";
+      setTimeout(() => { copy.textContent = "copy glyph debug"; }, 900);
+    });
+    card.appendChild(copy);
     panelBody.appendChild(card);
   }
+}
+
+function panelHasTextSelection() {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false;
+  const range = selection.getRangeAt(0);
+  return panelEl.contains(range.commonAncestorContainer);
 }
 
 // ----- pointer: drag feature, or pan -----
@@ -639,9 +1034,14 @@ function eventToContent(e) {
 
 function featureAt(p) {
   const s = sizeW(), o = origin();
-  // point objects first (cities + transport sit on top)
+  // transport objects first (they sit on top and are the focus), then cities
   for (const f of state.features || []) {
-    if (f.glyph !== "city" && f.glyph !== "transport") continue;
+    if (f.glyph !== "transport") continue;
+    const c = anchorContent(f);
+    if (Math.hypot(p.x - c.x, p.y - c.y) < s * 0.9) return f;
+  }
+  for (const f of state.features || []) {
+    if (f.glyph !== "city") continue;
     const c = anchorContent(f);
     if (Math.hypot(p.x - c.x, p.y - c.y) < s * 0.9) return f;
   }
@@ -651,10 +1051,18 @@ function featureAt(p) {
   for (const f of state.features || []) {
     if (f.glyph === "forest" && (f.cells || []).includes(pk)) return f;
   }
-  // massifs by their footprint box
+  // massifs by glyph footprint: no transparent bbox hit-testing once the image
+  // has loaded and its alpha metadata is available.
   for (const f of state.features || []) {
-    if (f.glyph !== "massif" || !f.bounds_px) continue;
-    const [x0, y0, x1, y1] = f.bounds_px;
+    if (f.glyph !== "massif" || !f.image) continue;
+    const coverage = massifCoverage(f);
+    if (coverage) {
+      if (coverage.primary.includes(pk) || coverage.faint.includes(pk)) return f;
+      continue;
+    }
+    const bounds = massifBounds(f);
+    if (!bounds) continue;
+    const [x0, y0, x1, y1] = bounds;
     if (p.x >= x0 - o[0] && p.x <= x1 - o[0] && p.y >= y0 - o[1] && p.y <= y1 - o[1]) return f;
   }
   return null;
@@ -713,11 +1121,6 @@ canvas.addEventListener("pointerup", () => {
         if (dq || dr) {
           f.anchor = shiftKey(f.anchor, dq, dr);
           f.cells = (f.cells || []).map((k) => shiftKey(k, dq, dr));
-          if (f.bounds_px) {
-            const d = hexDeltaWorld(dq, dr);
-            f.bounds_px = [f.bounds_px[0] + d.x, f.bounds_px[1] + d.y,
-                           f.bounds_px[2] + d.x, f.bounds_px[3] + d.y];
-          }
         }
       } else {
         const { q, r } = contentToHex(dragPos.x, dragPos.y);
@@ -739,13 +1142,19 @@ canvas.addEventListener("pointerup", () => {
 });
 
 // ----- zoom -----
-function setZoom(idx) {
-  zoomIdx = Math.max(0, Math.min(ZOOM_LEVELS.length - 1, idx));
-  zoomValEl.textContent = `${Math.round(ZOOM_LEVELS[zoomIdx] * 100)}%`;
+function setZoom(value) {
+  const center = viewportCenterContent();
+  const stepped = Math.round(value / ZCFG.step) * ZCFG.step;
+  zoomVal = Math.max(ZCFG.min, Math.min(ZCFG.max, stepped));
+  const sc = scale();
+  const fc = focusCenter();
+  panX = (fc.x - center.x) * sc;
+  panY = (fc.y - center.y) * sc;
+  zoomValEl.textContent = `${Math.round(zoomVal * 100)}%`;
   render();
 }
-document.getElementById("zoomIn").addEventListener("click", () => setZoom(zoomIdx + 1));
-document.getElementById("zoomOut").addEventListener("click", () => setZoom(zoomIdx - 1));
+document.getElementById("zoomIn").addEventListener("click", () => setZoom(zoomVal + ZCFG.step));
+document.getElementById("zoomOut").addEventListener("click", () => setZoom(zoomVal - ZCFG.step));
 // wheel/trackpad pans the map (zoom is only via the +/- buttons)
 canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
@@ -772,7 +1181,10 @@ function undo() {
 document.getElementById("undo").addEventListener("click", undo);
 window.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
-  else if ((e.key === "Delete" || e.key === "Backspace") && selected?.user) { e.preventDefault(); deleteFeature(selected); }
+  else if ((e.key === "Delete" || e.key === "Backspace") && selected && canDelete(selected)) {
+    e.preventDefault();
+    deleteFeature(selected);
+  }
 });
 
 // ----- move toggle (objects locked by default) -----
@@ -785,9 +1197,17 @@ moveBtn.addEventListener("click", () => {
 });
 
 // ----- palette show/hide -----
-document.getElementById("paletteToggle").addEventListener("click", () => {
+const paletteToggle = document.getElementById("paletteToggle");
+function syncPaletteToggle() {
+  const hidden = document.body.classList.contains("palette-hidden");
+  paletteToggle.setAttribute("aria-expanded", hidden ? "false" : "true");
+  paletteToggle.textContent = window.matchMedia("(max-width: 700px)").matches
+    ? (hidden ? "⌃" : "⌄")
+    : (hidden ? "‹" : "›");
+}
+paletteToggle.addEventListener("click", () => {
   document.body.classList.toggle("palette-hidden");
-  setupCanvas();
+  syncPaletteToggle();
   render();
 });
 
@@ -804,6 +1224,17 @@ const TRANSPORT_LABELS = {
 const PALETTE = [
   { kind: "forest", size: 1, label: "Лес (малый)", emoji: "🌲" },
   { kind: "forest", size: 7, label: "Лес (пучок)", emoji: "🌳" },
+  { kind: "massif", label: "Schwarzwald", image: "black_forest.png", zoomFactor: 5.2, aspect: 446 / 310 },
+  { kind: "massif", label: "Bayerischer Wald", image: "bavarian_forest.png", zoomFactor: 5.0, aspect: 452 / 285 },
+  { kind: "massif", label: "Eifel-Hunsrueck", image: "eifel_hunsrueck.png", zoomFactor: 4.8, aspect: 478 / 183 },
+  { kind: "massif", label: "Harz", image: "harz.png", zoomFactor: 4.3, aspect: 461 / 329 },
+  { kind: "massif", label: "Erzgebirge", image: "erzgebirge.png", zoomFactor: 5.6, aspect: 491 / 319 },
+  { kind: "massif", label: "Saxon Switzerland", image: "saxon_switzerland.png", zoomFactor: 3.8, aspect: 462 / 320 },
+  { kind: "massif", label: "Western Alps", image: "western_alps_massif.png", zoomFactor: 11.0, aspect: 628 / 304 },
+  { kind: "massif", label: "Swiss Alps", image: "swiss_alps_massif.png", zoomFactor: 11.2, aspect: 753 / 250 },
+  { kind: "massif", label: "Bavarian/Tyrol Alps", image: "bavarian_tyrol_alps_massif.png", zoomFactor: 10.8, aspect: 975 / 168 },
+  { kind: "massif", label: "German Alpine Edge", image: "german_alpine_edge_massif.png", zoomFactor: 9.2, aspect: 1042 / 155 },
+  { kind: "massif", label: "Austrian Alps", image: "austrian_alps_massif.png", zoomFactor: 10.6, aspect: 1040 / 196 },
 ];
 
 let placing = null, placeGhost = null, nextId = 1;
@@ -813,7 +1244,8 @@ let placing = null, placeGhost = null, nextId = 1;
   for (const p of PALETTE) {
     const el = document.createElement("div");
     el.className = "palette-item";
-    el.innerHTML = (p.icon ? `<img src="/asset/icon_${p.icon}.png" alt="">`
+    el.innerHTML = (p.image ? `<img src="${assetUrl(p.image)}" alt="">`
+      : p.icon ? `<img src="${assetUrl(`icon_${p.icon}.png`)}" alt="">`
       : `<span class="swatch">${p.emoji || "▩"}</span>`) + `<span>${p.label}</span>`;
     el.addEventListener("pointerdown", (e) => { e.preventDefault(); placing = p; placeGhost = null; });
     host.appendChild(el);
@@ -849,6 +1281,17 @@ function placeFeature(p, hex) {
     const cells = [key];
     if (p.size === 7) for (const [dq, dr] of NB) cells.push(shiftKey(key, dq, dr));
     f = { id: `forest-new-${nextId++}`, glyph: "forest", label: "Лес", cells, anchor: key, user: true };
+  } else if (p.kind === "massif") {
+    const ref = ensureMassifGlyphMetadata(p.image, p.zoomFactor, p.aspect);
+    f = {
+      id: `${p.image.replace(/\.png$/, "")}-${nextId++}`,
+      glyph: "massif",
+      image: p.image,
+      glyph_ref: ref,
+      label: p.label,
+      anchor: key,
+      user: true,
+    };
   } else {
     f = { id: `${p.icon}-${nextId++}`, glyph: "transport", icon: p.icon, label: p.label,
           anchor: key, lon: cell?.center?.[0], lat: cell?.center?.[1], user: true };
@@ -856,10 +1299,14 @@ function placeFeature(p, hex) {
   state.features.push(f);
   selected = f;
   selectedHex = key;
-  renderPanelList(featuresAtHex(key));
+  renderPanelList(featuresAtHex(key), key);
   panelEl.hidden = false;
   render();
   save();
+}
+
+function round1(value) {
+  return Math.round(value * 10) / 10;
 }
 
 // ----- save (writes the working hex_map.json; restorable via the generator) -----
@@ -884,6 +1331,8 @@ function save() {
 function boot(data) {
   state = structuredClone(data);
   panX = 0; panY = 0;
+  zoomValEl.textContent = `${Math.round(zoomVal * 100)}%`;
+  syncPaletteToggle();
   setupCanvas();
   preloadAssets();
   render();
@@ -892,7 +1341,7 @@ function boot(data) {
   statusEl.textContent = `Европа · ${state.grid.nominal_km} км · города ${c.city || 0} · массивы ${c.massif || 0} · леса ${c.forest || 0} · транспорт ${c.transport || 0}`;
 }
 
-window.addEventListener("resize", () => { setupCanvas(); render(); });
+window.addEventListener("resize", () => { syncPaletteToggle(); setupCanvas(); render(); });
 
 boot(initialData);
 

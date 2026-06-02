@@ -1,0 +1,128 @@
+{
+  "cropped_size_px": [
+    487,
+    441
+  ],
+  "extends_to": [],
+  "geo_bounds": {
+    "max_latitude": 52.25336,
+    "max_longitude": 11.37578,
+    "min_latitude": 51.38602,
+    "min_longitude": 9.82554
+  },
+  "glyphs": [
+    {
+      "glyph": "massif_harz_brocken",
+      "latitude": 51.78,
+      "longitude": 10.62,
+      "width": 250,
+      "y_offset": 0.0
+    }
+  ],
+  "id": "harz",
+  "image": "harz.png",
+  "kind": "isolated_mountain_range",
+  "label": "Harz",
+  "map_bbox_px": [
+    836.5,
+    949.5,
+    1080.0,
+    1170.0
+  ],
+  "massif_segments": [],
+  "placement_policy": "named_region_polygon_and_brocken_spine",
+  "region_polygon": [
+    {
+      "latitude": 52.14,
+      "longitude": 9.76
+    },
+    {
+      "latitude": 52.22,
+      "longitude": 10.55
+    },
+    {
+      "latitude": 51.92,
+      "longitude": 11.36
+    },
+    {
+      "latitude": 51.52,
+      "longitude": 11.48
+    },
+    {
+      "latitude": 51.24,
+      "longitude": 10.72
+    },
+    {
+      "latitude": 51.42,
+      "longitude": 9.72
+    }
+  ],
+  "render_bbox_px": [
+    1673,
+    1899,
+    2160,
+    2340
+  ],
+  "replacement_status": "first_generated_massif_glyph_pass_needs_elevation_layout_review",
+  "ridge_bands": [
+    {
+      "height": 52,
+      "id": "harz_brocken_spine",
+      "points": [
+        {
+          "latitude": 51.94,
+          "longitude": 9.95
+        },
+        {
+          "latitude": 51.84,
+          "longitude": 10.36
+        },
+        {
+          "latitude": 51.72,
+          "longitude": 10.82
+        },
+        {
+          "latitude": 51.56,
+          "longitude": 11.2
+        }
+      ],
+      "step": 26,
+      "style": "forested"
+    },
+    {
+      "height": 34,
+      "id": "harz_south_spur",
+      "points": [
+        {
+          "latitude": 51.58,
+          "longitude": 10.05
+        },
+        {
+          "latitude": 51.5,
+          "longitude": 10.48
+        },
+        {
+          "latitude": 51.42,
+          "longitude": 10.92
+        }
+      ],
+      "step": 28,
+      "style": "forested"
+    }
+  ],
+  "source_confidence": "named_region_first_pass",
+  "source_extent_id": "harz_brocken_extent",
+  "source_type": "relief_region",
+  "trees": [
+    {
+      "latitude": 51.88,
+      "longitude": 10.36,
+      "radius": 72
+    },
+    {
+      "latitude": 51.58,
+      "longitude": 10.84,
+      "radius": 64
+    }
+  ]
+}

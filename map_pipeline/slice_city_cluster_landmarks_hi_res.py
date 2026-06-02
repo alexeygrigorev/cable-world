@@ -91,7 +91,7 @@ def _fit_hi_res_icon(image: Image.Image) -> Image.Image:
         (max(1, round(image.width * scale)), max(1, round(image.height * scale))),
         Image.Resampling.LANCZOS,
     )
-    icon.alpha_composite(resized, ((ICON_SIZE - resized.width) // 2, (ICON_SIZE - resized.height) // 2))
+    icon.alpha_composite(resized, ((ICON_SIZE - resized.width) // 2, ICON_SIZE - resized.height - PADDING))
     return icon
 
 

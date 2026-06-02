@@ -1,0 +1,14 @@
+{
+	"captureScript": "map_review_app/capture_map_review_scenes.gd",
+	"description": "Runtime crop focused on the Berlin multi-symbol city cluster glyph.",
+	"feedbackTarget": "Check whether Berlin reads as a city cluster, not just a thin TV tower.",
+	"id": "godot_berlin_cluster",
+	"order": [
+		"050",
+		"100",
+		"150",
+		"200"
+	],
+	"schema": "cable-world.map-review-set.v1",
+	"title": "Godot Berlin Cluster"
+}

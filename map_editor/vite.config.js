@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import { writeFileSync, existsSync, createReadStream, readdirSync, mkdirSync, readFileSync } from "node:fs";
+import { writeFileSync, existsSync, createReadStream, readdirSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const DATA_PATH = fileURLToPath(new URL("./src/data/hex_map.json", import.meta.url));
@@ -14,12 +14,24 @@ const safeName = (n) => /^[\w -]+$/.test(n) ? n.replace(/\s+/g, "-") : null;
 const ASSET_DIRS = [
   fileURLToPath(new URL("../assets/sprites/", import.meta.url)),
   fileURLToPath(new URL("../assets/sprites/city_landmark_clusters_hi_res/outlined/", import.meta.url)),
-  fileURLToPath(new URL("../assets/sprites/city_landmarks/outlined/", import.meta.url)),
   fileURLToPath(new URL("../assets/map/glyphs/", import.meta.url)),
   fileURLToPath(new URL("../assets/map/massifs/", import.meta.url)),
+  fileURLToPath(new URL("../assets/map/hex_terrain/generated_2026_06_01/forests/", import.meta.url)),
+  fileURLToPath(new URL("../assets/map/hex_terrain/generated_2026_06_01/wooded_mountains/", import.meta.url)),
+  fileURLToPath(new URL("../assets/map/hex_terrain/generated_2026_06_01/german_mountains/", import.meta.url)),
+  fileURLToPath(new URL("../assets/map/hex_terrain/generated_2026_06_01/alps/", import.meta.url)),
   fileURLToPath(new URL("../assets/fonts/", import.meta.url)),
 ];
 const MIME = { png: "image/png", ttf: "font/ttf", otf: "font/otf", woff2: "font/woff2" };
+
+function findAsset(name) {
+  if (!/^[\w.-]+$/.test(name)) return null;
+  for (const dir of ASSET_DIRS) {
+    const p = dir + name;
+    if (existsSync(p)) return p;
+  }
+  return null;
+}
 
 // serve /asset/<file> from the game asset dirs (first match wins)
 function gameAssetsPlugin() {
@@ -30,15 +42,13 @@ function gameAssetsPlugin() {
         const name = decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, "");
         const ext = name.split(".").pop();
         if (!/^[\w.-]+$/.test(name) || !MIME[ext]) { res.statusCode = 400; return res.end(); }
-        for (const dir of ASSET_DIRS) {
-          const p = dir + name;
-          if (existsSync(p)) {
-            res.setHeader("Content-Type", MIME[ext]);
-            // game assets rarely change — let the browser cache them so reloads
-            // and panning don't re-download (hard-refresh to pick up edits)
-            res.setHeader("Cache-Control", "public, max-age=86400");
-            return createReadStream(p).pipe(res);
-          }
+        const p = findAsset(name);
+        if (p) {
+          res.setHeader("Content-Type", MIME[ext]);
+          // Asset URLs include a mtime/size fingerprint from /__asset_versions.
+          // That keeps reloads fast but changes URL whenever the file changes.
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          return createReadStream(p).pipe(res);
         }
         res.statusCode = 404;
         res.end();
@@ -94,6 +104,22 @@ function saveDataPlugin() {
         const files = readdirSync(MAPS_DIR).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify(files));
+      });
+
+      // stable cache keys for game assets used by the editor
+      server.middlewares.use("/__asset_versions", (req, res) => {
+        const u = new URL(req.url, "http://x");
+        const names = (u.searchParams.get("names") || "").split(",").filter(Boolean);
+        const versions = {};
+        for (const name of names) {
+          const p = findAsset(name);
+          if (!p) continue;
+          const st = statSync(p);
+          versions[name] = `${st.size}-${Math.floor(st.mtimeMs)}`;
+        }
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        res.end(JSON.stringify(versions));
       });
 
       // load a saved map

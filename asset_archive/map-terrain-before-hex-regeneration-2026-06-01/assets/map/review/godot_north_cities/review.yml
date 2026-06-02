@@ -1,0 +1,14 @@
+{
+	"captureScript": "map_review_app/capture_map_review_scenes.gd",
+	"description": "Runtime crop for Hamburg, Rostock and Berlin cluster glyphs.",
+	"feedbackTarget": "Check Hamburg/Rostock/Berlin recognizability and coastal placement.",
+	"id": "godot_north_cities",
+	"order": [
+		"050",
+		"100",
+		"150",
+		"200"
+	],
+	"schema": "cable-world.map-review-set.v1",
+	"title": "Godot Hamburg Rostock Berlin"
+}
