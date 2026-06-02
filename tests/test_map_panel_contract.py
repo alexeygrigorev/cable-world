@@ -854,15 +854,15 @@ class MapPanelContractTest(unittest.TestCase):
         script_text = (ROOT / "scripts" / "map_panel.gd").read_text(encoding="utf-8")
 
         for expected in [
-            "ICON_SIZE = 1024",
-            "PADDING = 96",
+            "ICON_SIZE = 256",
+            "PADDING = 24",
             "GRID_COLUMNS = 4",
             "GRID_ROWS = 2",
             "CITY_CLUSTER_ICON_NAMES",
             "assets/sprites/city_landmark_clusters_hi_res",
             "def _remove_tiny_alpha_islands",
             "narrow_edge_fragment",
-            "Build 1024px high-res city landmark cluster sprites",
+            "Build runtime city landmark cluster sprites",
             "--source-dir",
             "--sheet",
         ]:
@@ -894,8 +894,8 @@ class MapPanelContractTest(unittest.TestCase):
         for expected in [
             "High-res city cluster workflow",
             "1254x1254",
-            "`1024x1024` transparent city sprites",
-            "Runtime loads `assets/sprites/city_landmark_clusters_hi_res/outlined`",
+            "`256x256` transparent PNGs",
+            "If `256x256` is too soft",
             "Static glyph contact sheets should normally expose only `200`",
         ]:
             self.assertIn(expected, docs_text)

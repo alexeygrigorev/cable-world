@@ -9,8 +9,8 @@ from map_pipeline.city_cluster_glyph_specs import DEFAULT_SPECS_FILE, city_ids, 
 from map_pipeline.sheet_slice_audit import audit_grid_cut_components, cell_bounds, format_cut_issues
 
 
-ICON_SIZE = 1024
-PADDING = 96
+ICON_SIZE = 256
+PADDING = 24
 GRID_COLUMNS = 4
 GRID_ROWS = 2
 DEFAULT_OUT_DIR = "assets/sprites/city_landmark_clusters_hi_res"
@@ -86,7 +86,7 @@ def _trim_alpha(image: Image.Image) -> Image.Image:
 def _fit_hi_res_icon(image: Image.Image) -> Image.Image:
     icon = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (0, 0, 0, 0))
     max_side = ICON_SIZE - PADDING * 2
-    scale = min(max_side / image.width, max_side / image.height)
+    scale = min(1.0, max_side / image.width, max_side / image.height)
     resized = image.resize(
         (max(1, round(image.width * scale)), max(1, round(image.height * scale))),
         Image.Resampling.LANCZOS,
@@ -238,7 +238,7 @@ def _resolve_names(args: argparse.Namespace) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Build 1024px high-res city landmark cluster sprites from a sheet or per-city sources."
+        description="Build runtime city landmark cluster sprites from a sheet or per-city sources."
     )
     input_group = parser.add_mutually_exclusive_group(required=True)
     input_group.add_argument("--sheet", type=Path, help="Transparent city cluster sheet.")

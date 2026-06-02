@@ -62,7 +62,8 @@ class SheetSliceAuditTest(unittest.TestCase):
         self.assertEqual(len(crops), 2)
         left_bbox = crops[0].getchannel("A").getbbox()
         self.assertIsNotNone(left_bbox)
-        self.assertGreater(left_bbox[2], 100)
+        self.assertGreater(crops[0].size[0], 100)
+        self.assertEqual(left_bbox[2], 100)
 
     def test_cli_exits_nonzero_for_cut_issue(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

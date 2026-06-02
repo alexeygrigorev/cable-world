@@ -61,7 +61,7 @@ Keep generator output files under `$CODEX_HOME/generated_images/` as provenance.
 
 ## High-res city cluster workflow
 
-The original accepted high-res pass used per-city `1254x1254` transparent sources and normalized them into `1024x1024` transparent city sprites. Sheet-based batches are allowed now, but the quality bar is unchanged: source art must remain clean at user zoom `200%`. Runtime loads `assets/sprites/city_landmark_clusters_hi_res/outlined`.
+The original accepted pass used per-city `1254x1254` transparent sources. Runtime city sprites are currently normalized to `256x256` transparent PNGs for a mobile-sized map. Do not upscale smaller API output to fake a larger source; keep the generator output as provenance and only downscale/crop into runtime assets. If `256x256` is too soft at user zoom `200%`, raise the runtime target to `512x512` and regenerate from source.
 
 ## Remove Chroma Key
 
@@ -117,7 +117,7 @@ python3 -m map_pipeline.slice_city_cluster_landmarks_hi_res \
   --ids hannover,bremen,kiel
 ```
 
-The sheet slicer crops by connected alpha components, not only by the nominal grid cell. This prevents city clusters from losing a side when the generated art crosses a grid line. It also normalizes every accepted glyph to `1024x1024` with transparent padding and removes tiny alpha islands from sheet edges.
+The sheet slicer crops by connected alpha components, not only by the nominal grid cell. This prevents city clusters from losing a side when the generated art crosses a grid line. It also normalizes every accepted glyph to the current runtime target with transparent padding and removes tiny alpha islands from sheet edges.
 
 ## Outline
 
@@ -126,7 +126,7 @@ python3 -m map_pipeline.outline_sprites \
   --source-dir assets/sprites/city_landmark_clusters_hi_res \
   --out-dir assets/sprites/city_landmark_clusters_hi_res/outlined \
   --prefix city_ \
-  --radius 6 \
+  --radius 2 \
   --color '#25180fe0'
 ```
 
