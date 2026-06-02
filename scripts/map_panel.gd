@@ -732,7 +732,7 @@ func _position_markers() -> void:
 		var coordinates := _object_coordinates(objects[index])
 		var layer := map_layer as OfflineMapLayer
 		var map_size := layer.map_base_size()
-		var base_position := OfflineMapLayer._project_coordinates(coordinates, bounds, map_size)
+		var base_position := _map_point_for_geo(coordinates)
 		if clusters.has(index):
 			var cluster: Dictionary = clusters[index]
 			var cluster_indices: PackedInt32Array = cluster["indices"]
@@ -794,7 +794,7 @@ func _marker_clusters(bounds: Dictionary) -> Dictionary:
 		var coordinates := _object_coordinates(objects[index])
 		if not _coordinates_inside_bounds(coordinates, bounds):
 			continue
-		var base_position := OfflineMapLayer._project_coordinates(coordinates, bounds, map_size)
+		var base_position := _map_point_for_geo(coordinates)
 		var cluster: Dictionary = _nearest_cluster(cluster_list, base_position)
 		if cluster.is_empty():
 			cluster_list.append({
@@ -1069,6 +1069,14 @@ func _reset_map_view() -> void:
 	_apply_map_transform()
 
 func _default_zoom() -> float:
+	# Fit the whole Germany focus box into the viewport. With FIXED_MAP_SCALE the
+	# map scale is viewport-independent, so a fixed "100%" would be far too zoomed
+	# on a phone — pick the zoom that frames Germany on whatever screen we have.
+	if hex_model != null and hex_model.loaded and map_layer != null and map_layer.size.x > 0.0 and map_layer.size.y > 0.0:
+		var fixed: float = HexMapView.FIXED_MAP_SCALE
+		var fit_x: float = map_layer.size.x / max(1.0, hex_model.focus_size.x * fixed)
+		var fit_y: float = map_layer.size.y / max(1.0, hex_model.focus_size.y * fixed)
+		return clamp(min(fit_x, fit_y), MIN_ZOOM, MAX_ZOOM)
 	if map_layer != null and map_layer.size.x > map_layer.size.y:
 		return DEFAULT_LANDSCAPE_ZOOM
 	return DEFAULT_ZOOM
@@ -1152,6 +1160,17 @@ func _clamp_pan_offset_hex(viewport_size: Vector2) -> void:
 func _map_point_to_screen(point: Vector2, marker_size: Vector2 = ICON_MARKER_SIZE) -> Vector2:
 	return _pixel_snap(pan_offset + point * zoom - marker_size * 0.5)
 
+# Map-space point (screen = pan_offset + point*zoom) for a lon/lat coordinate.
+# When the hex map is loaded this uses its fixed world-pixel projection, so object
+# markers land exactly on the hex map. Falls back to the old cover-fit projection.
+func _map_point_for_geo(coordinates: Vector2) -> Vector2:
+	if hex_model != null and hex_model.loaded:
+		return (hex_model.geo_to_world(coordinates.x, coordinates.y) - hex_model.focus_origin) * HexMapView.FIXED_MAP_SCALE
+	if map_layer == null:
+		return Vector2.ZERO
+	var layer := map_layer as OfflineMapLayer
+	return OfflineMapLayer._project_coordinates(coordinates, _active_coordinate_bounds(), layer.map_base_size())
+
 func _marker_visual_size(is_cluster_marker: bool = false) -> Vector2:
 	var max_size: float = CLUSTER_MARKER_ZOOM_SIZE_MAX if is_cluster_marker else MARKER_ZOOM_SIZE_MAX
 	var size_value: float = round(clamp(ICON_MARKER_SIZE.x * _map_visual_scale(), MARKER_ZOOM_SIZE_MIN, max_size))
@@ -1179,7 +1198,7 @@ func _default_pan_offset() -> Vector2:
 
 func _initial_focus_map_point(layer: OfflineMapLayer) -> Vector2:
 	if map_scope == MAP_SCOPE_GERMANY:
-		return OfflineMapLayer._project_coordinates(GERMANY_INITIAL_FOCUS_COORDINATES, _active_coordinate_bounds(), layer.map_base_size())
+		return _map_point_for_geo(GERMANY_INITIAL_FOCUS_COORDINATES)
 
 	var bounds := _active_coordinate_bounds()
 	if bounds.is_empty():
@@ -1194,7 +1213,7 @@ func _initial_focus_map_point(layer: OfflineMapLayer) -> Vector2:
 		var coordinates := _object_coordinates(object_data)
 		if not _coordinates_inside_bounds(coordinates, bounds):
 			continue
-		var position := OfflineMapLayer._project_coordinates(coordinates, bounds, layer.map_base_size())
+		var position := _map_point_for_geo(coordinates)
 		if not has_any:
 			min_position = position
 			max_position = position

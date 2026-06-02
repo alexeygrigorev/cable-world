@@ -66,6 +66,7 @@ var focus_origin := Vector2.ZERO
 var focus_size := Vector2.ONE
 var view_origin := Vector2.ZERO   # top-left of the populated (Europe) extent, world px
 var view_size := Vector2.ONE      # size of the populated extent, world px
+var world_size := 65536.0         # Web Mercator world span in px (grid.world_size_px)
 var _mtime := 0
 
 var _tex_cache := {}   # filename -> Texture2D (or null when missing)
@@ -93,6 +94,7 @@ func load_from(path: String = CANONICAL_PATH) -> bool:
 	features = data.get("features", [])
 	glyphs = data.get("glyphs", {})
 	hex_size = float(grid.get("hex_size_px", 37.5071))
+	world_size = float(grid.get("world_size_px", 65536.0))
 	var fo: Array = focus.get("origin", [0.0, 0.0])
 	var fs: Array = focus.get("size", [1.0, 1.0])
 	focus_origin = Vector2(float(fo[0]), float(fo[1]))
@@ -121,6 +123,14 @@ func hex_world(q: float, r: float) -> Vector2:
 func hex_world_key(key: String) -> Vector2:
 	var parts := key.split(",")
 	return hex_world(float(parts[0]), float(parts[1]))
+
+# Web Mercator lon/lat -> world pixels, the SAME space hex centers live in. Lets
+# the game place geo-coordinate markers in the hex map's coordinate system.
+func geo_to_world(lon: float, lat: float) -> Vector2:
+	var x := (lon + 180.0) / 360.0 * world_size
+	var clamped: float = clamp(lat, -85.05112878, 85.05112878)
+	var y := world_size * 0.5 - world_size / (2.0 * PI) * log(tan(PI / 4.0 + deg_to_rad(clamped) / 2.0))
+	return Vector2(x, y)
 
 # geo_bounds the game's projection expects, taken from the model's focus box so
 # the two coordinate systems are guaranteed to agree.
