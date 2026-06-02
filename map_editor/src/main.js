@@ -966,6 +966,7 @@ function panelHasTextSelection() {
 
 // ----- pointer: drag feature, or pan -----
 let dragging = null, dragPos = null, panning = null, dragMoved = false;
+const TAP_MOVE_THRESHOLD_PX = 8;
 
 function eventToContent(e) {
   const rect = canvas.getBoundingClientRect();
@@ -1023,8 +1024,7 @@ canvas.addEventListener("pointerdown", (e) => {
     selectAt(p);
   } else {
     // locked (default): click selects, the object stays put; drag pans the map
-    selectAt(p);
-    panning = { x: e.clientX, y: e.clientY, panX, panY };
+    panning = { x: e.clientX, y: e.clientY, panX, panY, moved: false };
   }
   canvas.setPointerCapture(e.pointerId);
 });
@@ -1042,13 +1042,16 @@ canvas.addEventListener("pointermove", (e) => {
     }
     render();
   } else if (panning) {
-    panX = panning.panX + (e.clientX - panning.x);
-    panY = panning.panY + (e.clientY - panning.y);
+    const dx = e.clientX - panning.x;
+    const dy = e.clientY - panning.y;
+    if (Math.hypot(dx, dy) > TAP_MOVE_THRESHOLD_PX) panning.moved = true;
+    panX = panning.panX + dx;
+    panY = panning.panY + dy;
     render();
   }
 });
 
-canvas.addEventListener("pointerup", () => {
+canvas.addEventListener("pointerup", (e) => {
   if (dragging) {
     const f = dragging.feature;
     if (dragMoved) {
@@ -1074,7 +1077,12 @@ canvas.addEventListener("pointerup", () => {
     dragging = null; dragPos = null;
     render();
   }
+  if (panning && !panning.moved) selectAt(eventToContent(e));
   panning = null;
+});
+
+canvas.addEventListener("pointercancel", () => {
+  dragging = null; dragPos = null; panning = null; dragMoved = false;
 });
 
 // ----- zoom -----

@@ -251,6 +251,21 @@ class MapEditorContractTest(unittest.TestCase):
         self.assertIn("syncPaletteToggle();", handler)
         self.assertNotIn("setupCanvas()", handler)
 
+    def test_touch_pan_does_not_open_hex_panel(self) -> None:
+        self.assertIn("const TAP_MOVE_THRESHOLD_PX = 8;", self.main_js)
+        pointerdown = self.main_js.split('canvas.addEventListener("pointerdown"', 1)[1].split("canvas.setPointerCapture", 1)[0]
+        locked_branch = pointerdown.split("// locked (default): click selects", 1)[1]
+        self.assertIn("moved: false", locked_branch)
+        self.assertNotIn("selectAt(p)", locked_branch)
+
+        pointermove = self.main_js.split('canvas.addEventListener("pointermove"', 1)[1].split('canvas.addEventListener("pointerup"', 1)[0]
+        self.assertIn("Math.hypot(dx, dy) > TAP_MOVE_THRESHOLD_PX", pointermove)
+        self.assertIn("panning.moved = true", pointermove)
+
+        pointerup = self.main_js.split('canvas.addEventListener("pointerup"', 1)[1].split("// ----- zoom -----", 1)[0]
+        self.assertIn("if (panning && !panning.moved) selectAt(eventToContent(e));", pointerup)
+        self.assertIn('canvas.addEventListener("pointercancel"', self.main_js)
+
 
 if __name__ == "__main__":
     unittest.main()
