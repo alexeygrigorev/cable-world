@@ -17,10 +17,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Aarhus cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Aarhus cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "amsterdam",
@@ -30,10 +30,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Amsterdam cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Amsterdam cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "andorra",
@@ -43,10 +43,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Andorra la Vella cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Andorra la Vella cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "ankara",
@@ -56,10 +56,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Ankara cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Ankara cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "antalya",
@@ -69,10 +69,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Antalya cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Antalya cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "athens",
@@ -82,10 +82,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Athens cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Athens cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "augsburg",
@@ -108,10 +108,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Barcelona cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Barcelona cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "bari",
@@ -147,10 +147,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Belgrade cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Belgrade cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "bergen",
@@ -160,10 +160,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Bergen cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Bergen cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "berlin",
@@ -186,10 +186,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Bilbao cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Bilbao cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "bolzano",
@@ -212,10 +212,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Bordeaux cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Bordeaux cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "braga",
@@ -238,10 +238,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Bratislava cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Bratislava cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "bremen",
@@ -277,10 +277,10 @@
       "priority": "europe_city_cluster",
       "cluster_elements": [
         "Cathedral of St. Peter and Paul twin spires",
-        "Špilberk Castle hill",
+        "Špilberk Castle upper-town silhouette",
         "old town red-roof houses or tram/market base"
       ],
-      "prompt_spec": "Brno cluster with Cathedral of St. Peter and Paul twin spires, Špilberk Castle hill, and compact old town red-roof houses/tram base."
+      "prompt_spec": "Brno cluster with Cathedral of St. Peter and Paul twin spires, Špilberk Castle upper-town silhouette, and compact old town red-roof houses/tram base."
     },
     {
       "id": "brussels",
@@ -290,10 +290,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Brussels cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Brussels cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "bucharest",
@@ -303,10 +303,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Bucharest cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Bucharest cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "budapest",
@@ -316,10 +316,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Budapest cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Budapest cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "bursa",
@@ -329,10 +329,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Bursa cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Bursa cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "cardiff",
@@ -368,10 +368,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Chamonix cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Chamonix cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "chernivtsi",
@@ -394,10 +394,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Chisinau cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Chisinau cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "cluj_napoca",
@@ -407,10 +407,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Cluj-Napoca cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Cluj-Napoca cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "coimbra",
@@ -433,10 +433,9 @@
       "priority": "seed",
       "cluster_elements": [
         "Cologne Cathedral",
-        "Rhine bridge",
-        "river base"
+        "compact old-town street base"
       ],
-      "prompt_spec": "Cologne cluster with Cologne Cathedral, Rhine bridge, and simple river base."
+      "prompt_spec": "Cologne cluster with Cologne Cathedral, Romanesque church accents, and compact old-town street base."
     },
     {
       "id": "copenhagen",
@@ -446,10 +445,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Copenhagen cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Copenhagen cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "dnipro",
@@ -485,10 +484,9 @@
       "priority": "seed",
       "cluster_elements": [
         "Frauenkirche dome",
-        "Elbe bridge",
         "old town silhouette"
       ],
-      "prompt_spec": "Dresden cluster with Frauenkirche dome, Elbe bridge, and old town silhouette."
+      "prompt_spec": "Dresden cluster with Frauenkirche dome, palace roof accents, and old town silhouette."
     },
     {
       "id": "dublin",
@@ -498,10 +496,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Dublin cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Dublin cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "duesseldorf",
@@ -511,10 +509,9 @@
       "priority": "map_panel_remaining",
       "cluster_elements": [
         "Rhine Tower",
-        "Rhine promenade/bridge",
-        "Media Harbor leaning buildings"
+        "modern leaning civic buildings"
       ],
-      "prompt_spec": "Düsseldorf cluster with Rhine Tower, Rhine promenade/bridge, and Media Harbor buildings."
+      "prompt_spec": "Düsseldorf cluster with Rhine Tower, modern leaning civic buildings, and compact old-town blocks."
     },
     {
       "id": "edinburgh",
@@ -538,9 +535,9 @@
       "cluster_elements": [
         "Erfurt Cathedral",
         "Severikirche",
-        "Krämerbrücke bridge houses"
+        "Krämerbrücke-style old-town houses"
       ],
-      "prompt_spec": "Erfurt cluster with Erfurt Cathedral, Severikirche, and Krämerbrücke bridge houses."
+      "prompt_spec": "Erfurt cluster with Erfurt Cathedral, Severikirche, and Krämerbrücke-style old-town houses."
     },
     {
       "id": "erzurum",
@@ -590,9 +587,9 @@
       "cluster_elements": [
         "Freiburg Minster spire",
         "Schwabentor or Martinstor gate",
-        "Black Forest hill edge"
+        "compact Freiburg old-town edge"
       ],
-      "prompt_spec": "Freiburg cluster with Freiburg Minster spire, Schwabentor/Martinstor gate, and Black Forest hill edge."
+      "prompt_spec": "Freiburg cluster with Freiburg Minster spire, Schwabentor/Martinstor gate, and compact Freiburg old-town edge."
     },
     {
       "id": "gdansk",
@@ -615,10 +612,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Geneva cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Geneva cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "gomel",
@@ -641,10 +638,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Gothenburg cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Gothenburg cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "granada",
@@ -654,10 +651,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Granada cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Granada cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "grenoble",
@@ -667,10 +664,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Grenoble cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Grenoble cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "grodno",
@@ -693,10 +690,9 @@
       "priority": "seed",
       "cluster_elements": [
         "Speicherstadt warehouse",
-        "harbor crane",
-        "church spire or ship"
+        "church spire and brick roof cluster"
       ],
-      "prompt_spec": "Hamburg cluster with Speicherstadt red-brick warehouse, harbor crane, church spire or small ship."
+      "prompt_spec": "Hamburg cluster with Speicherstadt red-brick warehouse, church spire, and red-brick old-town roofs."
     },
     {
       "id": "hannover",
@@ -706,10 +702,10 @@
       "priority": "map_panel_remaining",
       "cluster_elements": [
         "New Town Hall dome",
-        "Maschsee water edge",
+        "compact civic garden edge",
         "Leineschloss or market church tower"
       ],
-      "prompt_spec": "Hannover cluster with New Town Hall dome, Maschsee water edge, and Leineschloss/Market Church tower."
+      "prompt_spec": "Hannover cluster with New Town Hall dome, compact civic garden edge, and Leineschloss/Market Church tower."
     },
     {
       "id": "helsinki",
@@ -719,10 +715,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Helsinki cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Helsinki cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "heraklion",
@@ -758,10 +754,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Istanbul cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Istanbul cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "izmir",
@@ -771,10 +767,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Izmir cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Izmir cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "kaliningrad",
@@ -835,11 +831,11 @@
       "status": "existing_cluster",
       "priority": "map_panel_remaining",
       "cluster_elements": [
-        "Kiel harbor cranes",
-        "ferry or sailboat",
+        "Kiel civic tower",
+        "brick civic buildings",
         "city hall tower"
       ],
-      "prompt_spec": "Kiel cluster with harbor cranes, ferry/sailboat, and city hall tower."
+      "prompt_spec": "Kiel cluster with civic tower, brick civic buildings, and city hall tower."
     },
     {
       "id": "konya",
@@ -862,10 +858,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Krakow cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Krakow cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "kyiv",
@@ -875,10 +871,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Kyiv cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Kyiv cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "leipzig",
@@ -901,10 +897,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Lisbon cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Lisbon cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "ljubljana",
@@ -914,10 +910,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Ljubljana cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Ljubljana cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "london",
@@ -927,10 +923,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "London cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "London cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "luebeck",
@@ -953,10 +949,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Luxembourg cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Luxembourg cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "lviv",
@@ -966,10 +962,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Lviv cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Lviv cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "lyon",
@@ -979,10 +975,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Lyon cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Lyon cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "madrid",
@@ -992,10 +988,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Madrid cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Madrid cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "magdeburg",
@@ -1006,9 +1002,9 @@
       "cluster_elements": [
         "Magdeburg Cathedral",
         "Green Citadel pink facade",
-        "Elbe bridge/water strip"
+        "compact old-town street edge"
       ],
-      "prompt_spec": "Magdeburg cluster with Magdeburg Cathedral, Green Citadel pink facade, and Elbe bridge/water strip."
+      "prompt_spec": "Magdeburg cluster with Magdeburg Cathedral, Green Citadel pink facade, and compact old-town street edge."
     },
     {
       "id": "malmo",
@@ -1018,10 +1014,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Malmo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Malmo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "manchester",
@@ -1044,10 +1040,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Marseille cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Marseille cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "milan",
@@ -1057,10 +1053,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Milan cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Milan cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "minsk",
@@ -1070,10 +1066,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Minsk cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Minsk cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "monaco",
@@ -1083,10 +1079,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Monaco cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Monaco cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "moscow",
@@ -1096,10 +1092,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Moscow cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Moscow cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "munich",
@@ -1135,10 +1131,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Nicosia cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Nicosia cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "nizhny_novgorod",
@@ -1175,9 +1171,9 @@
       "cluster_elements": [
         "Imperial Castle",
         "old town wall tower",
-        "Pegnitz bridge/river"
+        "compact old-town market edge"
       ],
-      "prompt_spec": "Nürnberg cluster with Imperial Castle, old town wall tower, and Pegnitz bridge/river."
+      "prompt_spec": "Nürnberg cluster with Imperial Castle, old town wall tower, and compact old-town market edge."
     },
     {
       "id": "odesa",
@@ -1187,10 +1183,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Odesa cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Odesa cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "oslo",
@@ -1200,10 +1196,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Oslo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Oslo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "oulu",
@@ -1239,10 +1235,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Paris cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Paris cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "patras",
@@ -1265,10 +1261,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Podgorica cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Podgorica cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "porto",
@@ -1278,10 +1274,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Porto cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Porto cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "poznan",
@@ -1304,10 +1300,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Prague cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Prague cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "pristina",
@@ -1317,10 +1313,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Pristina cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Pristina cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "pskov",
@@ -1343,10 +1339,9 @@
       "priority": "map_panel_remaining",
       "cluster_elements": [
         "Regensburg Cathedral twin spires",
-        "Stone Bridge",
-        "Danube river strip"
+        "compact old-town street base"
       ],
-      "prompt_spec": "Regensburg cluster with Cathedral twin spires, Stone Bridge, and Danube river strip."
+      "prompt_spec": "Regensburg cluster with Cathedral twin spires, old-town tower accents, and compact old-town street base."
     },
     {
       "id": "reykjavik",
@@ -1356,10 +1351,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Reykjavik cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Reykjavik cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "riga",
@@ -1369,10 +1364,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Riga cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Riga cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "rome",
@@ -1382,10 +1377,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Rome cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Rome cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "rostock",
@@ -1395,10 +1390,9 @@
       "priority": "seed",
       "cluster_elements": [
         "Hanseatic red-brick city gate",
-        "harbor ship",
         "church spire"
       ],
-      "prompt_spec": "Rostock cluster with Hanseatic red-brick city gate, harbor ship, and church spire."
+      "prompt_spec": "Rostock cluster with Hanseatic red-brick city gate, brick civic building, and church spire."
     },
     {
       "id": "saarbruecken",
@@ -1408,10 +1402,9 @@
       "priority": "map_panel_remaining",
       "cluster_elements": [
         "Ludwigskirche",
-        "Saar river bridge",
         "Saarbrücken Castle facade"
       ],
-      "prompt_spec": "Saarbrücken cluster with Ludwigskirche, Saar river bridge, and Saarbrücken Castle facade."
+      "prompt_spec": "Saarbrücken cluster with Ludwigskirche, Saarbrücken Castle facade, and compact old-town blocks."
     },
     {
       "id": "samsun",
@@ -1434,10 +1427,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "San Marino cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "San Marino cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "sarajevo",
@@ -1447,10 +1440,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Sarajevo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Sarajevo cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "seville",
@@ -1460,10 +1453,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Seville cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Seville cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "simferopol",
@@ -1486,10 +1479,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Skopje cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Skopje cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "smolensk",
@@ -1512,10 +1505,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Sofia cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Sofia cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "st_petersburg",
@@ -1525,10 +1518,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "St Petersburg cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "St Petersburg cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "stavanger",
@@ -1551,10 +1544,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Stockholm cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Stockholm cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "stuttgart",
@@ -1565,9 +1558,9 @@
       "cluster_elements": [
         "TV tower",
         "Schlossplatz palace/square",
-        "industrial hill form"
+        "compact civic square edge"
       ],
-      "prompt_spec": "Stuttgart cluster with slim TV tower, Schlossplatz palace/square element, and subtle industrial hill form."
+      "prompt_spec": "Stuttgart cluster with slim TV tower, Schlossplatz palace/square element, and subtle compact civic square edge."
     },
     {
       "id": "tallinn",
@@ -1577,10 +1570,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Tallinn cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Tallinn cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "tampere",
@@ -1590,10 +1583,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Tampere cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Tampere cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "thessaloniki",
@@ -1616,10 +1609,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Tirana cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Tirana cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "toulouse",
@@ -1629,10 +1622,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Toulouse cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Toulouse cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "trabzon",
@@ -1642,10 +1635,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Trabzon cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Trabzon cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "tromso",
@@ -1655,10 +1648,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Tromso cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Tromso cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "trondheim",
@@ -1681,10 +1674,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Turku cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Turku cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "uppsala",
@@ -1720,10 +1713,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Vaduz cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Vaduz cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "valencia",
@@ -1733,10 +1726,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Valencia cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Valencia cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "valletta",
@@ -1746,10 +1739,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Valletta cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Valletta cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "vatican",
@@ -1759,10 +1752,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Vatican City cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Vatican City cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "venice",
@@ -1772,10 +1765,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Venice cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Venice cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "vienna",
@@ -1785,10 +1778,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Vienna cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Vienna cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "vilnius",
@@ -1798,10 +1791,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Vilnius cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Vilnius cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "vitebsk",
@@ -1824,10 +1817,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Warsaw cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Warsaw cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "wolfsburg",
@@ -1838,9 +1831,9 @@
       "cluster_elements": [
         "Autostadt twin glass towers",
         "VW factory silhouette",
-        "Aller canal/waterfront"
+        "compact factory-town street edge"
       ],
-      "prompt_spec": "Wolfsburg cluster with Autostadt twin glass towers, VW factory silhouette, and Aller canal/waterfront."
+      "prompt_spec": "Wolfsburg cluster with Autostadt twin glass towers, VW factory silhouette, and compact factory-town street edge."
     },
     {
       "id": "wroclaw",
@@ -1863,10 +1856,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Zagreb cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Zagreb cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "zaragoza",
@@ -1876,10 +1869,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Zaragoza cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Zaragoza cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     },
     {
       "id": "zurich",
@@ -1889,10 +1882,10 @@
       "priority": "europe_city_cluster_full_pass_2026_06_02",
       "cluster_elements": [
         "2-4 recognizable local landmark elements",
-        "compact old-town, river, harbor, hill, or mountain base",
+        "compact old-town architecture with civic buildings, churches, palaces, domes, roofs, and modest tower accents",
         "balanced multi-symbol city silhouette"
       ],
-      "prompt_spec": "Zurich cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact contextual city base."
+      "prompt_spec": "Zurich cluster generated in the full Europe/Turkey city pass with 2-4 recognizable local landmarks and compact old-town architecture and civic landmark cluster."
     }
   ]
 }

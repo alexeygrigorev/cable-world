@@ -47,7 +47,7 @@ Prompt rules:
 - Use a warm European RPG map palette and crisp dark outline.
 - Generate on flat `#ff00ff` chroma key background.
 - Do not include mountain backdrops, snowy peaks, broad hills, or terrain massifs in city glyphs. Terrain is rendered by the map's terrain/massif layers; city glyphs should show the town/city itself.
-- Do not include water backdrops, harbor water, river strips, lakes, sea, boats, ships, piers, or wide bridges in city glyphs. Water and transport objects are separate map layers; city glyphs should not carry their own coastline/river scene.
+- Do not include water backdrops, harbor water, river strips, lakes, sea, boats, ships, piers in city glyphs. Water and transport objects are separate map layers; city glyphs should not carry their own coastline/river scene.
 - No text, letters, flags, labels, frames, map background, or photorealism.
 - The glyph must stay clean at user zoom `300%`.
 
@@ -90,7 +90,25 @@ Do not integrate a batch until its review sheet is visually checked against thes
 
 Use the approved `5x3` reference image as an input image for every city generation batch. Ask for the output to use the same `5 columns x 3 rows` layout so the model sees and returns the same structure.
 
-Batch prompt skeleton:
+Generate batch prompts from the city spec file instead of writing them by hand:
+
+```bash
+python3 -m map_pipeline.city_cluster_glyph_specs --batch-prompts
+```
+
+For five parallel workers:
+
+```bash
+python3 -m map_pipeline.city_cluster_glyph_specs --batch-prompts --shard-count 5 --shard-index 1
+python3 -m map_pipeline.city_cluster_glyph_specs --batch-prompts --shard-count 5 --shard-index 2
+python3 -m map_pipeline.city_cluster_glyph_specs --batch-prompts --shard-count 5 --shard-index 3
+python3 -m map_pipeline.city_cluster_glyph_specs --batch-prompts --shard-count 5 --shard-index 4
+python3 -m map_pipeline.city_cluster_glyph_specs --batch-prompts --shard-count 5 --shard-index 5
+```
+
+The generated prompts deliberately ignore old generic city hints that mention water, harbors, hills, or mountains. City glyphs must stay city-only tokens; those other concepts belong to map layers.
+
+Batch prompt shape:
 
 ```text
 Input image: assets/map/references/city-glyph-style-reference-5x3.png is the style reference.
@@ -116,6 +134,31 @@ Background: perfectly flat solid #ff00ff chroma-key background only, with clean 
 ```
 
 Do not ask for one city at a time during a full pass. Use `5x3` batches; a smaller last batch is allowed only when the remaining city count is below 15.
+
+## Full Regeneration Pass
+
+When the city style drifts, regenerate all city glyphs from the approved reference sheet instead of patching isolated cities. Split the work into five shards with `--shard-count 5`; each worker writes only to its own `tmp/city-full-regen-agent-<n>/` directory:
+
+```text
+tmp/city-full-regen-agent-<n>/raw
+tmp/city-full-regen-agent-<n>/alpha
+tmp/city-full-regen-agent-<n>/sliced
+tmp/city-full-regen-agent-<n>/outlined
+tmp/city-full-regen-agent-<n>/review
+```
+
+Workers must not write to `assets/`, `docs/`, `map_editor/`, `map_pipeline/data/`, or commit. Integration happens only after the combined review sheets are accepted.
+
+For each shard:
+
+1. Generate coherent `5x3` raw sheets from the approved reference image and generated batch prompts.
+2. Remove chroma key into `alpha/`.
+3. Slice into `sliced/` with ids in exact sheet order and `--columns 5`.
+4. Outline into `outlined/` with the normal city outline.
+5. Build a review sheet from `outlined/`.
+6. Run size and content audits; report warnings instead of integrating.
+
+Reject a generated sheet if it visibly changes style, produces water/scenic terrain, creates a flat skyline, makes tokens much taller/wider than the approved reference, or makes neighboring cities visually incomparable.
 
 ## Generate
 
