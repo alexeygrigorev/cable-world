@@ -26,6 +26,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HEX_MAP = ROOT / "map_editor" / "src" / "data" / "hex_map.json"
 STORE = ROOT / "map_pipeline" / "data" / "osm_peaks.json"
+# Per-tile checkpoint so a long pull can resume if it is interrupted/killed.
+# Holds raw kept records keyed by id + the set of completed tiles. Deleted on
+# a clean finish.
+CHECKPOINT = ROOT / "map_pipeline" / "data" / "osm_peaks.checkpoint.json"
 
 ENDPOINT = "https://overpass-api.de/api/interpreter"
 TILE_DEG = 5  # tile size; only tiles containing >=1 hex are queried
@@ -33,7 +37,7 @@ PULLED_AT = "2026-06-03"  # scripts can't read the clock; bump on refresh.
 
 # If Overpass keeps rate-limiting, raise this to shrink the pull (e.g. 1000 to
 # keep only named peaks >= 1000 m). 0 keeps every named+notable peak.
-MIN_ELE = 0
+MIN_ELE = 1000
 
 
 def hex_tiles() -> tuple[list[tuple[int, int]], list[float]]:
@@ -60,7 +64,7 @@ def fetch_tile(s: float, w: float, n: float, e: float) -> list[dict]:
         f'  node["natural"="peak"]["name"]["wikidata"]({s},{w},{n},{e});'
         f'  node["natural"="peak"]["name"]["wikipedia"]({s},{w},{n},{e});'
         f');'
-        f'out tags;'
+        f'out tags center;'  # 'center' also emits lat/lon for the matched nodes
     )
     data = urllib.parse.urlencode({"data": query}).encode()
     for attempt in range(6):
@@ -115,18 +119,35 @@ def main() -> None:
     print(f"hex bbox (S,W,N,E): {bbox}  tiles to query: {len(tiles)}", flush=True)
     if MIN_ELE:
         print(f"LEAN MODE: only named peaks with ele >= {MIN_ELE} m", flush=True)
-    elements: dict[int, dict] = {}
+
+    # Resume from checkpoint if present. We store only KEPT records (already
+    # filtered by record()) keyed by id, plus which tiles are done — so memory
+    # and the checkpoint stay lean even across the dense Alpine tiles.
+    kept: dict[int, dict] = {}
+    done: set[tuple[int, int]] = set()
+    if CHECKPOINT.exists():
+        ck = json.loads(CHECKPOINT.read_text(encoding="utf-8"))
+        kept = {r["id"]: r for r in ck.get("peaks", [])}
+        done = {tuple(t) for t in ck.get("done_tiles", [])}
+        print(f"resuming: {len(done)} tiles done, {len(kept)} peaks so far", flush=True)
+
     for i, (lon0, lat0) in enumerate(tiles, 1):
+        if (lon0, lat0) in done:
+            continue
         print(f"[{i}/{len(tiles)}] tile lon {lon0}..{lon0+TILE_DEG} lat {lat0}..{lat0+TILE_DEG}", flush=True)
         for el in fetch_tile(lat0, lon0, lat0 + TILE_DEG, lon0 + TILE_DEG):
-            elements[el["id"]] = el  # dedupe by node id across tile borders
-        print(f"   cumulative peaks: {len(elements)}", flush=True)
+            rec = record(el)
+            if rec is not None:
+                kept[rec["id"]] = rec  # dedupe by node id across tile borders
+        done.add((lon0, lat0))
+        CHECKPOINT.write_text(
+            json.dumps({"done_tiles": sorted(done), "peaks": list(kept.values())}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        print(f"   cumulative kept peaks: {len(kept)}", flush=True)
         time.sleep(8)
 
-    peaks = sorted(
-        (r for r in (record(e) for e in elements.values()) if r is not None),
-        key=lambda r: r["id"],
-    )
+    peaks = sorted(kept.values(), key=lambda r: r["id"])
     store = {
         "schema": "cable-world.osm-peaks.v1",
         "source": 'OpenStreetMap via Overpass API (node["natural"="peak"], named + ele/wikidata/wikipedia)',
@@ -145,6 +166,7 @@ def main() -> None:
         "peaks": peaks,
     }
     STORE.write_text(json.dumps(store, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    CHECKPOINT.unlink(missing_ok=True)  # clean finish: drop the resume file
     print(f"wrote {STORE.relative_to(ROOT)}: {len(peaks)} peaks", flush=True)
 
 

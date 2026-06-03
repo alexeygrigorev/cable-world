@@ -1,0 +1,795 @@
+{
+  "schema": "cable-world.tv-towers.v1",
+  "source": "OpenStreetMap TV / telecom towers",
+  "generated_from": "map_pipeline/data/osm_tv_towers.json",
+  "hex_count": 17,
+  "by_hex": {
+    "367,462": {
+      "count": 93,
+      "towers": [
+        {
+          "name": "Hylas 2 antenna",
+          "id": 2116667009,
+          "osm_type": "node"
+        },
+        {
+          "id": 967259926,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746298,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746309,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746310,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746311,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746312,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746316,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746319,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746323,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746324,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746327,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746328,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746334,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746335,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746336,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746339,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746340,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746341,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746342,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746343,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746344,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746345,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746347,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746349,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746350,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746351,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746352,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746353,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746354,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746355,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746356,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746357,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746358,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746359,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746360,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746361,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746362,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746364,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746365,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746366,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746367,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746368,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746369,
+          "osm_type": "node"
+        },
+        {
+          "id": 2104746370,
+          "osm_type": "node"
+        },
+        {
+          "id": 2109304673,
+          "osm_type": "node"
+        },
+        {
+          "id": 2529554845,
+          "osm_type": "node"
+        },
+        {
+          "id": 2529554849,
+          "osm_type": "node"
+        },
+        {
+          "id": 2529554852,
+          "osm_type": "node"
+        },
+        {
+          "id": 2529554861,
+          "osm_type": "node"
+        },
+        {
+          "id": 2529554879,
+          "osm_type": "node"
+        },
+        {
+          "id": 7471308380,
+          "osm_type": "node"
+        },
+        {
+          "id": 7471308381,
+          "osm_type": "node"
+        },
+        {
+          "id": 7495139531,
+          "osm_type": "node"
+        },
+        {
+          "id": 7495139532,
+          "osm_type": "node"
+        },
+        {
+          "id": 7495139533,
+          "osm_type": "node"
+        },
+        {
+          "id": 7495139534,
+          "osm_type": "node"
+        },
+        {
+          "id": 12851369499,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403121,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403122,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403123,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403124,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403125,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403126,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403127,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403128,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403129,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403130,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403131,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403132,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403133,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403134,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403135,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403136,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403137,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403138,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403139,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403140,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403141,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403142,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403143,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403144,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403145,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403146,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403147,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403148,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403175,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927403176,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927477371,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927477372,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927477377,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927477378,
+          "osm_type": "node"
+        },
+        {
+          "id": 12927477379,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "367,461": {
+      "count": 16,
+      "towers": [
+        {
+          "name": "BBC ICTS Tower",
+          "id": 2928722501,
+          "osm_type": "node"
+        },
+        {
+          "id": 687344339,
+          "osm_type": "way"
+        },
+        {
+          "id": 987955997,
+          "osm_type": "way"
+        },
+        {
+          "id": 2111306008,
+          "osm_type": "node"
+        },
+        {
+          "id": 2112799616,
+          "osm_type": "node"
+        },
+        {
+          "id": 2126767560,
+          "osm_type": "node"
+        },
+        {
+          "id": 2128157834,
+          "osm_type": "node"
+        },
+        {
+          "id": 2128157841,
+          "osm_type": "node"
+        },
+        {
+          "id": 2128157876,
+          "osm_type": "node"
+        },
+        {
+          "id": 2128157889,
+          "osm_type": "node"
+        },
+        {
+          "id": 2129829616,
+          "osm_type": "node"
+        },
+        {
+          "id": 2129830386,
+          "osm_type": "node"
+        },
+        {
+          "id": 2161816950,
+          "osm_type": "node"
+        },
+        {
+          "id": 2161816962,
+          "osm_type": "node"
+        },
+        {
+          "id": 11428457437,
+          "osm_type": "node"
+        },
+        {
+          "id": 12294811203,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "316,458": {
+      "count": 10,
+      "towers": [
+        {
+          "id": 1173352981,
+          "osm_type": "way"
+        },
+        {
+          "id": 1525186072,
+          "osm_type": "node"
+        },
+        {
+          "id": 4236450784,
+          "osm_type": "node"
+        },
+        {
+          "id": 4236450785,
+          "osm_type": "node"
+        },
+        {
+          "id": 4236450786,
+          "osm_type": "node"
+        },
+        {
+          "id": 4702120632,
+          "osm_type": "node"
+        },
+        {
+          "id": 5139582021,
+          "osm_type": "node"
+        },
+        {
+          "id": 5349992071,
+          "osm_type": "node"
+        },
+        {
+          "id": 7234694908,
+          "osm_type": "node"
+        },
+        {
+          "id": 9225114279,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "351,459": {
+      "count": 7,
+      "towers": [
+        {
+          "id": 1971239292,
+          "osm_type": "node"
+        },
+        {
+          "id": 1974266757,
+          "osm_type": "node"
+        },
+        {
+          "id": 1974776501,
+          "osm_type": "node"
+        },
+        {
+          "id": 2032770224,
+          "osm_type": "node"
+        },
+        {
+          "id": 4109969801,
+          "osm_type": "node"
+        },
+        {
+          "id": 10224516354,
+          "osm_type": "node"
+        },
+        {
+          "id": 12237444629,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "344,460": {
+      "count": 7,
+      "towers": [
+        {
+          "id": 1427092953,
+          "osm_type": "way"
+        },
+        {
+          "id": 1431221909,
+          "osm_type": "way"
+        },
+        {
+          "id": 5166611817,
+          "osm_type": "node"
+        },
+        {
+          "id": 5166611818,
+          "osm_type": "node"
+        },
+        {
+          "id": 5166613104,
+          "osm_type": "node"
+        },
+        {
+          "id": 6858185817,
+          "osm_type": "node"
+        },
+        {
+          "id": 6858185835,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "342,460": {
+      "count": 6,
+      "towers": [
+        {
+          "id": 2520260171,
+          "osm_type": "node"
+        },
+        {
+          "id": 2540909031,
+          "osm_type": "node"
+        },
+        {
+          "id": 2540909076,
+          "osm_type": "node"
+        },
+        {
+          "id": 4093474521,
+          "osm_type": "node"
+        },
+        {
+          "id": 4226141842,
+          "osm_type": "node"
+        },
+        {
+          "id": 11977712104,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "366,462": {
+      "count": 6,
+      "towers": [
+        {
+          "id": 2529554882,
+          "osm_type": "node"
+        },
+        {
+          "id": 2529554888,
+          "osm_type": "node"
+        },
+        {
+          "id": 10836625740,
+          "osm_type": "node"
+        },
+        {
+          "id": 10997295481,
+          "osm_type": "node"
+        },
+        {
+          "id": 11004327639,
+          "osm_type": "node"
+        },
+        {
+          "id": 11581966959,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "341,460": {
+      "count": 5,
+      "towers": [
+        {
+          "name": "Telecom Tower",
+          "id": 955792501,
+          "osm_type": "node"
+        },
+        {
+          "name": "ΚΟΡΑΚΙΑΣ/Χ",
+          "id": 6878314876,
+          "osm_type": "node"
+        },
+        {
+          "id": 736342230,
+          "osm_type": "way"
+        },
+        {
+          "id": 1503582030,
+          "osm_type": "way"
+        },
+        {
+          "id": 11935435295,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "343,460": {
+      "count": 5,
+      "towers": [
+        {
+          "id": 1433451962,
+          "osm_type": "node"
+        },
+        {
+          "id": 4964520435,
+          "osm_type": "node"
+        },
+        {
+          "id": 5315177602,
+          "osm_type": "node"
+        },
+        {
+          "id": 5316202421,
+          "osm_type": "node"
+        },
+        {
+          "id": 5373296231,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "365,461": {
+      "count": 4,
+      "towers": [
+        {
+          "id": 4483284911,
+          "osm_type": "node",
+          "height": "20"
+        },
+        {
+          "id": 5497428196,
+          "osm_type": "node"
+        },
+        {
+          "id": 6175234517,
+          "osm_type": "node"
+        },
+        {
+          "id": 9601675027,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "377,457": {
+      "count": 3,
+      "towers": [
+        {
+          "name": "LEW204HT",
+          "id": 6604005082,
+          "osm_type": "node"
+        },
+        {
+          "id": 1883733551,
+          "osm_type": "node"
+        },
+        {
+          "id": 1883733552,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "345,461": {
+      "count": 3,
+      "towers": [
+        {
+          "id": 7542371466,
+          "osm_type": "node"
+        },
+        {
+          "id": 9529231123,
+          "osm_type": "node"
+        },
+        {
+          "id": 9547112562,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "346,461": {
+      "count": 2,
+      "towers": [
+        {
+          "id": 1377183290,
+          "osm_type": "node"
+        },
+        {
+          "id": 2429320877,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "354,457": {
+      "count": 2,
+      "towers": [
+        {
+          "id": 2354562592,
+          "osm_type": "node"
+        },
+        {
+          "id": 2358841057,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "343,461": {
+      "count": 2,
+      "towers": [
+        {
+          "id": 2477870148,
+          "osm_type": "node"
+        },
+        {
+          "id": 3817148789,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "344,461": {
+      "count": 2,
+      "towers": [
+        {
+          "id": 9758472594,
+          "osm_type": "node"
+        },
+        {
+          "id": 9758525768,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "347,461": {
+      "count": 1,
+      "towers": [
+        {
+          "id": 9804768626,
+          "osm_type": "node"
+        }
+      ]
+    }
+  }
+}
