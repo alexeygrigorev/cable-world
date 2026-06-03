@@ -1,0 +1,287 @@
+{
+  "schema": "cable-world.mountain-systems.v1",
+  "note": "Curated, hand-drawn mountain SYSTEM and SUB-REGION polygons covering the populated hex grid (lon -24..45, lat 35..71). Polygons are approximate simple convex/bbox-ish outlines in [lon,lat] order, drawn from general geographic knowledge; they are meant for coarse per-hex classification, not survey-grade boundaries. Subregions reference their parent system via 'system' (the system's name_ru). 'magnitude' is the baseline icon-size class (small|medium|large) for hexes inside the polygon; the build step may upgrade it from peak elevations. Point-in-polygon test order: subregions are tested before their parent systems so a hex in the Dolomites resolves to the Dolomites, not just the Alps.",
+  "magnitude_values": ["small", "medium", "large"],
+  "systems": [
+    {
+      "id": "alps",
+      "name_ru": "Альпы",
+      "name_en": "Alps",
+      "magnitude": "large",
+      "polygon": [[5.7, 43.6], [7.2, 43.4], [9.5, 44.0], [12.5, 45.4], [14.6, 46.0], [16.4, 47.2], [16.0, 48.1], [13.2, 47.9], [10.0, 47.7], [7.5, 47.5], [5.9, 46.4], [5.6, 45.2]]
+    },
+    {
+      "id": "pyrenees",
+      "name_ru": "Пиренеи",
+      "name_en": "Pyrenees",
+      "magnitude": "large",
+      "polygon": [[-1.8, 43.4], [0.5, 42.9], [2.2, 42.4], [3.2, 42.4], [3.0, 42.0], [0.5, 42.2], [-1.6, 42.6], [-2.0, 43.0]]
+    },
+    {
+      "id": "carpathians",
+      "name_ru": "Карпаты",
+      "name_en": "Carpathians",
+      "magnitude": "medium",
+      "polygon": [[17.0, 49.4], [19.5, 49.6], [22.5, 49.1], [24.6, 48.2], [26.3, 47.4], [27.0, 46.3], [25.4, 45.2], [24.0, 45.2], [22.6, 45.0], [22.2, 45.6], [20.5, 46.2], [18.7, 47.5], [17.4, 48.6]]
+    },
+    {
+      "id": "scandinavian_mountains",
+      "name_ru": "Скандинавские горы",
+      "name_en": "Scandinavian Mountains",
+      "magnitude": "large",
+      "polygon": [[5.0, 58.5], [6.5, 60.5], [9.0, 62.5], [12.0, 65.0], [15.0, 67.5], [18.0, 68.8], [22.0, 69.8], [25.0, 70.2], [27.0, 69.8], [24.0, 68.5], [19.0, 67.0], [15.0, 64.5], [11.0, 61.5], [8.0, 59.5], [6.0, 58.3]]
+    },
+    {
+      "id": "dinaric_alps",
+      "name_ru": "Динарское нагорье",
+      "name_en": "Dinaric Alps",
+      "magnitude": "medium",
+      "polygon": [[13.4, 46.2], [15.5, 45.8], [17.5, 44.7], [19.0, 43.5], [20.4, 42.4], [20.0, 41.6], [18.8, 42.3], [17.0, 43.2], [15.2, 44.2], [13.5, 45.0]]
+    },
+    {
+      "id": "apennines",
+      "name_ru": "Апеннины",
+      "name_en": "Apennines",
+      "magnitude": "medium",
+      "polygon": [[7.6, 44.3], [9.5, 44.5], [12.5, 43.4], [14.2, 41.8], [15.8, 40.6], [16.6, 39.4], [16.4, 38.0], [15.6, 37.9], [14.8, 39.0], [13.4, 41.0], [11.8, 42.6], [9.6, 43.6], [7.8, 43.9]]
+    },
+    {
+      "id": "caucasus",
+      "name_ru": "Кавказ",
+      "name_en": "Caucasus",
+      "magnitude": "large",
+      "polygon": [[40.0, 43.0], [42.0, 43.6], [44.5, 43.0], [44.9, 42.0], [43.5, 41.4], [41.5, 41.6], [40.0, 42.2]]
+    },
+    {
+      "id": "balkan_mountains",
+      "name_ru": "Балканы (Стара-Планина)",
+      "name_en": "Balkan Mountains (Stara Planina)",
+      "magnitude": "medium",
+      "polygon": [[22.4, 43.2], [24.5, 43.0], [26.6, 43.0], [28.0, 42.8], [27.8, 42.5], [26.0, 42.6], [24.0, 42.7], [22.4, 42.9]]
+    },
+    {
+      "id": "rhodope",
+      "name_ru": "Родопы",
+      "name_en": "Rhodope Mountains",
+      "magnitude": "medium",
+      "polygon": [[23.0, 42.2], [24.6, 42.1], [26.0, 41.7], [26.0, 41.2], [24.4, 41.2], [23.0, 41.5]]
+    },
+    {
+      "id": "massif_central",
+      "name_ru": "Центральный массив",
+      "name_en": "Massif Central",
+      "magnitude": "small",
+      "polygon": [[1.6, 45.8], [3.3, 45.9], [4.4, 45.4], [4.3, 44.2], [3.6, 43.6], [2.4, 43.9], [1.8, 44.8]]
+    },
+    {
+      "id": "jura",
+      "name_ru": "Юра",
+      "name_en": "Jura Mountains",
+      "magnitude": "small",
+      "polygon": [[5.7, 47.5], [6.9, 47.4], [7.4, 46.8], [6.7, 46.0], [5.8, 46.2], [5.5, 46.9]]
+    },
+    {
+      "id": "black_forest",
+      "name_ru": "Шварцвальд",
+      "name_en": "Black Forest",
+      "magnitude": "small",
+      "polygon": [[7.6, 48.9], [8.5, 48.8], [8.6, 47.9], [7.8, 47.7], [7.6, 48.4]]
+    },
+    {
+      "id": "harz",
+      "name_ru": "Гарц",
+      "name_en": "Harz",
+      "magnitude": "small",
+      "polygon": [[10.2, 51.95], [11.2, 51.9], [11.1, 51.5], [10.3, 51.55]]
+    },
+    {
+      "id": "scottish_highlands",
+      "name_ru": "Шотландское нагорье",
+      "name_en": "Scottish Highlands",
+      "magnitude": "small",
+      "polygon": [[-5.8, 58.6], [-3.0, 58.5], [-2.6, 57.0], [-3.3, 56.2], [-5.0, 56.0], [-6.5, 56.8], [-6.0, 58.0]]
+    },
+    {
+      "id": "cantabrian_mountains",
+      "name_ru": "Кантабрийские горы",
+      "name_en": "Cantabrian Mountains",
+      "magnitude": "medium",
+      "polygon": [[-7.5, 43.5], [-4.5, 43.5], [-3.5, 43.3], [-3.6, 42.8], [-5.5, 42.8], [-7.4, 43.0]]
+    },
+    {
+      "id": "sierra_nevada",
+      "name_ru": "Сьерра-Невада (Испания)",
+      "name_en": "Sierra Nevada (Spain)",
+      "magnitude": "medium",
+      "polygon": [[-4.0, 37.4], [-2.5, 37.4], [-2.4, 36.9], [-3.9, 36.9]]
+    },
+    {
+      "id": "iberian_system",
+      "name_ru": "Иберийские горы",
+      "name_en": "Iberian System",
+      "magnitude": "small",
+      "polygon": [[-3.6, 42.3], [-1.6, 42.0], [-0.6, 41.0], [-1.4, 40.0], [-2.6, 40.2], [-3.4, 41.3]]
+    },
+    {
+      "id": "central_system_iberia",
+      "name_ru": "Центральная Кордильера (Испания)",
+      "name_en": "Sistema Central (Iberia)",
+      "magnitude": "small",
+      "polygon": [[-6.6, 40.5], [-4.0, 41.0], [-3.5, 40.8], [-4.5, 40.2], [-6.6, 40.1]]
+    },
+    {
+      "id": "pontic_mountains",
+      "name_ru": "Понтийские горы",
+      "name_en": "Pontic Mountains",
+      "magnitude": "large",
+      "polygon": [[31.0, 41.4], [35.0, 42.0], [38.0, 41.4], [41.0, 41.5], [42.0, 40.9], [40.0, 40.4], [37.0, 40.4], [34.0, 40.6], [31.5, 40.8]]
+    },
+    {
+      "id": "taurus_mountains",
+      "name_ru": "Тавр",
+      "name_en": "Taurus Mountains",
+      "magnitude": "large",
+      "polygon": [[29.0, 37.6], [31.5, 37.8], [34.0, 37.6], [36.5, 37.4], [37.0, 36.6], [35.0, 36.3], [32.0, 36.5], [29.5, 36.7], [28.8, 37.2]]
+    },
+    {
+      "id": "central_anatolia",
+      "name_ru": "Центральноанатолийские горы",
+      "name_en": "Central Anatolian Mountains",
+      "magnitude": "medium",
+      "polygon": [[33.0, 39.8], [36.5, 40.0], [39.5, 39.8], [42.0, 39.6], [44.5, 39.4], [44.8, 38.0], [42.0, 37.8], [39.0, 38.0], [36.0, 38.2], [33.0, 38.6]]
+    },
+    {
+      "id": "german_central_uplands",
+      "name_ru": "Среднегерманские горы",
+      "name_en": "German Central Uplands",
+      "magnitude": "small",
+      "polygon": [[7.0, 51.3], [9.5, 51.4], [10.0, 50.3], [12.5, 50.6], [13.0, 49.6], [11.0, 49.2], [8.5, 49.6], [7.2, 50.2]]
+    },
+    {
+      "id": "bohemian_massif",
+      "name_ru": "Чешский массив",
+      "name_en": "Bohemian Massif",
+      "magnitude": "small",
+      "polygon": [[12.0, 50.6], [13.5, 51.1], [15.5, 50.9], [16.6, 50.6], [16.0, 49.6], [14.5, 48.8], [13.0, 49.0], [12.2, 49.8]]
+    },
+    {
+      "id": "crimean_mountains",
+      "name_ru": "Крымские горы",
+      "name_en": "Crimean Mountains",
+      "magnitude": "small",
+      "polygon": [[33.5, 44.9], [34.8, 45.0], [35.4, 44.9], [35.2, 44.4], [34.0, 44.4], [33.4, 44.6]]
+    },
+    {
+      "id": "ore_mountains",
+      "name_ru": "Рудные горы",
+      "name_en": "Ore Mountains (Krušné hory)",
+      "magnitude": "small",
+      "polygon": [[12.3, 50.7], [13.6, 50.8], [14.0, 50.5], [13.0, 50.2], [12.3, 50.4]]
+    },
+    {
+      "id": "vosges",
+      "name_ru": "Вогезы",
+      "name_en": "Vosges",
+      "magnitude": "small",
+      "polygon": [[6.7, 48.9], [7.3, 48.9], [7.4, 47.8], [6.8, 47.8], [6.6, 48.4]]
+    }
+  ],
+  "subregions": [
+    {
+      "id": "alps_western",
+      "name_ru": "Западные Альпы",
+      "name_en": "Western Alps",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[5.6, 43.7], [7.2, 43.4], [7.8, 45.0], [7.5, 46.4], [6.2, 46.4], [5.6, 45.4]]
+    },
+    {
+      "id": "alps_pennine",
+      "name_ru": "Пеннинские Альпы",
+      "name_en": "Pennine Alps",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[7.0, 45.8], [8.2, 46.0], [8.2, 46.4], [7.0, 46.4]]
+    },
+    {
+      "id": "alps_bernese",
+      "name_ru": "Бернские Альпы",
+      "name_en": "Bernese Alps",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[7.0, 46.4], [8.4, 46.4], [8.4, 46.8], [7.0, 46.8]]
+    },
+    {
+      "id": "alps_central_swiss",
+      "name_ru": "Центральные Альпы",
+      "name_en": "Central Alps",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[8.2, 46.0], [10.6, 46.2], [10.8, 47.0], [8.4, 47.0]]
+    },
+    {
+      "id": "alps_tyrol",
+      "name_ru": "Тироль",
+      "name_en": "Tyrol Alps",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[10.6, 46.6], [12.3, 46.8], [12.4, 47.6], [10.4, 47.6], [10.4, 47.0]]
+    },
+    {
+      "id": "alps_hohe_tauern",
+      "name_ru": "Высокий Тауэрн",
+      "name_en": "High Tauern",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[12.0, 46.8], [13.6, 46.9], [13.6, 47.4], [12.0, 47.4]]
+    },
+    {
+      "id": "alps_dolomites",
+      "name_ru": "Доломиты",
+      "name_en": "Dolomites",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[11.3, 46.2], [12.6, 46.3], [12.7, 46.8], [11.5, 46.85], [11.2, 46.5]]
+    },
+    {
+      "id": "alps_julian",
+      "name_ru": "Юлийские Альпы",
+      "name_en": "Julian Alps",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[13.2, 46.2], [14.2, 46.3], [14.4, 46.6], [13.4, 46.6], [13.1, 46.4]]
+    },
+    {
+      "id": "alps_eastern",
+      "name_ru": "Восточные Альпы",
+      "name_en": "Eastern Alps",
+      "system": "Альпы",
+      "magnitude": "large",
+      "polygon": [[13.5, 47.0], [16.4, 47.3], [16.0, 48.1], [13.2, 47.9], [13.4, 47.4]]
+    },
+    {
+      "id": "carpathians_tatras",
+      "name_ru": "Татры",
+      "name_en": "Tatra Mountains",
+      "system": "Карпаты",
+      "magnitude": "large",
+      "polygon": [[19.4, 49.1], [20.3, 49.0], [20.4, 49.3], [19.5, 49.4]]
+    },
+    {
+      "id": "carpathians_southern",
+      "name_ru": "Южные Карпаты",
+      "name_en": "Southern Carpathians",
+      "system": "Карпаты",
+      "magnitude": "large",
+      "polygon": [[22.4, 45.0], [25.4, 45.2], [25.6, 45.8], [22.6, 45.7]]
+    },
+    {
+      "id": "pyrenees_high",
+      "name_ru": "Центральные Пиренеи",
+      "name_en": "Central Pyrenees",
+      "system": "Пиренеи",
+      "magnitude": "large",
+      "polygon": [[-0.6, 42.5], [1.2, 42.5], [1.3, 43.0], [-0.6, 43.0]]
+    }
+  ]
+}

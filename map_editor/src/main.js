@@ -1,6 +1,9 @@
 import "./style.css";
 import initialData from "./data/hex_map.json";
 import mapConfig from "./data/map_config.json";
+import liftDensity from "./data/lift_density.json";
+import mountainRegions from "./data/mountain_regions_by_hex.json";
+import hexElevation from "./data/hex_elevation.json";
 
 // the game's label font (scripts/map_panel.gd loads the same TTF)
 const LABEL_FONT = "MapLabel";
@@ -37,6 +40,89 @@ const zoomValEl = document.getElementById("zoomVal");
 // camera: fit-to-view at 100%, then user zoom on top, plus pan in CSS px
 let zoomVal = ZCFG.default; // 1.0 = 100%
 let panX = 0, panY = 0;
+
+// ----- Layer B: OSM lift-density overlay (see docs/pipelines/osm-lift-density.md) -----
+const overlays = {
+  liftDensity: false, // press "L" to toggle
+  alpsTarget: true,   // press "A" to toggle
+  mountains: false,   // press "M" to toggle (see docs/pipelines/mountain-regions.md)
+};
+let liftIndex = null;          // lazy-loaded named drill-in data (~900 KB)
+const LIFT_DENSITY = liftDensity.by_hex || {};
+const LIFT_NMAX = Math.max(1, ...Object.values(LIFT_DENSITY).map((c) => c.passenger_total));
+const liftOverlayBtn = document.getElementById("liftOverlayToggle");
+const LIFT_GROUP_LABEL = {
+  cable_car: "канатные/фуникулёры", gondola: "гондольные",
+  chair_lift: "кресельные", surface_tow: "бугельные/наземные",
+  zip_line: "зиплайны", water_ski: "вейкборд/водные лыжи",
+};
+const LIFT_DOT = {
+  cable_car: "#d0321e", gondola: "#f2783a", chair_lift: "#f6b733",
+  surface_tow: "#9aa0a6", zip_line: "#6aa0c8", water_ski: "#3aa0d0",
+};
+// emphasis order: real aerial ropeways first, water-ski last
+const LIFT_GROUP_ORDER = ["cable_car", "gondola", "chair_lift", "surface_tow", "zip_line", "water_ski"];
+// raw OSM aerialway value -> short Russian label, so each lift says what it is
+const LIFT_TYPE_LABEL = {
+  cable_car: "канатная (кабина)", cablecar: "канатная (кабина)", mixed_lift: "комбинированная",
+  funicular: "фуникулёр", gondola: "гондола", chair_lift: "кресельная",
+  drag_lift: "бугель", "t-bar": "Т-бугель", platter: "тарелочный", "j-bar": "J-бугель",
+  rope_tow: "верёвочный", magic_carpet: "траволатор", zip_line: "зиплайн",
+};
+
+// ----- Mountain regions overlay (see docs/pipelines/mountain-regions.md) -----
+const MOUNTAIN_REGIONS = mountainRegions.by_hex || {};
+const MOUNTAIN_ICON_SCALE = { small: 0.42, medium: 0.62, large: 0.85 };
+// per-hex elevation in metres (null where no DEM coverage)
+const HEX_ELEVATION = hexElevation.by_hex || {};
+
+function liftHeat(n) {
+  const t = Math.log1p(n) / Math.log1p(LIFT_NMAX);
+  const stops = [[0, [255, 245, 200]], [0.35, [255, 196, 90]], [0.65, [242, 120, 40]], [0.85, [208, 50, 30]], [1, [150, 18, 24]]];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const [t0, c0] = stops[i], [t1, c1] = stops[i + 1];
+    if (t <= t1) {
+      const f = t1 === t0 ? 0 : (t - t0) / (t1 - t0);
+      return `rgb(${c0.map((v, j) => Math.round(v + (c1[j] - v) * f)).join(",")})`;
+    }
+  }
+  return "rgb(150,18,24)";
+}
+
+// The named drill-in list is large, so it is fetched only on first hex open.
+async function ensureLiftIndex() {
+  if (!liftIndex) {
+    const mod = await import("./data/lift_index_by_hex.json");
+    liftIndex = mod.default.by_hex || {};
+  }
+  return liftIndex;
+}
+
+function escLift(s) {
+  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+function syncOverlayButtons() {
+  if (!liftOverlayBtn) return;
+  liftOverlayBtn.classList.toggle("on", overlays.liftDensity);
+  liftOverlayBtn.setAttribute("aria-pressed", overlays.liftDensity ? "true" : "false");
+}
+
+function toggleLiftOverlay() {
+  overlays.liftDensity = !overlays.liftDensity;
+  syncOverlayButtons();
+  render();
+}
+
+window.addEventListener("keydown", (e) => {
+  const t = e.target;
+  if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+  if (e.key === "l" || e.key === "L") { toggleLiftOverlay(); }
+  else if (e.key === "a" || e.key === "A") { overlays.alpsTarget = !overlays.alpsTarget; render(); }
+  else if (e.key === "m" || e.key === "M") { overlays.mountains = !overlays.mountains; render(); }
+});
+liftOverlayBtn?.addEventListener("click", toggleLiftOverlay);
+syncOverlayButtons();
 let cssW = 0, cssH = 0;
 
 const sizeW = () => state.grid.hex_size_px; // world px
@@ -116,6 +202,14 @@ function drawPeak(cx, cy, s) {
   ctx.restore();
 }
 
+function drawAlpsTargetMarker(cx, cy, s, band) {
+  ctx.save();
+  const scale = band === "main_alpine_wall" ? 0.72 : band === "northern_alpine_foothills" ? 0.55 : 0.44;
+  ctx.globalAlpha = band === "main_alpine_wall" ? 0.82 : 0.62;
+  drawPeak(cx, cy + s * 0.16, s * scale);
+  ctx.restore();
+}
+
 // terrain glyph sets from the game (varied per hex by a stable hash)
 const FOREST_GLYPHS = [
   "forest_pine_single_v1.png",
@@ -162,7 +256,16 @@ function getImg(name) {
   if (imgCache.has(name)) return imgCache.get(name);
   const img = new Image();
   img.decoding = "async";
-  img.onload = requestRender;
+  img.assetStatus = "loading";
+  img.onload = () => {
+    img.assetStatus = "loaded";
+    requestRender();
+  };
+  img.onerror = () => {
+    img.assetStatus = "error";
+    console.warn(`asset image failed: ${name}`, img.src);
+    requestRender();
+  };
   img.src = assetUrl(name);
   imgCache.set(name, img);
   return img;
@@ -263,8 +366,11 @@ function massifCoverage(f) {
 }
 
 // warm the cache for everything on the map so panning never pops in
-function preloadAssets() {
-  requestAssetVersions();
+// Asset versions must be known before creating Image objects; otherwise the
+// first render can load ?v=dev, then invalidate the whole image cache and leave
+// point fallbacks visible until the second wave of PNGs decodes.
+async function preloadAssets() {
+  await requestAssetVersions();
   for (const f of state.features || []) {
     if (f.glyph === "city" && f.icon) getImg(`city_${f.icon}.png`);
     else if (f.glyph === "massif" && f.image) getImg(f.image);
@@ -311,7 +417,7 @@ function drawTransport(cx, cy, s, f) {
     const w = h * (img.naturalWidth / img.naturalHeight);
     const dx = cx - w / 2, dy = cy - h * 0.72;
     ctx.drawImage(img, dx, dy, w, h);
-  } else {
+  } else if (!img || img.assetStatus === "error") {
     ctx.beginPath();
     ctx.arc(cx, cy, s * 0.4, 0, Math.PI * 2);
     ctx.fillStyle = "#2e7d32";
@@ -345,7 +451,7 @@ function drawCity(cx, cy, s, f, showLabel) {
     const tx = cx - w / 2, ty = cy - h * 0.70; // anchor point sits higher in the sprite
     ctx.drawImage(img, tx, ty, w, h);
     bottom = cy + h * 0.30;
-  } else {
+  } else if (!img || img.assetStatus === "error") {
     const r = s * 0.38;
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -465,6 +571,21 @@ function render() {
     ctx.stroke();
   }
 
+  // 1b. Layer B: OSM lift-density heat tint (overview)
+  if (overlays.liftDensity) {
+    for (const key in LIFT_DENSITY) {
+      if (!state.hexes[key]) continue;
+      const [q, r] = key.split(",").map(Number);
+      const { x, y } = hexToContent(q, r);
+      if (!onScreen(x, y)) continue;
+      hexPath(x, y, s);
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = liftHeat(LIFT_DENSITY[key].passenger_total);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
   // 2. country borders: edge between two land hexes of different countries
   ctx.strokeStyle = COLORS.outline;
   ctx.lineWidth = s * 0.08;
@@ -520,6 +641,33 @@ function render() {
     ctx.globalAlpha = 1;
   }
 
+  // 4. Planning layer: Alpine target cells where mountains should exist.
+  // This is separate from the lift-density overlay and marks target hexes only;
+  // final Alpine massif art must still be generated as hex-aware pieces.
+  if (overlays.alpsTarget) {
+    for (const [key, cell] of Object.entries(state.hexes)) {
+      if (!cell.alps_target) continue;
+      const [q, r] = key.split(",").map(Number);
+      const { x, y } = hexToContent(q, r);
+      if (!onScreen(x, y)) continue;
+      drawAlpsTargetMarker(x, y, os, cell.alps_target_band);
+    }
+  }
+
+  // 4b. Mountain-regions overlay: a peak icon per hex, sized by icon_size class
+  // (see docs/pipelines/mountain-regions.md). Reuses drawPeak() like the Alpine
+  // planning marker; independent of the lift overlay and alps_target planning.
+  if (overlays.mountains) {
+    for (const key in MOUNTAIN_REGIONS) {
+      if (!state.hexes[key]) continue;
+      const [q, r] = key.split(",").map(Number);
+      const { x, y } = hexToContent(q, r);
+      if (!onScreen(x, y)) continue;
+      const scale = MOUNTAIN_ICON_SCALE[MOUNTAIN_REGIONS[key].icon_size] || 0.5;
+      drawPeak(x, y + os * 0.1, os * scale);
+    }
+  }
+
   // 5. point objects (cities + transport) on top, south-over-north
   const showLabels = objectScreenS > 13;
   const points = (state.features || [])
@@ -535,6 +683,27 @@ function render() {
     if (f.glyph === "city") drawCity(pos.x, pos.y, os, f, showLabels);
     else drawTransport(pos.x, pos.y, os, f, showLabels);
     ctx.globalAlpha = 1;
+  }
+
+  // 5c. Layer B: lift count numbers on top (legible above glyphs)
+  if (overlays.liftDensity && s * sc >= 18) {
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `${Math.max(7, s * 0.5)}px ui-sans-serif, system-ui, sans-serif`;
+    ctx.lineWidth = s * 0.06;
+    ctx.strokeStyle = "rgba(0,0,0,0.75)";
+    ctx.fillStyle = "#ffffff";
+    for (const key in LIFT_DENSITY) {
+      const n = LIFT_DENSITY[key].passenger_total;
+      if (n < 6 || !state.hexes[key]) continue;
+      const [q, r] = key.split(",").map(Number);
+      const { x, y } = hexToContent(q, r);
+      if (!onScreen(x, y)) continue;
+      ctx.strokeText(String(n), x, y);
+      ctx.fillText(String(n), x, y);
+    }
+    ctx.restore();
   }
 
   // 5a. clicked hex debug outline. It is independent from feature selection so
@@ -889,15 +1058,97 @@ function cardHtml(f) {
     <dt>Якорь</dt><dd>${f.anchor}</dd></dl>`;
 }
 
+// Drill-in: per-hex lift breakdown + named list (the "zoom-in on a hex" idea).
+// Named lifts first; unnamed lifts are still listed but muted ("без названия").
+function appendLiftSection(hexKey) {
+  const c = LIFT_DENSITY[hexKey];
+  if (!c) return;
+  const box = document.createElement("div");
+  box.className = "hex-debug";
+  const parts = LIFT_GROUP_ORDER
+    .filter((g) => c[g]).map((g) => `${LIFT_GROUP_LABEL[g]}: ${c[g]}`).join(" · ");
+  box.innerHTML = `<h2>Подъёмники (OSM): ${c.passenger_total}</h2>` +
+    `<div style="margin:2px 0 6px;color:#cfcfcf;font-size:12px">${parts}</div>` +
+    `<div class="lift-list" style="font-size:12px;color:#bbb">загрузка списка…</div>`;
+  panelBody.appendChild(box);
+  const listEl = box.querySelector(".lift-list");
+  const want = hexKey;
+  const dot = (g) => `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${LIFT_DOT[g] || "#888"};margin-right:6px"></span>`;
+  ensureLiftIndex().then((idx) => {
+    if (selectedHex !== want) return;            // user moved to another hex
+    const entry = idx[hexKey];
+    if (!entry) { listEl.textContent = ""; return; }
+    const CAP = 120;
+    // named lifts: dot + name + the specific type so it's clear what each one is
+    const namedRows = entry.lifts.slice(0, CAP).map((l) => {
+      const t = LIFT_TYPE_LABEL[l.type] || l.type;
+      const nm = l.id
+        ? `<a href="https://www.openstreetmap.org/way/${l.id}" target="_blank" rel="noopener" style="color:#bcd">${escLift(l.name)}</a>`
+        : escLift(l.name);
+      return `<li style="list-style:none;margin:1px 0">${dot(l.group)}${nm} <span style="color:#888">· ${t}</span></li>`;
+    }).join("");
+    const more = entry.lifts.length > CAP ? `<li style="list-style:none;color:#999">…ещё ${entry.lifts.length - CAP} именованных</li>` : "";
+    // unnamed lifts: not listed by name, but show how many of each type are there
+    // unnamed lifts: collapsible — click to expand and open each on OSM to dig in
+    const un = entry.unnamed || [];
+    let unnamedHtml = "";
+    if (un.length) {
+      const byG = {};
+      for (const u of un) byG[u.group] = (byG[u.group] || 0) + 1;
+      const summary = LIFT_GROUP_ORDER.filter((g) => byG[g])
+        .map((g) => `${dot(g)}${LIFT_GROUP_LABEL[g]} ×${byG[g]}`).join(" · ");
+      const UNCAP = 300;
+      const uItems = un.slice(0, UNCAP).map((u) => {
+        const t = LIFT_TYPE_LABEL[u.type] || u.type;
+        return `<li style="list-style:none;margin:1px 0">${dot(u.group)}<a href="https://www.openstreetmap.org/way/${u.id}" target="_blank" rel="noopener" style="color:#bcd">${t}</a> <span style="color:#777">· way/${u.id}</span></li>`;
+      }).join("");
+      const uMore = un.length > UNCAP ? `<li style="list-style:none;color:#777">…ещё ${un.length - UNCAP}</li>` : "";
+      unnamedHtml = `<details style="margin-top:6px;color:#999"><summary style="cursor:pointer">Без названия: ${summary}</summary>` +
+        `<ul style="padding-left:0;margin:4px 0">${uItems}${uMore}</ul></details>`;
+    }
+    listEl.innerHTML = `<ul style="padding-left:0;margin:4px 0">${namedRows}${more}</ul>${unnamedHtml}`;
+  }).catch(() => { listEl.textContent = "(не удалось загрузить список)"; });
+}
+
+// Drill-in: which mountain SYSTEM -> SUB-REGION the hex is in, its icon-size
+// class, and notable named peaks (see docs/pipelines/mountain-regions.md).
+const MOUNTAIN_SIZE_LABEL = { small: "малый", medium: "средний", large: "крупный" };
+function appendMountainSection(hexKey) {
+  const m = MOUNTAIN_REGIONS[hexKey];
+  if (!m) return;
+  const box = document.createElement("div");
+  box.className = "hex-debug";
+  const where = m.subregion
+    ? `${escLift(m.system)} → ${escLift(m.subregion)}`
+    : (m.system ? escLift(m.system) : "—");
+  const meta = [`размер иконки: ${MOUNTAIN_SIZE_LABEL[m.icon_size] || m.icon_size}`];
+  if (m.max_ele != null) meta.push(`макс. высота: ${m.max_ele} м`);
+  let peaksHtml = "";
+  if (m.peaks && m.peaks.length) {
+    const rows = m.peaks.map((p) => {
+      const ele = p.ele != null ? ` <span style="color:#999">${p.ele} м</span>` : "";
+      return `<li style="list-style:none;margin:1px 0">⛰ ${escLift(p.name)}${ele}</li>`;
+    }).join("");
+    peaksHtml = `<ul style="padding-left:0;margin:4px 0;font-size:12px;color:#ddd">${rows}</ul>`;
+  }
+  box.innerHTML = `<h2>Горы: ${where}</h2>` +
+    `<div style="margin:2px 0 6px;color:#cfcfcf;font-size:12px">${meta.join(" · ")}</div>` +
+    peaksHtml;
+  panelBody.appendChild(box);
+}
+
 function renderPanelList(list, hexKey = selectedHex) {
   panelBody.innerHTML = "";
   if (hexKey) {
     const hexInfo = document.createElement("div");
     hexInfo.className = "hex-debug";
     const cell = state.hexes[hexKey];
+    const ele = HEX_ELEVATION[hexKey];
+    const eleStr = (ele === null || ele === undefined) ? "—" : `${ele} м`;
     hexInfo.innerHTML = `<h2>Гекс ${hexKey}</h2>
       <dl><dt>id</dt><dd>${hexKey}</dd>
       <dt>Страна</dt><dd>${cell?.country || "—"}</dd>
+      <dt>Высота</dt><dd>${eleStr}</dd>
       <dt>Террейн</dt><dd>${cell?.terrain || "—"}</dd></dl>`;
     panelBody.appendChild(hexInfo);
   }
@@ -945,6 +1196,11 @@ function renderPanelList(list, hexKey = selectedHex) {
     });
     card.appendChild(copy);
     panelBody.appendChild(card);
+  }
+  // OSM-derived ambient context (lifts, mountains) goes below placed objects.
+  if (hexKey) {
+    appendLiftSection(hexKey);
+    appendMountainSection(hexKey);
   }
 }
 
@@ -1263,13 +1519,13 @@ function save() {
 }
 
 // ----- boot + live reload -----
-function boot(data) {
+async function boot(data) {
   state = structuredClone(data);
   panX = 0; panY = 0;
   zoomValEl.textContent = `${Math.round(zoomVal * 100)}%`;
   syncPaletteToggle();
   setupCanvas();
-  preloadAssets();
+  await preloadAssets();
   render();
   const c = {};
   for (const f of state.features || []) c[f.glyph] = (c[f.glyph] || 0) + 1;
@@ -1289,10 +1545,10 @@ window.addEventListener("resize", () => {
   render();
 });
 
-boot(initialData);
+void boot(initialData);
 
 if (import.meta.hot) {
   import.meta.hot.accept("./data/hex_map.json", (mod) => {
-    if (mod?.default) boot(mod.default);
+    if (mod?.default) void boot(mod.default);
   });
 }
