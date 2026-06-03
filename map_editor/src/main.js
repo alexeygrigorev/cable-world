@@ -4,6 +4,7 @@ import mapConfig from "./data/map_config.json";
 import liftDensity from "./data/lift_density.json";
 import mountainRegions from "./data/mountain_regions_by_hex.json";
 import hexElevation from "./data/hex_elevation.json";
+import ferrisWheels from "./data/ferris_wheels_by_hex.json";
 
 // the game's label font (scripts/map_panel.gd loads the same TTF)
 const LABEL_FONT = "MapLabel";
@@ -48,6 +49,7 @@ const overlays = {
   alpsTarget: overlayParams.get("alpsTarget") !== "0",   // press "A" to toggle
   mountains: false,   // press "M" to toggle (see docs/pipelines/mountain-regions.md)
   elevation: false,   // hypsometric tint
+  wheels: false,      // Ferris wheels (колёса обозрения)
 };
 let liftIndex = null;          // lazy-loaded named drill-in data (~900 KB)
 const LIFT_DENSITY = liftDensity.by_hex || {};
@@ -77,6 +79,8 @@ const MOUNTAIN_REGIONS = mountainRegions.by_hex || {};
 const MOUNTAIN_ICON_SCALE = { small: 0.42, medium: 0.62, large: 0.85 };
 // per-hex elevation in metres (null where no DEM coverage)
 const HEX_ELEVATION = hexElevation.by_hex || {};
+// Ferris wheels (колёса обозрения), OSM attraction=big_wheel
+const FERRIS_WHEELS = ferrisWheels.by_hex || {};
 
 function liftHeat(n) {
   const t = Math.log1p(n) / Math.log1p(LIFT_NMAX);
@@ -113,6 +117,7 @@ function syncOverlayButtons() {
   set("flt-lifts", overlays.liftDensity);
   set("flt-mountains", overlays.mountains);
   set("flt-elevation", overlays.elevation);
+  set("flt-wheels", overlays.wheels);
 }
 
 function toggleLiftOverlay() {
@@ -165,6 +170,8 @@ function wireFilters() {
   if (lifts) lifts.addEventListener("change", () => { setAllLiftGroups(lifts.checked); render(); });
   if (mtns) mtns.addEventListener("change", () => { overlays.mountains = mtns.checked; render(); });
   if (elev) elev.addEventListener("change", () => { overlays.elevation = elev.checked; render(); });
+  const wheels = document.getElementById("flt-wheels");
+  if (wheels) wheels.addEventListener("change", () => { overlays.wheels = wheels.checked; render(); });
   for (const cb of document.querySelectorAll(".flt-lg")) {
     cb.addEventListener("change", () => {
       if (cb.checked) LIFT_GROUPS_ON.add(cb.dataset.g); else LIFT_GROUPS_ON.delete(cb.dataset.g);
@@ -686,9 +693,12 @@ function render() {
     }
   }
 
-  // 3. multi-hex massif glyphs (each its own image, placed from glyph_ref metadata)
-  for (const f of state.features || []) {
-    if (f.glyph !== "massif" || !f.image) continue;
+  // 3. multi-hex massif glyphs, north-to-south so lower rows draw in front
+  const massifs = (state.features || [])
+    .filter((f) => f.glyph === "massif" && f.image)
+    .map((f) => ({ f, pos: anchorContent(f) }))
+    .sort((a, b) => a.pos.y - b.pos.y);
+  for (const { f } of massifs) {
     const img = getImg(f.image);
     if (!img.complete || !img.naturalWidth) continue;
     const held = f === dragging?.feature;
@@ -741,6 +751,22 @@ function render() {
       const scale = MOUNTAIN_ICON_SCALE[MOUNTAIN_REGIONS[key].icon_size] || 0.5;
       drawPeak(x, y + os * 0.1, os * scale);
     }
+  }
+
+  // Ferris wheels (колёса обозрения): placeholder 🎡 marker per hex that has one
+  if (overlays.wheels) {
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `${os}px serif`;
+    for (const key in FERRIS_WHEELS) {
+      if (!state.hexes[key]) continue;
+      const [q, r] = key.split(",").map(Number);
+      const { x, y } = hexToContent(q, r);
+      if (!onScreen(x, y)) continue;
+      ctx.fillText("🎡", x, y);
+    }
+    ctx.restore();
   }
 
   // 5. point objects (cities + transport) on top, south-over-north
@@ -824,11 +850,11 @@ function render() {
       const [q, r] = k.split(",").map(Number);
       const c = hexToContent(q, r);
       ctx.beginPath();
-      ctx.arc(c.x, c.y, os * 0.13, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(215,215,215,0.42)";
+      ctx.arc(c.x, c.y, os * 0.16, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(230,230,230,0.68)";
       ctx.fill();
-      ctx.lineWidth = os * 0.035;
-      ctx.strokeStyle = "rgba(80,80,80,0.35)";
+      ctx.lineWidth = os * 0.045;
+      ctx.strokeStyle = "rgba(45,45,45,0.55)";
       ctx.stroke();
     }
     for (const k of primaryKeys) {
@@ -1189,6 +1215,24 @@ function appendLiftSection(hexKey) {
 // Drill-in: which mountain SYSTEM -> SUB-REGION the hex is in, its icon-size
 // class, and notable named peaks (see docs/pipelines/mountain-regions.md).
 const MOUNTAIN_SIZE_LABEL = { small: "малый", medium: "средний", large: "крупный" };
+function appendWheelSection(hexKey) {
+  const w = FERRIS_WHEELS[hexKey];
+  if (!w) return;
+  const box = document.createElement("div");
+  box.className = "hex-debug";
+  const named = (w.wheels || []).filter((x) => x.name);
+  const unnamed = (w.wheels || []).length - named.length;
+  const rows = named.map((x) => {
+    const h = x.height ? ` <span style="color:#888">· ${escLift(String(x.height))} м</span>` : "";
+    const url = `https://www.openstreetmap.org/${x.osm_type || "node"}/${x.id}`;
+    return `<li style="list-style:none;margin:1px 0">🎡 <a href="${url}" target="_blank" rel="noopener" style="color:#bcd">${escLift(x.name)}</a>${h}</li>`;
+  }).join("");
+  const un = unnamed ? `<div style="color:#999;margin-top:4px">+${unnamed} без названия</div>` : "";
+  box.innerHTML = `<h2>Колёса обозрения: ${w.count}</h2>` +
+    `<ul style="padding-left:0;margin:4px 0;font-size:12px">${rows}</ul>${un}`;
+  panelBody.appendChild(box);
+}
+
 function appendMountainSection(hexKey) {
   const m = MOUNTAIN_REGIONS[hexKey];
   if (!m) return;
@@ -1280,6 +1324,7 @@ function renderPanelList(list, hexKey = selectedHex) {
   if (hexKey) {
     appendLiftSection(hexKey);
     appendMountainSection(hexKey);
+    appendWheelSection(hexKey);
   }
 }
 
