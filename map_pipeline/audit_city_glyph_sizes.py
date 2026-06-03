@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from map_pipeline.city_cluster_glyph_specs import APPROVED_REFERENCE_CITY_IDS
+from map_pipeline.city_cluster_glyph_specs import WIDTH_FIT_CITY_IDS
 from map_pipeline.city_glyph_size_contract import (
     ICON_SIZE,
     MAX_OUTLINED_CONTENT_SIDE,
@@ -54,7 +54,7 @@ def audit(paths: list[Path]) -> list[str]:
         if height > MAX_OUTLINED_CONTENT_SIDE:
             errors.append(f"{path}: alpha height {height}px exceeds {MAX_OUTLINED_CONTENT_SIDE}px")
         city_id = path.stem.removeprefix("city_")
-        if city_id in APPROVED_REFERENCE_CITY_IDS:
+        if city_id in WIDTH_FIT_CITY_IDS:
             min_width = TARGET_OUTLINED_CONTENT_WIDTH - REFERENCE_WIDTH_TOLERANCE
             max_width = TARGET_OUTLINED_CONTENT_WIDTH + REFERENCE_WIDTH_TOLERANCE
             if width < min_width or width > max_width:

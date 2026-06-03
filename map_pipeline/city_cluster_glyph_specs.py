@@ -22,6 +22,40 @@ APPROVED_REFERENCE_CITY_IDS = (
     "kyiv",
     "athens",
 )
+REPAIRED_WIDTH_FIT_CITY_IDS = (
+    "regensburg",
+    "nuremberg",
+    "podgorica",
+    "saarbruecken",
+    "seville",
+    "san_marino",
+    "simferopol",
+    "smolensk",
+    "rostock",
+    "oulu",
+    "helsinki",
+    "lisbon",
+    "ljubljana",
+    "cologne",
+    "stuttgart",
+    "aarhus",
+    "granada",
+    "freiburg",
+    "bratislava",
+    "copenhagen",
+    "moscow",
+    "paris",
+    "kaliningrad",
+    "izmir",
+    "antalya",
+    "bursa",
+    "konya",
+    "samsun",
+    "sarajevo",
+    "pristina",
+    "sofia",
+)
+WIDTH_FIT_CITY_IDS = APPROVED_REFERENCE_CITY_IDS + REPAIRED_WIDTH_FIT_CITY_IDS
 FULL_REGEN_BATCH_SIZE = 15
 BATCH_GRID_CELLS = 15
 
