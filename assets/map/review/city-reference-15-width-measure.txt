@@ -1,0 +1,15 @@
+venice: outlined alpha bbox 194x189px
+bolzano: outlined alpha bbox 194x200px
+augsburg: outlined alpha bbox 194x220px
+leipzig: outlined alpha bbox 194x188px
+brno: outlined alpha bbox 194x196px
+bremen: outlined alpha bbox 194x209px
+kiel: outlined alpha bbox 194x186px
+berlin: outlined alpha bbox 194x231px
+milan: outlined alpha bbox 194x194px
+prague: outlined alpha bbox 194x182px
+brussels: outlined alpha bbox 194x195px
+frankfurt: outlined alpha bbox 194x205px
+riga: outlined alpha bbox 194x190px
+kyiv: outlined alpha bbox 194x186px
+athens: outlined alpha bbox 194x144px

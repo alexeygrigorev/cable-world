@@ -4,6 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from map_pipeline.city_cluster_glyph_specs import APPROVED_REFERENCE_CITY_IDS
 from map_pipeline.city_glyph_size_contract import (
     ICON_SIZE,
     MAX_OUTLINED_CONTENT_SIDE,
@@ -11,11 +12,13 @@ from map_pipeline.city_glyph_size_contract import (
     OUTLINED_BOTTOM_PADDING,
     OUTLINED_ALPHA_AREA_MAX,
     OUTLINED_ALPHA_AREA_MIN,
+    TARGET_OUTLINED_CONTENT_WIDTH,
     WIDE_CONTENT_ASPECT_RATIO,
 )
 
 
 DEFAULT_CITY_DIR = Path("assets/sprites/city_landmark_clusters_hi_res/outlined")
+REFERENCE_WIDTH_TOLERANCE = 1
 
 
 def _alpha_metrics(path: Path) -> tuple[tuple[int, int, int, int] | None, float]:
@@ -50,7 +53,16 @@ def audit(paths: list[Path]) -> list[str]:
             errors.append(f"{path}: alpha width {width}px exceeds {max_width}px for aspect {aspect:.2f}")
         if height > MAX_OUTLINED_CONTENT_SIDE:
             errors.append(f"{path}: alpha height {height}px exceeds {MAX_OUTLINED_CONTENT_SIDE}px")
-        if alpha_area < OUTLINED_ALPHA_AREA_MIN or alpha_area > OUTLINED_ALPHA_AREA_MAX:
+        city_id = path.stem.removeprefix("city_")
+        if city_id in APPROVED_REFERENCE_CITY_IDS:
+            min_width = TARGET_OUTLINED_CONTENT_WIDTH - REFERENCE_WIDTH_TOLERANCE
+            max_width = TARGET_OUTLINED_CONTENT_WIDTH + REFERENCE_WIDTH_TOLERANCE
+            if width < min_width or width > max_width:
+                errors.append(
+                    f"{path}: reference alpha width {width}px is outside "
+                    f"{min_width}..{max_width}px"
+                )
+        elif alpha_area < OUTLINED_ALPHA_AREA_MIN or alpha_area > OUTLINED_ALPHA_AREA_MAX:
             errors.append(
                 f"{path}: weighted alpha area {alpha_area:.0f}px is outside "
                 f"{OUTLINED_ALPHA_AREA_MIN:.0f}..{OUTLINED_ALPHA_AREA_MAX:.0f}px"

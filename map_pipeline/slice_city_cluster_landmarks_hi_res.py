@@ -13,6 +13,7 @@ from map_pipeline.city_glyph_size_contract import (
     PADDING,
     TARGET_CONTENT_ALPHA_AREA,
     TARGET_CONTENT_HEIGHT,
+    TARGET_CONTENT_WIDTH,
     WIDE_CONTENT_ASPECT_RATIO,
 )
 from map_pipeline.sheet_slice_audit import audit_grid_cut_components, cell_bounds, format_cut_issues
@@ -96,13 +97,16 @@ def _weighted_alpha_area(image: Image.Image) -> float:
     return sum(image.getchannel("A").getdata()) / 255.0
 
 
-def _fit_hi_res_icon(image: Image.Image) -> Image.Image:
+def _fit_hi_res_icon(image: Image.Image, fit_mode: str = "visual-mass") -> Image.Image:
     icon = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (0, 0, 0, 0))
     aspect = image.width / image.height
     max_width = MAX_WIDE_CONTENT_WIDTH if aspect > WIDE_CONTENT_ASPECT_RATIO else MAX_CONTENT_SIDE
-    alpha_area = max(1.0, _weighted_alpha_area(image))
-    visual_mass_scale = math.sqrt(TARGET_CONTENT_ALPHA_AREA / alpha_area)
-    scale = min(visual_mass_scale, TARGET_CONTENT_HEIGHT / image.height, max_width / image.width, MAX_CONTENT_SIDE / image.height)
+    if fit_mode == "width":
+        scale = min(TARGET_CONTENT_WIDTH / image.width, max_width / image.width, MAX_CONTENT_SIDE / image.height)
+    else:
+        alpha_area = max(1.0, _weighted_alpha_area(image))
+        visual_mass_scale = math.sqrt(TARGET_CONTENT_ALPHA_AREA / alpha_area)
+        scale = min(visual_mass_scale, TARGET_CONTENT_HEIGHT / image.height, max_width / image.width, MAX_CONTENT_SIDE / image.height)
     resized = image.resize(
         (max(1, round(image.width * scale)), max(1, round(image.height * scale))),
         Image.Resampling.LANCZOS,
@@ -118,12 +122,12 @@ def _source_path(source_dir: Path, name: str) -> Path:
     raise FileNotFoundError(f"Missing source for {name}: expected city_{name}.png or {name}.png in {source_dir}")
 
 
-def _write_icon(image: Image.Image, out_dir: Path, name: str) -> None:
+def _write_icon(image: Image.Image, out_dir: Path, name: str, fit_mode: str = "visual-mass") -> None:
     cleaned = _remove_tiny_alpha_islands(image)
     # Generated sheets sometimes carry small detached alpha fragments near cell
     # edges. Clean once before fitting and once after resizing so those fragments
     # cannot become visible outlined scraps above a city marker.
-    icon = _remove_tiny_alpha_islands(_fit_hi_res_icon(_trim_alpha(cleaned)), min_pixels=1800)
+    icon = _remove_tiny_alpha_islands(_fit_hi_res_icon(_trim_alpha(cleaned), fit_mode), min_pixels=1800)
     out = out_dir / f"city_{name}.png"
     icon.save(out, "PNG", optimize=True)
     print(f"Wrote {out}")
@@ -218,6 +222,7 @@ def _slice_sheet(
     columns: int,
     legacy_cell_crop: bool = False,
     edge_audit: str = "warn",
+    fit_mode: str = "visual-mass",
 ) -> None:
     sheet = Image.open(sheet_path).convert("RGBA")
     rows = max(1, math.ceil(len(names) / columns))
@@ -235,13 +240,13 @@ def _slice_sheet(
         else _component_crops(sheet, names, columns)
     )
     for name, cell in zip(names, cells):
-        _write_icon(cell, out_dir, name)
+        _write_icon(cell, out_dir, name, fit_mode)
 
 
-def _slice_sources(source_dir: Path, out_dir: Path, names: list[str]) -> None:
+def _slice_sources(source_dir: Path, out_dir: Path, names: list[str], fit_mode: str = "visual-mass") -> None:
     for name in names:
         source = Image.open(_source_path(source_dir, name)).convert("RGBA")
-        _write_icon(source, out_dir, name)
+        _write_icon(source, out_dir, name, fit_mode)
 
 
 def _resolve_names(args: argparse.Namespace) -> list[str]:
@@ -266,14 +271,28 @@ def main() -> int:
     parser.add_argument("--columns", type=int, default=GRID_COLUMNS)
     parser.add_argument("--legacy-cell-crop", action="store_true", help="Use old fixed-grid sheet slicing.")
     parser.add_argument("--edge-audit", choices=["off", "warn", "error"], default="warn")
+    parser.add_argument(
+        "--fit-mode",
+        choices=["visual-mass", "width"],
+        default="visual-mass",
+        help="Normalize by weighted alpha mass or by shared visible width.",
+    )
     args = parser.parse_args()
 
     names = _resolve_names(args)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     if args.sheet:
-        _slice_sheet(args.sheet, args.out_dir, names, max(1, args.columns), args.legacy_cell_crop, args.edge_audit)
+        _slice_sheet(
+            args.sheet,
+            args.out_dir,
+            names,
+            max(1, args.columns),
+            args.legacy_cell_crop,
+            args.edge_audit,
+            args.fit_mode,
+        )
     else:
-        _slice_sources(args.source_dir, args.out_dir, names)
+        _slice_sources(args.source_dir, args.out_dir, names, args.fit_mode)
     return 0
 
 

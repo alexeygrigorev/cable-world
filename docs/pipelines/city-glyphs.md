@@ -218,6 +218,7 @@ python3 -m map_pipeline.slice_city_cluster_landmarks_hi_res \
   --out-dir assets/sprites/city_landmark_clusters_hi_res \
   --ids hannover,bremen,kiel,luebeck,duesseldorf,dortmund \
   --columns 3 \
+  --fit-mode visual-mass \
   --edge-audit error
 ```
 
@@ -245,6 +246,20 @@ Venice, Bolzano, Augsburg, Leipzig, Brno
 Bremen, Kiel, Berlin, Milan, Prague
 Brussels, Frankfurt, Riga, Kyiv, Athens
 ```
+
+When integrating the approved reference-sheet cities themselves, normalize by shared visible width because their city silhouettes intentionally have different heights:
+
+```bash
+python3 -m map_pipeline.slice_city_cluster_landmarks_hi_res \
+  --sheet tmp/city-reference-5x3/alpha/city-glyph-style-reference-5x3.png \
+  --out-dir assets/sprites/city_landmark_clusters_hi_res \
+  --ids venice,bolzano,augsburg,leipzig,brno,bremen,kiel,berlin,milan,prague,brussels,frankfurt,riga,kyiv,athens \
+  --columns 5 \
+  --fit-mode width \
+  --edge-audit error
+```
+
+The width fit is still uniform scaling. Do not stretch X/Y separately. The expected runtime outlined width for these reference cities is the shared target from `city_glyph_size_contract.py`; verify it with the size audit or a pixel-measure preview before accepting the pass.
 
 The size contract lives in:
 

@@ -5,6 +5,23 @@ from pathlib import Path
 
 DEFAULT_SPECS_FILE = Path("map_pipeline/data/city_cluster_glyph_specs.json")
 APPROVED_REFERENCE_SHEET = Path("assets/map/references/city-glyph-style-reference-5x3.png")
+APPROVED_REFERENCE_CITY_IDS = (
+    "venice",
+    "bolzano",
+    "augsburg",
+    "leipzig",
+    "brno",
+    "bremen",
+    "kiel",
+    "berlin",
+    "milan",
+    "prague",
+    "brussels",
+    "frankfurt",
+    "riga",
+    "kyiv",
+    "athens",
+)
 FULL_REGEN_BATCH_SIZE = 15
 BATCH_GRID_CELLS = 15
 
