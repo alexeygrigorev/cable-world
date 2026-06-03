@@ -340,18 +340,17 @@ func _draw_cities(k: float, s: float, view_rect: Rect2) -> void:
 		_draw_city(entry["f"], entry["pos"], s, show_labels)
 
 func _draw_city(f: Dictionary, pos: Vector2, s: float, show_label: bool) -> void:
-	var capital := str(f.get("kind", "")) == "capital"
 	var icon := str(f.get("icon", ""))
 	var tex := model.texture("city_%s.png" % icon) if not icon.is_empty() else null
 	var bottom := pos.y
 	if tex != null:
-		var h := s * (5.0 if capital else 4.0)
+		var h := s * 4.0
 		var w := h * (float(tex.get_width()) / float(tex.get_height()))
 		draw_texture_rect(tex, Rect2(pos.x - w * 0.5, pos.y - h * 0.70, w, h), false)
 		bottom = pos.y + h * 0.30
 	else:
-		var rad := s * (0.5 if capital else 0.38)
-		draw_circle(pos, rad, Color("c0392b") if capital else Color("34495e"))
+		var rad := s * 0.38
+		draw_circle(pos, rad, Color("34495e"))
 		bottom = pos.y + rad
 	var label := str(f.get("label", ""))
 	if show_label and not label.is_empty():

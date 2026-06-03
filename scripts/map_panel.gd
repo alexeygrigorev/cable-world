@@ -137,13 +137,12 @@ class OfflineMapLayer:
 		var position := _geo_to_screen(label_data["coordinates"])
 		if not _screen_point_near_viewport(position, LANDMARK_EDGE_MARGIN):
 			return
-		var is_capital := str(label_data.get("kind", "")) == "capital"
 		var is_town := str(label_data.get("kind", "")) == "town"
 		if is_town and zoom < SECONDARY_CITY_LABEL_ZOOM:
 			return
 		if not _city_label_has_icon(label_data) and zoom < BARE_CITY_LABEL_ZOOM:
 			return
-		var label_size := 17 if is_capital else (14 if is_town else 15)
+		var label_size := 14 if is_town else 15
 		var icon_rect := _city_icon_rect(label_data, position)
 		var label_rect := Rect2()
 		if icon_rect.size != Vector2.ZERO:

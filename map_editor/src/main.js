@@ -344,21 +344,20 @@ function drawSprite(name, cx, cy, s, h, baseAnchor) {
 
 function drawCity(cx, cy, s, f, showLabel) {
   ctx.save();
-  const capital = f.kind === "capital";
   const img = f.icon ? getImg(`city_${f.icon}.png`) : null;
   let bottom = cy;
   if (img && img.complete && img.naturalWidth) {
     // sprite footprint scaled to the hex; anchored so its base sits on the hex
-    const h = s * (capital ? 5.0 : 4.0);
+    const h = s * 4.0;
     const w = h * (img.naturalWidth / img.naturalHeight);
     const tx = cx - w / 2, ty = cy - h * 0.70; // anchor point sits higher in the sprite
     ctx.drawImage(img, tx, ty, w, h);
     bottom = cy + h * 0.30;
   } else {
-    const r = s * (capital ? 0.5 : 0.38);
+    const r = s * 0.38;
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = capital ? "#c0392b" : "#34495e";
+    ctx.fillStyle = "#34495e";
     ctx.fill();
     ctx.lineWidth = s * 0.06;
     ctx.strokeStyle = "#fff";
@@ -871,7 +870,7 @@ async function copyGlyphDebug(f) {
 
 function cardHtml(f) {
   if (f.glyph === "city") {
-    return `<h2>${f.label}</h2><div class="kind">${f.kind === "capital" ? "Столица" : "Город"}</div>
+    return `<h2>${f.label}</h2><div class="kind">Город</div>
       ${glyphPreviewHtml(f)}
       <dl><dt>Тип</dt><dd>город</dd><dt>id</dt><dd>${f.id}</dd><dt>Глиф</dt><dd>${glyphName(f)}</dd>${glyphDebugRows(f)}
       <dt>Координаты</dt><dd>${(f.lat ?? 0).toFixed(4)}, ${(f.lon ?? 0).toFixed(4)}</dd>
