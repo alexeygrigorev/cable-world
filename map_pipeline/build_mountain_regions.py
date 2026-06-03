@@ -29,9 +29,20 @@ SYSTEMS = ROOT / "map_pipeline" / "data" / "mountain_systems.json"
 PEAKS = ROOT / "map_pipeline" / "data" / "osm_peaks.json"
 OUT = ROOT / "map_editor" / "src" / "data" / "mountain_regions_by_hex.json"
 ELEV = ROOT / "map_pipeline" / "data" / "hex_elevation.json"
+DENS = ROOT / "map_editor" / "src" / "data" / "lift_density.json"
 # A hex inside a range polygon only counts as mountain above this elevation,
 # so sea-level / plain hexes (Venice lagoon, Po valley) drop out.
 MOUNTAIN_MIN_ELE = 300
+# Elevation alone is enough to call a hex mountainous (catches isolated high
+# summits), regardless of any polygon.
+HIGH_ELE = 2000
+# LOCAL RELIEF is the reliable, systematic mountain signal: the elevation spread
+# between a hex and its neighbours. Mountains have big spread; high-but-flat
+# plateaus (Anatolia, Spanish Meseta) have small spread and are NOT mountains.
+RELIEF_MIN = 350
+NB6 = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
+# Ski-type lifts are a precise relief signal (no drag/chair lifts on flat plateaus).
+SKI_GROUPS = ("chair_lift", "gondola", "cable_car", "surface_tow")
 
 MAX_PEAKS_PER_HEX = 8
 SIZE_RANK = {"small": 0, "medium": 1, "large": 2}
@@ -110,6 +121,8 @@ def main() -> None:
 
     # per-hex elevation gate (drops flat hexes that fall inside coarse polygons)
     elev = json.loads(ELEV.read_text(encoding="utf-8")).get("by_hex", {}) if ELEV.exists() else {}
+    # ski-lift density per hex — a reliable relief signal that fills polygon gaps
+    dens = json.loads(DENS.read_text(encoding="utf-8")).get("by_hex", {}) if DENS.exists() else {}
 
     # Bin notable peaks onto hexes (store may be absent if the network step
     # hasn't run yet; the region layer still works without it).
@@ -164,34 +177,47 @@ def main() -> None:
                 for p in top
             ]
 
-        # Keep a hex only if it actually reads as mountainous:
-        #  - it has a notable peak (always keep), or
-        #  - it is inside a range polygon AND high enough (elevation gate).
-        # A flat hex inside a coarse polygon (Venice, Po valley) is dropped.
-        # Unknown elevation (null, e.g. east of EU-DEM) is not used to drop.
+        # A hex reads as mountainous when ANY reliable signal says so:
+        #  - a notable OSM peak, or
+        #  - ski-type lifts present (precise relief signal; fills polygon gaps
+        #    like Maiella / Rhön), or
+        #  - high elevation on its own (>= HIGH_ELE), or
+        #  - inside a curated range polygon AND high enough (drops Venice/Po valley).
+        # The region NAME still comes from the polygon when available; otherwise
+        # the hex is mountainous-but-unnamed until a reliable name source lands.
         hex_ele = elev.get(key)
-        if not hex_peaks:
-            if "system" not in entry:
-                continue
-            if hex_ele is not None and hex_ele < MOUNTAIN_MIN_ELE:
-                continue
+        q, r = (int(x) for x in key.split(","))
+        vals = [hex_ele] if hex_ele is not None else []
+        for dq, dr in NB6:
+            v = elev.get(f"{q + dq},{r + dr}")
+            if v is not None:
+                vals.append(v)
+        relief = (max(vals) - min(vals)) if len(vals) >= 2 else 0
+        d = dens.get(key) or {}
+        ski_lifts = sum(d.get(g, 0) for g in SKI_GROUPS)
+        in_region = "system" in entry
+        mountainous = (
+            bool(hex_peaks)
+            or ski_lifts >= 1
+            or relief >= RELIEF_MIN
+            or (hex_ele is not None and hex_ele >= HIGH_ELE)
+            or (in_region and (hex_ele is None or hex_ele >= MOUNTAIN_MIN_ELE))
+        )
+        if not mountainous:
+            continue
+        if ski_lifts:
+            entry["ski_lifts"] = ski_lifts
+        if relief:
+            entry["relief"] = relief
 
-        # icon_size = max of region magnitude, peak elevation and hex elevation.
-        candidates = []
-        if region_size is not None:
-            candidates.append(region_size)
-        if max_ele is not None:
-            candidates.append(ele_size(max_ele))
-        if hex_ele is not None:
-            candidates.append(ele_size(hex_ele))
-        if not candidates:
-            candidates.append(SIZE_RANK["small"])
-        size_rank = max(candidates)
-        entry["icon_size"] = SIZE_BY_RANK[size_rank]
-        if max_ele is not None:
-            entry["max_ele"] = max_ele
-        elif hex_ele is not None:
-            entry["max_ele"] = hex_ele
+        # icon_size is driven by the LOCAL MAX elevation (hex + neighbours), so a
+        # valley hex surrounded by high peaks still reads big — consistent and
+        # closer to "how big are the mountains here" than the valley-floor centre.
+        local_max = max(vals) if vals else None
+        size_ele = max([v for v in (local_max, max_ele) if v is not None], default=None)
+        entry["icon_size"] = SIZE_BY_RANK[ele_size(size_ele)]
+        if size_ele is not None:
+            entry["max_ele"] = size_ele  # the elevation that drives the icon size
 
         by_hex[key] = entry
         size_counts[entry["icon_size"]] += 1
