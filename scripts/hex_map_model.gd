@@ -43,6 +43,7 @@ static func load_zoom_config() -> Dictionary:
 # "forest_pine_single_v1.png") resolves to the first dir that has it, so assets
 # can be moved between these folders without breaking references.
 const ASSET_DIRS := [
+	"res://assets/sprites/transport_glow/",
 	"res://assets/sprites/",
 	"res://assets/sprites/city_landmark_clusters_hi_res/outlined/",
 	"res://assets/map/glyphs/",

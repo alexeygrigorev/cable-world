@@ -309,15 +309,7 @@ function drawTransport(cx, cy, s, f) {
   if (img && img.complete && img.naturalWidth) {
     const h = s * 2.0;
     const w = h * (img.naturalWidth / img.naturalHeight);
-    // dark outline-glow so the icon reads over busy terrain (built up by a few
-    // shadowed passes), then a crisp draw on top — not white, but visible
     const dx = cx - w / 2, dy = cy - h * 0.72;
-    ctx.shadowColor = "rgba(22,16,9,0.9)";
-    ctx.shadowBlur = s * 0.22;
-    ctx.drawImage(img, dx, dy, w, h);
-    ctx.drawImage(img, dx, dy, w, h);
-    ctx.drawImage(img, dx, dy, w, h);
-    ctx.shadowBlur = 0;
     ctx.drawImage(img, dx, dy, w, h);
   } else {
     ctx.beginPath();

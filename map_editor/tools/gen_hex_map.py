@@ -51,7 +51,6 @@ MASSIF_ASSET_WIDTH_HEX = {
 }
 MASSIF_FOOTPRINT_OVERRIDES = {
     "black_forest.png": {
-        "anchor_source_x_px": 9,
         "faint_offsets": [],
     },
 }
@@ -289,7 +288,11 @@ FOREST_POINTS = [
 NEIGHBORS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
 HEX_ALPHA_STEP = 0.18
 PRIMARY_ALPHA_RATIO = 0.22
+PRIMARY_ALPHA_MIN_OPAQUE_SAMPLES = 18
 ALPHA_THRESHOLD = 50
+LOWER_SUPPORT_ANCHOR_BAND_PX = 14
+LOWER_SUPPORT_SEARCH_BAND_PX = 72
+LOWER_SUPPORT_MIN_ROW_COVERAGE = 0.5
 
 CATALOGS = [
     os.path.join(ROOT, "scripts", "demo_catalog.gd"),
@@ -636,20 +639,36 @@ def alpha_bottom_left_anchor_x(alpha, threshold=ALPHA_THRESHOLD):
         return 0
     width, _height = alpha.size
     pixels = alpha.load()
-    alpha_height = bbox[3] - bbox[1]
-    band_top = max(bbox[1], bbox[3] - max(12, int(alpha_height * 0.08)))
-    xs = []
-    for y in range(band_top, bbox[3]):
-        for x in range(width):
-            if pixels[x, y] > threshold:
-                xs.append(x)
-    if not xs:
+    bbox_width = max(1, bbox[2] - bbox[0])
+
+    def row_left_x(y):
+        row_xs = [x for x in range(width) if pixels[x, y] > threshold]
+        return min(row_xs) if row_xs else None
+
+    def row_coverage(y):
+        return sum(1 for x in range(width) if pixels[x, y] > threshold) / bbox_width
+
+    support_y = max(bbox[1], bbox[3] - LOWER_SUPPORT_ANCHOR_BAND_PX)
+    support_x = row_left_x(support_y)
+    if support_x is None:
+        for y in range(support_y, bbox[3]):
+            support_x = row_left_x(y)
+            if support_x is not None:
+                break
+    if support_x is None:
         return bbox[0]
-    xs.sort()
-    # Use the lower-left support mass, not the first stray edge pixel. The 25th
-    # percentile keeps the anchor on the left side while putting the anchor hex
-    # inside the visible glyph base.
-    return xs[len(xs) // 4]
+    if support_x <= LOWER_SUPPORT_ANCHOR_BAND_PX:
+        return support_x
+
+    best_x = support_x
+    search_top = max(bbox[1], bbox[3] - LOWER_SUPPORT_SEARCH_BAND_PX)
+    for y in range(search_top, bbox[3]):
+        left_x = row_left_x(y)
+        if left_x is None:
+            continue
+        if row_coverage(y) >= LOWER_SUPPORT_MIN_ROW_COVERAGE:
+            best_x = min(best_x, left_x)
+    return best_x
 
 
 def glyph_footprint(image_name, zoom_factor, s):
@@ -661,10 +680,7 @@ def glyph_footprint(image_name, zoom_factor, s):
 
     width_px = s * float(zoom_factor)
     height_px = width_px * ih / iw
-    anchor_x_px = MASSIF_FOOTPRINT_OVERRIDES.get(image_name, {}).get(
-        "anchor_source_x_px",
-        alpha_bottom_left_anchor_x(alpha),
-    )
+    anchor_x_px = alpha_bottom_left_anchor_x(alpha)
     anchor_x = width_px * anchor_x_px / iw
     x0, y0, x1, y1 = -anchor_x, -height_px, width_px - anchor_x, 0
     primary_offsets = []
@@ -699,7 +715,7 @@ def glyph_footprint(image_name, zoom_factor, s):
             if not sampled or not opaque:
                 continue
             key = f"{dq},{dr}"
-            if opaque / sampled >= PRIMARY_ALPHA_RATIO:
+            if opaque / sampled >= PRIMARY_ALPHA_RATIO and opaque >= PRIMARY_ALPHA_MIN_OPAQUE_SAMPLES:
                 primary_offsets.append(key)
             else:
                 faint_offsets.append(key)

@@ -12,8 +12,9 @@ const safeName = (n) => /^[\w -]+$/.test(n) ? n.replace(/\s+/g, "-") : null;
 
 // real game assets live in the repo, outside the editor folder
 const ASSET_DIRS = [
+  fileURLToPath(new URL("../assets/sprites/transport_glow/", import.meta.url)),
   fileURLToPath(new URL("../assets/sprites/", import.meta.url)),
-  fileURLToPath(new URL("../assets/sprites/city_landmark_clusters_hi_res/outlined/", import.meta.url)),
+  fileURLToPath(new URL("../assets/sprites/city_landmark_clusters_hi_res/outlined_thin/", import.meta.url)),
   fileURLToPath(new URL("../assets/map/glyphs/", import.meta.url)),
   fileURLToPath(new URL("../assets/map/massifs/", import.meta.url)),
   fileURLToPath(new URL("../assets/map/hex_terrain/generated_2026_06_01/forests/", import.meta.url)),

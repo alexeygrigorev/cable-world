@@ -9,6 +9,47 @@ except ModuleNotFoundError:
 
 
 ROOT = Path(__file__).resolve().parents[1]
+LOWER_SUPPORT_ANCHOR_BAND_PX = 14
+LOWER_SUPPORT_SEARCH_BAND_PX = 72
+ALPHA_THRESHOLD = 50
+LOWER_SUPPORT_MIN_ROW_COVERAGE = 0.5
+
+
+def lower_support_anchor_x(alpha) -> int:
+    bbox = alpha.getbbox()
+    if not bbox:
+        return 0
+    pixels = alpha.load()
+    bbox_width = max(1, bbox[2] - bbox[0])
+
+    def row_left_x(y):
+        row_xs = [x for x in range(alpha.width) if pixels[x, y] > ALPHA_THRESHOLD]
+        return min(row_xs) if row_xs else None
+
+    def row_coverage(y):
+        return sum(1 for x in range(alpha.width) if pixels[x, y] > ALPHA_THRESHOLD) / bbox_width
+
+    support_y = max(bbox[1], bbox[3] - LOWER_SUPPORT_ANCHOR_BAND_PX)
+    support_x = row_left_x(support_y)
+    if support_x is None:
+        for y in range(support_y, bbox[3]):
+            support_x = row_left_x(y)
+            if support_x is not None:
+                break
+    if support_x is None:
+        return bbox[0]
+    if support_x <= LOWER_SUPPORT_ANCHOR_BAND_PX:
+        return support_x
+
+    best_x = support_x
+    search_top = max(bbox[1], bbox[3] - LOWER_SUPPORT_SEARCH_BAND_PX)
+    for y in range(search_top, bbox[3]):
+        left_x = row_left_x(y)
+        if left_x is None:
+            continue
+        if row_coverage(y) >= LOWER_SUPPORT_MIN_ROW_COVERAGE:
+            best_x = min(best_x, left_x)
+    return best_x
 
 
 class MapEditorContractTest(unittest.TestCase):
@@ -129,6 +170,14 @@ class MapEditorContractTest(unittest.TestCase):
     def test_massif_anchor_is_bottom_left_and_visible(self) -> None:
         if Image is None:
             self.skipTest("PIL is required for alpha anchor validation")
+        rejected_anchor_source_px = {
+            "black_forest.png": [[95, 196]],
+            "swiss_alps_massif.png": [[38, 174], [22, 174]],
+            "bavarian_tyrol_alps_massif.png": [[34, 191], [28, 191]],
+            "austrian_alps_massif.png": [[23, 177]],
+            "erzgebirge.png": [[65, 263], [31, 263]],
+            "saxon_switzerland.png": [[108, 245], [62, 245]],
+        }
         for ref, meta in self.hex_map["glyphs"].items():
             with self.subTest(ref=ref):
                 self.assertEqual(meta.get("anchor_offset"), "bottom-left")
@@ -138,22 +187,30 @@ class MapEditorContractTest(unittest.TestCase):
                     alpha = source.convert("RGBA").getchannel("A")
                     bbox = alpha.getbbox()
                     self.assertIsNotNone(bbox)
-                    pixels = alpha.load()
-                    alpha_height = bbox[3] - bbox[1]
-                    band_top = max(bbox[1], bbox[3] - max(12, int(alpha_height * 0.08)))
-                    xs = [
-                        x
-                        for y in range(band_top, bbox[3])
-                        for x in range(alpha.width)
-                        if pixels[x, y] > 50
-                    ]
-                    self.assertIn(meta["anchor_source_px"][0], xs)
+                    anchor_x = meta["anchor_source_px"][0]
+                    expected_anchor_x = lower_support_anchor_x(alpha)
+                    self.assertEqual(anchor_x, expected_anchor_x)
                     self.assertEqual(meta["anchor_source_px"][1], alpha.height - 1)
+                    for rejected_anchor in rejected_anchor_source_px.get(meta["file"], []):
+                        self.assertNotEqual(meta["anchor_source_px"], rejected_anchor)
                 x0, y0, x1, y1 = meta["bounds_offset_hex"]
                 self.assertLessEqual(x0, 0)
                 self.assertGreater(x1, 0)
                 self.assertLess(y0, 0)
                 self.assertEqual(y1, 0)
+
+    def test_massif_edge_touches_are_faint_not_primary(self) -> None:
+        weak_edge_offsets = {
+            "austrian_alps_massif.png": "-1,0",
+            "bavarian_tyrol_alps_massif.png": "0,-1",
+        }
+        for ref, meta in self.hex_map["glyphs"].items():
+            weak_offset = weak_edge_offsets.get(meta["file"])
+            if weak_offset is None:
+                continue
+            with self.subTest(ref=ref):
+                self.assertNotIn(weak_offset, meta["primary_offsets"])
+                self.assertIn(weak_offset, meta["faint_offsets"])
 
         for expected in [
             "if (hi.glyph === \"massif\")",
