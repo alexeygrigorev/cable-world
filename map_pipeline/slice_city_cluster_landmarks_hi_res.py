@@ -11,6 +11,7 @@ from map_pipeline.city_glyph_size_contract import (
     MAX_CONTENT_SIDE,
     MAX_WIDE_CONTENT_WIDTH,
     PADDING,
+    TARGET_CONTENT_ALPHA_AREA,
     TARGET_CONTENT_HEIGHT,
     WIDE_CONTENT_ASPECT_RATIO,
 )
@@ -91,11 +92,17 @@ def _trim_alpha(image: Image.Image) -> Image.Image:
     return image.crop(bbox) if bbox else image
 
 
+def _weighted_alpha_area(image: Image.Image) -> float:
+    return sum(image.getchannel("A").getdata()) / 255.0
+
+
 def _fit_hi_res_icon(image: Image.Image) -> Image.Image:
     icon = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (0, 0, 0, 0))
     aspect = image.width / image.height
     max_width = MAX_WIDE_CONTENT_WIDTH if aspect > WIDE_CONTENT_ASPECT_RATIO else MAX_CONTENT_SIDE
-    scale = min(TARGET_CONTENT_HEIGHT / image.height, max_width / image.width, MAX_CONTENT_SIDE / image.height)
+    alpha_area = max(1.0, _weighted_alpha_area(image))
+    visual_mass_scale = math.sqrt(TARGET_CONTENT_ALPHA_AREA / alpha_area)
+    scale = min(visual_mass_scale, TARGET_CONTENT_HEIGHT / image.height, max_width / image.width, MAX_CONTENT_SIDE / image.height)
     resized = image.resize(
         (max(1, round(image.width * scale)), max(1, round(image.height * scale))),
         Image.Resampling.LANCZOS,

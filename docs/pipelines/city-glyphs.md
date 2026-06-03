@@ -232,11 +232,19 @@ python3 -m map_pipeline.slice_city_cluster_landmarks_hi_res \
 
 The sheet slicer crops by connected alpha components, not only by the nominal grid cell. This prevents city clusters from losing a side when the generated art crosses a grid line. It also normalizes every accepted glyph to the current runtime target with transparent padding and removes tiny alpha islands from sheet edges.
 
-Normalization rule: after alpha trim, scale the resized glyph uniformly toward the shared target content height, center it horizontally, and place its bottom on the shared bottom padding baseline. Do not vertically center city glyphs inside the 256x256 canvas; wide/low cities like Amsterdam and Bremen otherwise float above the map anchor while taller cities like Berlin and Hannover look correct by accident.
+Normalization rule: after alpha trim, scale the resized glyph uniformly toward the shared visual-mass target, cap it by the shared target content height, center it horizontally, and place its bottom on the shared bottom padding baseline. Do not vertically center city glyphs inside the 256x256 canvas; wide/low cities like Amsterdam and Bremen otherwise float above the map anchor while taller cities like Berlin and Hannover look correct by accident.
 
-Runtime city glyphs must be comparable by visible size, not only "below maximum". Normal-aspect city clusters should finish at the target outlined alpha height from `city_glyph_size_contract.py` on the shared baseline. The size audit fails normal-aspect glyphs that are visibly shorter than that target, which catches mistakes like Odesa or Venice looking smaller than neighboring cities.
+Runtime city glyphs must be comparable by visual mass, not only "below maximum" and not only equal bbox height. The scaler uses weighted alpha area from `city_glyph_size_contract.py` as the primary target, with a height cap to prevent sparse silhouettes from becoming towers. This catches dense cities like Odesa, Bratislava, or Chisinau dominating neighboring cities while still keeping thin/sparse silhouettes readable.
 
 Wide/low city clusters use the same uniform scale but may hit the canvas width first. Do not fix these by non-uniform X/Y stretching; regenerate the city art if its aspect makes it impossible to read at the shared size.
+
+The 15 approved reference-sheet cities are canonical source inputs and must be re-applied from the approved reference slice before a full normalization pass:
+
+```text
+Venice, Bolzano, Augsburg, Leipzig, Brno
+Bremen, Kiel, Berlin, Milan, Prague
+Brussels, Frankfurt, Riga, Kyiv, Athens
+```
 
 The size contract lives in:
 
@@ -267,7 +275,7 @@ The audit checks the final runtime `outlined/city_*.png` files. It fails if:
 
 - canvas size is not `256x256`;
 - alpha content is wider or taller than the contract allows;
-- normal-aspect alpha content is shorter than the shared target height;
+- weighted alpha area is outside the shared visual-mass range;
 - bottom alpha padding does not match the shared baseline.
 
 ## Content Audit
