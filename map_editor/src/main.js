@@ -46,6 +46,7 @@ const overlays = {
   liftDensity: false, // press "L" to toggle
   alpsTarget: true,   // press "A" to toggle
   mountains: false,   // press "M" to toggle (see docs/pipelines/mountain-regions.md)
+  elevation: false,   // hypsometric tint
 };
 let liftIndex = null;          // lazy-loaded named drill-in data (~900 KB)
 const LIFT_DENSITY = liftDensity.by_hex || {};
@@ -103,9 +104,14 @@ function escLift(s) {
 }
 
 function syncOverlayButtons() {
-  if (!liftOverlayBtn) return;
-  liftOverlayBtn.classList.toggle("on", overlays.liftDensity);
-  liftOverlayBtn.setAttribute("aria-pressed", overlays.liftDensity ? "true" : "false");
+  if (liftOverlayBtn) {
+    liftOverlayBtn.classList.toggle("on", overlays.liftDensity);
+    liftOverlayBtn.setAttribute("aria-pressed", overlays.liftDensity ? "true" : "false");
+  }
+  const set = (id, on) => { const el = document.getElementById(id); if (el) el.checked = on; };
+  set("flt-lifts", overlays.liftDensity);
+  set("flt-mountains", overlays.mountains);
+  set("flt-elevation", overlays.elevation);
 }
 
 function toggleLiftOverlay() {
@@ -119,9 +125,44 @@ window.addEventListener("keydown", (e) => {
   if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
   if (e.key === "l" || e.key === "L") { toggleLiftOverlay(); }
   else if (e.key === "a" || e.key === "A") { overlays.alpsTarget = !overlays.alpsTarget; render(); }
-  else if (e.key === "m" || e.key === "M") { overlays.mountains = !overlays.mountains; render(); }
+  else if (e.key === "m" || e.key === "M") { overlays.mountains = !overlays.mountains; syncOverlayButtons(); render(); }
 });
 liftOverlayBtn?.addEventListener("click", toggleLiftOverlay);
+
+// ----- layer filter (checkbox panel in the header) -----
+const LIFT_GROUPS_ON = new Set(LIFT_GROUP_ORDER); // which lift categories are shown
+function liftShown(c) {
+  if (LIFT_GROUPS_ON.size >= LIFT_GROUP_ORDER.length) return c.passenger_total;
+  let n = 0;
+  for (const g of LIFT_GROUPS_ON) n += c[g] || 0;
+  return n;
+}
+function eleColor(m) {
+  const stops = [[-20, [60, 110, 150]], [0, [90, 150, 95]], [400, [170, 185, 110]],
+    [1000, [175, 150, 100]], [2000, [150, 120, 95]], [3000, [225, 225, 230]], [4000, [255, 255, 255]]];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const [a, ca] = stops[i], [b, cb] = stops[i + 1];
+    if (m <= b) { const f = b === a ? 0 : (m - a) / (b - a); return `rgb(${ca.map((v, j) => Math.round(v + (cb[j] - v) * f)).join(",")})`; }
+  }
+  return "rgb(255,255,255)";
+}
+function wireFilters() {
+  const lifts = document.getElementById("flt-lifts");
+  const mtns = document.getElementById("flt-mountains");
+  const elev = document.getElementById("flt-elevation");
+  if (lifts) lifts.addEventListener("change", () => { overlays.liftDensity = lifts.checked; syncOverlayButtons(); render(); });
+  if (mtns) mtns.addEventListener("change", () => { overlays.mountains = mtns.checked; render(); });
+  if (elev) elev.addEventListener("change", () => { overlays.elevation = elev.checked; render(); });
+  for (const cb of document.querySelectorAll(".flt-lg")) {
+    cb.addEventListener("change", () => {
+      if (cb.checked) LIFT_GROUPS_ON.add(cb.dataset.g); else LIFT_GROUPS_ON.delete(cb.dataset.g);
+      if (LIFT_GROUPS_ON.size && !overlays.liftDensity) overlays.liftDensity = true;
+      syncOverlayButtons();
+      render();
+    });
+  }
+}
+wireFilters();
 syncOverlayButtons();
 let cssW = 0, cssH = 0;
 
@@ -571,16 +612,34 @@ function render() {
     ctx.stroke();
   }
 
-  // 1b. Layer B: OSM lift-density heat tint (overview)
+  // 1a. elevation hypsometric tint
+  if (overlays.elevation) {
+    for (const key in HEX_ELEVATION) {
+      const m = HEX_ELEVATION[key];
+      if (m === null || m === undefined || !state.hexes[key]) continue;
+      const [q, r] = key.split(",").map(Number);
+      const { x, y } = hexToContent(q, r);
+      if (!onScreen(x, y)) continue;
+      hexPath(x, y, s);
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = eleColor(m);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // 1b. Layer B: OSM lift-density heat tint (overview), respecting category filter
   if (overlays.liftDensity) {
     for (const key in LIFT_DENSITY) {
       if (!state.hexes[key]) continue;
+      const n = liftShown(LIFT_DENSITY[key]);
+      if (!n) continue;
       const [q, r] = key.split(",").map(Number);
       const { x, y } = hexToContent(q, r);
       if (!onScreen(x, y)) continue;
       hexPath(x, y, s);
       ctx.globalAlpha = 0.5;
-      ctx.fillStyle = liftHeat(LIFT_DENSITY[key].passenger_total);
+      ctx.fillStyle = liftHeat(n);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
@@ -695,8 +754,9 @@ function render() {
     ctx.strokeStyle = "rgba(0,0,0,0.75)";
     ctx.fillStyle = "#ffffff";
     for (const key in LIFT_DENSITY) {
-      const n = LIFT_DENSITY[key].passenger_total;
-      if (n < 6 || !state.hexes[key]) continue;
+      if (!state.hexes[key]) continue;
+      const n = liftShown(LIFT_DENSITY[key]);
+      if (n < 6) continue;
       const [q, r] = key.split(",").map(Number);
       const { x, y } = hexToContent(q, r);
       if (!onScreen(x, y)) continue;
