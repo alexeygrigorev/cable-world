@@ -1194,11 +1194,14 @@ function appendMountainSection(hexKey) {
   if (!m) return;
   const box = document.createElement("div");
   box.className = "hex-debug";
-  const where = m.subregion
-    ? `${escLift(m.system)} → ${escLift(m.subregion)}`
-    : (m.system ? escLift(m.system) : "—");
+  const named = m.system
+    ? (m.subregion ? `${escLift(m.system)} → ${escLift(m.subregion)}` : escLift(m.system))
+    : null;
+  const title = named ? `Горы: ${named}` : "Горы (название уточняется)";
   const meta = [`размер иконки: ${MOUNTAIN_SIZE_LABEL[m.icon_size] || m.icon_size}`];
-  if (m.max_ele != null) meta.push(`макс. высота: ${m.max_ele} м`);
+  if (m.max_ele != null) meta.push(`высота ≈ ${m.max_ele} м`);
+  if (m.relief != null) meta.push(`перепад ≈ ${m.relief} м`);
+  if (m.ski_lifts) meta.push(`горнолыжных подъёмников: ${m.ski_lifts}`);
   let peaksHtml = "";
   if (m.peaks && m.peaks.length) {
     const rows = m.peaks.map((p) => {
@@ -1207,7 +1210,7 @@ function appendMountainSection(hexKey) {
     }).join("");
     peaksHtml = `<ul style="padding-left:0;margin:4px 0;font-size:12px;color:#ddd">${rows}</ul>`;
   }
-  box.innerHTML = `<h2>Горы: ${where}</h2>` +
+  box.innerHTML = `<h2>${title}</h2>` +
     `<div style="margin:2px 0 6px;color:#cfcfcf;font-size:12px">${meta.join(" · ")}</div>` +
     peaksHtml;
   panelBody.appendChild(box);
