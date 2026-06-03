@@ -28,6 +28,10 @@ HEX_MAP = ROOT / "map_editor" / "src" / "data" / "hex_map.json"
 SYSTEMS = ROOT / "map_pipeline" / "data" / "mountain_systems.json"
 PEAKS = ROOT / "map_pipeline" / "data" / "osm_peaks.json"
 OUT = ROOT / "map_editor" / "src" / "data" / "mountain_regions_by_hex.json"
+ELEV = ROOT / "map_pipeline" / "data" / "hex_elevation.json"
+# A hex inside a range polygon only counts as mountain above this elevation,
+# so sea-level / plain hexes (Venice lagoon, Po valley) drop out.
+MOUNTAIN_MIN_ELE = 300
 
 MAX_PEAKS_PER_HEX = 8
 SIZE_RANK = {"small": 0, "medium": 1, "large": 2}
@@ -104,6 +108,9 @@ def main() -> None:
     systems = sys_doc["systems"]
     subregions = sys_doc["subregions"]
 
+    # per-hex elevation gate (drops flat hexes that fall inside coarse polygons)
+    elev = json.loads(ELEV.read_text(encoding="utf-8")).get("by_hex", {}) if ELEV.exists() else {}
+
     # Bin notable peaks onto hexes (store may be absent if the network step
     # hasn't run yet; the region layer still works without it).
     peaks_by_hex: dict[str, list] = defaultdict(list)
@@ -157,19 +164,34 @@ def main() -> None:
                 for p in top
             ]
 
-        # Skip hexes with neither a region nor notable peaks.
-        if "system" not in entry and not hex_peaks:
-            continue
+        # Keep a hex only if it actually reads as mountainous:
+        #  - it has a notable peak (always keep), or
+        #  - it is inside a range polygon AND high enough (elevation gate).
+        # A flat hex inside a coarse polygon (Venice, Po valley) is dropped.
+        # Unknown elevation (null, e.g. east of EU-DEM) is not used to drop.
+        hex_ele = elev.get(key)
+        if not hex_peaks:
+            if "system" not in entry:
+                continue
+            if hex_ele is not None and hex_ele < MOUNTAIN_MIN_ELE:
+                continue
 
-        # icon_size = max of region magnitude and peak-elevation signal.
+        # icon_size = max of region magnitude, peak elevation and hex elevation.
         candidates = []
         if region_size is not None:
             candidates.append(region_size)
-        candidates.append(ele_size(max_ele) if hex_peaks else SIZE_RANK["small"])
+        if max_ele is not None:
+            candidates.append(ele_size(max_ele))
+        if hex_ele is not None:
+            candidates.append(ele_size(hex_ele))
+        if not candidates:
+            candidates.append(SIZE_RANK["small"])
         size_rank = max(candidates)
         entry["icon_size"] = SIZE_BY_RANK[size_rank]
         if max_ele is not None:
             entry["max_ele"] = max_ele
+        elif hex_ele is not None:
+            entry["max_ele"] = hex_ele
 
         by_hex[key] = entry
         size_counts[entry["icon_size"]] += 1

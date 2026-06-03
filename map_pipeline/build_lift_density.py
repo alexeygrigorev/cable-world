@@ -57,6 +57,7 @@ def main() -> None:
     latlon_to_hex = _binner(world_px, hex_size)
 
     by_hex: dict[str, Counter] = defaultdict(Counter)
+    named_by_hex: dict[str, Counter] = defaultdict(Counter)  # named-only per group
     totals: Counter = Counter()
     dropped = 0
     for e in lifts:
@@ -70,17 +71,21 @@ def main() -> None:
         by_hex[h]["passenger_total"] += 1
         by_hex[h][group] += 1
         totals[group] += 1
+        if e.get("name"):
+            named_by_hex[h][group] += 1
 
     # Stable ordering: densest first, then hex id.
     ordered = sorted(by_hex.items(), key=lambda kv: (-kv[1]["passenger_total"], kv[0]))
     out = {
         "schema": "cable-world.lift-density.v1",
         "source": "OpenStreetMap aerialway (passenger uphill transport)",
-        "generated_from": "map_pipeline/data/alps_osm_lifts.json",
-        "groups": ["chair_lift", "gondola", "cable_car", "surface_tow"],
+        "generated_from": "map_pipeline/data/osm_lifts.json",
+        "groups": ["cable_car", "gondola", "chair_lift", "surface_tow", "zip_line", "water_ski"],
         "totals": {"passenger_total": sum(totals.values()), **dict(totals)},
         "hex_count": len(by_hex),
-        "by_hex": {h: dict(c) for h, c in ordered},
+        # each hex: per-group totals + "named" sub-map (named-only) so the UI can
+        # filter "с названием / без названия" without loading the big index.
+        "by_hex": {h: {**dict(c), "named": dict(named_by_hex[h])} for h, c in ordered},
     }
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)}")

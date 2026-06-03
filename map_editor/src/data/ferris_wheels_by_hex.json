@@ -1,0 +1,3202 @@
+{
+  "schema": "cable-world.ferris-wheels.v1",
+  "source": "OpenStreetMap Ferris / observation wheels",
+  "generated_from": "map_pipeline/data/osm_ferris_wheels.json",
+  "hex_count": 297,
+  "by_hex": {
+    "428,364": {
+      "count": 6,
+      "wheels": [
+        {
+          "id": 6845766786,
+          "osm_type": "node",
+          "name": "Большое колесо обозрения",
+          "height": "50"
+        },
+        {
+          "id": 363460997,
+          "osm_type": "way",
+          "name": "Круговой обзор"
+        },
+        {
+          "id": 8695734777,
+          "osm_type": "node",
+          "name": "Малое колесо обозрения"
+        },
+        {
+          "id": 1093600277,
+          "osm_type": "way",
+          "name": "Солнце Москвы",
+          "height": "140"
+        },
+        {
+          "id": 12084847447,
+          "osm_type": "node",
+          "height": "30"
+        },
+        {
+          "id": 8245742052,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "429,401": {
+      "count": 4,
+      "wheels": [
+        {
+          "id": 5877978364,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 8757744017,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 7005832080,
+          "osm_type": "node",
+          "height": "24"
+        },
+        {
+          "id": 7006158635,
+          "osm_type": "node",
+          "height": "50"
+        }
+      ]
+    },
+    "420,339": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 1108696886,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 502694046,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 10199796098,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "330,387": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 766644682,
+          "osm_type": "way",
+          "name": "Kinderriesenrad"
+        },
+        {
+          "id": 766644683,
+          "osm_type": "way",
+          "name": "Riesenrad"
+        },
+        {
+          "id": 1444424755,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "317,372": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 1066954552,
+          "osm_type": "way",
+          "name": "Scarborough Observation Wheel"
+        },
+        {
+          "id": 13712822035,
+          "osm_type": "node"
+        },
+        {
+          "id": 3041895224,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "447,361": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 9793500584,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 978580338,
+          "osm_type": "way",
+          "name": "Колесо_Нино"
+        },
+        {
+          "id": 3146977533,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "389,418": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 4391994390,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 6312998885,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 7572489321,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "441,357": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 5774127709,
+          "osm_type": "node"
+        },
+        {
+          "id": 6543513083,
+          "osm_type": "node"
+        },
+        {
+          "id": 6901026892,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "348,404": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 97976204,
+          "osm_type": "way",
+          "name": "Blumenrad"
+        },
+        {
+          "id": 97979331,
+          "osm_type": "way",
+          "name": "Riesenrad",
+          "height": "64.8"
+        },
+        {
+          "id": 5807389612,
+          "osm_type": "node",
+          "name": "Wilfert's Riesenrad"
+        }
+      ]
+    },
+    "373,415": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 7467552771,
+          "osm_type": "node"
+        },
+        {
+          "id": 7467703010,
+          "osm_type": "node"
+        },
+        {
+          "id": 7467707862,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "367,421": {
+      "count": 3,
+      "wheels": [
+        {
+          "id": 10180726807,
+          "osm_type": "node",
+          "name": "Roata Mare"
+        },
+        {
+          "id": 1389618365,
+          "osm_type": "way",
+          "name": "Roata Mare"
+        },
+        {
+          "id": 1389618360,
+          "osm_type": "way",
+          "name": "Roata mică"
+        }
+      ]
+    },
+    "406,337": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 287560868,
+          "osm_type": "node",
+          "name": "Rinkeli",
+          "height": "34"
+        },
+        {
+          "id": 457949936,
+          "osm_type": "way",
+          "name": "SkyWheel Helsinki",
+          "height": "40"
+        }
+      ]
+    },
+    "285,434": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 10290154080,
+          "osm_type": "node",
+          "name": "Noria",
+          "height": "20"
+        },
+        {
+          "id": 759519863,
+          "osm_type": "node",
+          "name": "Noria de la Paz"
+        }
+      ]
+    },
+    "440,353": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 669282648,
+          "osm_type": "way",
+          "name": "Колесо обозрения «Золотое кольцо»",
+          "height": "65"
+        },
+        {
+          "id": 853014246,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "408,352": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 923343554,
+          "osm_type": "node"
+        },
+        {
+          "id": 9760753393,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "374,396": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 1796379383,
+          "osm_type": "node",
+          "name": "Оглядове колесо"
+        },
+        {
+          "id": 694021947,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "430,364": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 6451265946,
+          "osm_type": "node",
+          "name": "Колесо обозрения",
+          "height": "27"
+        },
+        {
+          "id": 1816525009,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "339,411": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 2110876510,
+          "osm_type": "node",
+          "name": "Mini-Wiener Riesenrad"
+        },
+        {
+          "id": 12214478075,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "401,403": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 2402338190,
+          "osm_type": "node",
+          "name": "Оглядове колесо"
+        },
+        {
+          "id": 2403137493,
+          "osm_type": "node",
+          "name": "Оглядове колесо"
+        }
+      ]
+    },
+    "406,421": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 2497631636,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 13511371324,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "427,366": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 2992354895,
+          "osm_type": "node"
+        },
+        {
+          "id": 6915965989,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "429,363": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 12346977776,
+          "osm_type": "node",
+          "height": "20"
+        },
+        {
+          "id": 3497904833,
+          "osm_type": "node",
+          "height": "35"
+        }
+      ]
+    },
+    "428,363": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 3615709657,
+          "osm_type": "node"
+        },
+        {
+          "id": 3822418256,
+          "osm_type": "node",
+          "height": "50"
+        }
+      ]
+    },
+    "411,409": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 6387488285,
+          "osm_type": "node",
+          "name": "Колесо обозрения \"Одно небо\""
+        },
+        {
+          "id": 4311611842,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "300,427": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 9873311286,
+          "osm_type": "node",
+          "name": "Grande Roue"
+        },
+        {
+          "id": 5736496823,
+          "osm_type": "node",
+          "height": "33"
+        }
+      ]
+    },
+    "423,373": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 10880508538,
+          "osm_type": "node"
+        },
+        {
+          "id": 6328436940,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "403,342": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 10015901630,
+          "osm_type": "node",
+          "name": "SkyWheel"
+        },
+        {
+          "id": 6395769577,
+          "osm_type": "node",
+          "name": "SkyWheel of Tallinn",
+          "height": "45"
+        }
+      ]
+    },
+    "388,421": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 305589297,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 6594870885,
+          "osm_type": "node",
+          "height": "24"
+        }
+      ]
+    },
+    "400,420": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 6606798990,
+          "osm_type": "node"
+        },
+        {
+          "id": 6606799032,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "394,419": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 11923111898,
+          "osm_type": "node"
+        },
+        {
+          "id": 6685142253,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "428,365": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 6952482022,
+          "osm_type": "node"
+        },
+        {
+          "id": 7857699631,
+          "osm_type": "node",
+          "height": "41"
+        }
+      ]
+    },
+    "293,435": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 7091056103,
+          "osm_type": "node",
+          "name": "Bicing Ferris Wheel"
+        },
+        {
+          "id": 9937619256,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "363,395": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 7685077165,
+          "osm_type": "node",
+          "name": "Młyńskie koło",
+          "height": "50"
+        },
+        {
+          "id": 12880884207,
+          "osm_type": "node",
+          "height": "32"
+        }
+      ]
+    },
+    "361,394": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 8511223841,
+          "osm_type": "node",
+          "name": "Legendia Flower"
+        },
+        {
+          "id": 12574494365,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "395,414": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 378695569,
+          "osm_type": "way"
+        },
+        {
+          "id": 8879807927,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "310,385": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 8892367403,
+          "osm_type": "node",
+          "name": "Willen Observation Wheel"
+        },
+        {
+          "id": 1348299371,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "302,408": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 9037731885,
+          "osm_type": "node"
+        },
+        {
+          "id": 9193111476,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "425,381": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 13106636038,
+          "osm_type": "node"
+        },
+        {
+          "id": 9048358733,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "394,393": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 159181850,
+          "osm_type": "way",
+          "name": "Оглядове колесо"
+        },
+        {
+          "id": 9870459521,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "327,406": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 10834318942,
+          "osm_type": "node",
+          "name": "Riesenrad am See",
+          "height": "38"
+        },
+        {
+          "id": 11768897352,
+          "osm_type": "node",
+          "name": "Riesenrad am See"
+        }
+      ]
+    },
+    "312,425": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 11298455356,
+          "osm_type": "node",
+          "name": "Grande Roue"
+        },
+        {
+          "id": 1204097882,
+          "osm_type": "way",
+          "name": "La Grande Roue"
+        }
+      ]
+    },
+    "324,424": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 20351217,
+          "osm_type": "relation",
+          "name": "Piazza della Signoria"
+        },
+        {
+          "id": 11804611451,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "361,399": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 12235711981,
+          "osm_type": "node",
+          "name": "Zakopane Wheel"
+        },
+        {
+          "id": 13002184949,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "354,407": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 386319234,
+          "osm_type": "way",
+          "name": "Budapest Óriáskereke",
+          "height": "65"
+        },
+        {
+          "id": 12569420727,
+          "osm_type": "node",
+          "name": "Törpe Kerék"
+        }
+      ]
+    },
+    "366,430": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 13323851828,
+          "osm_type": "node"
+        },
+        {
+          "id": 13591222198,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "377,369": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 958443140,
+          "osm_type": "way",
+          "name": "Глаз Балтики"
+        },
+        {
+          "id": 13883690504,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "401,421": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 173300079,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 765680011,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "329,386": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 361264812,
+          "osm_type": "way",
+          "name": "Mini Ferris Wheel"
+        },
+        {
+          "id": 361106823,
+          "osm_type": "way",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "393,403": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 677364677,
+          "osm_type": "way",
+          "name": "Колесо огляду",
+          "height": "27 m"
+        },
+        {
+          "id": 1214588840,
+          "osm_type": "way",
+          "name": "Сонечко",
+          "height": "6 m"
+        }
+      ]
+    },
+    "390,419": {
+      "count": 2,
+      "wheels": [
+        {
+          "id": 789624237,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        },
+        {
+          "id": 838671070,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "396,356": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 311096630,
+          "osm_type": "node",
+          "name": "Siguldas panorāmas rats",
+          "height": "30"
+        }
+      ]
+    },
+    "341,381": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 472399807,
+          "osm_type": "node",
+          "name": "Putu Moto Riesenrad"
+        }
+      ]
+    },
+    "331,401": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 747131047,
+          "osm_type": "node",
+          "name": "Riesenrad",
+          "height": "8"
+        }
+      ]
+    },
+    "346,386": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 762075260,
+          "osm_type": "node",
+          "name": "Schaufelradbagger \"Big Wheel\""
+        }
+      ]
+    },
+    "310,402": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 781418816,
+          "osm_type": "node",
+          "name": "La Grande Roue"
+        }
+      ]
+    },
+    "403,397": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1172851327,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "324,389": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1175961354,
+          "osm_type": "node",
+          "name": "Reuzenrad"
+        }
+      ]
+    },
+    "391,396": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1245920730,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "438,326": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1296575361,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "426,358": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1360844567,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "412,424": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1514032056,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "464,307": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1843191943,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "317,391": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1845794188,
+          "osm_type": "node",
+          "name": "Mini Rad"
+        }
+      ]
+    },
+    "413,417": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2088660616,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "380,333": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2293845887,
+          "osm_type": "node",
+          "name": "Pariserhjulet"
+        }
+      ]
+    },
+    "402,342": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2475107600,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "400,418": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2612196689,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "422,381": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2760563024,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "412,419": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2850653420,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "400,383": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2921900478,
+          "osm_type": "node",
+          "name": "Кола агляду"
+        }
+      ]
+    },
+    "369,427": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 2993701864,
+          "osm_type": "node",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "346,390": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3128365622,
+          "osm_type": "node",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "382,392": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3129314967,
+          "osm_type": "node",
+          "name": "Чортове колесо"
+        }
+      ]
+    },
+    "432,390": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3280598281,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "400,402": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3281411616,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "394,375": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3588199861,
+          "osm_type": "node",
+          "name": "Агляднае кола",
+          "height": "54"
+        }
+      ]
+    },
+    "426,372": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3621370577,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "388,417": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3678775721,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "432,364": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3732152583,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "433,365": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3740140083,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "418,378": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3775681657,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "407,390": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3783172189,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "437,362": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 3906071863,
+          "osm_type": "node",
+          "name": "Небо 33",
+          "height": "50"
+        }
+      ]
+    },
+    "390,421": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4034733804,
+          "osm_type": "node",
+          "name": "Чёртово колесо"
+        }
+      ]
+    },
+    "462,270": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4147713658,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "427,378": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4151528437,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "408,405": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4200397311,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "380,410": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4243967494,
+          "osm_type": "node",
+          "name": "Roata Dracului"
+        }
+      ]
+    },
+    "412,408": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4674930968,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "405,409": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4734193693,
+          "osm_type": "node",
+          "name": "Оглядове колесо"
+        }
+      ]
+    },
+    "375,404": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4842305453,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "440,365": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4847824470,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "413,424": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4876546882,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "418,394": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4970111407,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "369,370": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 4979785715,
+          "osm_type": "node",
+          "name": "Koło młyńskie"
+        }
+      ]
+    },
+    "418,383": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5019873369,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "425,374": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5252849044,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "262,452": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5276466575,
+          "osm_type": "node",
+          "name": "Rueda Primavera"
+        }
+      ]
+    },
+    "357,365": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5313898121,
+          "osm_type": "node",
+          "name": "Ballongyngen"
+        }
+      ]
+    },
+    "445,343": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5382769976,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "463,306": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5390601978,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "322,417": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5507953755,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "332,405": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5525702677,
+          "osm_type": "node",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "367,422": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5590144746,
+          "osm_type": "node",
+          "name": "Roata Panoramică"
+        }
+      ]
+    },
+    "268,452": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5645996314,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "336,396": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5677917829,
+          "osm_type": "node",
+          "name": "Kinderriesenrad"
+        }
+      ]
+    },
+    "431,370": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5697216460,
+          "osm_type": "node",
+          "name": "Колесо обозрения «Окская Жемчужина»"
+        }
+      ]
+    },
+    "381,398": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5724985032,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "331,383": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5737190720,
+          "osm_type": "node",
+          "name": "Avonturenrad"
+        }
+      ]
+    },
+    "341,378": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5749651805,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "278,449": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5769039520,
+          "osm_type": "node",
+          "name": "Noria de la Bernada"
+        }
+      ]
+    },
+    "437,382": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5829887255,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "427,364": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 5834811921,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "413,402": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6015302736,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "419,339": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6055712610,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "350,410": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6168820313,
+          "osm_type": "node",
+          "name": "Ferris wheel",
+          "height": "50"
+        }
+      ]
+    },
+    "306,424": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6312411117,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "335,404": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6351556179,
+          "osm_type": "node",
+          "name": "Umadum Riesenrad",
+          "height": "78"
+        }
+      ]
+    },
+    "338,378": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6393073975,
+          "osm_type": "node",
+          "name": "Riesenrad zum Treten"
+        }
+      ]
+    },
+    "428,388": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6449316402,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "414,426": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6486243902,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "368,429": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6530581496,
+          "osm_type": "node",
+          "name": "The Wheel"
+        }
+      ]
+    },
+    "380,391": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6567519731,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "322,403": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6596369173,
+          "osm_type": "node",
+          "name": "La Roue Panoramique"
+        }
+      ]
+    },
+    "314,373": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6600676020,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "297,420": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6604844336,
+          "osm_type": "node",
+          "name": "La Grande Roue 1900"
+        }
+      ]
+    },
+    "404,419": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6653339985,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "441,358": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6695051185,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "413,419": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6743811975,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "334,418": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6772956751,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "383,376": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6779590787,
+          "osm_type": "node",
+          "height": "42"
+        }
+      ]
+    },
+    "409,395": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 6920064489,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "363,454": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7002835078,
+          "osm_type": "node",
+          "name": "Antalya'nın Kalbi",
+          "height": "90"
+        }
+      ]
+    },
+    "373,423": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7024087651,
+          "osm_type": "node",
+          "name": "Giant Wheel"
+        }
+      ]
+    },
+    "398,400": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7074888305,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "429,368": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7191886024,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "382,451": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7260703467,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "414,423": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7344599004,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "409,374": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7344632192,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "388,394": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7572492816,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "353,434": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7640544787,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "379,395": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7803528297,
+          "osm_type": "node",
+          "name": "Чортове колесо"
+        }
+      ]
+    },
+    "361,396": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7816229849,
+          "osm_type": "node",
+          "name": "Młynskie koło"
+        }
+      ]
+    },
+    "328,424": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7833840187,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "399,387": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7837765885,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "347,411": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 7939573181,
+          "osm_type": "node",
+          "name": "Óriaskerék"
+        }
+      ]
+    },
+    "379,384": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8040371832,
+          "osm_type": "node",
+          "name": "Кола агляду",
+          "height": "40"
+        }
+      ]
+    },
+    "314,392": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8142056769,
+          "osm_type": "node",
+          "name": "Les Montgolfières"
+        }
+      ]
+    },
+    "395,398": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8148508738,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "378,397": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8298707889,
+          "osm_type": "node",
+          "name": "Оглядове колесо"
+        }
+      ]
+    },
+    "417,367": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8322318493,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "400,406": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8450319906,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "352,362": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8507784671,
+          "osm_type": "node",
+          "name": "Pariserhjulet"
+        }
+      ]
+    },
+    "378,402": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8717094200,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "321,391": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8848327546,
+          "osm_type": "node",
+          "name": "The View Brussels",
+          "height": "55"
+        }
+      ]
+    },
+    "392,411": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8879577884,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "298,429": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8898393844,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "404,410": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8919973148,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "266,452": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 8972450788,
+          "osm_type": "node",
+          "name": "Noria de La Aceña"
+        }
+      ]
+    },
+    "405,368": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9066460832,
+          "osm_type": "node",
+          "name": "Кола агляду",
+          "height": "30"
+        }
+      ]
+    },
+    "269,449": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9067414518,
+          "osm_type": "node",
+          "name": "Noria Huerta de Arteaga"
+        }
+      ]
+    },
+    "340,441": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9135726129,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "318,382": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9160612437,
+          "osm_type": "node",
+          "name": "Great Yarmouth Giant Wheel"
+        }
+      ]
+    },
+    "369,442": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9186561220,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "307,423": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9221865697,
+          "osm_type": "node",
+          "name": "Boule et Bill Déboulent"
+        }
+      ]
+    },
+    "307,427": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9433580056,
+          "osm_type": "node",
+          "name": "Tipis de Sitting Bull"
+        }
+      ]
+    },
+    "347,425": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9453681606,
+          "osm_type": "node",
+          "name": "Панорамски точак",
+          "height": "35"
+        }
+      ]
+    },
+    "409,401": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9602863894,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "326,417": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9625504679,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "325,384": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9648232580,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "369,438": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9650156416,
+          "osm_type": "node",
+          "name": "Körfez Güneşi"
+        }
+      ]
+    },
+    "391,420": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9704578950,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "382,363": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9749355878,
+          "osm_type": "node",
+          "name": "Palangos apžvalgos ratas"
+        }
+      ]
+    },
+    "339,405": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9825097002,
+          "osm_type": "node",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "395,374": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9841484917,
+          "osm_type": "node",
+          "name": "Агляднае кола",
+          "height": "28"
+        }
+      ]
+    },
+    "389,407": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9865004273,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "405,336": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9868383226,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "346,371": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9892211823,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "322,389": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9927904109,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "295,428": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 9938986757,
+          "osm_type": "node",
+          "name": "La noria"
+        }
+      ]
+    },
+    "403,421": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10161618812,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "303,405": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10313309641,
+          "osm_type": "node",
+          "name": "La grande roue"
+        }
+      ]
+    },
+    "416,379": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10565879295,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "409,370": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10646825595,
+          "osm_type": "node",
+          "name": "Колесо обозрения",
+          "height": "50"
+        }
+      ]
+    },
+    "410,316": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10749742029,
+          "osm_type": "node",
+          "name": "Giant Wheel"
+        }
+      ]
+    },
+    "261,451": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10766971077,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "346,403": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10941684776,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "444,366": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 10944062561,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "373,401": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11005617701,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "308,384": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11032177848,
+          "osm_type": "node",
+          "name": "Stratford Big Wheel"
+        }
+      ]
+    },
+    "355,399": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11036939187,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "378,374": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11048651945,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "306,426": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11061632609,
+          "osm_type": "node",
+          "name": "Grande roue"
+        }
+      ]
+    },
+    "355,409": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11077376952,
+          "osm_type": "node",
+          "name": "Safari Eye Óriáskerék",
+          "height": "30"
+        }
+      ]
+    },
+    "311,411": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11078506155,
+          "osm_type": "node",
+          "name": "Grande Roue"
+        }
+      ]
+    },
+    "381,384": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11081977663,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "339,384": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11134185250,
+          "osm_type": "node",
+          "name": "Riesenrad auf dem Historischen Jahrmarkt"
+        }
+      ]
+    },
+    "336,424": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11140666798,
+          "osm_type": "node",
+          "name": "Adria eye"
+        }
+      ]
+    },
+    "385,399": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11167899109,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "380,396": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11181936165,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "281,437": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11200959205,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "290,422": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11219446668,
+          "osm_type": "node",
+          "name": "Grande roue en Aquitaine"
+        }
+      ]
+    },
+    "355,453": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11255384894,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "446,361": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11262709583,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "405,386": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11280691899,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "350,425": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11296325667,
+          "osm_type": "node",
+          "name": "Skyview"
+        }
+      ]
+    },
+    "366,405": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11380762478,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "409,361": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11476300302,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "371,403": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11743351369,
+          "osm_type": "node",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "321,451": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11892463053,
+          "osm_type": "node",
+          "name": "Rondò"
+        }
+      ]
+    },
+    "298,386": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11895711178,
+          "osm_type": "node",
+          "name": "The Pembrokeshire Wheel"
+        }
+      ]
+    },
+    "364,454": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11939935047,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "300,411": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 11991515852,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "348,411": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12081060615,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "377,387": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12089463424,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "324,433": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12090297976,
+          "osm_type": "node",
+          "name": "Giranido"
+        }
+      ]
+    },
+    "322,415": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12095198423,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "340,400": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12099232900,
+          "osm_type": "node",
+          "name": "Dual-Wheel-Riesenrad"
+        }
+      ]
+    },
+    "373,407": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12104271152,
+          "osm_type": "node",
+          "name": "Roata Panoramică"
+        }
+      ]
+    },
+    "345,374": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12107195921,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "294,415": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12161921484,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "342,382": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12178243338,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "374,438": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12223070157,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "374,412": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12246722436,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "329,383": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12282551560,
+          "osm_type": "node",
+          "name": "La Grande Roue"
+        }
+      ]
+    },
+    "405,421": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12288256282,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "423,362": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12352193352,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "357,454": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12396748040,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "328,386": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12792090414,
+          "osm_type": "node",
+          "name": "Mini-reuzenrad"
+        }
+      ]
+    },
+    "321,415": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12860383118,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "306,398": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12875303233,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "307,378": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12875708395,
+          "osm_type": "node",
+          "height": "30"
+        }
+      ]
+    },
+    "416,428": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12950183702,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "424,382": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 12955152590,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "357,396": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13083901519,
+          "osm_type": "node",
+          "name": "Skaláčkovo kolo"
+        }
+      ]
+    },
+    "324,385": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13098482147,
+          "osm_type": "node",
+          "name": "De Kwal"
+        }
+      ]
+    },
+    "382,411": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13115485430,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "319,429": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13352432714,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "366,423": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13412751471,
+          "osm_type": "node",
+          "name": "Roata Panoramica"
+        }
+      ]
+    },
+    "416,403": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13463005620,
+          "osm_type": "node",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "263,436": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13695799833,
+          "osm_type": "node",
+          "name": "Roda Panorâmica"
+        }
+      ]
+    },
+    "329,389": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13734175460,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "332,381": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13786586855,
+          "osm_type": "node",
+          "name": "Chuck Wagon"
+        }
+      ]
+    },
+    "421,337": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13804376719,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "310,401": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13836394015,
+          "osm_type": "node",
+          "name": "Grande Roue"
+        }
+      ]
+    },
+    "428,380": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 13907744031,
+          "osm_type": "node"
+        }
+      ]
+    },
+    "412,378": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 114800671,
+          "osm_type": "way",
+          "name": "Колесо обозрения",
+          "height": "15"
+        }
+      ]
+    },
+    "420,338": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 116587332,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "416,323": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 126116929,
+          "osm_type": "way",
+          "name": "Maailmanpyörä"
+        }
+      ]
+    },
+    "419,407": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 128962251,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "413,333": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 149557545,
+          "osm_type": "way",
+          "name": "Kouvola-pyörä"
+        }
+      ]
+    },
+    "371,372": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 176327993,
+          "osm_type": "way",
+          "name": "AmberSky Gdańsk - Koło Widokowe"
+        }
+      ]
+    },
+    "311,387": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 204068874,
+          "osm_type": "way",
+          "name": "London Eye",
+          "height": "136.5"
+        }
+      ]
+    },
+    "395,388": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 205936308,
+          "osm_type": "way",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "351,381": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 227342398,
+          "osm_type": "way",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "329,403": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 227642030,
+          "osm_type": "way",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "403,424": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 257863641,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "328,391": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 299682844,
+          "osm_type": "way",
+          "name": "Bolles Riesenrad"
+        }
+      ]
+    },
+    "330,388": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 320516526,
+          "osm_type": "way",
+          "name": "Sonnenrad"
+        }
+      ]
+    },
+    "308,377": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 333215450,
+          "osm_type": "way",
+          "name": "Wheel Of Liverpool",
+          "height": "60"
+        }
+      ]
+    },
+    "430,381": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 357834567,
+          "osm_type": "way",
+          "height": "30"
+        }
+      ]
+    },
+    "407,377": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 367099374,
+          "osm_type": "way",
+          "name": "Карусель «Кола агляду»"
+        }
+      ]
+    },
+    "392,419": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 414078927,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "383,394": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 423963441,
+          "osm_type": "way",
+          "name": "Чортове колесо"
+        }
+      ]
+    },
+    "410,409": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 441526086,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "323,433": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 483289580,
+          "osm_type": "way",
+          "name": "La Grande Ruota Panoramica"
+        }
+      ]
+    },
+    "377,370": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 505586174,
+          "osm_type": "way",
+          "height": "45"
+        }
+      ]
+    },
+    "290,403": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 522458256,
+          "osm_type": "way",
+          "name": "Grande Roue"
+        }
+      ]
+    },
+    "398,411": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 551982688,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "310,426": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 581299973,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "365,340": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 585363827,
+          "osm_type": "way",
+          "name": "Ballongferden"
+        }
+      ]
+    },
+    "255,453": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 607812105,
+          "osm_type": "way",
+          "name": "Roda Gigante"
+        }
+      ]
+    },
+    "304,391": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 696171965,
+          "osm_type": "way",
+          "name": "Bournemouth Eye"
+        }
+      ]
+    },
+    "407,414": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 705439404,
+          "osm_type": "way",
+          "name": "Колесо обозрения"
+        }
+      ]
+    },
+    "316,373": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 875447408,
+          "osm_type": "way",
+          "name": "Rotataur"
+        }
+      ]
+    },
+    "349,439": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 973895815,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "305,378": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1030805115,
+          "osm_type": "way",
+          "name": "Ferris Wheel"
+        }
+      ]
+    },
+    "326,400": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1078878405,
+          "osm_type": "way",
+          "name": "La Grande Roue"
+        }
+      ]
+    },
+    "315,404": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1106545541,
+          "osm_type": "way",
+          "name": "La Grande Roue"
+        }
+      ]
+    },
+    "351,382": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1118309471,
+          "osm_type": "way",
+          "height": "45"
+        }
+      ]
+    },
+    "264,455": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1133985147,
+          "osm_type": "way",
+          "name": "Mirador princess"
+        }
+      ]
+    },
+    "313,377": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1170517355,
+          "osm_type": "way",
+          "name": "Ferris Wheel"
+        }
+      ]
+    },
+    "410,419": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1190873201,
+          "osm_type": "way",
+          "height": "40"
+        }
+      ]
+    },
+    "295,425": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1287098678,
+          "osm_type": "way",
+          "name": "Roue des Pionniers"
+        }
+      ]
+    },
+    "352,420": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1293378284,
+          "osm_type": "way",
+          "name": "Панорама"
+        }
+      ]
+    },
+    "361,395": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1307071301,
+          "osm_type": "way",
+          "name": "Wonder Wheel",
+          "height": "53"
+        }
+      ]
+    },
+    "340,399": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1312160162,
+          "osm_type": "way",
+          "name": "Riesenrad"
+        }
+      ]
+    },
+    "285,439": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1315091205,
+          "osm_type": "way",
+          "name": "Sénia panadera"
+        }
+      ]
+    },
+    "334,388": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1329294565,
+          "osm_type": "way",
+          "name": "Big Wheel"
+        }
+      ]
+    },
+    "301,373": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1348056525,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "393,357": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1349588176,
+          "osm_type": "way",
+          "name": "Rīgas Rise panorāmas rats",
+          "height": "65"
+        }
+      ]
+    },
+    "409,402": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1429542579,
+          "osm_type": "way"
+        }
+      ]
+    },
+    "412,396": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1436155957,
+          "osm_type": "way",
+          "name": "Колесо огляду"
+        }
+      ]
+    },
+    "358,412": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1461930326,
+          "osm_type": "way",
+          "name": "Gyulai óriáskerék"
+        }
+      ]
+    },
+    "408,395": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1482377203,
+          "osm_type": "way",
+          "name": "Колесо огляду",
+          "height": "55"
+        }
+      ]
+    },
+    "302,387": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1493543076,
+          "osm_type": "way",
+          "name": "The Giant Wheel"
+        }
+      ]
+    },
+    "297,419": {
+      "count": 1,
+      "wheels": [
+        {
+          "id": 1523101454,
+          "osm_type": "way",
+          "name": "La Grande Roue"
+        }
+      ]
+    }
+  }
+}

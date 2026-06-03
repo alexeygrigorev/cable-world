@@ -42,9 +42,10 @@ let zoomVal = ZCFG.default; // 1.0 = 100%
 let panX = 0, panY = 0;
 
 // ----- Layer B: OSM lift-density overlay (see docs/pipelines/osm-lift-density.md) -----
+const overlayParams = new URLSearchParams(window.location.search);
 const overlays = {
-  liftDensity: false, // press "L" to toggle
-  alpsTarget: true,   // press "A" to toggle
+  liftDensity: overlayParams.get("liftDensity") === "1", // press "L" to toggle
+  alpsTarget: overlayParams.get("alpsTarget") !== "0",   // press "A" to toggle
   mountains: false,   // press "M" to toggle (see docs/pipelines/mountain-regions.md)
   elevation: false,   // hypsometric tint
 };
@@ -115,8 +116,7 @@ function syncOverlayButtons() {
 }
 
 function toggleLiftOverlay() {
-  overlays.liftDensity = !overlays.liftDensity;
-  syncOverlayButtons();
+  setAllLiftGroups(!overlays.liftDensity);
   render();
 }
 
@@ -129,13 +129,25 @@ window.addEventListener("keydown", (e) => {
 });
 liftOverlayBtn?.addEventListener("click", toggleLiftOverlay);
 
-// ----- layer filter (checkbox panel in the header) -----
+// ----- layer filter (checkboxes inside the right palette) -----
 const LIFT_GROUPS_ON = new Set(LIFT_GROUP_ORDER); // which lift categories are shown
+let NAMED_ON = true, UNNAMED_ON = true;            // "с названием" / "без названия"
 function liftShown(c) {
-  if (LIFT_GROUPS_ON.size >= LIFT_GROUP_ORDER.length) return c.passenger_total;
+  const named = c.named || {};
   let n = 0;
-  for (const g of LIFT_GROUPS_ON) n += c[g] || 0;
+  for (const g of LIFT_GROUPS_ON) {
+    const tot = c[g] || 0, nm = named[g] || 0;
+    if (NAMED_ON) n += nm;
+    if (UNNAMED_ON) n += tot - nm;
+  }
   return n;
+}
+function setAllLiftGroups(on) {
+  LIFT_GROUPS_ON.clear();
+  if (on) for (const g of LIFT_GROUP_ORDER) LIFT_GROUPS_ON.add(g);
+  overlays.liftDensity = on;
+  for (const cb of document.querySelectorAll(".flt-lg")) cb.checked = on;
+  syncOverlayButtons();
 }
 function eleColor(m) {
   const stops = [[-20, [60, 110, 150]], [0, [90, 150, 95]], [400, [170, 185, 110]],
@@ -150,17 +162,21 @@ function wireFilters() {
   const lifts = document.getElementById("flt-lifts");
   const mtns = document.getElementById("flt-mountains");
   const elev = document.getElementById("flt-elevation");
-  if (lifts) lifts.addEventListener("change", () => { overlays.liftDensity = lifts.checked; syncOverlayButtons(); render(); });
+  if (lifts) lifts.addEventListener("change", () => { setAllLiftGroups(lifts.checked); render(); });
   if (mtns) mtns.addEventListener("change", () => { overlays.mountains = mtns.checked; render(); });
   if (elev) elev.addEventListener("change", () => { overlays.elevation = elev.checked; render(); });
   for (const cb of document.querySelectorAll(".flt-lg")) {
     cb.addEventListener("change", () => {
       if (cb.checked) LIFT_GROUPS_ON.add(cb.dataset.g); else LIFT_GROUPS_ON.delete(cb.dataset.g);
-      if (LIFT_GROUPS_ON.size && !overlays.liftDensity) overlays.liftDensity = true;
+      overlays.liftDensity = LIFT_GROUPS_ON.size > 0;
       syncOverlayButtons();
       render();
     });
   }
+  const named = document.getElementById("flt-named");
+  const unnamed = document.getElementById("flt-unnamed");
+  if (named) named.addEventListener("change", () => { NAMED_ON = named.checked; render(); });
+  if (unnamed) unnamed.addEventListener("change", () => { UNNAMED_ON = unnamed.checked; render(); });
 }
 wireFilters();
 syncOverlayButtons();

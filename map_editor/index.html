@@ -24,30 +24,34 @@
     <aside id="palette">
       <button id="paletteToggle" class="palette-toggle" title="Показать/скрыть палитру" aria-expanded="true">›</button>
       <div class="palette-scroll">
-        <div class="palette-title">Палитра</div>
+        <div class="palette-title">Объекты</div>
         <div id="paletteItems"></div>
         <div class="palette-hint">Перетащи на карту</div>
+        <div id="filters">
+          <div class="filters-title">Слои</div>
+          <label class="flt-master"><input type="checkbox" id="flt-lifts" /> 🚡 Подъёмники <span class="flt-key">L</span></label>
+          <div class="flt-sub">
+            <label><input type="checkbox" class="flt-lg" data-g="cable_car" checked /> канатные/фуникулёры</label>
+            <label><input type="checkbox" class="flt-lg" data-g="gondola" checked /> гондольные</label>
+            <label><input type="checkbox" class="flt-lg" data-g="chair_lift" checked /> кресельные</label>
+            <label><input type="checkbox" class="flt-lg" data-g="surface_tow" checked /> бугельные/наземные</label>
+            <label><input type="checkbox" class="flt-lg" data-g="zip_line" checked /> зиплайны</label>
+            <label><input type="checkbox" class="flt-lg" data-g="water_ski" checked /> вейкборд/водные лыжи</label>
+          </div>
+          <div class="flt-sub">
+            <label><input type="checkbox" id="flt-named" checked /> с названием</label>
+            <label><input type="checkbox" id="flt-unnamed" checked /> без названия</label>
+          </div>
+          <label class="flt-master"><input type="checkbox" id="flt-mountains" /> ⛰ Горы <span class="flt-key">M</span></label>
+          <label class="flt-master"><input type="checkbox" id="flt-elevation" /> 🗻 Высота (тон)</label>
+          <label class="flt-master flt-soon"><input type="checkbox" id="flt-towers" disabled /> 📡 Телебашни <span>(скоро)</span></label>
+          <label class="flt-master flt-soon"><input type="checkbox" id="flt-wheels" disabled /> 🎡 Колёса обозрения <span>(скоро)</span></label>
+        </div>
       </div>
     </aside>
     <main id="stage">
       <canvas id="map"></canvas>
     </main>
-    <aside id="filters">
-      <div class="filters-title">Слои</div>
-      <label class="flt-master"><input type="checkbox" id="flt-lifts" /> 🚡 Подъёмники <span class="flt-key">L</span></label>
-      <div class="flt-sub">
-        <label><input type="checkbox" class="flt-lg" data-g="cable_car" checked /> канатные/фуникулёры</label>
-        <label><input type="checkbox" class="flt-lg" data-g="gondola" checked /> гондольные</label>
-        <label><input type="checkbox" class="flt-lg" data-g="chair_lift" checked /> кресельные</label>
-        <label><input type="checkbox" class="flt-lg" data-g="surface_tow" checked /> бугельные/наземные</label>
-        <label><input type="checkbox" class="flt-lg" data-g="zip_line" checked /> зиплайны</label>
-        <label><input type="checkbox" class="flt-lg" data-g="water_ski" checked /> вейкборд/водные лыжи</label>
-      </div>
-      <label class="flt-master"><input type="checkbox" id="flt-mountains" /> ⛰ Горы <span class="flt-key">M</span></label>
-      <label class="flt-master"><input type="checkbox" id="flt-elevation" /> 🗻 Высота (тон)</label>
-      <label class="flt-master flt-soon"><input type="checkbox" id="flt-towers" disabled /> 📡 Телебашни <span>(скоро)</span></label>
-      <label class="flt-master flt-soon"><input type="checkbox" id="flt-wheels" disabled /> 🎡 Колёса обозрения <span>(скоро)</span></label>
-    </aside>
     <aside id="panel" hidden>
       <button id="panelClose" title="Закрыть">✕</button>
       <div id="panelBody"></div>
