@@ -131,11 +131,20 @@ def main() -> None:
         done = {tuple(t) for t in ck.get("done_tiles", [])}
         print(f"resuming: {len(done)} tiles done, {len(kept)} peaks so far", flush=True)
 
+    failed: list = []
     for i, (lon0, lat0) in enumerate(tiles, 1):
         if (lon0, lat0) in done:
             continue
         print(f"[{i}/{len(tiles)}] tile lon {lon0}..{lon0+TILE_DEG} lat {lat0}..{lat0+TILE_DEG}", flush=True)
-        for el in fetch_tile(lat0, lon0, lat0 + TILE_DEG, lon0 + TILE_DEG):
+        try:
+            els = fetch_tile(lat0, lon0, lat0 + TILE_DEG, lon0 + TILE_DEG)
+        except RuntimeError as ex:
+            # Overpass overload on a dense tile: skip it (do NOT mark done) so a
+            # later rerun retries it, and keep going with the rest.
+            print(f"   SKIP, will retry next run: {ex}", flush=True)
+            failed.append((lon0, lat0))
+            continue
+        for el in els:
             rec = record(el)
             if rec is not None:
                 kept[rec["id"]] = rec  # dedupe by node id across tile borders
@@ -166,7 +175,10 @@ def main() -> None:
         "peaks": peaks,
     }
     STORE.write_text(json.dumps(store, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    CHECKPOINT.unlink(missing_ok=True)  # clean finish: drop the resume file
+    if failed:
+        print(f"NOTE: {len(failed)} tiles skipped on Overpass overload; rerun to fill: {failed}", flush=True)
+    else:
+        CHECKPOINT.unlink(missing_ok=True)  # clean finish: drop the resume file
     print(f"wrote {STORE.relative_to(ROOT)}: {len(peaks)} peaks", flush=True)
 
 
