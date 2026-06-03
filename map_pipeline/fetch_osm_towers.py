@@ -144,7 +144,7 @@ def quarter(s: float, w: float, n: float, e: float):
             (mlat, w, n, mlon), (mlat, mlon, n, e)]
 
 
-def write_store(bbox: list[float], towers: list[dict]) -> None:
+def write_store(bbox: list[float], towers: list[dict], done: set | None = None) -> None:
     towers = sorted(towers, key=lambda r: (r["osm_type"], r["id"]))
     store = {
         "schema": "cable-world.osm-tv-towers.v1",
@@ -162,6 +162,9 @@ def write_store(bbox: list[float], towers: list[dict]) -> None:
             "See docs/pipelines/tv-towers.md."
         ),
         "count": len(towers),
+        # seed tiles already fully fetched, so a killed run can resume cheaply
+        # (re-runs skip these instead of re-probing the whole continent).
+        "_done_tiles": sorted(list(t) for t in (done or set())),
         "towers": towers,
     }
     STORE.write_text(json.dumps(store, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -226,9 +229,9 @@ def main() -> None:
         print(f"[{i}/{len(seed)}]", flush=True)
         collect(tile, by_key)
         done.add(tuple(tile))
-        write_store(bbox, list(by_key.values()))  # incremental: never lose progress
+        write_store(bbox, list(by_key.values()), done)  # incremental: never lose progress
 
-    write_store(bbox, list(by_key.values()))
+    write_store(bbox, list(by_key.values()), done)
     print(f"wrote {STORE.relative_to(ROOT)}: {len(by_key)} towers", flush=True)
 
 

@@ -46,7 +46,7 @@ let panX = 0, panY = 0;
 const overlayParams = new URLSearchParams(window.location.search);
 const overlays = {
   liftDensity: overlayParams.get("liftDensity") === "1", // press "L" to toggle
-  alpsTarget: overlayParams.get("alpsTarget") !== "0",   // press "A" to toggle
+  alpsTarget: overlayParams.get("alpsTarget") === "1",   // press "A" to toggle
   mountains: false,   // press "M" to toggle (see docs/pipelines/mountain-regions.md)
   elevation: false,   // hypsometric tint
   wheels: false,      // Ferris wheels (колёса обозрения)
@@ -1545,11 +1545,6 @@ const PALETTE = [
   { kind: "massif", label: "Harz", image: "harz.png", zoomFactor: 4.3, aspect: 461 / 329 },
   { kind: "massif", label: "Erzgebirge", image: "erzgebirge.png", zoomFactor: 5.6, aspect: 491 / 319 },
   { kind: "massif", label: "Saxon Switzerland", image: "saxon_switzerland.png", zoomFactor: 3.8, aspect: 462 / 320 },
-  { kind: "massif", label: "Western Alps", image: "western_alps_massif.png", zoomFactor: 11.0, aspect: 628 / 304 },
-  { kind: "massif", label: "Swiss Alps", image: "swiss_alps_massif.png", zoomFactor: 11.2, aspect: 753 / 250 },
-  { kind: "massif", label: "Bavarian/Tyrol Alps", image: "bavarian_tyrol_alps_massif.png", zoomFactor: 10.8, aspect: 975 / 168 },
-  { kind: "massif", label: "German Alpine Edge", image: "german_alpine_edge_massif.png", zoomFactor: 9.2, aspect: 1042 / 155 },
-  { kind: "massif", label: "Austrian Alps", image: "austrian_alps_massif.png", zoomFactor: 10.6, aspect: 1040 / 196 },
 ];
 
 let placing = null, placeGhost = null, nextId = 1;
